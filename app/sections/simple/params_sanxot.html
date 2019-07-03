@@ -1,0 +1,101 @@
+<template class="task-template" id="params_sanxot">
+  <section class="tab-content">
+    <div class="form-group row col-md-5">
+      <input class="col-md-1 col-form-label" type="checkbox" value="" id="discardOutliers" checked="checked">
+      <div class="">
+        <label class="form-check-label" for="discardOutliers">Discard outliers</label>
+      </div>
+    </div>
+
+    <div class="scan2peptide">
+      <h6>Scan to peptide</h6>
+      <div class="form-group row col-md-5">
+        <label for="fdr" class="col-md-1 col-form-label">FDR</label>
+        <div class="">
+          <input type="number" class="form-control" id="fdr" min="0" step="0.01" value="0.01" data-bind="value:replyNumber">
+        </div>
+      </div>
+      <div class="form-group row col-md-5">
+        <input class="col-md-1 col-form-label" type="checkbox" value="" id="forceVariance" onchange="document.querySelector('.scan2peptide #variance').disabled = !this.checked;">
+        <div class="">
+          <label class="form-check-label" for="forceVariance">Force the variance</label>
+        </div>
+      </div>
+      <div class="form-group row col-md-5">
+        <label for="variance" class="col-md-1 col-form-label">Variance</label>
+        <div class="">
+          <input type="number" class="form-control" id="variance" min="0" step="0.01" value="0.01" data-bind="value:replyNumber" disabled="disabled">
+        </div>
+      </div>
+    </div>
+    <!-- end Scan to peptide -->
+
+    <div class="peptide2protein">
+      <h6>Peptide to protein</h6>
+      <div class="form-group row col-md-5">
+        <label for="fdr" class="col-md-1 col-form-label">FDR</label>
+        <div class="">
+          <input type="number" class="form-control" id="fdr" min="0" step="0.01" value="0.01" data-bind="value:replyNumber">
+        </div>
+      </div>
+      <div class="form-group row col-md-5">
+        <input class="col-md-1 col-form-label" type="checkbox" value="" id="forceVariance" onchange="document.querySelector('.peptide2protein #variance').disabled = !this.checked;">
+        <div class="">
+          <label class="form-check-label" for="forceVariance">Force the variance</label>
+        </div>
+      </div>
+      <div class="form-group row col-md-5">
+        <label for="variance" class="col-md-1 col-form-label">Variance</label>
+        <div class="">
+          <input type="number" class="form-control" id="variance" min="0" step="0.01" value="0.01" data-bind="value:replyNumber" disabled="disabled">
+        </div>
+      </div>
+    </div>
+    <!-- end Peptide to Protein -->
+
+    <div class="protein2category">
+      <h6>Protein to category</h6>
+      <div class="form-group row col-md-5">
+        <label for="fdr" class="col-md-1 col-form-label">FDR</label>
+        <div class="">
+          <input type="number" class="form-control" id="fdr" min="0" step="0.01" value="0.01" data-bind="value:replyNumber">
+        </div>
+      </div>
+      <div class="form-group row col-md-5">
+        <input class="col-md-1 col-form-label" type="checkbox" value="" id="forceVariance" onchange="document.querySelector('.protein2category #variance').disabled = !this.checked;">
+        <div class="">
+          <label class="form-check-label" for="forceVariance">Force the variance</label>
+        </div>
+      </div>
+      <div class="form-group row col-md-5">
+        <label for="variance" class="col-md-1 col-form-label">Variance</label>
+        <div class="">
+          <input type="number" class="form-control" id="variance" min="0" step="0.01" value="0.01" data-bind="value:replyNumber" disabled="disabled">
+        </div>
+      </div>
+
+      <h6 for="select-catfile">Choose a Category file (by default, or your category file)</h6>
+      <div class="form-group row">
+        <div class="form-group row col">
+          <select class="custom-select" id="def-catfile">
+            <option value="q2cIPA-DAVID-CORUM-Manual-Human3_nd.txt">category for Human</option>
+            <option value="Mouse.txt">category for Mouse</option>
+            <option value="Pig.txt">category for Pig</option>
+            <option value="personal">Or choose your file...</option>
+          </select>
+        </div>
+        <div class="form-group row col">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Select your category file" id="catfile" value="" disabled/>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="select-catfile" disabled>Choose a file</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- end Protein to category -->
+ 
+  </section>
+</template>

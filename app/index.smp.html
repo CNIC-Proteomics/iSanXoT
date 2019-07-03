@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>iq-Proteo!</title>
+    <!-- Imports CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/handsontable.full.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <!-- Imports JS -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>   
+    <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/handsontable.full.min.js"></script>
+    <script src="assets/js/underscore-min.js"></script>
+
+    <script>if (window.module) module = window.module;</script>
+
+    <!-- Imports HTML Templates -->
+    <link rel="import" href="sections/simple/tasktable.html">
+    <link rel="import" href="sections/simple/params_pratio.html">
+    <link rel="import" href="sections/simple/params_sanxot.html">
+    <link rel="import" href="sections/processes.html">
+    <link rel="import" href="sections/footer.html">
+
+</head>
+<body>
+  <header>
+  <!-- We are using Node.js <script>document.write(process.versions.node)</script>,
+  Chromium <script>document.write(process.versions.chrome)</script>,
+  and Electron <script>document.write(process.versions.electron)</script>. -->
+  </header>
+
+  <section class="content tabs-main">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="tasktable-tab" data-toggle="tab" href="#tasktable" role="tab" aria-controls="tasktable">Tasktable</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="params_pratio-tab" data-toggle="tab" href="#params_pratio" role="tab" aria-controls="params_pratio">pRatio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="params_sanxot-tab" data-toggle="tab" href="#params_sanxot" role="tab" aria-controls="params_sanxot">SanXoT</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" id="processes-tab" data-toggle="tab" href="#processes" role="tab" aria-controls="processes">Processes</a>
+      </li>
+    </ul>  
+    <div class="tab-content main">
+      <div class="tab-pane active" id="tasktable" role="tabpanel" aria-labelledby="tasktable-tab"></div>
+      <div class="tab-pane" id="params_pratio" role="tabpanel" aria-labelledby="params_pratio-tab"></div>
+      <div class="tab-pane" id="params_sanxot" role="tabpanel" aria-labelledby="params_sanxot-tab"></div>
+      <div class="tab-pane" id="processes" role="tabpanel" aria-labelledby="processes-tab"></div>
+    </div>
+  </section>
+
+  <section class="executor">
+    <div class="form-group row col-md-5">
+      <label for="fdr" class="col-form-label">Number of processors</label>
+      <input type="number" id="nthreads" min="1" max="20" value="10" data-bind="value:replyNumber">
+      <button type="button" class="btn btn-primary" id="executor">Start</button>
+      <button type="button" class="btn btn-primary" id="stopproc">Stop</button>
+    </div>
+  </section>
+
+  <footer><div class="footer" id="footer"></div></footer>
+
+  <script>
+    // Global processes
+    require('./renderer-process/imports');
+    require('./renderer-process/executor');
+    var exceptor = require('./renderer-process/exceptions');
+    var tasktable = require('./renderer-process/simple/tasktable');
+    var parameters = require('./renderer-process/parameters');
+
+    // Print the version
+    document.querySelector('#footer > .version').innerHTML = require('electron').remote.app.getVersion();
+
+  </script>
+</body>
+</html>

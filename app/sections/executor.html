@@ -1,0 +1,8 @@
+<template class="task-template" id="temp-executor">
+  <div class="form-group row col-md-5">
+    <label for="fdr" class="col-form-label">Number of processors</label>
+    <input type="number" id="nthreads" min="1" max="20" value="10" data-bind="value:replyNumber">
+    <button type="button" class="btn btn-primary" id="executor">Start</button>
+    <button type="button" class="btn btn-primary" id="stopproc">Stop</button>
+  </div>
+</template>

@@ -1,0 +1,29 @@
+/* Data samples */
+
+let dtatest = [
+  ["A","a1","A_01","B_01",0.01,0.01,0.01,false,false,false],
+  ["A","a2","A_02","B_02",0.01,0.01,0.01,false,false,false],
+  ["A","a3","A_03","B_03",0.01,0.01,0.01,false,false,false],
+  ["A","a4","A_04","B_04",0.01,0.01,0.01,false,false,false],
+  ["B","b1","B_01","A_01",0.01,0.01,0.01,false,false,false],
+  ["B","b2","B_02","A_02",0.01,0.01,0.01,false,false,false],
+  ["B","b3","B_03","A_03",0.01,0.01,0.01,false,false,false],
+  ["B","b4","B_04","A_04",0.01,0.01,0.01,false,false,false]
+];
+  
+
+/* Events */
+
+if ( document.getElementById('sample') != null ) {
+  document.getElementById('sample').addEventListener('click', function(){    
+      if(this.checked) {
+          // <!-- test 1 -->
+          document.getElementById('infile').value = process.env.ISANXOT_SRC_HOME + "\\tests\\label_free\\modificationSpecificPeptides.txt";
+          document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\label_free\\wf_results";
+          document.getElementById('def-catfile').value = 'human';
+          document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + "\\dbs\\human_UP000005640_201904.tsv";
+          document.getElementById("catfile").disabled = false;
+          tasktable.container.handsontable('loadData', dtatest);
+      }
+  },false);
+}

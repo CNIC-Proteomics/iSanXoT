@@ -1,0 +1,55 @@
+# Visual Studio Code
+.vscode
+
+# R and RStudio files
+src/*/*.Rproj
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# DBs files
+dbs/*
+!dbs/README.md
+
+# tests
+tests/*
+!tests/README.md
+
+# SanXoT
+src/SanXoT/.svn
+src/SanXoT/*.pyc
+src/SanXoT/__pycache__
+src/SanXoT/help
+src/SanXoT/standalone exes
+src/SanXoT/Desktop.ini
+src/SanXoT/PTMrelsMaker.py
+src/SanXoT/README.txt
+src/SanXoT/SanXoT_advancedHelp.doc
+src/SanXoT/SanXoT_advancedHelp.txt
+src/SanXoT/anselmo.py
+src/SanXoT/arbor.py
+src/SanXoT/camacho.py
+src/SanXoT/cardenio.py
+src/SanXoT/catapep.py
+src/SanXoT/conf
+src/SanXoT/coordinometer.py
+src/SanXoT/db
+src/SanXoT/dot.ini
+src/SanXoT/format
+src/SanXoT/highLevel_rels.py
+src/SanXoT/hooks
+src/SanXoT/install.txt
+src/SanXoT/locks
+src/SanXoT/logmasher.py
+src/SanXoT/maesepedro.py
+src/SanXoT/sanson.py
+src/SanXoT/sanxotgauss.py
+src/SanXoT/sanxotghost.py
+src/SanXoT/sanxotsqueezer.py
+src/SanXoT/svn.ico
+src/SanXoT/trilogy.py
+src/SanXoT/utest
+src/SanXoT/workflows
+src/SanXoT/xp_vpCollector.py
+

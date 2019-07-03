@@ -1,0 +1,90 @@
+body {
+    padding: 5px;
+    font-size: .8em;
+}
+section.content {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+section.executor {
+    position: fixed;
+    left: 0;
+    bottom: 1.7em;
+    width: 100%;
+    padding: 1em;
+    background-color: goldenrod;
+    height: 5em;
+    z-index: 2;
+}
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1.7em;
+    text-align: right;
+    background-color: #f0f0f0;
+    z-index: 2;
+}
+input:disabled, button:disabled {
+    cursor: not-allowed;
+}
+
+/* Tab settings */
+section.tab-content {
+    margin-bottom: 10px;
+    padding-right: 0.3em;
+    padding-left: 0.3em;
+    /* width: 99%; */
+}
+
+.tabs-main .tab-pane {
+    overflow-y: auto;
+    overflow-x: auto;
+    width: 100%;   
+}
+.tabs-parameters .tab-pane {
+    width: 100%;   
+}
+.tab-content {
+    padding: .5em;
+}
+
+/* parameters */
+.form-group.row {
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: .6em;
+    padding-left: 0;
+    padding-right: 0;
+}
+.form-group.row > [class^="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: 1em;
+}
+.form-control {
+    font-size: inherit;
+}
+
+input#indir, input#outdir, input#modfile, input#catfile {
+    /* width: 400px; */
+    /* width: 100%; */
+}
+#tasktable [type^="button"] {
+    /* margin-top: 3px; */
+}
+input#modfile, input#catfile {
+    /* margin-right: 3px; */
+}
+section.tab-content > .form-inline {
+    margin-bottom: 5px;
+}
+
+
+/* executor */
+button#executor {
+    color: #fff;
+    background-color: slategray;
+    border-color: black;
+}
