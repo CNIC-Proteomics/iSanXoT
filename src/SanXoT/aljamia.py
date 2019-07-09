@@ -330,9 +330,17 @@ def checkFilterPartTXT(currentRow, headers, filter, useNumbers = False):
 				filterVariable = filter.split(condition)[0].strip()
 				filterCondition = condition
 				filterValue = filter.split(condition)[1].strip()
+				# begin: jmrc
+				# if empty value, re-declare
+				filterValue = "" if filterValue == "''" else filterValue
+				# end: jmrc
 				break
 	
-	if len(filterVariable) > 0 and len(filterCondition) > 0 and len(filterValue) > 0:
+	# begin: jmrc
+	# now, we can compare with empy values
+	# if len(filterVariable) > 0 and len(filterCondition) > 0 and len(filterValue) > 0:
+	if len(filterVariable) > 0 and len(filterCondition) > 0:
+    # end: jmrc
 		filterOk = False
 		for i in range(len(headers)):
 			nodeNameBrackets = "[" + headers[i] + "]"
