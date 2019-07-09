@@ -35,33 +35,21 @@ def create_modifications(ddf):
     '''
     # declare
     modifications = {}
-    # modifications= {
-    #     'Carbamidomethyl': '*',
-    #     'Methylthio': '_',
-    #     'Oxidation': '^',
-    #     'TMT6plex': '@',
-    #     'iTRAQ':'-',
-    #     'Phosphorilation':'$'
-    # }
     # create xml-doc from UNIMOD
     localdir = os.path.dirname(os.path.abspath(__file__))
     root = etree.parse(localdir+'/unimod.xml').getroot()
     ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
     xdoc_mods = root.find('umod:modifications', ns)
-
     # extract the unique labels of modifications from the input files
     m = ddf['Modifications'].str.extractall(r'\(([^\)]*)').compute()
     lmods = np.unique(m.values)
-
     # extract the delta mono_mass for each modification
     for m in lmods:
         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
         if delta:
             mono_mass = delta.get('mono_mass')
             modifications[m] = mono_mass
-
     return modifications
-
 
 def targetdecoy(df, tagDecoy):
     '''
@@ -76,11 +64,12 @@ def Jumps(df, JumpsAreas):
     '''
     Correct monoisotopic mass
     '''
-    s1=(df["Theo. MH+ [Da]"]-df["MH+ [Da]"])/df["Theo. MH+ [Da]"]*1e6
-    s2=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-1.0033))/df["Theo. MH+ [Da]"]*1e6
-    s3=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+1.0033))/df["Theo. MH+ [Da]"]*1e6
-    s4=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-2*1.0033))/df["Theo. MH+ [Da]"]*1e6
-    s5=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+2*1.0033))/df["Theo. MH+ [Da]"]*1e6
+    # s1=(df["Theo. MH+ [Da]"]-df["MH+ [Da]"])/df["Theo. MH+ [Da]"]*1e6
+    s1=df["DeltaM [ppm]"]
+    s2=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-1.003355))/df["Theo. MH+ [Da]"]*1e6
+    s3=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+1.003355))/df["Theo. MH+ [Da]"]*1e6
+    s4=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-2*1.003355))/df["Theo. MH+ [Da]"]*1e6
+    s5=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+2*1.003355))/df["Theo. MH+ [Da]"]*1e6
     df1 = pd.DataFrame( {"1":s1,"2":s2,"3":s3,"4":s4,"5":s5 })
     if JumpsAreas == 1:
         j = ["1"]
@@ -89,7 +78,10 @@ def Jumps(df, JumpsAreas):
     elif JumpsAreas == 5: 
         j = ["1","2","3","4","5"]
     Deltamass=df1[j].abs().min(axis=1)
-    return Deltamass
+
+    x = list( zip(s1,s2,s3,s4,s5) )
+
+    return Deltamass,x
 
 def cXcorr(df):
     '''
@@ -103,8 +95,8 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     '''
     Pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXcorr
     '''    
-    df = pd.read_csv(file,sep="\t")
-    # df = pd.read_csv(file, sep="\t", usecols=["Sequence", "Annotated Sequence", "Modifications", "Protein Accessions", "Protein Descriptions", "Charge", "MH+ [Da]", "Theo. MH+ [Da]", "Search Engine Rank", "XCorr"])
+    # read input file
+    df = pd.read_csv(file, sep="\t")
     # delete suffix in the headers coming from PD 2.3
     col = list(df.columns.values)
     col[:] = [s.replace('Abundance: ', '') for s in col]
@@ -115,29 +107,22 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     df["T_D"] = targetdecoy(df, tagDecoy)
     df = df[df["Search Engine Rank"] == 1 ]
     # correct monoisotopic mass
-    df["JDeltaM [ppm]"] = Jumps(df, JumpsAreas)
+    df["JDeltaM [ppm]"],df["JDeltaM"] = Jumps(df, JumpsAreas)
     df = df[ df["JDeltaM [ppm]"].abs() <= deltaMassThreshold ]
     # calculate cXcorr
     df["cXcorr"] = cXcorr(df)
     return df
 
-def Proteins(df, tagDecoy):
-    '''
-    Extract the redundance proteins discarding DECOY proteins
-    '''    
-    p = list(df["Protein Accessions"].fillna("").str.split(";")) # list of lists
-    p = [ [i.strip() for i in s if not (tagDecoy in i)] for s in p ] # discard DECOY proteins and delete empty spaces
-    [ i.sort() for i in p ] # sort each list
-    m = [ i[0] for i in p ] # get the first element
-    r = [ ";".join(i[1:]) for i in p ] # get the rest of proteins => reduncances
-    return m,r
-    
 def ProteinsGenes(df, tagDecoy):
     '''
-    Extract the genes (and redundances) discarding DECOY proteins
+    Extract the protein, genes (with redundances) and species discarding DECOY proteins
     '''
     def _pattern_gene(i):
         m = re.search('GN=([^\s]*)', i)
+        r = m.group(1) if m else 'NaN'
+        return r
+    def _pattern_species(i):
+        m = re.search('OS=([^\s]+\s+[^\s]+)', i)
         r = m.group(1) if m else 'NaN'
         return r
     a = list(df["Protein Accessions"].fillna("").str.split(";"))
@@ -146,21 +131,19 @@ def ProteinsGenes(df, tagDecoy):
     ad = [ ["|".join(i) for i in s] for s in ad ]
     # discard DECOY proteins and sort
     ad = [ [i for i in sorted(s) if not (tagDecoy in i)] for s in ad ]
-    # get the protein list
-    # get the first element
-    # get the rest => reduncances
-    # get the descriptions
+    # get the protein list: the first element, the rest => reduncances, and descriptions
     p = [ [i.split("|")[0].strip() for i in s] for s in ad ]
     pm = [ i[0] for i in p ]
     pr = [ ";".join(i[1:]) for i in p ]
     pd = [ ";".join(i) for i in ad ]
-    # get the gene list
-    # get the first element
-    # get the rest => reduncances
+    # get the gene list: the first element, the rest => reduncances
     g = [ [_pattern_gene(i) for i in s] for s in ad ]
     gm = [ i[0] for i in g ]
     gr = [ ";".join(i[1:]) for i in g ]
-    return pm,pr,pd,gm,gr
+    # get the list of unique species
+    x = [ [_pattern_species(i) for i in s] for s in ad ]
+    s = [ ";".join(set(i)) for i in x ]
+    return pm,pr,pd,gm,gr,s
 
 def SequenceMod(df, mods):
     '''
@@ -194,48 +177,30 @@ def FdrXc(df, FDRlvl):
     '''
     Calculate FDR and filter by cXcorr
     '''
-    #####Calculate FDR and filter by cXcorr#####
-    df = df.sort_values(by="cXcorr", ascending=False)
+    # df = df.sort_values(by="cXcorr", ascending=False)
+    df = df.sort_values(by=["XCorr","T_D"], ascending=False)
     df["rank"] = df.groupby("T_D").cumcount()+1
-    df["rank_T"] = np.where(df["T_D"]==0,df["rank"],0)
+    df["rank_T"] = np.where(df["T_D"]==0, df["rank"], 0)
     df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
-    df["rank_D"] = np.where(df["T_D"]==1,df["rank"],0)
+    df["rank_D"] = np.where(df["T_D"]==1, df["rank"], 0)
     df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
     df["FdrXc"] = df["rank_D"]/df["rank_T"]
-    df = df[ df["FdrXc"] <= FDRlvl ]
-    df = df[ df["T_D"] == 0 ]
+    # df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR # CHANGE
+    # df = df[ df["T_D"] == 0 ] # discard decoy # CHANGE
     return df
 
-# def pro(ddf, FDRlvl, mods, tagDecoy, lblCtr, outdir):
 def pro(ddf, FDRlvl, mods, tagDecoy, Expt, outdir):
     '''
-
+    Multi-task function: Calculate FDR and filter by cXcorr, create sequence with the mono_mas by mods, retrieve the list of protein,gene and species
     '''
     # calculate FDR and filter by cXcorr
     ddf = FdrXc(ddf, FDRlvl)
     # extract modifications and replace for final values
     ddf["SequenceMod"] = SequenceMod(ddf, mods)
-    # extract the redundance proteins discarding DECOY proteins
-    # ddf["Protein"],ddf["Protein_Redundancy"] = Proteins(ddf, tagDecoy)
     # extract the redundance protein/genes discarding DECOY proteins
-    ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"] = ProteinsGenes(ddf, tagDecoy)
-#     # discard some columns
-#     dis_cols = ["Checked", "Confidence", "Identifying Node Type", "Identifying Node", "Search ID", "Identifying Node No", "PSM Ambiguity", "Sequence", "Annotated Sequence", "Modifications", "# Protein Groups", "# Proteins",
-# "Master Protein Accessions", "Protein Accessions", "Protein Descriptions", "# Missed Cleavages", "Original Precursor Charge", "DeltaScore", "DeltaCn", "Rank", "Search Engine Rank", "Concatenated Rank", 
-# "m/z [Da]", "MH+ [Da]", "Theo. MH+ [Da]", "DeltaM [ppm]", "Deltam/z [Da]", "Matched Ions", "Total Ions", "Intensity", "Activation Type", "MS Order", "Isolation Interference [%]", "Average Reporter S/N", 
-# "Ion Inject Time [ms]", "RT [min]", "Last Scan", "Master Scan(s)", "Ions Matched", "Annotation", "XCorr", "Peptides Matched", "Reporter Quan Result ID", 
-# "Peptide Quan Usage", "Quan Info", "T_D", "JDeltaM [ppm]", "rank", "rank_T", "rank_D"]
-#     ddf = ddf.drop(dis_cols, axis=1)
-#     # rename columns
-#     ddf.rename(columns={
-#         "Spectrum File": "Spectrum_File",
-#         "First Scan": "Scan"
-#     }, inplace=True)
-    # get the name of current experiment
-    # print the results
-    exp = ''.join(np.unique(ddf.index.values))
-    if exp != '':
-        ddf.to_csv( outdir+"/ID_"+exp+"_FDR.tsv", sep="\t")
+    ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
+        
+    return ddf
 
 
 
@@ -251,9 +216,10 @@ def main(args):
     FDRlvl = args.fdr
     JumpsAreas = args.jump_areas
     outputfolder = args.outdir    
-    Expt = args.expt.split(",")
     if not os.path.exists(outputfolder):
         os.mkdir(outputfolder)
+    Expt = args.expt.split(",")
+    Expt.sort()
 
   
     logging.info("extract the list of files from the given experiments")
@@ -278,18 +244,21 @@ def main(args):
     ddf = ddf.repartition(divisions=Exptr)
 
 
-
-#     logging.info("discard some columns")
-#     dis_cols = ["Checked", "Confidence", "Identifying Node Type", "Identifying Node", "Search ID", "Identifying Node No", "PSM Ambiguity", "Sequence", "Annotated Sequence", "Modifications", "# Protein Groups", "# Proteins",
-# "Master Protein Accessions", "Protein Accessions", "Protein Descriptions", "# Missed Cleavages", "Original Precursor Charge", "DeltaScore", "DeltaCn", "Rank", "Search Engine Rank", "Concatenated Rank", 
-# "m/z [Da]", "MH+ [Da]", "Theo. MH+ [Da]", "DeltaM [ppm]", "Deltam/z [Da]", "Matched Ions", "Total Ions", "Intensity", "Activation Type", "MS Order", "Isolation Interference [%]", "Average Reporter S/N", 
-# "Ion Inject Time [ms]", "RT [min]", "Last Scan", "Master Scan(s)", "Ions Matched", "Annotation", "XCorr", "Peptides Matched", "Reporter Quan Result ID", 
-# "Peptide Quan Usage", "Quan Info", "T_D", "JDeltaM [ppm]"]
-#     ddf = ddf.drop(dis_cols, axis=1)
-
-
     logging.info("map partitions")
-    ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder).compute()
+    # ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder).compute()
+    d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder)
+    d = d.compute()
+    d.to_csv( outputfolder+"/ID_fdr.tsv", sep="\t")
+
+    # ddf = ddf.compute()
+    # ddf.to_csv( outputfolder+"/ID_fdr.tsv", sep="\t")
+
+    # outfiles = [ outputfolder+"/ID_"+e+"_FDR.tsv" for e in Expt]
+    # logging.debug(Expt)
+    # logging.debug(outfiles)
+    # ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder)
+    # ddf.to_csv(outfiles, sep="\t")
+
 
     # create phantom output for Snakemake workflow
     f = open(outputfolder+"/.pratio", "w")
@@ -312,7 +281,7 @@ if __name__ == "__main__":
     parser.add_argument('-e',  '--expt', required=True, type=str, help='String with the list of Experiments separated by comma')
     parser.add_argument('-f',  '--fdr', type=float, default=0.01, help='FDR value (default: %(default)s)')
     parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
-    parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=1, help='Number of jumps [1,3,5] (default: %(default)s)')
+    parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
     parser.add_argument('-o',  '--outdir',   required=True, help='Output directory')
     parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
