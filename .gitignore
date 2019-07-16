@@ -1,8 +1,6 @@
 # Visual Studio Code
-.vscode
-
 # R and RStudio files
-src/*/*.Rproj
+.vscode
 .Rproj.user
 .Rhistory
 .RData
@@ -16,10 +14,15 @@ dbs/*
 tests/*
 !tests/README.md
 
+# src
+src/*/*.pyc
+src/*/__pycache__
+src/*/*.Rproj
+
+# preSanXoT
+
 # SanXoT
 src/SanXoT/.svn
-src/SanXoT/*.pyc
-src/SanXoT/__pycache__
 src/SanXoT/help
 src/SanXoT/standalone exes
 src/SanXoT/Desktop.ini

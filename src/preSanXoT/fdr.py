@@ -185,8 +185,8 @@ def FdrXc(df, FDRlvl):
     df["rank_D"] = np.where(df["T_D"]==1, df["rank"], 0)
     df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
     df["FdrXc"] = df["rank_D"]/df["rank_T"]
-    # df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR # CHANGE
-    # df = df[ df["T_D"] == 0 ] # discard decoy # CHANGE
+    df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR # CHANGE
+    df = df[ df["T_D"] == 0 ] # discard decoy # CHANGE
     return df
 
 def pro(ddf, FDRlvl, mods, tagDecoy, Expt, outdir):
@@ -215,9 +215,6 @@ def main(args):
     tagDecoy = args.lab_decoy
     FDRlvl = args.fdr
     JumpsAreas = args.jump_areas
-    outputfolder = args.outdir    
-    if not os.path.exists(outputfolder):
-        os.mkdir(outputfolder)
     Expt = args.expt.split(",")
     Expt.sort()
 
@@ -248,7 +245,7 @@ def main(args):
     # ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder).compute()
     d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder)
     d = d.compute()
-    d.to_csv( outputfolder+"/ID_fdr.tsv", sep="\t")
+    d.to_csv( args.outfile, sep="\t")
 
     # ddf = ddf.compute()
     # ddf.to_csv( outputfolder+"/ID_fdr.tsv", sep="\t")
@@ -260,10 +257,6 @@ def main(args):
     # ddf.to_csv(outfiles, sep="\t")
 
 
-    # create phantom output for Snakemake workflow
-    f = open(outputfolder+"/.pratio", "w")
-    f.write("pRatio (python) has finished succesfully!\n")
-    f.close()
 
 
 
@@ -283,7 +276,7 @@ if __name__ == "__main__":
     parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
     parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
-    parser.add_argument('-o',  '--outdir',   required=True, help='Output directory')
+    parser.add_argument('-o',  '--outfile',   required=True, help='Output file')
     parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

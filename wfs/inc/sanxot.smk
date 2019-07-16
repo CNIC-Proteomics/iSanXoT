@@ -67,9 +67,7 @@ if r and r["enabled"]:
             r = next((r for r in CONF_RULES if r["name"] == rule), None)
             indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
             outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            # tmpdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name+"/tmp"
-            tmpdir = None
-            execute_methods(r["methods"], indir, outdir, log, tmpdir=tmpdir)
+            execute_methods(r["methods"], indir, outdir, log)
 
 rule_name = "peptide2protein"
 r = next((r for r in CONF_RULES if r["name"] == rule_name), None)

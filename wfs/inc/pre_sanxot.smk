@@ -34,7 +34,6 @@ if r and r["enabled"]:
         threads: r["threads"]
         message: "Executing '{rule}' with {threads} threads"
         input:
-            # expand(["{indir}/{fname}"], indir=replace_params(r["indir"]), fname=r["inputs"])
             replace_params(r["indir"])+"/"+fname for fname in r["inputs"]
         output:
             replace_params(r["outdir"])+"/"+fname for fname in r["outputs"]

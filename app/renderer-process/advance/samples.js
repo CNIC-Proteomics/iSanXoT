@@ -61,12 +61,12 @@ let dtatest3 = [
 
 /* Events */
 
-if ( document.getElementById('sample') != null ) {
+if ( document.getElementById('sample') !== null ) {
   document.getElementById('sample').addEventListener('click', function(){
       if(this.checked) {
           // <!-- test 1 -->
-          document.getElementById('indir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2\\TMT_Fraccionamiento";
-          document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\wf_results_PESA_3a_Cohorte_120_V2_TMTfrac";
+          document.getElementById('indir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
+          document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2_wf_results";
           document.getElementById('def-catfile').value = 'human';
           document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + '\\dbs\\human_UP000005640_201904.tsv';
           tasktable.container.handsontable('loadData', dtatest);
@@ -83,7 +83,7 @@ if ( document.getElementById('sample') != null ) {
       }
   },false);
 }
-if ( document.getElementById('sample2') != null ) {
+if ( document.getElementById('sample2') !== null ) {
   document.getElementById('sample2').addEventListener('click', function(){    
       if(this.checked) {
           // <!-- test 2 -->
@@ -100,26 +100,6 @@ if ( document.getElementById('sample2') != null ) {
           tasktable.container.handsontable('deselectCell');
           document.getElementById("sample").checked = true;
           document.getElementById("sample3").checked = true;
-      }
-  },false);
-}
-if ( document.getElementById('sample3') != null ) {
-  document.getElementById('sample3').addEventListener('click', function(){    
-      if(this.checked) {
-          // <!-- test 1 -->
-          document.getElementById('indir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\PESA_omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
-          document.getElementById('outdir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\PESA_3a_Cohorte_120_V2_TMTfrac_WF_psm_input";
-          tasktable.container.handsontable('loadData', dtatest3);
-          document.getElementById("sample").checked = false;
-          document.getElementById("sample2").checked = false;
-      } else {
-          // Checkbox is not checked..
-          document.getElementById('indir').value = "";
-          document.getElementById('outdir').value = "";
-          tasktable.container.handsontable('loadData', [[]]);
-          tasktable.container.handsontable('deselectCell');
-          document.getElementById("sample").checked = true;
-          document.getElementById("sample2").checked = true;
       }
   },false);
 }

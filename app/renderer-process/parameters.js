@@ -5,8 +5,8 @@ let remote = require('electron').remote;
 var path = require('path');
 let dialog = remote.dialog;
 let fs = require('fs');
-let dtablefilename = '/isanxot_dta.csv';
-let cfgfilename = '/isanxot_cfg.json'
+let dtablefilename = 'isanxot_dta.csv';
+let cfgfilename = 'isanxot_cfg.json'
 
 /*
 * Export tasktable to CSV
@@ -41,121 +41,92 @@ function createtasktableFile(outdir) {
         let tasktable = $("#hot").data('handsontable');
         var cont = exporttasktableCSV(tasktable);
     } catch (err) {
-        console.log("Error exporting tasktable: " + err);
+        console.log(`Error exporting tasktable: ${err}`);
         return false;
     }
     // write file sync
-    let file = outdir + dtablefilename;
+    let file = outdir +'/'+ dtablefilename;
     try {
         fs.writeFileSync(file, cont, 'utf-8');
     } catch (err) {    
-        console.log("Error writing tasktable file: " + err);
+        console.log(`Error writing tasktable file: ${err}`);
         return false;
     }
     return file;
 }
 
+
+/*
+* Global functions
+*/
+function getInFileDir(tid) {
+    let f = document.querySelector('#'+tid).value;
+    try {
+        if (!fs.existsSync(f)){
+            console.log(`given ${tid} does not exist: ${f}`);
+            return false;
+        }
+    } catch (err) {    
+        console.log(`Error getting ${tid}: ${err}`);
+        return false;
+    }
+    f = f.replace(/\\/g, "/");
+    return f;
+} // end getInFileDir
+
+function createLocalDir(tid) {
+    let f = document.querySelector('#'+tid).value;
+    try {
+        if (!fs.existsSync(f)){
+            fs.mkdirSync(f);
+        }
+    } catch (err) {    
+        console.log(`Error creating local ${tid}: ${err}`);
+        return false;
+    }    
+    f = f.replace(/\\/g, "/");
+    return f;
+} // end createLocalDir
+
   
 /*
 * Create config file 
 */
-function addSmpConfParams(file, params) {
-    // get object from template
-    let data = JSON.parse(file);
+// traverse all the Nodes of a JSON Object Tree
+// function traverse(jsonObj, jsonKey="") {
+//     if ( jsonObj !== null && typeof jsonObj == "object" ) {
+//         Object.entries(jsonObj).forEach(([key, val]) => {
+//             // key is either an array index or object key
+//             traverse(val, jsonKey+"/"+key);
+//         });
+//     } else {
+//         jsonObj 
+//         // jsonObj is a number or string
+//         console.log(`${key} ${jsonObj}` );
+//     }
+// }
+function replaceConsts(data) {
 
-    // add tabledata file
-    data['indata'] = params['tskfile'];
-    // add tabledata file
-    data['indir'] = params['indir'];
-    // add tabledata file
-    data['outdir'] = params['outdir'];
-    // add modification
-    data['modfile'] = params['modfile'];
-    // add category
-    data['catfile'] = params['catfile'];
+    //convert to JSON string
+    let sdta = JSON.stringify(data);
+    // var odata = sdta.replace(/--WF__INFILE__NAMES--/g, value);
+    // replace constants
+    sdta = sdta.replace(/--WF__INDATA--/g, data["indata"]);
+    sdta = sdta.replace(/--WF__INDIR--/g, data["indir"]);
+    sdta = sdta.replace(/--WF__INFILE__NAMES--/g, data["infilenames"]);
+    sdta = sdta.replace(/--WF__INFILE__DB--/g, data["dbfile"]);
+    sdta = sdta.replace(/--WF__INFILE__CAT--/g, data["catfile"]);
+    sdta = sdta.replace(/--WF__OUTDIR--/g, data["outdir"]);
+    sdta = sdta.replace(/--WF__WKS__TMPDIR--/g, data["tmpdir"]);
+    sdta = sdta.replace(/--WF__WKS__RSTDIR--/g, data["rstdir"]);
+    sdta = sdta.replace(/--WF__WKS__LOGDIR--/g, data["logdir"]);
+    // convert back to array
+    let dta = JSON.parse(sdta);
 
-    // wf parameters
-    let wf = data['workflow'];
-    let wf_presanxot2 = wf['presanxot2'];
-    let wf_sanxot = wf['sanxot'];
+    return dta;
+} // end replaceTags
 
-    /* --- pRatio --- */
-    wf_presanxot2['pratio']['threshold'] = parseInt(document.querySelector('#deltaMassThreshold').value);
-    wf_presanxot2['pratio']['delta_mass'] = parseInt(document.querySelector('#deltaMassAreas').value);
-    wf_presanxot2['pratio']['tag_mass'] = parseFloat(document.querySelector('#tagMass').value);
-    wf_presanxot2['pratio']['lab_decoy'] = document.querySelector('#tagDecoy').value;
-
-
-    /* --- Pre-SanXoT2 --- */
-    // add to presanxot2 the option of included tags
-    // let includeTags = document.querySelector('#includeTags').checked;
-    // if ( includeTags ) {
-    //     // relationship table s2p
-    //     wf_presanxot2['rels2sp']['optparams']['aljamia1'] += ' -l [Tags] ';
-    //     wf_presanxot2['rels2sp']['optparams']['aljamia2'] += ' -k [Tags] ';
-    //     // relationship table p2q
-    //     wf_presanxot2['rels2pq']['optparams']['aljamia1'] += ' -k [Tags] ';
-    //     // relationship table p2q_unique
-    //     wf_presanxot2['rels2pq_unique']['optparams']['aljamia1'] += ' --c5 [Tags] ';        
-    // }
-
-    /* --- SanXoT --- */
-    // add FDR
-    wf_sanxot['scan2peptide']['fdr'] = parseFloat(document.querySelector('.scan2peptide #fdr').value);
-    wf_sanxot['peptide2protein']['fdr'] = parseFloat(document.querySelector('.peptide2protein #fdr').value);
-    wf_sanxot['protein2category']['fdr'] = parseFloat(document.querySelector('.protein2category #fdr').value);
-    // force the variance if apply
-    if ( !document.querySelector('.scan2peptide #variance').disabled ) {
-        wf_sanxot['scan2peptide']['variance'] = parseFloat(document.querySelector('.scan2peptide #variance').value);
-    }
-    if ( !document.querySelector('.peptide2protein #variance').disabled ) {
-        wf_sanxot['peptide2protein']['variance'] = parseFloat(document.querySelector('.peptide2protein #variance').value);
-    }
-    if ( !document.querySelector('.protein2category #variance').disabled ) {
-        wf_sanxot['protein2category']['variance'] = parseFloat(document.querySelector('.protein2category #variance').value);
-    }    
-    // Discard outliers
-    let discardOutliers = document.querySelector('#discardOutliers').checked;
-    if ( discardOutliers ) {
-        wf_sanxot['scan2peptide']['optparams']['sanxot2'] += ' --tags !out ';
-        wf_sanxot['peptide2protein']['optparams']['sanxot2'] += ' --tags !out ';
-        wf_sanxot['protein2category']['optparams']['sanxot2'] += ' --tags !out ';
-    }
-
-    return data;
-
-} // end addSmpConfParams
-
-function addAdvConfParams(file, params) {
-    // get object from template
-    let data = JSON.parse(file);
-
-    // add tabledata file
-    data['indata'] = params['tskfile'];
-    // add tabledata file
-    data['indir'] = params['indir'];
-    // add tabledata file
-    data['outdir'] = params['outdir'];
-    // add category
-    data['catfile'] = params['catfile'];
-
-    // wf parameters
-    let wf = data['workflow'];
-    let wf_sanxot = wf['sanxot'];
-
-    /* --- SanXoT --- */
-    // Discard outliers
-    let discardOutliers = document.querySelector('#discardOutliers').checked;
-    if ( discardOutliers ) {
-        wf_sanxot['scan2peptide']['optparams']['sanxot2'] += ' --tags !out ';
-        wf_sanxot['peptide2protein']['optparams']['sanxot2'] += ' --tags !out ';
-        wf_sanxot['protein2category']['optparams']['sanxot2'] += ' --tags !out ';
-    }
-
-    return data;
-} // end addAdvConfParams
-
-function addLblConfParams(file, params) {
+function addConfParams(file, params) {
     // get object from template
     let data = JSON.parse(file);
 
@@ -165,88 +136,45 @@ function addLblConfParams(file, params) {
     if ( 'infile' in params) {
         var dirname  = path.dirname(params['infile']);
         var filename = path.basename(params['infile']);
-        data['indir'] = dirname;    
-    }
+        data['indir'] = dirname;
+        data['infilenames'] = filename;
+    }    
     // add tabledata file
-    if ('outdir' in params) { data['outdir'] = params['outdir']; }
+    if ('outdir' in params) {
+        data['outdir'] = params['outdir'];
+        data['tmpdir'] = params['outdir']+'/temp';
+        data['rstdir'] = params['outdir']+'/results';
+        data['logdir'] = params['outdir']+'/logs';
+    }
     // add category
     if ('catfile' in params) { data['catfile'] = params['catfile']; }
+    // add db file
+    if ('dbfile' in params) { data['dbfile'] = params['dbfile']; }
+    // replace tags in the config data
+    data = replaceConsts(data)
 
-    // wf parameters
-    let wf = data['workflow'];
-    let wf_sanxot = wf['sanxot'];
-
-    // return data
     return data;
-} // end addLblConfParams
+} // end addConfParams
 
-function createSmpConfFile(conf, params) {
+function createConfFile(conf, params) {
     // read template file
     try {
         //file exists, get the contents
         let d = fs.readFileSync(conf);
         // create config data with the parameters
-        let data = addSmpConfParams(d, params);
+        let data = addConfParams(d, params);
         // convert JSON to string
         var cont = JSON.stringify(data, undefined, 2);
     } catch (err) {
-        console.log("Error creating config file: " + err);
+        console.log(`Error creating config file: ${err}`);
         return false;
     }
     // write file sync
-    let file = params['outdir'] + '/' + cfgfilename;
+    let file = params['outdir'] +'/'+ cfgfilename;
     try {
         fs.writeFileSync(file, cont, 'utf-8');
     } catch (err) {    
-        console.log("Error writing config file: " + err);
-        return false;
-    }
-    return file;
-} // end createSmpConfFile
-
-function createAdvConfFile(conf, params) {
-    // read template file
-    try {
-        //file exists, get the contents
-        let d = fs.readFileSync(conf);
-        // create config data with the parameters
-        let data = addAdvConfParams(d, params);
-        // convert JSON to string
-        var cont = JSON.stringify(data, undefined, 2);
-    } catch (err) {
-        console.log("Error creating config file: " + err);
-        return false;
-    }
-    // write file sync
-    let file = params['outdir'] + '/' + cfgfilename;
-    try {
-        fs.writeFileSync(file, cont, 'utf-8');
-    } catch (err) {    
-        console.log("Error writing config file: " + err);
-        return false;
-    }
-    return file;
-} // end createAdvConfFile
-
-function createLblConfFile(conf, params) {
-    // read template file
-    try {
-        //file exists, get the contents
-        let d = fs.readFileSync(conf);
-        // create config data with the parameters
-        let data = addLblConfParams(d, params);
-        // convert JSON to string
-        var cont = JSON.stringify(data, undefined, 2);
-    } catch (err) {
-        console.log("Error creating config file: " + err);
-        return false;
-    }
-    // write file sync
-    let file = params['outdir'] + '/' + cfgfilename;
-    try {
-        fs.writeFileSync(file, cont, 'utf-8');
-    } catch (err) {    
-        console.log("Error writing config file: " + err);
+        console.log(`Error writing config file: ${err}`);
         return false;
     }
     return file;
@@ -256,149 +184,18 @@ function createLblConfFile(conf, params) {
 /*
  * Create parameters to workflow
  */
-function getInDir() {
-    let dir = document.querySelector('#indir').value;
-    try {
-        if (!fs.existsSync(dir)){
-            console.log("Input directory does not exist");
-            return false;
-        }
-    } catch (err) {    
-        console.log("Error getting input directory: " + err);
-        return false;
-    }
-    return dir;
-}
-function getInFile() {
-    let file = document.querySelector('#infile').value;
-    try {
-        if (!fs.existsSync(file)){
-            console.log("Input file does not exist");
-            return false;
-        }
-    } catch (err) {    
-        console.log("Error getting input file: " + err);
-        return false;
-    }
-    return file;
-}
-function createLocalDir() {
-    let dir = document.querySelector('#outdir').value;
-    try {
-        if (!fs.existsSync(dir)){
-            fs.mkdirSync(dir);
-        }
-    } catch (err) {    
-        console.log("Error creating local directory: " + err);
-        return false;
-    }
-    return dir;
-}
-function getModificationFile() {
-    let file = document.querySelector('#modfile').value;
-    // by default
-    if ( document.querySelector('#def-modfile:checked') ) {
-        file = process.env.ISANXOT_SRC_HOME + '/src/pRatio/modifications.xml';
-    }
-    try {
-        if (!fs.existsSync(file)){
-            console.log("Modification file does not exist");
-            return false;
-        }
-    } catch (err) {    
-        console.log("Error getting modification file: " + err);
-        return false;
-}
-    return file;
-}
-function getCategoryFile() {
-    let file = document.querySelector('#catfile').value;
-    console.log(file);
-    // // by default
-    // if ( document.querySelector('#def-catfile').value !== "personal" ) {
-    //     // list with all the files starting witb the species name and ending with 'tsv' => Category file
-    //     // HAS TO BE UNIQUE
-    //     let files = fs.readdirSync(process.env.ISANXOT_SRC_HOME + '/dbs/').filter(fn => fn.startsWith(document.querySelector('#def-catfile').value) & fn.endsWith('.tsv'));
-    //     file = files[0]
-    //     console.log( file );
-    // }
-    try {
-        if (!fs.existsSync(file)){
-            console.log("Category file does not exist: "+file);
-            return false;
-        }
-    } catch (err) {    
-        console.log("Error getting category file: " + err);
-        return false;
-}
-    return file;
-}
-function createSmpParameters(conf) {
-    let params = {};
-
-    // get input directory
-    let indir = getInDir();
-    if ( !indir ) {
-        exceptor.showMessageBox('Error Message', 'Input directory is required');
-        return false;
-    }
-    else { params.indir = indir }
-    // get and create check and get: output directory
-    let outdir = createLocalDir();
-    if ( !outdir ) {
-        exceptor.showMessageBox('Error Message', 'Output directory is required');
-        return false;
-    }
-    else { params.outdir = outdir }
-    // create tasktable file
-    let dtablefile = createtasktableFile(outdir); 
-    if ( !dtablefile ) {
-        exceptor.showMessageBox('Error Message', 'Creating tasktable file');
-        return false;
-    }
-    // create modification file
-    let modfile = getModificationFile();
-    if ( !modfile ) {
-        exceptor.showMessageBox('Error Message', 'Modification file is required');
-        return false;
-    }
-    // create category file
-    let catfile = getCategoryFile();
-    if ( !catfile ) {
-        exceptor.showMessageBox('Error Message', 'Category file is required');
-        return false;
-    }
-    // Create Config file
-    let cfgfile = createSmpConfFile(conf, {
-        'indir': indir,
-        'outdir': outdir,
-        'tskfile': dtablefile,
-        'modfile': modfile,
-        'catfile': catfile
-    });
-    if ( !cfgfile ) {
-        exceptor.showMessageBox('Error Message', 'Creating config file');
-        return false;
-    }
-    else { params.cfgfile = cfgfile }
-
-    // get: num threads
-    params.nthreads = document.querySelector('#nthreads').value;
-
-    return params;
-}
 function createAdvParameters(conf) {
     let params = {};
 
     // get input directory
-    let indir = getInDir();
+    let indir = getInFileDir('indir');
     if ( !indir ) {
         exceptor.showMessageBox('Error Message', 'Input directory is required');
         return false;
     }
     else { params.indir = indir }
     // get and create check and get: output directory
-    let outdir = createLocalDir();
+    let outdir = createLocalDir('outdir');
     if ( !outdir ) {
         exceptor.showMessageBox('Error Message', 'Output directory is required');
         return false;
@@ -411,13 +208,13 @@ function createAdvParameters(conf) {
         return false;
     }
     // create category file
-    let catfile = getCategoryFile();
+    let catfile = getInFileDir('catfile');
     if ( !catfile ) {
         exceptor.showMessageBox('Error Message', 'Category file is required');
         return false;
     }
     // Create Config file
-    let cfgfile = createAdvConfFile(conf, {
+    let cfgfile = createConfFile(conf, {
         'indir': indir,
         'outdir': outdir,
         'tskfile': dtablefile,
@@ -437,14 +234,14 @@ function createLblFreeParameters(conf) {
     let params = {};
 
     // get input file
-    let infile = getInFile();
+    let infile = getInFileDir('infile');
     if ( !infile ) {
         exceptor.showMessageBox('Error Message', 'Input file is required');
         return false;
     }
     else { params.infile = infile }
     // get and create check and get: output directory
-    let outdir = createLocalDir();
+    let outdir = createLocalDir('outdir');
     if ( !outdir ) {
         exceptor.showMessageBox('Error Message', 'Output directory is required');
         return false;
@@ -456,18 +253,25 @@ function createLblFreeParameters(conf) {
         exceptor.showMessageBox('Error Message', 'Creating tasktable file');
         return false;
     }
+    // create db file
+    let dbfile = getInFileDir('dbfile');
+    if ( !dbfile ) {
+        exceptor.showMessageBox('Error Message', 'Database file is required');
+        return false;
+    }
     // create category file
-    let catfile = getCategoryFile();
+    let catfile = getInFileDir('catfile');
     if ( !catfile ) {
         exceptor.showMessageBox('Error Message', 'Category file is required');
         return false;
     }
     // Create Config file
-    let cfgfile = createLblConfFile(conf, {
+    let cfgfile = createConfFile(conf, {
         'infile': infile,
         'outdir': outdir,
         'tskfile': dtablefile,
-        'catfile': catfile
+        'catfile': catfile,
+        'dbfile': dbfile
     });
     if ( !cfgfile ) {
         exceptor.showMessageBox('Error Message', 'Creating config file');
@@ -504,7 +308,7 @@ module.exports.createParameters = createParameters;
  */
 
 // for Database
-if ( document.getElementById('select-indir') != null ) {
+if ( document.getElementById('select-indir') !== null ) {
     document.getElementById('select-indir').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
             if(dirs === undefined){
@@ -515,7 +319,7 @@ if ( document.getElementById('select-indir') != null ) {
         }); 
     },false);    
 }
-if ( document.getElementById('select-infile') != null ) {
+if ( document.getElementById('select-infile') !== null ) {
     document.getElementById('select-infile').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
             if( files === undefined ){
@@ -526,7 +330,7 @@ if ( document.getElementById('select-infile') != null ) {
         });
     });
 }
-if ( document.getElementById('select-outdir') != null ) {
+if ( document.getElementById('select-outdir') !== null ) {
     document.getElementById('select-outdir').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
             if(dirs === undefined){
@@ -538,7 +342,7 @@ if ( document.getElementById('select-outdir') != null ) {
     },false);
 }
 
-if ( document.getElementById('def-catfile') != null ) {
+if ( document.getElementById('def-catfile') !== null ) {
     document.getElementById('def-catfile').addEventListener('change', function(){
         if ( this.value === "personal" ) {
             document.getElementById('catfile').value = "";
@@ -555,7 +359,7 @@ if ( document.getElementById('def-catfile') != null ) {
     });
 }
 
-if ( document.getElementById('select-catfile') != null ) {
+if ( document.getElementById('select-catfile') !== null ) {
     document.getElementById('select-catfile').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
             if( files === undefined ){
@@ -570,7 +374,7 @@ if ( document.getElementById('select-catfile') != null ) {
 /* ---------------- Specific: Simple Mode ------------------ */
 
 // for pRatio
-if ( document.getElementById('def-modfile') != null ) {
+if ( document.getElementById('def-modfile') !== null ) {
     document.getElementById('def-modfile').addEventListener('click', function(){
         if(this.checked) {
             document.getElementById("modfile").disabled = true;
@@ -583,7 +387,7 @@ if ( document.getElementById('def-modfile') != null ) {
     },false);    
 }
 
-if ( document.getElementById('select-modfile') != null ) {
+if ( document.getElementById('select-modfile') !== null ) {
     document.getElementById('select-modfile').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
             if( files === undefined ){
@@ -596,7 +400,7 @@ if ( document.getElementById('select-modfile') != null ) {
 }
 
 // for SanXot
-// if ( document.getElementById('select-catfile') != null ) {
+// if ( document.getElementById('select-catfile') !== null ) {
 //     document.getElementById('select-catfile').addEventListener('click', function(){
 //         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
 //             if(files === undefined){
@@ -608,7 +412,7 @@ if ( document.getElementById('select-modfile') != null ) {
 //     },false);
 // }
 
-// if ( document.getElementById('sample') != null ) {
+// if ( document.getElementById('sample') !== null ) {
 //     document.getElementById('sample').addEventListener('click', function(){    
 //         if(this.checked) {
 //             // <!-- test 1 -->
@@ -628,7 +432,7 @@ if ( document.getElementById('select-modfile') != null ) {
 //         }
 //     },false);
 // }
-// if ( document.getElementById('sample2') != null ) {
+// if ( document.getElementById('sample2') !== null ) {
 //     document.getElementById('sample2').addEventListener('click', function(){    
 //         if(this.checked) {
 //             // <!-- test 2 -->
@@ -648,7 +452,7 @@ if ( document.getElementById('select-modfile') != null ) {
 //         }
 //     },false);
 // }
-// if ( document.getElementById('sample3') != null ) {
+// if ( document.getElementById('sample3') !== null ) {
 //     document.getElementById('sample3').addEventListener('click', function(){    
 //         if(this.checked) {
 //             // <!-- test 1 -->
@@ -668,4 +472,101 @@ if ( document.getElementById('select-modfile') != null ) {
 //         }
 //     },false);
 // }
+
+// function addSmpConfParams(file, params) {
+//     // get object from template
+//     let data = JSON.parse(file);
+
+//     // add tabledata file
+//     data['indata'] = params['tskfile'];
+//     // add tabledata file
+//     data['indir'] = params['indir'];
+//     // add tabledata file
+//     data['outdir'] = params['outdir'];
+//     // add modification
+//     data['modfile'] = params['modfile'];
+//     // add category
+//     data['catfile'] = params['catfile'];
+
+//     // wf parameters
+//     let wf = data['workflow'];
+//     let wf_presanxot2 = wf['presanxot2'];
+//     let wf_sanxot = wf['sanxot'];
+
+//     /* --- pRatio --- */
+//     wf_presanxot2['pratio']['threshold'] = parseInt(document.querySelector('#deltaMassThreshold').value);
+//     wf_presanxot2['pratio']['delta_mass'] = parseInt(document.querySelector('#deltaMassAreas').value);
+//     wf_presanxot2['pratio']['tag_mass'] = parseFloat(document.querySelector('#tagMass').value);
+//     wf_presanxot2['pratio']['lab_decoy'] = document.querySelector('#tagDecoy').value;
+
+
+//     /* --- Pre-SanXoT2 --- */
+//     // add to presanxot2 the option of included tags
+//     // let includeTags = document.querySelector('#includeTags').checked;
+//     // if ( includeTags ) {
+//     //     // relationship table s2p
+//     //     wf_presanxot2['rels2sp']['optparams']['aljamia1'] += ' -l [Tags] ';
+//     //     wf_presanxot2['rels2sp']['optparams']['aljamia2'] += ' -k [Tags] ';
+//     //     // relationship table p2q
+//     //     wf_presanxot2['rels2pq']['optparams']['aljamia1'] += ' -k [Tags] ';
+//     //     // relationship table p2q_unique
+//     //     wf_presanxot2['rels2pq_unique']['optparams']['aljamia1'] += ' --c5 [Tags] ';        
+//     // }
+
+//     /* --- SanXoT --- */
+//     // add FDR
+//     wf_sanxot['scan2peptide']['fdr'] = parseFloat(document.querySelector('.scan2peptide #fdr').value);
+//     wf_sanxot['peptide2protein']['fdr'] = parseFloat(document.querySelector('.peptide2protein #fdr').value);
+//     wf_sanxot['protein2category']['fdr'] = parseFloat(document.querySelector('.protein2category #fdr').value);
+//     // force the variance if apply
+//     if ( !document.querySelector('.scan2peptide #variance').disabled ) {
+//         wf_sanxot['scan2peptide']['variance'] = parseFloat(document.querySelector('.scan2peptide #variance').value);
+//     }
+//     if ( !document.querySelector('.peptide2protein #variance').disabled ) {
+//         wf_sanxot['peptide2protein']['variance'] = parseFloat(document.querySelector('.peptide2protein #variance').value);
+//     }
+//     if ( !document.querySelector('.protein2category #variance').disabled ) {
+//         wf_sanxot['protein2category']['variance'] = parseFloat(document.querySelector('.protein2category #variance').value);
+//     }    
+//     // Discard outliers
+//     let discardOutliers = document.querySelector('#discardOutliers').checked;
+//     if ( discardOutliers ) {
+//         wf_sanxot['scan2peptide']['optparams']['sanxot2'] += ' --tags !out ';
+//         wf_sanxot['peptide2protein']['optparams']['sanxot2'] += ' --tags !out ';
+//         wf_sanxot['protein2category']['optparams']['sanxot2'] += ' --tags !out ';
+//     }
+
+//     return data;
+
+// } // end addSmpConfParams
+
+
+// function addAdvConfParams(file, params) {
+//     // get object from template
+//     let data = JSON.parse(file);
+
+//     // add tabledata file
+//     data['indata'] = params['tskfile'];
+//     // add tabledata file
+//     data['indir'] = params['indir'];
+//     // add tabledata file
+//     data['outdir'] = params['outdir'];
+//     // add category
+//     data['catfile'] = params['catfile'];
+
+//     // wf parameters
+//     let wf = data['workflow'];
+//     let wf_sanxot = wf['sanxot'];
+
+//     /* --- SanXoT --- */
+//     // Discard outliers
+//     let discardOutliers = document.querySelector('#discardOutliers').checked;
+//     if ( discardOutliers ) {
+//         wf_sanxot['scan2peptide']['optparams']['sanxot2'] += ' --tags !out ';
+//         wf_sanxot['peptide2protein']['optparams']['sanxot2'] += ' --tags !out ';
+//         wf_sanxot['protein2category']['optparams']['sanxot2'] += ' --tags !out ';
+//     }
+
+//     return data;
+// } // end addAdvConfParams
 

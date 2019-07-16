@@ -1,53 +1,48 @@
 {
   "indata": "",
   "indir": "",
-  "outdir": "",
+  "infilenames": [],
+  "dbfile": "",
   "catfile": "",
+  "outdir": "",
+  "tmpdir": "",
+  "rstdir": "",
+  "logdir": "",
   "workflow": {
     "verbose": true,
     "rules": [{
-      "name": "converter",
-      "enabled": true,
-      "threads": 2,
-      "description": "Convert the result from MaxQuant (txt/evidences) to ID-q file: label-free",
-      "indir": "--WF__INDIR--",
-      "outdir": "--WF__WKSDIR--",
-      "inputs":  ["modificationSpecificPeptides.txt"],
-      "outputs": ["ID.tsv"],
-      "methods": [{
-        "script": "converter/convert2id.py",
-        "inputs":  { "--infile": "modificationSpecificPeptides.txt" },
-        "params":  { "--n_workers": "2" },
-        "outputs": { "--outfile": "ID.tsv" }
-      }]
-    },{
       "name": "pre_sanxot",
       "enabled": true,
-      "threads": 2,
-      "description": "Calculation of ratios (Xs, Vs,...)",
-      "indir": "--WF__WKSDIR--",
-      "outdir": "--WF__WKSDIR--",
-      "inputs":  ["ID.tsv"],
-      "outputs": ["ID-q.tsv"],
+      "threads": 3,
+      "description": "Calculation of FDR and ratios (Xs, Vs,...)",
+      "indir": "--WF__INDIR--",
+      "outdir": "--WF__OUTDIR--",
+      "inputs":  ["--WF__INFILE__NAMES--"],
+      "outputs": ["ID.tsv", "ID-q.tsv"],
       "methods": [{
-        "script": "pRatio/pre_sanxot.py",
+        "script": "preSanXoT/fdr.py",
+        "inputs":  { "--indir": "--WF__INDIR--" },
+        "params":  { "--expt": "--EXPTS--" },
+        "outputs": { "--outfile": "ID.tsv" }
+      },{
+        "script": "preSanXoT/pre_sanxot.py",
         "inputs":  { "--infile": "ID.tsv" },
         "params":  { "--datfile": "--WF__INDATA--" },
         "outputs": { "--outfile": "ID-q.tsv" }
       }]
     },{
       "name": "aljamia",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "Extract information from ID-q file",
-      "indir": "--WF__WKSDIR--",
+      "indir": "--WF__OUTDIR--",
       "outdir": "--WF__WKS__TMPDIR--",
       "inputs":  ["ID-q.tsv"],
       "outputs": ["u_peptides.tsv", "p2q_rels_human.tsv", "p2q_rels_rest.tsv", "q2org_rels_human.tsv", "q2org_rels_rest.tsv"],
       "methods": [{
         "script": "SanXoT/aljamia.py",
         "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "[SequenceMod]", "-j": "[Xs_--TAG--_vs_--CONTROLTAG--]", "-k": "[Vs_--TAG--_vs_--CONTROLTAG--]" },
+        "params":  { "-i": "[SequenceMod]", "-j": "[Xs_--TAG--_vs_--CONTROLTAG--]", "-k": "[Vs_--TAG--_vs_--CONTROLTAG--]", "-e": "1" },
         "outputs": { "-o": "u_peptides.tsv" }    
       },{
         "script": "SanXoT/aljamia.py",
@@ -57,7 +52,7 @@
       },{
         "script": "SanXoT/aljamia.py",
         "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "[Protein]", "-j": "[SequenceMod]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A" },
+        "params":  { "-i": "[Protein]", "-j": "[SequenceMod]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A && [Species]!=''" },
         "outputs": { "-o": "p2q_rels_rest.tsv" }
       },{
         "script": "SanXoT/aljamia.py",
@@ -67,12 +62,12 @@
         },{
           "script": "SanXoT/aljamia.py",
           "inputs":  { "-x": "ID-q.tsv" },
-          "params":  { "-i": "1", "-j": "[Protein]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A" },
+          "params":  { "-i": "1", "-j": "[Protein]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A && [Species]!=''" },
           "outputs": { "-o": "q2org_rels_rest.tsv" }  
       }]
     },{
       "name": "aljamia_cat",
-      "enabled": true,
+      "enabled": false,
       "threads": 1,
       "description": "Concatenate files from aljamia",
       "indir": "--WF__WKS__TMPDIR--",
@@ -90,7 +85,7 @@
       }]
     },{
       "name": "peptide2protein",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "SanXoT node: peptide to protein",
       "indir": "--WF__WKS__TMPDIR--",
@@ -118,7 +113,7 @@
       }]  
     },{
       "name": "protein2all",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "SanXoT node: protein to all",
       "indir": "--WF__WKS__TMPDIR--",
@@ -132,8 +127,8 @@
         "outputs": { "-z": "q2a_outStats.tsv" }
       }]  
     },{
-      "name": "compilator",
-      "enabled": true,
+      "name": "collector",
+      "enabled": false,
       "threads": 1,
       "description": "Merge the results of SanXoT nodes",
       "indir": "--WF__WKS__TMPDIR--",
@@ -141,13 +136,13 @@
       "inputs":  ["q2a_outStats.tsv"],
       "outputs": ["q2a_lowerNormV.tsv"],
       "methods": [{
-        "script": "compilator/compilator.py",
+        "script": "SanXoT/collector.py",
         "params":  { "--indir":   "--WF__EXPTO__DIR--", "--regex": "q2a_lowerNormV.tsv" },
         "outputs": { "--outfile": "q2a_lowerNormV.tsv" }
       }]  
     },{
       "name": "sanxot",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "Execute SanXoT methods within 'flexible' directory",
       "indir": "--WF__WKS__RSTDIR--",
@@ -167,10 +162,10 @@
       }]
     },{
       "name": "sanxot",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "Execute SanXoT methods within 'flexible' directory",
-      "indir": "--WF__WKSDIR--",
+      "indir": "--WF__OUTDIR--",
       "outdir": "--WF__WKS__RSTDIR--",
       "inputs":  ["ID-q.tsv"],
       "outputs": ["q2org_rels_human.tsv", "q2org_rels_rest.tsv"],
@@ -182,12 +177,12 @@
       },{
         "script": "SanXoT/aljamia.py",
         "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "1", "-j": "[Protein]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A" },
+        "params":  { "-i": "1", "-j": "[Protein]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A && [Species]!=''" },
         "outputs": { "-o": "q2org_rels_rest.tsv" }    
       }]
     },{
       "name": "sanxot",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "Execute SanXoT methods within 'flexible' directory",
       "indir": "--WF__WKS__RSTDIR--",
@@ -201,7 +196,7 @@
       }]
     },{
       "name": "sanxot",
-      "enabled": true,
+      "enabled": false,
       "threads": 3,
       "description": "Execute SanXoT methods within 'flexible' directory",
       "indir": "--WF__WKS__RSTDIR--",

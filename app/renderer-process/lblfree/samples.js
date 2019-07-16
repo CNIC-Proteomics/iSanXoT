@@ -14,12 +14,15 @@ let dtatest = [
 
 /* Events */
 
-if ( document.getElementById('sample') != null ) {
+if ( document.getElementById('sample') !== null ) {
   document.getElementById('sample').addEventListener('click', function(){    
       if(this.checked) {
           // <!-- test 1 -->
           document.getElementById('infile').value = process.env.ISANXOT_SRC_HOME + "\\tests\\label_free\\modificationSpecificPeptides.txt";
           document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\label_free\\wf_results";
+          document.getElementById('def-dbfile').value = 'personal';
+          document.getElementById('dbfile').value = process.env.ISANXOT_SRC_HOME + "\\tests\\label_free\\HumanSaccEcoliPME12.fasta";
+          document.getElementById("dbfile").disabled = false;
           document.getElementById('def-catfile').value = 'human';
           document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + "\\dbs\\human_UP000005640_201904.tsv";
           document.getElementById("catfile").disabled = false;

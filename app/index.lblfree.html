@@ -39,13 +39,13 @@
     </ul> 
     <div class="tab-content main">
       <div class="tab-pane active" id="tasktable" role="tabpanel" aria-labelledby="tasktable-tab"></div>
-      <div class="tab-pane" id="processes" role="tabpanel" aria-labelledby="processes-tab"></div>
+      <div class="tab-pane tpl-processes" id="processes" role="tabpanel" aria-labelledby="processes-tab"></div>
     </div>
   </section>
   
-  <section class="executor" id="temp-executor"></section>
+  <section class="executor" id="executor"></section>
 
-  <footer><div class="footer" id="temp-footer"></div></footer>
+  <footer><div class="footer" id="footer"></div></footer>
 
   <script>
     // Global processes
@@ -57,7 +57,7 @@
     require('./renderer-process/lblfree/samples');
 
     // Print the version
-    document.querySelector('#footer.version').innerHTML = require('electron').remote.app.getVersion();
+    document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
 
   </script>
 </body>

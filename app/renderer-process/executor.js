@@ -40,7 +40,7 @@ function backgroundProcess(cmd) {
 
   proc.stdout.on('data', (data) => {
     appendToDroidOutput(data);
-    // console.log(`stdout: ${data}`);
+    console.log(`stdout: ${data}`);
   });
 
   proc.stderr.on('data', (data) => {
@@ -65,6 +65,8 @@ function backgroundProcess(cmd) {
             console.info(preText+"An error ocurred while creating the file");
             break;
     }
+    document.querySelector('#executor #start').disabled = false;
+    document.querySelector('#executor #stop').disabled = true;
   });
 
 };
@@ -72,32 +74,32 @@ function backgroundProcess(cmd) {
 /*
  * Click Executor
  */
-document.getElementById('executor').addEventListener('click', function() {
+document.querySelector('#executor #start').addEventListener('click', function() {
 
   // get the type of Workflow
   let smkfile = tasktable.smkfile;
   let cfgfile = tasktable.cfgfile;
+
   // Check and retrieves parameters depending on the type of workflow
   let params = parameters.createParameters(cfgfile);
   if ( params ) {
     // Execute the workflow
-    let cmd_smk = '"'+process.env.ISANXOT_PYTHON3x_HOME + '/tools/Scripts/snakemake.exe" --configfile "'+params.cfgfile+'" --snakefile "'+smkfile+'" --cores '+params.nthreads+' --directory "'+params.outdir+'" ';
-    let cmd = cmd_smk+' --unlock && '+cmd_smk+' --rerun-incomplete ';
+    let cmd_smk = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" `;
+    let cmd = `${cmd_smk} --unlock && ${cmd_smk} --rerun-incomplete `;
     console.log( cmd );
     backgroundProcess( cmd );
-
     // active the log tab
-    $('.nav-tabs a#temp-processes-tab').tab('show');
-
+    $('.nav-tabs a#processes-tab').tab('show');
     // disable Start button
-    document.getElementById('executor').disabled = true;
+    document.querySelector('#executor #start').disabled = true;
+    document.querySelector('#executor #stop').disabled = false;
   }
 
 });
 
 // Kill all shell processes
-document.getElementById('stopproc').addEventListener('click', function() {
-  if ( proc != null ) {
+document.querySelector('#executor #stop').addEventListener('click', function() {
+  if ( proc !== null ) {
     let sms = "Look for child processes from: "+proc.pid+"\n";
     console.log(sms);
     appendToDroidOutput("\n\nThe processes have been stopped!\n\n");
@@ -108,7 +110,8 @@ document.getElementById('stopproc').addEventListener('click', function() {
         process.kill(p.PID); 
       });
       // enable the Start button
-      document.getElementById('executor').disabled = false;
-    });
+      document.querySelector('#executor #start').disabled = false;
+      document.querySelector('#executor #stop').disabled = true;
+      });
   }
 });

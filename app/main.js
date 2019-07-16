@@ -15,7 +15,7 @@ let template = [
     { role: 'quit', accelerator: 'Shift+Ctrl+Q' }
   ] },
   { label: "Workflows", submenu: [
-    { label: 'Simple Mode',   click() { mainWindow.loadFile('index.smp.html') } },
+    // { label: 'Simple Mode',   click() { mainWindow.loadFile('index.smp.html') } },
     { label: 'Advanced Mode', click() { mainWindow.loadFile('index.adv.html') } },
     { label: 'Label-Free Mode', click() { mainWindow.loadFile('index.lblfree.html') } }
     ]},

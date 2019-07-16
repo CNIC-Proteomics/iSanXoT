@@ -1,7 +1,39 @@
 import os
 import pandas
 import re
+import json
 
+def replace_consts(config):
+    '''
+    Just in case, replace the constants
+    '''
+    # Config variables for workflow
+    infile_dat         = config["indata"].replace("\\", "/")
+    indir              = config["indir"].replace("\\", "/")
+    # infile_names       = config["infilenames"]
+    infile_db          = config["dbfile"].replace("\\", "/")
+    infile_cat         = config["catfile"].replace("\\", "/")
+    outdir             = config["outdir"].replace("\\", "/")
+    tmpdir             = config["tmpdir"].replace("\\", "/")
+    rstdir             = config["rstdir"].replace("\\", "/")
+    logdir             = config["logdir"].replace("\\", "/")
+    # replace tag-constant values
+    cfg_string = json.dumps(config)
+    cfg_string = cfg_string.replace("--WF__INDATA--", infile_dat)
+    cfg_string = cfg_string.replace("--WF__INDIR--", indir)
+    # cfg_string = cfg_string.replace("--WF__INFILE__NAMES--", infile_names)
+    cfg_string = cfg_string.replace("--WF__INFILE__DB--", infile_db)
+    cfg_string = cfg_string.replace("--WF__INFILE__CAT--", infile_cat)
+    cfg_string = cfg_string.replace("--WF__OUTDIR--", outdir)
+    cfg_string = cfg_string.replace("--WF__WKS__TMPDIR--", tmpdir)
+    cfg_string = cfg_string.replace("--WF__WKS__RSTDIR--", rstdir)
+    cfg_string = cfg_string.replace("--WF__WKS__LOGDIR--", logdir)
+    config = json.loads(cfg_string)
+    # write data in a file. 
+    # cfg_file = open(outdir+"/isanxot_cfg_2.json","w")  
+    # cfg_file.writelines( json.dumps(json.loads(cfg_string), indent=2, sort_keys=False) ) 
+    # cfg_file.close()
+    return config
 
 # Give an excise number of cores... It will be replaced by the given cores as parameter
 CORES_EXCISE =  40
@@ -11,30 +43,21 @@ ISANXOT_SRC_HOME       = os.environ['ISANXOT_SRC_HOME']
 ISANXOT_PYTHON3x_HOME  = os.environ['ISANXOT_PYTHON3x_HOME']
 
 # Config variables for workflow
+config = replace_consts(config) # just in case, replace the constanst to their values
 INFILE_DAT         = config["indata"]
 INDIR              = config["indir"]
+INFILE_NAMES       = config["infilenames"]
 INFILE_DB          = config["dbfile"]
 INFILE_CAT         = config["catfile"]
-WKS_OUTDIR         = config["outdir"]
-TMP_OUTDIR         = WKS_OUTDIR+"/temp"
-RST_OUTDIR         = WKS_OUTDIR+"/results"
-LOG_OUTDIR         = WKS_OUTDIR+"/logs"
+OUTDIR             = config["outdir"]
+TMP_OUTDIR         = config["tmpdir"]
+RST_OUTDIR         = config["rstdir"]
+LOG_OUTDIR         = config["logdir"]
 CONF_RULES         = config["workflow"]["rules"]
 RULES              = [ r["name"] for r in CONF_RULES ]
 WF_VERBOSE_MODE    = " -vv " if config["workflow"]["verbose"] else ""
 
-# Variable used to replace values from config file
-REPLACE_CONST = {
-    "--WF__INDATA--": INFILE_DAT,
-    "--WF__INDIR--": INDIR,
-    "--WF__INFILE__DB--": INFILE_DB,
-    "--WF__INFILE__CAT--": INFILE_CAT,
-    "--WF__WKSDIR--": WKS_OUTDIR,
-    "--WF__WKS__TMPDIR--": TMP_OUTDIR,
-    "--WF__WKS__RSTDIR--": RST_OUTDIR,
-    "--WF__TMPDIR--": "temp",
-    "--WF__RSTDIR--": "results",
-}
+
 
 def load_indata(ifile):
     '''
@@ -99,10 +122,10 @@ def setup_outfiles_from_indata():
             if "converter" == rule["name"]:
                 yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
 
-            # phantom output for the pRatio rules
-            if "pratio" == rule["name"]:
-                # yield "{outdir}/.pratio".format(outdir=TMP_OUTDIR)
-                yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
+            # # phantom output for the pRatio rules
+            # if "pratio" == rule["name"]:
+            #     # yield "{outdir}/.pratio".format(outdir=TMP_OUTDIR)
+            #     yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
 
             # Output for the pre_sanxot: calculation of ratios (Xs, Vs,...)
             if "pre_sanxot" == rule["name"]:
@@ -121,7 +144,6 @@ def setup_outfiles_from_indata():
                         yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
                     if "peptide2protein" == rule["name"]:
                         yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                        # yield expand(["{outdir}/{exp}/{name}/{fname}", "{outdir}/{exp}/{name}/tmp"], outdir=TMP_OUTDIR, exp=exp, name=name, fname=outputs)
                     if "protein2category" == rule["name"]:
                         yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
                     if "peptide2all" == rule["name"]:
@@ -144,6 +166,8 @@ def replace_params(in_param, rep=None, indir=None, tmpdir=None):
     '''
     Replace the variable values for the parameters
     '''
+    # init 
+    REPLACE_CONST = {}
     # add more replacements
     if indir:
         REPLACE_CONST["--WF__EXPTO__DIR--"] = indir
@@ -158,10 +182,13 @@ def replace_params(in_param, rep=None, indir=None, tmpdir=None):
         r = rep["labeltags"]
         s = str(r).replace(",","-")+"_Mean" if ',' in r else r
         REPLACE_CONST["--TAG--"] = s
-    optrep = dict((re.escape(k), v) for k, v in REPLACE_CONST.items())
-    # replace action
-    pattern = re.compile("|".join(optrep.keys()))
-    output = pattern.sub( lambda m: optrep[re.escape(m.group(0))], in_param )
+    # replace action if apply
+    if REPLACE_CONST:
+        optrep = dict((re.escape(k), v) for k, v in REPLACE_CONST.items())
+        pattern = re.compile("|".join(optrep.keys()))
+        output = pattern.sub( lambda m: optrep[re.escape(m.group(0))], in_param )
+    else:
+        output = in_param
     return output
 
 
