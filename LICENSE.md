@@ -1,6 +1,6 @@
 #LICENSE
 
-APPRIS by Jose Manuel Rodriguez is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 4.0 Unported License
+iSanXoT developed by the Cardiovascular Proteomics Lab/Proteomic Unit at CNIC is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 4.0 Unported License
 https://creativecommons.org/licenses/by-nc-nd/4.0/
 
 
