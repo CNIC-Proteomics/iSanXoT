@@ -45,3 +45,59 @@ if r and r["enabled"]:
             outdir = replace_params(r["outdir"])
             execute_methods(r["methods"], indir, outdir, log)
 
+rule_name = "fdr"
+r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
+if r and r["enabled"]:
+    rule fdr:
+        '''
+        Calculate the ratios
+        '''
+        threads: r["threads"]
+        message: "Executing '{rule}' with {threads} threads"
+        output:
+            replace_params(r["outdir"])+"/"+fname for fname in r["outputs"]
+        log:
+            LOG_OUTDIR+"/"+rule_name+".log"
+        run:
+            r = next((r for r in CONF_RULES if r["name"] == rule), None)
+            indir  = ""
+            outdir = replace_params(r["outdir"])
+            execute_methods(r["methods"], indir, outdir, log)
+
+# rule_name = "pre_sanxot"
+# r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
+# if r and r["enabled"] and isinstance(r["inputs"], list) and r["inputs"]:
+#     rule pre_sanxot:
+#         '''
+#         Calculate the ratios
+#         '''
+#         threads: r["threads"]
+#         message: "Executing '{rule}' with {threads} threads"
+#         input:
+#             replace_params(r["indir"])+"/"+fname for fname in r["inputs"]
+#         output:
+#             replace_params(r["outdir"])+"/"+fname for fname in r["outputs"]
+#         log:
+#             LOG_OUTDIR+"/"+rule_name+".log"
+#         run:
+#             r = next((r for r in CONF_RULES if r["name"] == rule), None)
+#             indir  = replace_params(r["indir"])
+#             outdir = replace_params(r["outdir"])
+#             execute_methods(r["methods"], indir, outdir, log)
+# elif r and r["enabled"] and isinstance(r["inputs"], list) and not r["inputs"]:
+#     rule pre_sanxot:
+#         '''
+#         Calculate the ratios
+#         '''
+#         threads: r["threads"]
+#         message: "Executing '{rule}' with {threads} threads"
+#         output:
+#             replace_params(r["outdir"])+"/"+fname for fname in r["outputs"]
+#         log:
+#             LOG_OUTDIR+"/"+rule_name+".log"
+#         run:
+#             r = next((r for r in CONF_RULES if r["name"] == rule), None)
+#             indir  = ""
+#             outdir = replace_params(r["outdir"])
+#             execute_methods(r["methods"], indir, outdir, log)
+

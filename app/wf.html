@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>iSanXoT!</title>
+    <!-- Imports CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/handsontable.full.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Imports JS -->
+    <script>
+      if (typeof module === 'object') {window.module = module; module = undefined;}
+    </script>   
+    <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/handsontable.full.min.js"></script>
+    <script src="assets/js/underscore-min.js"></script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
+</head>
+<body>
+  <header></header>
+
+  <section class="bodied" id="main"></section>
+
+  <section class="executor" id="executor"></section>
+
+  <footer><div class="footer" id="footer"></div></footer>
+
+  <script>
+    // Global processes
+    var importer = require('./renderer-process/imports.js');
+    var exceptor = require('./renderer-process/exceptions.js');
+    var parameters = require('./renderer-process/parameters.js');
+    require('./renderer-process/executor.js');
+    // Print the version
+    document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
+  </script>
+</body>
+</html>

@@ -77,15 +77,15 @@ function backgroundProcess(cmd) {
 document.querySelector('#executor #start').addEventListener('click', function() {
 
   // get the type of Workflow
-  let smkfile = tasktable.smkfile;
-  let cfgfile = tasktable.cfgfile;
+  let smkfile = importer.tasktable.smkfile;
+  let cfgfile = importer.tasktable.cfgfile;
 
   // Check and retrieves parameters depending on the type of workflow
   let params = parameters.createParameters(cfgfile);
   if ( params ) {
     // Execute the workflow
-    let cmd_smk = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" `;
-    let cmd = `${cmd_smk} --unlock && ${cmd_smk} --rerun-incomplete `;
+    let cmd_smk = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}"`;
+    let cmd = `${cmd_smk} --unlock && ${cmd_smk} --rerun-incomplete`;
     console.log( cmd );
     backgroundProcess( cmd );
     // active the log tab
@@ -100,13 +100,12 @@ document.querySelector('#executor #start').addEventListener('click', function() 
 // Kill all shell processes
 document.querySelector('#executor #stop').addEventListener('click', function() {
   if ( proc !== null ) {
-    let sms = "Look for child processes from: "+proc.pid+"\n";
-    console.log(sms);
+    console.log(`Look for child processes from sms ${proc.pid}`);
+
     appendToDroidOutput("\n\nThe processes have been stopped!\n\n");
     psTree(proc.pid, function (err, children) {  // check if it works always
       children.forEach(function (p) {
-        let sms = "Process has been killed!"+p.PID+"\n";
-        console.log(sms);
+        console.log(`process ${p.PID} has been killed!`);
         process.kill(p.PID); 
       });
       // enable the Start button

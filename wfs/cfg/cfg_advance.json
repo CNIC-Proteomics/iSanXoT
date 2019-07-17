@@ -11,20 +11,30 @@
   "workflow": {
     "verbose": true,
     "rules": [{
-      "name": "pre_sanxot",
+      "name": "fdr",
       "enabled": true,
       "threads": 3,
-      "description": "Calculation of FDR and ratios (Xs, Vs,...)",
+      "description": "Calculation of FDR",
       "indir": "--WF__INDIR--",
       "outdir": "--WF__OUTDIR--",
-      "inputs":  ["--WF__INFILE__NAMES--"],
-      "outputs": ["ID.tsv", "ID-q.tsv"],
+      "inputs":  [],
+      "outputs": ["ID.tsv"],
       "methods": [{
         "script": "preSanXoT/fdr.py",
         "inputs":  { "--indir": "--WF__INDIR--" },
-        "params":  { "--expt": "--EXPTS--" },
+        "params":  { "--n_workers": "3", "--expt": "--EXPTS--" },
         "outputs": { "--outfile": "ID.tsv" }
-      },{
+      }]
+    },{
+      "name": "pre_sanxot",
+      "enabled": true,
+      "threads": 3,
+      "description": "Calculation of ratios (Xs, Vs,...)",
+      "indir": "--WF__OUTDIR--",
+      "outdir": "--WF__OUTDIR--",
+      "inputs":  ["ID.tsv"],
+      "outputs": ["ID-q.tsv"],
+      "methods": [{
         "script": "preSanXoT/pre_sanxot.py",
         "inputs":  { "--infile": "ID.tsv" },
         "params":  { "--datfile": "--WF__INDATA--" },

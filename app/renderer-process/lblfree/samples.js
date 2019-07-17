@@ -1,3 +1,5 @@
+let tt = require('./tasktable');
+
 /* Data samples */
 
 let dtatest = [
@@ -26,7 +28,7 @@ if ( document.getElementById('sample') !== null ) {
           document.getElementById('def-catfile').value = 'human';
           document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + "\\dbs\\human_UP000005640_201904.tsv";
           document.getElementById("catfile").disabled = false;
-          tasktable.container.handsontable('loadData', dtatest);
+          tt.container.handsontable('loadData', dtatest);
       }
   },false);
 }

@@ -173,6 +173,8 @@ def replace_params(in_param, rep=None, indir=None, tmpdir=None):
         REPLACE_CONST["--WF__EXPTO__DIR--"] = indir
     if tmpdir:
         REPLACE_CONST["--WF__EXPTO__TMPDIR--"] = tmpdir
+    # add experimets
+    REPLACE_CONST["--EXPTS--"] = ",".join(INDATA_EXPTO)
     # add more replacements for control labels and tag labesl
     if rep and "controltags" in rep:
         r = rep["controltags"]
@@ -204,9 +206,9 @@ def extract_method_parameters(method, indir, outdir, optrep=None, tmpdir=None):
             if isinstance(value, list):
                 inputs  = ' {} '.format(key)
                 for val in value:
-                    inputs  += '"{}/{}" '.format(_dir, val)
+                    inputs  += '"{}/{}" '.format(_dir, val) if _dir != "" else '"{}" '.format(val)
             else: # string
-                inputs  += ' {} "{}/{}" '.format(key, _dir, value)
+                inputs  += ' {} "{}/{}" '.format(key, _dir, value) if _dir != "" else ' {} "{}" '.format(key, value)
     # handle outputs
     if "outputs" in method:
         _dir = outdir

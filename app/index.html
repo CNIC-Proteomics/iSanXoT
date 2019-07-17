@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>iSanXoT!</title>
+    <!-- Imports CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/handsontable.full.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Imports JS -->
+    <script>
+      if (typeof module === 'object') {window.module = module; module = undefined;}
+    </script>
+    <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/handsontable.full.min.js"></script>
+    <script src="assets/js/underscore-min.js"></script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
+    <!-- Imports HTML Templates -->
+    <!-- <link rel="import" href="sections/footer.html"> -->
+</head>
+<body>
+  <header></header>
+
+  <div class="list-group">
+    <a href="wf.html?wfid=advance" class="list-group-item list-group-item-action">Advanced Workflow</a>
+    <a href="wf.html?wfid=lblfree" class="list-group-item list-group-item-action">Label-Free Workflow</a>
+  </div>
+
+  <footer><div class="footer" id="footer"></div></footer>
+
+  <script>
+    // Import the templates    
+    require('./renderer-process/imports.js');
+    // Print the version
+    document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
+  </script>
+</body>
+</html>

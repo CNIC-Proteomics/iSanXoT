@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Module metadata variables
-__author__ = "Jose Rodriguez"
+__author__ = ["Ricardo Magni", "Jose Rodriguez"]
 __credits__ = ["Ricardo Magni", "Jose Rodriguez", "Jesus Vazquez"]
 __license__ = "Creative Commons Attribution-NonCommercial-NoDerivs 4.0 Unported License https://creativecommons.org/licenses/by-nc-nd/4.0/"
 __version__ = "1.0.1"
@@ -189,7 +189,7 @@ def FdrXc(df, FDRlvl):
     df = df[ df["T_D"] == 0 ] # discard decoy # CHANGE
     return df
 
-def pro(ddf, FDRlvl, mods, tagDecoy, Expt, outdir):
+def pro(ddf, FDRlvl, mods, tagDecoy, Expt):
     '''
     Multi-task function: Calculate FDR and filter by cXcorr, create sequence with the mono_mas by mods, retrieve the list of protein,gene and species
     '''
@@ -242,19 +242,10 @@ def main(args):
 
 
     logging.info("map partitions")
-    # ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder).compute()
-    d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder)
+    d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt)
     d = d.compute()
     d.to_csv( args.outfile, sep="\t")
 
-    # ddf = ddf.compute()
-    # ddf.to_csv( outputfolder+"/ID_fdr.tsv", sep="\t")
-
-    # outfiles = [ outputfolder+"/ID_"+e+"_FDR.tsv" for e in Expt]
-    # logging.debug(Expt)
-    # logging.debug(outfiles)
-    # ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt, outputfolder)
-    # ddf.to_csv(outfiles, sep="\t")
 
 
 

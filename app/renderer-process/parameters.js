@@ -2,7 +2,7 @@
  * Handle parameters
  */
 let remote = require('electron').remote;
-var path = require('path');
+let path = require('path');
 let dialog = remote.dialog;
 let fs = require('fs');
 let dtablefilename = 'isanxot_dta.csv';
@@ -100,16 +100,50 @@ function createLocalDir(tid) {
 //             traverse(val, jsonKey+"/"+key);
 //         });
 //     } else {
-//         jsonObj 
 //         // jsonObj is a number or string
 //         console.log(`${key} ${jsonObj}` );
 //     }
 // }
-function replaceConsts(data) {
+// function traverse(jsonObj, jsonKey="", method=null) {
+function addParamsInMethod(jsonObj, method=null, params) {
+    Object.entries(jsonObj).forEach(([key, val]) => {
+        Object.entries(val["methods"]).forEach(([k, v]) => {
+            if ( v["script"] == method) {
+                for ( let i in params ) {
+                    let param = params[i];
+                    v["params"][param.attr] = param.val;
+                }
+            }
+        });
+    });
+} // end addParamInMethod
 
+function addParams(data) {
+    // create var with the parameter values    
+    let params = []
+    if (document.querySelector('#deltaMassThreshold')) { // pRatio
+        let val = document.querySelector('#deltaMassThreshold').value;
+        params.push({ "attr": "--threshold", "val": val });        
+    }
+    if (document.querySelector('#deltaMassAreas')) { // pRatio
+        let val = document.querySelector('#deltaMassAreas').value;
+        params.push({ "attr": "--jump_areas", "val": val });        
+    }
+    if (document.querySelector('#tagDecoy')) { // pRatio
+        let val = document.querySelector('#tagDecoy').value;
+        params.push({ "attr": "--lab_decoy", "val": val });        
+    }
+    // add into config
+    if ( params.length !== 0 ) {
+        addParamsInMethod(data["workflow"]["rules"], "preSanXoT/fdr.py", params )
+    }
+    
+    return data
+} // end addParams
+
+function replaceConsts(data) {
     //convert to JSON string
     let sdta = JSON.stringify(data);
-    // var odata = sdta.replace(/--WF__INFILE__NAMES--/g, value);
     // replace constants
     sdta = sdta.replace(/--WF__INDATA--/g, data["indata"]);
     sdta = sdta.replace(/--WF__INDIR--/g, data["indir"]);
@@ -133,7 +167,9 @@ function addConfParams(file, params) {
     // add tabledata file
     if ('tskfile' in params) { data['indata'] = params['tskfile']; }    
     // add tabledata file
-    if ( 'infile' in params) {
+    if ('indir'   in params) { data['indir'] = params['indir']; }
+    // add tabledata file
+    if ('infile'  in params) {
         var dirname  = path.dirname(params['infile']);
         var filename = path.basename(params['infile']);
         data['indir'] = dirname;
@@ -150,6 +186,8 @@ function addConfParams(file, params) {
     if ('catfile' in params) { data['catfile'] = params['catfile']; }
     // add db file
     if ('dbfile' in params) { data['dbfile'] = params['dbfile']; }
+    // add parameters
+    data = addParams(data)    
     // replace tags in the config data
     data = replaceConsts(data)
 
@@ -398,175 +436,3 @@ if ( document.getElementById('select-modfile') !== null ) {
         }); 
     },false);
 }
-
-// for SanXot
-// if ( document.getElementById('select-catfile') !== null ) {
-//     document.getElementById('select-catfile').addEventListener('click', function(){
-//         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
-//             if(files === undefined){
-//                 console.log("No category file selected");
-//             } else{
-//                 document.getElementById("catfile").value = files[0];
-//             }
-//         }); 
-//     },false);
-// }
-
-// if ( document.getElementById('sample') !== null ) {
-//     document.getElementById('sample').addEventListener('click', function(){    
-//         if(this.checked) {
-//             // <!-- test 1 -->
-//             document.getElementById('indir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\PESA_omicas\\3a_Cohorte_120_V2\\TMT_Fraccionamiento";
-//             document.getElementById('outdir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\PESA_3a_Cohorte_120_V2_TMTfrac_WF";
-//             tasktable.container.handsontable('loadData', tasktable.dtatest);
-//             document.getElementById("sample2").checked = false;
-//             document.getElementById("sample3").checked = false;
-//         } else {
-//             // Checkbox is not checked..
-//             document.getElementById('indir').value = "";
-//             document.getElementById('outdir').value = "";
-//             tasktable.container.handsontable('loadData', [[]]);
-//             tasktable.container.handsontable('deselectCell');
-//             document.getElementById("sample2").checked = true;
-//             document.getElementById("sample3").checked = true;
-//         }
-//     },false);
-// }
-// if ( document.getElementById('sample2') !== null ) {
-//     document.getElementById('sample2').addEventListener('click', function(){    
-//         if(this.checked) {
-//             // <!-- test 2 -->
-//             document.getElementById('indir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\Calsequestrin_null_mice_Sept_17___LC-MS_1st_round";
-//             document.getElementById('outdir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\Calseq_WF";
-//             tasktable.container.handsontable('loadData', tasktable.dtatest2);
-//             document.getElementById("sample").checked = false;
-//             document.getElementById("sample3").checked = false;
-//         } else {
-//             // Checkbox is not checked..
-//             document.getElementById('indir').value = "";
-//             document.getElementById('outdir').value = "";
-//             tasktable.container.handsontable('loadData', [[]]);
-//             tasktable.container.handsontable('deselectCell');
-//             document.getElementById("sample").checked = true;
-//             document.getElementById("sample3").checked = true;
-//         }
-//     },false);
-// }
-// if ( document.getElementById('sample3') !== null ) {
-//     document.getElementById('sample3').addEventListener('click', function(){    
-//         if(this.checked) {
-//             // <!-- test 1 -->
-//             document.getElementById('indir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\PESA_omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
-//             document.getElementById('outdir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\PESA_3a_Cohorte_120_V2_TMTfrac_WF_psm_input";
-//             tasktable.container.handsontable('loadData', tasktable.dtatest3);
-//             document.getElementById("sample").checked = false;
-//             document.getElementById("sample2").checked = false;
-//         } else {
-//             // Checkbox is not checked..
-//             document.getElementById('indir').value = "";
-//             document.getElementById('outdir').value = "";
-//             tasktable.container.handsontable('loadData', [[]]);
-//             tasktable.container.handsontable('deselectCell');
-//             document.getElementById("sample").checked = true;
-//             document.getElementById("sample2").checked = true;
-//         }
-//     },false);
-// }
-
-// function addSmpConfParams(file, params) {
-//     // get object from template
-//     let data = JSON.parse(file);
-
-//     // add tabledata file
-//     data['indata'] = params['tskfile'];
-//     // add tabledata file
-//     data['indir'] = params['indir'];
-//     // add tabledata file
-//     data['outdir'] = params['outdir'];
-//     // add modification
-//     data['modfile'] = params['modfile'];
-//     // add category
-//     data['catfile'] = params['catfile'];
-
-//     // wf parameters
-//     let wf = data['workflow'];
-//     let wf_presanxot2 = wf['presanxot2'];
-//     let wf_sanxot = wf['sanxot'];
-
-//     /* --- pRatio --- */
-//     wf_presanxot2['pratio']['threshold'] = parseInt(document.querySelector('#deltaMassThreshold').value);
-//     wf_presanxot2['pratio']['delta_mass'] = parseInt(document.querySelector('#deltaMassAreas').value);
-//     wf_presanxot2['pratio']['tag_mass'] = parseFloat(document.querySelector('#tagMass').value);
-//     wf_presanxot2['pratio']['lab_decoy'] = document.querySelector('#tagDecoy').value;
-
-
-//     /* --- Pre-SanXoT2 --- */
-//     // add to presanxot2 the option of included tags
-//     // let includeTags = document.querySelector('#includeTags').checked;
-//     // if ( includeTags ) {
-//     //     // relationship table s2p
-//     //     wf_presanxot2['rels2sp']['optparams']['aljamia1'] += ' -l [Tags] ';
-//     //     wf_presanxot2['rels2sp']['optparams']['aljamia2'] += ' -k [Tags] ';
-//     //     // relationship table p2q
-//     //     wf_presanxot2['rels2pq']['optparams']['aljamia1'] += ' -k [Tags] ';
-//     //     // relationship table p2q_unique
-//     //     wf_presanxot2['rels2pq_unique']['optparams']['aljamia1'] += ' --c5 [Tags] ';        
-//     // }
-
-//     /* --- SanXoT --- */
-//     // add FDR
-//     wf_sanxot['scan2peptide']['fdr'] = parseFloat(document.querySelector('.scan2peptide #fdr').value);
-//     wf_sanxot['peptide2protein']['fdr'] = parseFloat(document.querySelector('.peptide2protein #fdr').value);
-//     wf_sanxot['protein2category']['fdr'] = parseFloat(document.querySelector('.protein2category #fdr').value);
-//     // force the variance if apply
-//     if ( !document.querySelector('.scan2peptide #variance').disabled ) {
-//         wf_sanxot['scan2peptide']['variance'] = parseFloat(document.querySelector('.scan2peptide #variance').value);
-//     }
-//     if ( !document.querySelector('.peptide2protein #variance').disabled ) {
-//         wf_sanxot['peptide2protein']['variance'] = parseFloat(document.querySelector('.peptide2protein #variance').value);
-//     }
-//     if ( !document.querySelector('.protein2category #variance').disabled ) {
-//         wf_sanxot['protein2category']['variance'] = parseFloat(document.querySelector('.protein2category #variance').value);
-//     }    
-//     // Discard outliers
-//     let discardOutliers = document.querySelector('#discardOutliers').checked;
-//     if ( discardOutliers ) {
-//         wf_sanxot['scan2peptide']['optparams']['sanxot2'] += ' --tags !out ';
-//         wf_sanxot['peptide2protein']['optparams']['sanxot2'] += ' --tags !out ';
-//         wf_sanxot['protein2category']['optparams']['sanxot2'] += ' --tags !out ';
-//     }
-
-//     return data;
-
-// } // end addSmpConfParams
-
-
-// function addAdvConfParams(file, params) {
-//     // get object from template
-//     let data = JSON.parse(file);
-
-//     // add tabledata file
-//     data['indata'] = params['tskfile'];
-//     // add tabledata file
-//     data['indir'] = params['indir'];
-//     // add tabledata file
-//     data['outdir'] = params['outdir'];
-//     // add category
-//     data['catfile'] = params['catfile'];
-
-//     // wf parameters
-//     let wf = data['workflow'];
-//     let wf_sanxot = wf['sanxot'];
-
-//     /* --- SanXoT --- */
-//     // Discard outliers
-//     let discardOutliers = document.querySelector('#discardOutliers').checked;
-//     if ( discardOutliers ) {
-//         wf_sanxot['scan2peptide']['optparams']['sanxot2'] += ' --tags !out ';
-//         wf_sanxot['peptide2protein']['optparams']['sanxot2'] += ' --tags !out ';
-//         wf_sanxot['protein2category']['optparams']['sanxot2'] += ' --tags !out ';
-//     }
-
-//     return data;
-// } // end addAdvConfParams
-
