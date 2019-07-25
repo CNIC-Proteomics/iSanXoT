@@ -130,13 +130,13 @@ if ( document.querySelector('#executor #start') !== null ) {
         // let cmd = `${cmd_smk} --unlock && ${cmd_smk} --rerun-incomplete > "${params.logfile}" 2>&1`;
         let cmd1 = `${cmd_smk} --unlock`;
         let cmd2 = `${cmd_smk} --rerun-incomplete > "${params.logfile}" 2>&1`;
-        // // Sync process that Unlock the output directory
-        // // First we unlock the ouput directory
-        // console.log(cmd1);
-        // cProcess.execSync(cmd1);
-        // // Then, we execute the workflow
-        // console.log(cmd2);
-        // execProcess(cmd2, params.logfile);
+        // Sync process that Unlock the output directory
+        // First we unlock the ouput directory
+        console.log(cmd1);
+        cProcess.execSync(cmd1);
+        // Then, we execute the workflow
+        console.log(cmd2);
+        execProcess(cmd2, params.logfile);
       }
     });
 }
