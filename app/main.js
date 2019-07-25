@@ -1,23 +1,18 @@
 // Modules to control application life and create native browser window
 const { app, Menu, BrowserWindow, ipcMain } = require('electron')
 
-// // Remove console log in production mode
-// if (process.env.ISANXOT_MODE == "production") {
-//   console.log = function() {};
-// }
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow;
 
 // Variables with the processes IDs
-let psTree = require(process.env.ISANXOT_NODE_PATH + '/ps-tree')
-let pids = []
+let all_pids = { 'pids':[], 'c_pids':[] };
 
 // Menu
 let template = [
   { label: "Menu", submenu: [    
     { label: 'Init', click() { mainWindow.loadFile('index.html') } },
+    { label: 'Processes', click() { mainWindow.loadFile('processes.html') } },
     { role: 'quit', accelerator: 'Shift+Ctrl+Q' }
   ]},
   { label: "Workflows", submenu: [
@@ -57,7 +52,6 @@ function createWindow () {
     console.log = function() {};
   }
   else { // Debug mode    
-    // open the DevTools.
     mainWindow.webContents.openDevTools()
   }
 
@@ -66,14 +60,15 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    console.log("close windows");
+    console.log("** close windows");
     mainWindow = null
     app.quit();
   })
   
   // Set application menu
   Menu.setApplicationMenu(menu)
-} // end createWindow
+
+}; // end createWindow
 
 
 /*
@@ -83,35 +78,31 @@ App functions
 // This method will be called when Electron has finished initialization 
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 // before quit: App close handler
 app.on('before-quit', () => {
   mainWindow.removeAllListeners('close');
   mainWindow.close();
-})
+});
 
-// Quit when all windows are closed.
+// When all windows are closed...
 app.on('window-all-closed', function () {
-  console.log(`window-all-closed for ${pids}`);
-
-  pids.reverse().forEach(function(pid) {
-    // Kill all sub-processes
-    psTree(pid, function (err, children) {  // check if it works always
-      children.forEach(function(p) {
-      // children.map(function (p) {
-        console.log(`${p.PID} has been killed!`);
-        process.kill(p.PID);
-      });
-      // On OS X it is common for applications and their menu bar
-      // to stay active until the user quits explicitly with Cmd + Q
-      if (process.platform !== 'darwin') {
-        app.quit();
-      }
-    });
-  });
-
-})
+  // kill all processes
+  console.log("** kill all processes");
+  console.log( all_pids );
+  // all_pids['c_pids'].forEach(function(pids) {
+  //   pids.forEach(function(pid) {
+  //     // kill the process
+  //     console.log(`${pid} has been killed!`);
+  //     process.kill(pid);
+  //   });  
+  // });
+  // all_pids['pids'].forEach(function(pid) {
+  //   console.log(`${pid} main-process has been killed!`);
+  //   process.kill(pid);
+  // });
+});
 
 app.on('activate', function () {
   // On OS X it's common to re-create a window in the app when the
@@ -119,7 +110,7 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
-})
+});
 
 
 // ---------------
@@ -127,9 +118,26 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-// Connect the "main" process of electron with the javascript library
-ipcMain.on('pid-message', function(event, arg) {
-  // add the shell process to list of PIDs
-  console.log(`-- main PID: ${arg}`);
-  pids.push(arg);
+// Load the new URL
+ipcMain.on('load-page', function(event, arg) {
+  mainWindow.loadURL(arg);
+});
+
+// Get the PIDs
+ipcMain.on('send-pids', function(event, arg) {
+  console.log('receive pids');
+});  
+
+
+// Get the PIDs
+ipcMain.on('send-pid', function(event, arg) {
+  console.log('receive pids');
+  console.log(arg);
+  all_pids['pids'].push(arg);
+});  
+
+// Get the PIDs
+ipcMain.on('send-spid', function(event, arg) {
+  console.log(arg);
+  all_pids['c_pids'].push(arg);
 });  

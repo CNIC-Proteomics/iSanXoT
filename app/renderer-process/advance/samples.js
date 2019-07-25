@@ -24,6 +24,11 @@ let dtatest = [
   ["TMT2","h34571","130C","126,131",0.01,0.01,0.01,false,false,false],
   ["TMT2","h34572","131","126,131",0.01,0.01,0.01,false,false,false]
 ];
+// let dtatest = [
+//   ["TMT1","wt 1","126","126,131",0.01,0.01,0.01,false,false,false],
+//   ["TMT1","wt 2","127N","126,131",0.01,0.01,0.01,false,false,false],
+//   ["TMT1","wt 3","127C","126,131",0.01,0.01,0.01,false,false,false],
+// ];
   
 let dtatest2 = [
   ["Calseq2","wt 1","126","126,131",0.01,0.01,0.01,false,false,false],
@@ -43,40 +48,32 @@ let dtatest2 = [
 
 if ( document.getElementById('sample') !== null ) {
   document.getElementById('sample').addEventListener('click', function(){
-      if(this.checked) {
-          // <!-- test 1 -->
-          document.getElementById('indir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
-          document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2_wf_results";
-          document.getElementById('def-catfile').value = 'human';
-          document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + '\\dbs\\human_UP000005640_201904.tsv';
-          tt.container.handsontable('loadData', dtatest);
-          document.getElementById('tagDecoy').value = 'DECOY_';          
-          // document.getElementById("sample2").checked = false;
-        } else {
-          // Checkbox is not checked..
-          document.getElementById('indir').value = "";
-          document.getElementById('outdir').value = "";
-          tt.container.handsontable('loadData', [[]]);
-          tt.container.handsontable('deselectCell');
-          // document.getElementById("sample2").checked = true;
-      }
+    document.getElementById('indir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
+    document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2_wf_results";
+    document.getElementById('def-catfile').value = 'human';
+    document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + '\\dbs\\human_UP000005640_201904.tsv';
+    // tt.container.loadData(dtatest);
+    tt.container.handsontable('loadData', dtatest);
+    document.getElementById('tagDecoy').value = '_INV_';
+    document.querySelector('#nthreads').value = 20;
   },false);
 }
 if ( document.getElementById('sample2') !== null ) {
   document.getElementById('sample2').addEventListener('click', function(){    
-      if(this.checked) {
-          // <!-- test 2 -->
-          document.getElementById('indir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\Calsequestrin_null_mice_Sept_17___LC-MS_1st_round";
-          document.getElementById('outdir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\Calseq_WF";
-          tt.container.handsontable('loadData', dtatest2);
-          document.getElementById("sample").checked = false;
-      } else {
-          // Checkbox is not checked..
-          document.getElementById('indir').value = "";
-          document.getElementById('outdir').value = "";
-          tt.container.handsontable('loadData', [[]]);
-          tt.container.handsontable('deselectCell');
-          document.getElementById("sample").checked = true;
-      }
+    document.getElementById('indir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\Calsequestrin_null_mice_Sept_17___LC-MS_1st_round";
+    document.getElementById('outdir').value = "S:\\LAB_JVC\\RESULTADOS\\JM RC\\iq-Proteo\\Calseq_WF";
+    // tt.container.loadData(dtatest2);
+    tt.container.handsontable('loadData', dtatest2);
+  },false);  
+}
+
+if ( document.getElementById('sample-clear') !== null ) {
+  document.getElementById('sample-clear').addEventListener('click', function(){    
+    document.getElementById('indir').value = "";
+    document.getElementById('outdir').value = "";
+    document.getElementById('def-catfile').value = 'personal';
+    document.getElementById('catfile').value = "";
+    tt.container.handsontable('loadData', [[]]);
+    tt.container.handsontable('deselectCell');
   },false);
 }

@@ -5,8 +5,11 @@ let remote = require('electron').remote;
 let path = require('path');
 let dialog = remote.dialog;
 let fs = require('fs');
+
 let dtablefilename = 'isanxot_dta.csv';
-let cfgfilename = 'isanxot_cfg.json'
+let cfgfilename = 'isanxot_cfg.json';
+let logfilename = 'isanxot.log';
+
 
 /*
 * Export tasktable to CSV
@@ -70,7 +73,7 @@ function getInFileDir(tid) {
         console.log(`Error getting ${tid}: ${err}`);
         return false;
     }
-    f = f.replace(/\\/g, "/");
+    f = f.replace(/\\/g, "/");    
     return f;
 } // end getInFileDir
 
@@ -92,54 +95,17 @@ function createLocalDir(tid) {
 /*
 * Create config file 
 */
-// traverse all the Nodes of a JSON Object Tree
-// function traverse(jsonObj, jsonKey="") {
-//     if ( jsonObj !== null && typeof jsonObj == "object" ) {
-//         Object.entries(jsonObj).forEach(([key, val]) => {
-//             // key is either an array index or object key
-//             traverse(val, jsonKey+"/"+key);
-//         });
-//     } else {
-//         // jsonObj is a number or string
-//         console.log(`${key} ${jsonObj}` );
-//     }
-// }
-// function traverse(jsonObj, jsonKey="", method=null) {
-function addParamsInMethod(jsonObj, method=null, params) {
+function addParamsInMethod(jsonObj, rules, methods, params) {
     Object.entries(jsonObj).forEach(([key, val]) => {
-        Object.entries(val["methods"]).forEach(([k, v]) => {
-            if ( v["script"] == method) {
-                for ( let i in params ) {
-                    let param = params[i];
-                    v["params"][param.attr] = param.val;
+        if ( rules.includes(parseInt(key)) ) {
+            Object.entries(val["methods"]).forEach(([k, v]) => {
+                if ( methods.includes(parseInt(k)) ) {
+                    v["params"] += ` ${params} `;
                 }
-            }
-        });
+            });    
+        }
     });
 } // end addParamInMethod
-
-function addParams(data) {
-    // create var with the parameter values    
-    let params = []
-    if (document.querySelector('#deltaMassThreshold')) { // pRatio
-        let val = document.querySelector('#deltaMassThreshold').value;
-        params.push({ "attr": "--threshold", "val": val });        
-    }
-    if (document.querySelector('#deltaMassAreas')) { // pRatio
-        let val = document.querySelector('#deltaMassAreas').value;
-        params.push({ "attr": "--jump_areas", "val": val });        
-    }
-    if (document.querySelector('#tagDecoy')) { // pRatio
-        let val = document.querySelector('#tagDecoy').value;
-        params.push({ "attr": "--lab_decoy", "val": val });        
-    }
-    // add into config
-    if ( params.length !== 0 ) {
-        addParamsInMethod(data["workflow"]["rules"], "preSanXoT/fdr.py", params )
-    }
-    
-    return data
-} // end addParams
 
 function replaceConsts(data) {
     //convert to JSON string
@@ -160,10 +126,12 @@ function replaceConsts(data) {
     return dta;
 } // end replaceTags
 
-function addConfParams(file, params) {
+
+function createConfData(conf, params, func_addParams) {
+    //file exists, get the contents
+    let file = fs.readFileSync(conf);
     // get object from template
     let data = JSON.parse(file);
-
     // add tabledata file
     if ('tskfile' in params) { data['indata'] = params['tskfile']; }    
     // add tabledata file
@@ -186,21 +154,18 @@ function addConfParams(file, params) {
     if ('catfile' in params) { data['catfile'] = params['catfile']; }
     // add db file
     if ('dbfile' in params) { data['dbfile'] = params['dbfile']; }
-    // add parameters
-    data = addParams(data)    
     // replace tags in the config data
     data = replaceConsts(data)
+
+    // add specific workflow parameters
+    data = func_addParams(data)
 
     return data;
 } // end addConfParams
 
-function createConfFile(conf, params) {
+function createConfFile(data, outdir) {
     // read template file
     try {
-        //file exists, get the contents
-        let d = fs.readFileSync(conf);
-        // create config data with the parameters
-        let data = addConfParams(d, params);
         // convert JSON to string
         var cont = JSON.stringify(data, undefined, 2);
     } catch (err) {
@@ -208,136 +173,26 @@ function createConfFile(conf, params) {
         return false;
     }
     // write file sync
-    let file = params['outdir'] +'/'+ cfgfilename;
+    let file = outdir +'/'+ cfgfilename;
     try {
         fs.writeFileSync(file, cont, 'utf-8');
     } catch (err) {    
         console.log(`Error writing config file: ${err}`);
         return false;
     }
-    return file;
-} // end createLblConfFile
+    let logfile = outdir +'/'+ logfilename;
+    return [file, logfile];
+} // end createConfFile
 
 
-/*
- * Create parameters to workflow
- */
-function createAdvParameters(conf) {
-    let params = {};
-
-    // get input directory
-    let indir = getInFileDir('indir');
-    if ( !indir ) {
-        exceptor.showMessageBox('Error Message', 'Input directory is required');
-        return false;
-    }
-    else { params.indir = indir }
-    // get and create check and get: output directory
-    let outdir = createLocalDir('outdir');
-    if ( !outdir ) {
-        exceptor.showMessageBox('Error Message', 'Output directory is required');
-        return false;
-    }
-    else { params.outdir = outdir }
-    // create tasktable file
-    let dtablefile = createtasktableFile(outdir); 
-    if ( !dtablefile ) {
-        exceptor.showMessageBox('Error Message', 'Creating tasktable file');
-        return false;
-    }
-    // create category file
-    let catfile = getInFileDir('catfile');
-    if ( !catfile ) {
-        exceptor.showMessageBox('Error Message', 'Category file is required');
-        return false;
-    }
-    // Create Config file
-    let cfgfile = createConfFile(conf, {
-        'indir': indir,
-        'outdir': outdir,
-        'tskfile': dtablefile,
-        'catfile': catfile
-    });
-    if ( !cfgfile ) {
-        exceptor.showMessageBox('Error Message', 'Creating config file');
-        return false;
-    }
-    else { params.cfgfile = cfgfile }
-    // get: num threads
-    params.nthreads = document.querySelector('#nthreads').value;
-
-    return params;
-}
-function createLblFreeParameters(conf) {
-    let params = {};
-
-    // get input file
-    let infile = getInFileDir('infile');
-    if ( !infile ) {
-        exceptor.showMessageBox('Error Message', 'Input file is required');
-        return false;
-    }
-    else { params.infile = infile }
-    // get and create check and get: output directory
-    let outdir = createLocalDir('outdir');
-    if ( !outdir ) {
-        exceptor.showMessageBox('Error Message', 'Output directory is required');
-        return false;
-    }
-    else { params.outdir = outdir }
-    // create tasktable file
-    let dtablefile = createtasktableFile(outdir); 
-    if ( !dtablefile ) {
-        exceptor.showMessageBox('Error Message', 'Creating tasktable file');
-        return false;
-    }
-    // create db file
-    let dbfile = getInFileDir('dbfile');
-    if ( !dbfile ) {
-        exceptor.showMessageBox('Error Message', 'Database file is required');
-        return false;
-    }
-    // create category file
-    let catfile = getInFileDir('catfile');
-    if ( !catfile ) {
-        exceptor.showMessageBox('Error Message', 'Category file is required');
-        return false;
-    }
-    // Create Config file
-    let cfgfile = createConfFile(conf, {
-        'infile': infile,
-        'outdir': outdir,
-        'tskfile': dtablefile,
-        'catfile': catfile,
-        'dbfile': dbfile
-    });
-    if ( !cfgfile ) {
-        exceptor.showMessageBox('Error Message', 'Creating config file');
-        return false;
-    }
-    else { params.cfgfile = cfgfile }
-    // get: num threads
-    params.nthreads = document.querySelector('#nthreads').value;
-
-    return params;
-}
-function createParameters(conf) {
-    let params = false;
-    if ( conf.search(/simple/) != -1 ) {
-        params = createSmpParameters(conf);
-    } else if ( conf.search(/advance/) != -1 ) {
-        params = createAdvParameters(conf);
-    } else if ( conf.search(/labelfree/) != -1 ) {
-        params = createLblFreeParameters(conf);
-    } else {
-        params = false;
-    }
-    return params;
-}
-
-// We assign properties to the `module.exports` property, or reassign `module.exports` it to something totally different.
-// In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
-module.exports.createParameters = createParameters;
+// Export modules
+module.exports.createtasktableFile = createtasktableFile;
+module.exports.getInFileDir = getInFileDir;
+module.exports.createLocalDir = createLocalDir;
+module.exports.createConfFile = createConfFile;
+module.exports.addParamsInMethod = addParamsInMethod;
+module.exports.createConfData = createConfData;
+module.exports.createConfFile = createConfFile;
 
 
 
@@ -345,7 +200,55 @@ module.exports.createParameters = createParameters;
  * Events
  */
 
-// for Database
+$("#select-methods :checkbox").on("change", function(){
+    if($(this).is(":checked")){
+        // Enable methods
+        $("#select-methods :checkbox").prop('disabled', false);
+        if( this.id == "fdr" ) {
+            // Show tab for the current method
+            $('a#params-pratio-tab').show();
+        }
+        else if( this.id == "pre_sanxot" ) {
+            // Show tab for the current method
+            $('a#tasktable-tab').show();
+        }
+        else if( this.id == "sanxot" ) {
+            // Show tab for the current method
+            $('a#tasktable-tab').show();
+        }
+    }
+    else if($(this).is(":not(:checked)")) {
+        // Disable methods depending on which one
+        if( this.id == "fdr" ) {
+            $("#select-methods :checkbox").prop('disabled', true);
+            $(`#select-methods #${this.id}`).prop('disabled', false);
+            // Hide tab for the current method and the disabled methods
+            $(`a#params-pratio-tab`).hide();
+        }
+        else if( this.id == "pre_sanxot" ) {
+            $("#select-methods :checkbox").prop('disabled', true);
+            $(`#select-methods #${this.id}`).prop('disabled', false);
+            $(`#select-methods #fdr`).prop('disabled', false);
+            // Hide tab for the current method and the disabled methods
+            $(`a#tasktable-tab`).hide();
+        }
+        else if( this.id == "sanxot" ) {
+            // Hide tab for the current method and the disabled methods
+            $(`a#tasktable-tab`).hide();
+        }
+    }
+});
+if ( document.getElementById('select-indir') !== null ) {
+    document.getElementById('select-indir').addEventListener('click', function(){
+        dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
+            if(dirs === undefined){
+                console.log("No input directory selected");
+            } else{
+                document.getElementById("indir").value = dirs[0];
+            }
+        }); 
+    },false);    
+}
 if ( document.getElementById('select-indir') !== null ) {
     document.getElementById('select-indir').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
@@ -379,7 +282,6 @@ if ( document.getElementById('select-outdir') !== null ) {
         }); 
     },false);
 }
-
 if ( document.getElementById('def-catfile') !== null ) {
     document.getElementById('def-catfile').addEventListener('change', function(){
         if ( this.value === "personal" ) {
@@ -396,7 +298,6 @@ if ( document.getElementById('def-catfile') !== null ) {
         }
     });
 }
-
 if ( document.getElementById('select-catfile') !== null ) {
     document.getElementById('select-catfile').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
@@ -407,32 +308,4 @@ if ( document.getElementById('select-catfile') !== null ) {
             }
         });
     });
-}
-
-/* ---------------- Specific: Simple Mode ------------------ */
-
-// for pRatio
-if ( document.getElementById('def-modfile') !== null ) {
-    document.getElementById('def-modfile').addEventListener('click', function(){
-        if(this.checked) {
-            document.getElementById("modfile").disabled = true;
-            document.getElementById("select-modfile").disabled = true;
-        }
-        else {
-            document.getElementById("modfile").disabled = false;
-            document.getElementById("select-modfile").disabled = false;
-        }
-    },false);    
-}
-
-if ( document.getElementById('select-modfile') !== null ) {
-    document.getElementById('select-modfile').addEventListener('click', function(){
-        dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
-            if( files === undefined ){
-                console.log("No modification file selected");
-            } else{
-                document.getElementById("modfile").value = files[0];
-            }
-        }); 
-    },false);
 }

@@ -17,6 +17,7 @@ import logging
 import pandas
 import glob
 import re
+from time import strftime
 
 ###################
 # Local functions #
@@ -76,6 +77,6 @@ if __name__ == "__main__":
                             datefmt='%m/%d/%Y %I:%M:%S %p')
 
     # start main function
-    logging.info('start script: '+"{0}".format(" ".join([x for x in sys.argv])))
+    logging.info("** {} - {} - start script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), " ".join([x for x in sys.argv]) ))
     main(args)
-    logging.info('end script')
+    logging.info("** {} - {} - end  script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), os.path.basename(__file__) ))

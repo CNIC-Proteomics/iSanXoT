@@ -35,9 +35,6 @@ def replace_consts(config):
     # cfg_file.close()
     return config
 
-# Give an excise number of cores... It will be replaced by the given cores as parameter
-CORES_EXCISE =  40
-
 # Env. variables
 ISANXOT_SRC_HOME       = os.environ['ISANXOT_SRC_HOME']
 ISANXOT_PYTHON3x_HOME  = os.environ['ISANXOT_PYTHON3x_HOME']
@@ -111,90 +108,41 @@ def setup_outfiles_from_indata():
     '''
     Handles the input data (output files for the workflow)
     '''
-    # scan every rule: inputs and outputs
+    # apply the rule executors to rule (method)
     for rule in CONF_RULES:
         if rule["enabled"]:
             inputs  = rule["inputs"]
             outputs = rule["outputs"]
-            dynamic_outdir  = replace_params(rule["outdir"])
 
-            # Convert the result from MaxQuant (txt/evidences) to ID-q file: label-free
-            if "converter" == rule["name"]:
-                yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
+            # rules that work on another directories
+            if rule["executor"] == "on_outdir" or rule["executor"] == "indir_to_outdir" or rule["executor"] == "infiles_to_outdir":
+                yield expand(["{outdir}/{fname}"], outdir=OUTDIR, fname=outputs)
 
-            # # phantom output for the pRatio rules
-            # if "pratio" == rule["name"]:
-            #     # yield "{outdir}/.pratio".format(outdir=TMP_OUTDIR)
-            #     yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
+            # rules that work on another directories
+            if rule["executor"] == "on_rstdir" or rule["executor"] == "outdir_to_rstdir" or rule["executor"] == "tmpdir_to_rstdir" or rule["executor"] == "indir_to_rstdir":
+                yield expand(["{outdir}/{fname}"], outdir=RST_OUTDIR, fname=outputs)
 
-            # Output for the pre_sanxot: calculation of ratios (Xs, Vs,...)
-            if "pre_sanxot" == rule["name"]:
-                yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
-
-            # apply the corrected methods for the experiments info
-            # output files created by sanxot workflow
-            for exp, indat in INDATA.items():
-                for name in indat["names"]:
-                    # SanXoT rules
-                    if "aljamia" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "aljamia_cat" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "scan2peptide" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "peptide2protein" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "protein2category" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "peptide2all" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "protein2all" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-                    if "category2all" == rule["name"]:
-                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=dynamic_outdir, exp=exp, name=name, fname=outputs)
-            
-            # we merge the multiple results files from compilator
-            if "compilator" == rule["name"]:
-                yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
-
-            # SanXoT rule that will operate within 'flexilble' output directory (the sub-directory is in the output file name)
-            if "sanxot" == rule["name"]:
-                yield expand(["{outdir}/{fname}"], outdir=dynamic_outdir, fname=outputs)
+            # rules that work on experiment directories
+            if rule["executor"] == "on_tmpdir" or rule["executor"] == "outdir_to_tmpdir":
+                for exp, indat in INDATA.items():
+                    for name in indat["names"]:
+                        yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=TMP_OUTDIR, exp=exp, name=name, fname=outputs)
 
 
-def replace_params(in_param, rep=None, indir=None, tmpdir=None):
+def replace_params(in_param, optrep=None, indir=None, tmpdir=None):
     '''
     Replace the variable values for the parameters
     '''
-    # init 
-    REPLACE_CONST = {}
-    # add more replacements
-    if indir:
-        REPLACE_CONST["--WF__EXPTO__DIR--"] = indir
-    if tmpdir:
-        REPLACE_CONST["--WF__EXPTO__TMPDIR--"] = tmpdir
-    # add experimets
-    REPLACE_CONST["--EXPTS--"] = ",".join(INDATA_EXPTO)
-    # add more replacements for control labels and tag labesl
-    if rep and "controltags" in rep:
-        r = rep["controltags"]
-        s = str(r).replace(",","-")+"_Mean" if ',' in r else r
-        REPLACE_CONST["--CONTROLTAG--"] = s
-    if rep and "labeltags" in rep:
-        r = rep["labeltags"]
-        s = str(r).replace(",","-")+"_Mean" if ',' in r else r
-        REPLACE_CONST["--TAG--"] = s
-    # replace action if apply
-    if REPLACE_CONST:
-        optrep = dict((re.escape(k), v) for k, v in REPLACE_CONST.items())
-        pattern = re.compile("|".join(optrep.keys()))
-        output = pattern.sub( lambda m: optrep[re.escape(m.group(0))], in_param )
-    else:
-        output = in_param
+    if optrep:
+        orep = dict((re.escape(k), v) for k, v in optrep.items())
+        pattern = re.compile("|".join(orep.keys()))
+        output = pattern.sub( lambda m: orep[re.escape(m.group(0))], in_param )
+    else:        
+        output = in_param if in_param is not None else ''
     return output
 
 
-def extract_method_parameters(method, indir, outdir, optrep=None, tmpdir=None):
+def extract_method_parameters(method, indir, outdir, optparam=None, optrep=None, tmpdir=None):
     '''
     Extract command execution of a method from the from an unique output file name
     '''
@@ -221,22 +169,17 @@ def extract_method_parameters(method, indir, outdir, optrep=None, tmpdir=None):
                 outputs  += ' {} "{}/{}" '.format(key, _dir, value)
     # handle params
     if "params" in method:
-        for key,value in method["params"].items():
-            if isinstance(value, str):
-                if value != "":
-                    params += ' '+key+' "'+replace_params(value, rep=optrep, indir=indir, tmpdir=tmpdir)+'" '
-                else: #empty parameter
-                    params += ' '+key+' '
+        params = replace_params(method["params"], optrep=optrep) + replace_params(optparam)
     return inputs,params,outputs
 
 
 def extract_method(rule_name, outputs):
     fnames = [os.path.basename(o) for o in outputs]
-    r = next((r for r in CONF_RULES if r["name"] == rule_name and any(e in fnames for e in r["outputs"])), None)
+    r = next((r for r in CONF_RULES if r["name"] == rule_name and all(e in fnames for e in r["outputs"])), None)
     return r
 
 
-def execute_methods(methods, indir, outdir, log, optrep=None, tmpdir=None):
+def execute_methods(methods, indir, outdir, log, optparam=None, optrep=None, tmpdir=None):
     cmd  = ''
     # prepare temporal workspace
     if tmpdir:
@@ -245,7 +188,7 @@ def execute_methods(methods, indir, outdir, log, optrep=None, tmpdir=None):
     for method in methods:
         interpret = ISANXOT_PYTHON3x_HOME+'/tools/python'
         script    = ISANXOT_SRC_HOME+'/src/'+method["script"]
-        inputs, params, outputs = extract_method_parameters(method, indir, outdir, optrep=optrep, tmpdir=tmpdir)
+        inputs, params, outputs = extract_method_parameters(method, indir, outdir, optparam=optparam, optrep=optrep, tmpdir=tmpdir)
         cmd  += '"{}" "{}" {} {} {} 1>> "{}" 2>&1 && '.format(interpret, script, inputs, params, outputs, log)
     cmd = re.sub(r'&&\s*$', '', cmd)
     shell(cmd)

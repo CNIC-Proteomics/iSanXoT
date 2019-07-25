@@ -199,7 +199,11 @@ def pro(ddf, FDRlvl, mods, tagDecoy, Expt):
     ddf["SequenceMod"] = SequenceMod(ddf, mods)
     # extract the redundance protein/genes discarding DECOY proteins
     ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
-        
+    # rename columns
+    ddf.rename(columns={
+        "Spectrum File": "Spectrum_File",
+        "First Scan": "Scan"
+    }, inplace=True)
     return ddf
 
 

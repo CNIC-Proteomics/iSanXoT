@@ -1,216 +1,57 @@
-# ------------ #
-# SanXoT rules #
-# ------------ #
+# ------------------------- #
+# Functions for the methods #
+# ------------------------- #
+def create_ad_hoc_params(method, wildcards):
+    rep,param = {},''
+    if method == "aljamia":
+        if wildcards and wildcards.exp and wildcards.name:
+            l = INDATA[wildcards.exp]["names"][wildcards.name]["ratio_num"]
+            c = INDATA[wildcards.exp]["names"][wildcards.name]["ratio_den"]
+            lbl_tag = str(l).replace(",","-")+"_Mean" if ',' in l else l
+            lbl_ctr = str(c).replace(",","-")+"_Mean" if ',' in c else c
+            rep["--TAG--"]        = lbl_tag
+            rep["--CONTROLTAG--"] = lbl_ctr
 
-rule_name = "aljamia"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule aljamia:
-        '''
-        Convert the result from MaxQuant (txt/evidences) to ID-q file: label-free
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            expand(["{indir}/{fname}"], indir=replace_params(r["indir"]), fname=r["inputs"])
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            optrep = {
-                "labeltags":   INDATA[wildcards.exp]["names"][wildcards.name]["ratio_num"],
-                "controltags": INDATA[wildcards.exp]["names"][wildcards.name]["ratio_den"]
-            }
-            execute_methods(r["methods"], indir, outdir, log, optrep=optrep)
+    elif method == "scan2peptide":
+        if wildcards and wildcards.exp and wildcards.name:
+            lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["s>p FDR"])
+            try:
+                if type(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"]) is bool:
+                    lbl_var = " -V s2p_infoFile.txt "
+                else:
+                    f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
+                    lbl_var = " -v {} ".format(str(f))
+            except:
+                lbl_var = " -V s2p_infoFile.txt "
+            rep["--PARAMS__FDR--"]        = lbl_fdr
+            rep["--PARAMS__VARIANCE--"]   = lbl_var
+        
+    elif method == "peptide2protein":
+        if wildcards and wildcards.exp and wildcards.name:
+            lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["p>q FDR"])
+            try:
+                if type(INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"]) is bool:
+                    lbl_var = " -V p2q_infoFile.txt "
+                else:
+                    f = float(INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"])
+                    lbl_var = " -v {} ".format(str(f))
+            except:
+                lbl_var = " -V p2q_infoFile.txt "
+            rep["--PARAMS__FDR--"]        = lbl_fdr
+            rep["--PARAMS__VARIANCE--"]   = lbl_var
 
-rule_name = "aljamia_cat"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule aljamia_cat:
-        '''
-        Concatenate aljamia outputs
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "scan2peptide"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule scan2peptide:
-        '''
-        SanXoT method: scan to peptide
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "peptide2protein"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule peptide2protein:
-        '''
-        SanXoT method: peptide to protein
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "protein2category"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule protein2category:
-        '''
-        SanXoT method: protein to category
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "peptide2all"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule peptide2all:
-        '''
-        SanXoT method: peptide to all
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "protein2all"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule protein2all:
-        '''
-        SanXoT method: protein to all
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "category2all"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule category2all:
-        '''
-        SanXoT method: category to all
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            replace_params(r["indir"])+"/{exp}/{name}/"+fname for fname in r["inputs"]
-        output:
-            replace_params(r["outdir"])+"/{exp}/{name}/"+fname for fname in r["outputs"]
-        log:
-            LOG_OUTDIR+"/"+rule_name+"_{exp}_{name}.log"
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])+"/"+wildcards.exp+"/"+wildcards.name
-            outdir = replace_params(r["outdir"])+"/"+wildcards.exp+"/"+wildcards.name
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "collector"
-r = next((r for r in CONF_RULES if r["name"] == rule_name), None)
-if r and r["enabled"]:
-    rule collector:
-        '''
-        Merge the results of SanXoT nodes
-        '''
-        threads: r["threads"]
-        message: "Executing '{rule}' with {threads} threads"
-        input:
-            "{indir}/{exp}/{name}/{fname}".format(indir=replace_params(r["indir"]), exp=e, name=n, fname=f) for e in INDATA for n in INDATA[e]["names"] for f in r["inputs"]
-        output:
-            "{outdir}/"+fname for fname in r["outputs"]
-        run:
-            r = next((r for r in CONF_RULES if r["name"] == rule), None)
-            indir  = replace_params(r["indir"])
-            outdir = replace_params(r["outdir"])
-            log = "{}/{}.log".format(LOG_OUTDIR,rule) # variable log file
-            execute_methods(r["methods"], indir, outdir, log)
-
-rule_name = "sanxot"
-rul = [r for r in CONF_RULES if r["name"] == rule_name]
-for r in rul:
-    if r and r["enabled"]:
-        rule:
-            '''
-            Execute SanXoT methods within 'flexilble' output directory (the sub-directory is in the output file name)
-            '''
-            threads: r["threads"]
-            message: "Executing '{rule}' with {threads} threads"
-            input:
-                replace_params(r["indir"])+"/"+fname for fname in r["inputs"]
-            output:
-                replace_params(r["outdir"])+"/"+fname for fname in r["outputs"]
-            run:
-                r = extract_method("sanxot", output) # extract the rule configuration from the outputs
-                indir  = replace_params(r["indir"])
-                outdir = replace_params(r["outdir"])                
-                log = "{}/{}.{}.log".format(LOG_OUTDIR,"sanxot",rule) # variable log file
-                execute_methods(r["methods"], indir, outdir, log)
+    elif method == "protein2category":
+        if wildcards and wildcards.exp and wildcards.name:
+            lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["q>c FDR"])
+            try:
+                if type(INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"]) is bool:
+                    lbl_var = " -V q2c_infoFile.txt "
+                else:
+                    f = float(INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"])
+                    lbl_var = " -v {} ".format(str(f))
+            except:
+                lbl_var = " -V q2c_infoFile.txt "
+            rep["--PARAMS__FDR--"]        = lbl_fdr
+            rep["--PARAMS__VARIANCE--"]   = lbl_var
+    
+    return rep,param

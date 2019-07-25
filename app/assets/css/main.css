@@ -6,7 +6,7 @@ section.content {
     margin-top: 1em;
     margin-bottom: 1em;
 }
-section.executor {
+section.executor, section.processor {
     position: fixed;
     left: 0;
     bottom: 1.7em;
@@ -51,6 +51,14 @@ section.tab-content {
 }
 
 /* parameters */
+.form-inline.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+.input-group.col {
+    padding-left: 0;
+    padding-right: 0;
+}
 .form-group.row {
     margin-right: 0;
     margin-left: 0;
@@ -79,12 +87,17 @@ input#modfile, input#catfile {
 }
 section.tab-content > .form-inline {
     margin-bottom: 5px;
+    width: 100%;
 }
 
 
 /* executor */
-button#executor {
+#executor button#start {
     color: #fff;
     background-color: slategray;
     border-color: black;
+    margin-left: 0.3em;
+}
+#processor button#stop {
+    margin-left: 0.1em;
 }

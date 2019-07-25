@@ -12,225 +12,180 @@
     "verbose": true,
     "rules": [{
       "name": "fdr",
+      "description": "Calculation of FDR",
+      "executor": "indir_to_outdir",
       "enabled": true,
       "threads": 3,
-      "description": "Calculation of FDR",
-      "indir": "--WF__INDIR--",
-      "outdir": "--WF__OUTDIR--",
       "inputs":  [],
       "outputs": ["ID.tsv"],
       "methods": [{
         "script": "preSanXoT/fdr.py",
         "inputs":  { "--indir": "--WF__INDIR--" },
-        "params":  { "--n_workers": "3", "--expt": "--EXPTS--" },
-        "outputs": { "--outfile": "ID.tsv" }
+        "outputs": { "--outfile": "ID.tsv" },
+        "params":  ""
       }]
     },{
       "name": "pre_sanxot",
+      "description": "Calculation of ratios (Xs, Vs,...)",
+      "executor": "on_outdir",
       "enabled": true,
       "threads": 3,
-      "description": "Calculation of ratios (Xs, Vs,...)",
-      "indir": "--WF__OUTDIR--",
-      "outdir": "--WF__OUTDIR--",
       "inputs":  ["ID.tsv"],
       "outputs": ["ID-q.tsv"],
       "methods": [{
         "script": "preSanXoT/pre_sanxot.py",
         "inputs":  { "--infile": "ID.tsv" },
-        "params":  { "--datfile": "--WF__INDATA--" },
-        "outputs": { "--outfile": "ID-q.tsv" }
+        "outputs": { "--outfile": "ID-q.tsv" },
+        "params":  "--datfile \"--WF__INDATA--\""
       }]
     },{
       "name": "aljamia",
-      "enabled": false,
-      "threads": 3,
       "description": "Extract information from ID-q file",
-      "indir": "--WF__OUTDIR--",
-      "outdir": "--WF__WKS__TMPDIR--",
-      "inputs":  ["ID-q.tsv"],
-      "outputs": ["u_peptides.tsv", "p2q_rels_human.tsv", "p2q_rels_rest.tsv", "q2org_rels_human.tsv", "q2org_rels_rest.tsv"],
-      "methods": [{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "[SequenceMod]", "-j": "[Xs_--TAG--_vs_--CONTROLTAG--]", "-k": "[Vs_--TAG--_vs_--CONTROLTAG--]", "-e": "1" },
-        "outputs": { "-o": "u_peptides.tsv" }    
-      },{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "[Protein]", "-j": "[SequenceMod]", "-l": "hsa", "-f": "[Species]~~Homo sapiens" },
-        "outputs": { "-o": "p2q_rels_human.tsv" }
-      },{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "[Protein]", "-j": "[SequenceMod]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A && [Species]!=''" },
-        "outputs": { "-o": "p2q_rels_rest.tsv" }
-      },{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "1", "-j": "[Protein]", "-l": "hsa", "-f": "[Species]~~Homo sapiens" },
-        "outputs": { "-o": "q2org_rels_human.tsv" }    
-        },{
-          "script": "SanXoT/aljamia.py",
-          "inputs":  { "-x": "ID-q.tsv" },
-          "params":  { "-i": "1", "-j": "[Protein]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A && [Species]!=''" },
-          "outputs": { "-o": "q2org_rels_rest.tsv" }  
-      }]
-    },{
-      "name": "aljamia_cat",
-      "enabled": false,
-      "threads": 1,
-      "description": "Concatenate files from aljamia",
-      "indir": "--WF__WKS__TMPDIR--",
-      "outdir": "--WF__WKS__TMPDIR--",
-      "inputs":  ["p2q_rels_human.tsv", "p2q_rels_rest.tsv", "q2org_rels_human.tsv", "q2org_rels_rest.tsv"],
-      "outputs": ["p2q_rels.tsv", "q2org_rels.tsv"],
-      "methods": [{
-        "script": "SanXoT/concatenate.py",
-        "inputs":  { "--infiles": ["p2q_rels_human.tsv", "p2q_rels_rest.tsv"] },
-        "outputs": { "--outfile": "p2q_rels.tsv" }
-      },{
-        "script": "SanXoT/concatenate.py",
-        "inputs":  { "--infile": ["q2org_rels_human.tsv", "q2org_rels_rest.tsv"] },
-        "outputs": { "--outfile": "q2org_rels.tsv" }
-      }]
-    },{
-      "name": "peptide2protein",
-      "enabled": false,
+      "executor": "outdir_to_tmpdir",
+      "enabled": true,
       "threads": 3,
-      "description": "SanXoT node: peptide to protein",
-      "indir": "--WF__WKS__TMPDIR--",
-      "outdir": "--WF__WKS__TMPDIR--",
-      "inputs":  ["u_peptides.tsv", "p2q_rels.tsv"],
-      "outputs": ["peptides.tsv", "proteins.tsv"],
+      "inputs":  ["ID-q.tsv"],
+      "outputs": ["u_scans.tsv", "s2p_rels.tsv", "p2q_rels.tsv"],
+      "methods": [{
+        "script": "SanXoT/aljamia.py",
+        "inputs":  { "-x": "ID-q.tsv" },
+        "outputs": { "-o": "u_scans.tsv" },
+        "params":  "-i [Spectrum_File]-[Scan]-[Charge] -j [Xs_--TAG--_vs_--CONTROLTAG--] -k [Vs_--TAG--_vs_--CONTROLTAG--]"
+      },{
+        "script": "SanXoT/aljamia.py",
+        "inputs":  { "-x": "ID-q.tsv" },
+        "outputs": { "-o": "s2p_rels.tsv" },
+        "params":  "-i [SequenceMod] -j [Spectrum_File]-[Scan]-[Charge]"
+      },{
+        "script": "SanXoT/aljamia.py",
+        "inputs":  { "-x": "ID-q.tsv" },
+        "outputs": { "-o": "p2q_rels.tsv" },
+        "params":  "-i [Protein] -j [SequenceMod]"
+      }]
+    },{
+      "name": "klibrate",
+      "description": "SanXoT node: calibrate",
+      "executor": "on_tmpdir",
+      "enabled": true,
+      "threads": 3,
+      "inputs":  ["u_scans.tsv", "s2p_rels.tsv"],
+      "outputs": ["scans.tsv"],
       "methods": [{
         "script": "SanXoT/klibrate.py",
-        "inputs":  { "-d": "u_peptides.tsv" },
-        "params":  { "-a": "p2q", "-g": "" },
-        "outputs": { "-r": "p2q_rels.tsv", "-o": "peptides.tsv" }
+        "inputs":  { "-d": "u_scans.tsv" },
+        "outputs": { "-r": "s2p_rels.tsv", "-o": "scans.tsv" },
+        "params":  "-a s2p -g " 
+      }]  
+    },{
+      "name": "scan2peptide",
+      "description": "SanXoT node: scan to peptide",
+      "executor": "on_tmpdir",
+      "enabled": true,
+      "threads": 3,
+      "inputs":  ["scans.tsv", "s2p_rels.tsv"],
+      "outputs": ["peptides.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "scans.tsv", "-r": "s2p_rels.tsv" },
+        "params":  "-a s2p -g -b -s"
+      },{
+        "script": "SanXoT/sanxotsieve.py",
+        "inputs":  { "-d": "scans.tsv", "-r": "s2p_rels.tsv" },
+        "params":  "--PARAMS__FDR-- --PARAMS__VARIANCE--"
       },{
         "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "scans.tsv", "-r": "scans_tagged.tsv" },
+        "outputs": { "-o": "peptides.tsv" },
+        "params":  "-a s2p -g -f --PARAMS__VARIANCE--"
+      }]  
+    },{
+      "name": "peptide2protein",
+      "description": "SanXoT node: peptide to protein",
+      "executor": "on_tmpdir",
+      "enabled": true,
+      "threads": 3,
+      "inputs":  ["peptides.tsv", "p2q_rels.tsv"],
+      "outputs": ["proteins.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "peptides.tsv", "-r": "p2q_rels.tsv" },
-        "params":  { "-a": "p2q", "-g": "", "-b": "", "-s": "" }
+        "params":  "-a p2q -g -b -s"
       },{
         "script": "SanXoT/sanxotsieve.py",
         "inputs":  { "-d": "peptides.tsv", "-r": "p2q_rels.tsv" },
-        "params":  { "-f": "0.01", "-V": "p2q_infoFile.txt" }
+        "params":  "--PARAMS__FDR-- --PARAMS__VARIANCE--"
       },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "peptides.tsv", "-r": "peptides_tagged.tsv" },
+        "outputs": { "-o": "proteins.tsv" },
+        "params":  "-a p2q -g -f --PARAMS__VARIANCE--"
+      }]
+    },{
+      "name": "protein2category",
+      "description": "SanXoT node: protein to category",
+      "executor": "on_tmpdir",
+      "enabled": true,
+      "threads": 3,
+      "inputs":  ["proteins.tsv"],
+      "outputs": ["categories.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "proteins.tsv" },
+        "params":  "-a q2c -g -b -s -r \"--WF__INFILE__CAT--\""
+      },{
+        "script": "SanXoT/sanxotsieve.py",
+        "inputs":  { "-d": "proteins.tsv" },
+        "params":  "-r \"--WF__INFILE__CAT--\" --PARAMS__FDR-- --PARAMS__VARIANCE--"
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "proteins.tsv", "-r": "proteins_tagged.tsv" },
+        "outputs": { "-o": "categories.tsv" },
+        "params":  "-a q2c -g -f --PARAMS__VARIANCE--"
+      }]
+    },{
+      "name": "everything2all",
+      "description": "SanXoT node: peptide/protein/category to all",
+      "executor": "on_tmpdir",
+      "enabled": true,
+      "threads": 3,
+      "inputs":  ["peptides.tsv", "proteins.tsv", "categories.tsv"],
+      "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "methods": [{
         "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "peptides.tsv" },
-        "params":  { "-a": "p2q", "-g": "", "-f": "", "-r": "peptides_tagged.tsv", "-V": "p2q_infoFile.txt", "--tags": "!out" },
-        "outputs": { "-o": "proteins.tsv" }
-      }]  
-    },{
-      "name": "protein2all",
-      "enabled": false,
-      "threads": 3,
-      "description": "SanXoT node: protein to all",
-      "indir": "--WF__WKS__TMPDIR--",
-      "outdir": "--WF__WKS__TMPDIR--",
-      "inputs":  ["proteins.tsv", "q2org_rels.tsv"],
-      "outputs": ["q2a_outStats.tsv"],
-      "methods": [{
-        "script": "SanXoT/sanxot.py",
-        "inputs":  { "-d": "proteins.tsv", "-r": "q2org_rels.tsv" },
-        "params":  { "-a": "q2a", "-g": "", "-s": "", "--tags": "hsa" },
-        "outputs": { "-z": "q2a_outStats.tsv" }
-      }]  
-    },{
-      "name": "collector",
-      "enabled": false,
-      "threads": 1,
-      "description": "Merge the results of SanXoT nodes",
-      "indir": "--WF__WKS__TMPDIR--",
-      "outdir": "--WF__WKS__RSTDIR--",
-      "inputs":  ["q2a_outStats.tsv"],
-      "outputs": ["q2a_lowerNormV.tsv"],
-      "methods": [{
-        "script": "SanXoT/collector.py",
-        "params":  { "--indir":   "--WF__EXPTO__DIR--", "--regex": "q2a_lowerNormV.tsv" },
-        "outputs": { "--outfile": "q2a_lowerNormV.tsv" }
-      }]  
-    },{
-      "name": "sanxot",
-      "enabled": false,
-      "threads": 3,
-      "description": "Execute SanXoT methods within 'flexible' directory",
-      "indir": "--WF__WKS__RSTDIR--",
-      "outdir": "--WF__WKS__RSTDIR--",
-      "inputs":  ["q2a_lowerNormV.tsv"],
-      "outputs": ["protein_expto.tsv", "q2q_rels.tsv"],
-      "methods": [{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "q2a_lowerNormV.tsv" },
-        "params":  { "-i": "[idinf]-[Tag]", "-j": "[X'inf]", "-k": "[Vinf]", "-f": "[Expto]==B" },
-        "outputs": { "-o": "protein_expto.tsv" }
-      },{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "q2a_lowerNormV.tsv" },
-        "params":  { "-i": "[idinf]", "-j": "[idinf]-[Tag]", "-f": "[Expto]==B" },
-        "outputs": { "-o": "q2q_rels.tsv" }
-      }]
-    },{
-      "name": "sanxot",
-      "enabled": false,
-      "threads": 3,
-      "description": "Execute SanXoT methods within 'flexible' directory",
-      "indir": "--WF__OUTDIR--",
-      "outdir": "--WF__WKS__RSTDIR--",
-      "inputs":  ["ID-q.tsv"],
-      "outputs": ["q2org_rels_human.tsv", "q2org_rels_rest.tsv"],
-      "methods": [{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "1", "-j": "[Protein]", "-l": "hsa", "-f": "[Species]~~Homo sapiens" },
-        "outputs": { "-o": "q2org_rels_human.tsv" }
-      },{
-        "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
-        "params":  { "-i": "1", "-j": "[Protein]", "-l": "scere_ecoli", "-f": "[Species]!~Homo sapiens && [Species]!~#N/A && [Species]!=''" },
-        "outputs": { "-o": "q2org_rels_rest.tsv" }    
-      }]
-    },{
-      "name": "sanxot",
-      "enabled": false,
-      "threads": 3,
-      "description": "Execute SanXoT methods within 'flexible' directory",
-      "indir": "--WF__WKS__RSTDIR--",
-      "outdir": "--WF__WKS__RSTDIR--",
-      "inputs":  ["q2org_rels_human.tsv", "q2org_rels_rest.tsv"],
-      "outputs": ["q2org_rels.tsv"],
-      "methods": [{
-        "script": "SanXoT/concatenate.py",
-        "inputs":  { "--infile": ["q2org_rels_human.tsv", "q2org_rels_rest.tsv"] },
-        "outputs": { "--outfile": "q2org_rels.tsv" }
-      }]
-    },{
-      "name": "sanxot",
-      "enabled": false,
-      "threads": 3,
-      "description": "Execute SanXoT methods within 'flexible' directory",
-      "indir": "--WF__WKS__RSTDIR--",
-      "outdir": "--WF__WKS__RSTDIR--",
-      "inputs":  ["protein_expto.tsv", "q2q_rels.tsv", "q2org_rels.tsv"],
-      "outputs": ["proteins.tsv", "q2e_outStats.tsv"],
-      "methods": [{
-        "script": "SanXoT/sanxot.py",
-        "inputs":  { "-d": "protein_expto.tsv", "-r": "q2q_rels.tsv" },
-        "params":  { "-a": "q2q", "-g": "", "-b": "", "-s": "", "-f": "", "-v": "0" }
-      },{
-        "script": "SanXoT/sanxotsieve.py",
-        "inputs":  { "-d": "protein_expto.tsv", "-r": "q2q_rels.tsv" },
-        "params":  { "-f": "0.01", "-V": "q2q_infoFile.txt" }
-      },{
-        "script": "SanXoT/sanxot.py",
-        "inputs":  { "-d": "protein_expto.tsv" },
-        "params":  { "-a": "q2q", "-g": "", "-f": "", "-r": "protein_expto_tagged.tsv", "-V": "q2q_infoFile.txt", "--tags": "!out" },
-        "outputs": { "-o": "proteins.tsv" }
+        "outputs": { "-z": "p2a_outStats.tsv" },
+        "params":  "-a p2a -C -g "
       },{
         "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "proteins.tsv" },
-        "params":  { "-a": "q2e", "-g": "", "-s": "", "-r": "q2org_rels.tsv", "--tags": "hsa" },
-        "outputs": { "-z": "q2e_outStats.tsv" }  
+        "outputs": { "-z": "q2a_outStats.tsv" },
+        "params":  "-a q2a -C -g -f "
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "categories.tsv" },
+        "outputs": { "-z": "c2a_outStats.tsv" },
+        "params":  "-a c2a -C -g -f -v 0"
+      }]  
+    },{
+      "name": "collector",
+      "description": "Merge the results of SanXoT nodes",
+      "executor": "tmpdir_to_rstdir",
+      "enabled": true,
+      "threads": 1,
+      "inputs":  ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "methods": [{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "p2a_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex p2a_outStats.tsv"
+      },{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "q2a_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex q2a_outStats.tsv"
+      },{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "c2a_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex c2a_outStats.tsv"
       }]
     }]
   }

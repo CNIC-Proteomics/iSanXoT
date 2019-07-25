@@ -11,7 +11,9 @@ let header = ["experiment", "name", "ratio_numerator", "ratio_denominator", "s>p
 //   ['N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
 // ]
 
-let container = $('#hot').handsontable({
+// let hot = document.getElementById('hot');
+// let container = new Handsontable(hot, {
+let container = $('#hot').handsontable({  
 data: [[]],
 colHeaders: header,
 // colHeaders: true,
@@ -22,23 +24,28 @@ minSpareRows: 1,
 rowHeaders: true,
 contextMenu: true,
 manualColumnResize: true,
-// formulas: true,
-// manualRowMove: true,
-// manualColumnMove: true,
-// filters: true,
-// dropdownMenu: true,
-// mergeCells: true,
-// columnSorting: true,
-// sortIndicator: true,
-autoColumnSize: {
-    samplingRatio: 23
-}
+// formulas: false,
+// manualRowMove: false,
+// manualColumnMove: false,
+// filters: false,
+// dropdownMenu: false,
+// mergeCells: false,
+// columnSorting: false,
+// sortIndicator: false,
+// autoColumnSize: {
+//     samplingRatio: 23
+// },
 // fixedRowsTop: 2,
-// fixedColumnsLeft: 3        
+// fixedColumnsLeft: 3
+});
+
+$('a[id="tasktable-tab"]').on('shown.bs.tab', function (e) {
+  $('#hot').handsontable('render');
 });
 
 let smkfile = process.env.ISANXOT_SRC_HOME + '/wfs/wf_sanxot.smk';
-let cfgfile = process.env.ISANXOT_SRC_HOME + '/wfs/cfg/cfg_labelfree.json';
+// let cfgfile = process.env.ISANXOT_SRC_HOME + '/wfs/cfg/cfg_labelfree.json';
+let cfgfile = process.env.ISANXOT_SRC_HOME + '/wfs/cfg/cfg_labelfree_NOT_GENERAL.json';
 
 // We assign properties to the `module.exports` property, or reassign `module.exports` it to something totally different.
 // In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.

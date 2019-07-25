@@ -966,7 +966,13 @@ def main(argv):
 #######################################################
 
 if __name__ == "__main__":
+    # begin: jmrc
+    print("** {} - {} - start script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), " ".join([x for x in sys.argv]) ))
+    # end: jmrc
     main(sys.argv[1:])
+    # begin: jmrc
+    print("** {} - {} - end  script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), os.path.basename(__file__) ))
+    # end: jmrc
 	
 	
 
