@@ -24,12 +24,15 @@ let template = [
     { label: 'Advanced workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_adv`) } },
     { label: 'Label-Free workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } }
   ]},  
-  // { label: "Debug", submenu: [
-  //   { label: 'Reload', accelerator: 'Ctrl+R', click() { mainWindow.reload() } },
-  //   { label: 'Toggle Developer Tools', accelerator: 'Ctrl+D', click() { mainWindow.webContents.openDevTools() } }
-  // ]},
 ]
-
+// Add 'debugging' menu
+if (process.env.ISANXOT_MODE != "production") {
+  template.push({ label: "Debug", submenu: [
+    { label: 'Reload', accelerator: 'Ctrl+R', click() { mainWindow.reload() } },
+    { label: 'Toggle Developer Tools', accelerator: 'Ctrl+D', click() { mainWindow.webContents.openDevTools() } }
+  ]});
+}
+// create menu
 const menu = Menu.buildFromTemplate(template)
 
 function createWindow () {
@@ -47,13 +50,13 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
-  // // Remove console log in production mode
-  // if (process.env.ISANXOT_MODE == "production") {
-  //   console.log = function() {};
-  // }
-  // else { // Debug mode    
-  //   mainWindow.webContents.openDevTools()
-  // }
+  // Remove console log in production mode
+  if (process.env.ISANXOT_MODE == "production") {
+    console.log = function() {};
+  }
+  else { // Debug mode    
+    mainWindow.webContents.openDevTools()
+  }
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function (e) {
