@@ -57,8 +57,10 @@ def targetdecoy(df, tagDecoy):
     '''    
     z=list(df["Protein Accessions"].str.split(";"))
     p=[(all(tagDecoy  in item for item in i )) for i in z]
-    p=list(map(int, p))
-    return p    
+    # p=list(map(int, p))
+    # return p
+    r = [0 if i==True else 1 for i in p]
+    return r
 
 def Jumps(df, JumpsAreas):
     '''
@@ -153,6 +155,7 @@ def SequenceMod(df, mods):
     s = df.Modifications.replace(mods, regex=True)
     # create indexes list
     sn = list( s.replace({
+        'foo': '', # Due the test part of DASK
         '(\S*N-Term\S*)': '',
         '\([^)]*\)': '',
         '(\s)': '',
@@ -173,6 +176,21 @@ def SequenceMod(df, mods):
     x = ["".join(list(itertools.chain.from_iterable(list(itertools.zip_longest(i,j,fillvalue=''))))) for i,j in list(zip(f,sa))]
     return x
 
+# def FdrXc(df, FDRlvl):
+#     '''
+#     Calculate FDR and filter by cXcorr
+#     '''
+#     # df = df.sort_values(by="cXcorr", ascending=False)
+#     df = df.sort_values(by=["XCorr","T_D"], ascending=False)
+#     df["rank"] = df.groupby("T_D").cumcount()+1
+#     df["rank_T"] = np.where(df["T_D"]==0, df["rank"], 0)
+#     df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
+#     df["rank_D"] = np.where(df["T_D"]==1, df["rank"], 0)
+#     df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
+#     df["FdrXc"] = df["rank_D"]/df["rank_T"]
+#     df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR
+#     df = df[ df["T_D"] == 0 ] # discard decoy
+#     return df
 def FdrXc(df, FDRlvl):
     '''
     Calculate FDR and filter by cXcorr
@@ -180,13 +198,13 @@ def FdrXc(df, FDRlvl):
     # df = df.sort_values(by="cXcorr", ascending=False)
     df = df.sort_values(by=["XCorr","T_D"], ascending=False)
     df["rank"] = df.groupby("T_D").cumcount()+1
-    df["rank_T"] = np.where(df["T_D"]==0, df["rank"], 0)
+    df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
     df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
-    df["rank_D"] = np.where(df["T_D"]==1, df["rank"], 0)
+    df["rank_D"] = np.where(df["T_D"]==0, df["rank"], 0)
     df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
     df["FdrXc"] = df["rank_D"]/df["rank_T"]
-    df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR # CHANGE
-    df = df[ df["T_D"] == 0 ] # discard decoy # CHANGE
+    df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR
+    df = df[ df["T_D"] == 1 ] # discard decoy
     return df
 
 def pro(ddf, FDRlvl, mods, tagDecoy, Expt):
@@ -196,7 +214,8 @@ def pro(ddf, FDRlvl, mods, tagDecoy, Expt):
     # calculate FDR and filter by cXcorr
     ddf = FdrXc(ddf, FDRlvl)
     # extract modifications and replace for final values
-    ddf["SequenceMod"] = SequenceMod(ddf, mods)
+    if mods:
+        ddf["SequenceMod"] = SequenceMod(ddf, mods)
     # extract the redundance protein/genes discarding DECOY proteins
     ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
     # rename columns
@@ -221,6 +240,7 @@ def main(args):
     JumpsAreas = args.jump_areas
     Expt = args.expt.split(",")
     Expt.sort()
+    logging.debug(Expt)
 
   
     logging.info("extract the list of files from the given experiments")

@@ -196,4 +196,5 @@ def execute_methods(methods, indir, outdir, log, optparam=None, optrep=None, tmp
 
 
 # Config variables from the input data
-INDATA,INDATA_EXPTO,INDATA_NAMES = load_indata(INFILE_DAT)
+if INFILE_DAT and INFILE_DAT != "":
+    INDATA,INDATA_EXPTO,INDATA_NAMES = load_indata(INFILE_DAT)

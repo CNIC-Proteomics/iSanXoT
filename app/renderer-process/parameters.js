@@ -39,23 +39,28 @@ function exporttasktableCSV(tasktable) {
 
 // Create tasktable file
 function createtasktableFile(outdir) {
-    // export tasktable to CSV
-    try {
-        let tasktable = $("#hot").data('handsontable');
-        var cont = exporttasktableCSV(tasktable);
-    } catch (err) {
-        console.log(`Error exporting tasktable: ${err}`);
-        return false;
+    if ( !$(`#hot`).attr("discard") ) {
+        // export tasktable to CSV
+        try {
+            let tasktable = $("#hot").data('handsontable');
+            var cont = exporttasktableCSV(tasktable);
+        } catch (err) {
+            console.log(`Error exporting tasktable: ${err}`);
+            return false;
+        }
+        // write file sync
+        let file = outdir +'/'+ dtablefilename;
+        try {
+            fs.writeFileSync(file, cont, 'utf-8');
+        } catch (err) {    
+            console.log(`Error writing tasktable file: ${err}`);
+            return false;
+        }
+        return file;
     }
-    // write file sync
-    let file = outdir +'/'+ dtablefilename;
-    try {
-        fs.writeFileSync(file, cont, 'utf-8');
-    } catch (err) {    
-        console.log(`Error writing tasktable file: ${err}`);
-        return false;
+    else {
+        return "";
     }
-    return file;
 }
 
 
@@ -63,32 +68,43 @@ function createtasktableFile(outdir) {
 * Global functions
 */
 function getInFileDir(tid) {
-    let f = document.querySelector('#'+tid).value;
-    try {
-        if (!fs.existsSync(f)){
-            console.log(`given ${tid} does not exist: ${f}`);
+    if ( !$(`#${tid}`).attr("discard") ) {
+        let f = $(`#${tid}`).val();
+        try {
+            if (!fs.existsSync(f)){
+                console.log(`given ${tid} does not exist: ${f}`);
+                return false;
+            }
+        } catch (err) {    
+            console.log(`Error getting ${tid}: ${err}`);
             return false;
         }
-    } catch (err) {    
-        console.log(`Error getting ${tid}: ${err}`);
-        return false;
+        f = f.replace(/\\/g, "/");    
+        return f;
     }
-    f = f.replace(/\\/g, "/");    
-    return f;
+    else {
+        return "";
+    }
 } // end getInFileDir
 
 function createLocalDir(tid) {
-    let f = document.querySelector('#'+tid).value;
-    try {
-        if (!fs.existsSync(f)){
-            fs.mkdirSync(f);
-        }
-    } catch (err) {    
-        console.log(`Error creating local ${tid}: ${err}`);
-        return false;
-    }    
-    f = f.replace(/\\/g, "/");
-    return f;
+    if ( !$(`#${tid}`).attr("discard") ) {
+        // let f = document.querySelector('#'+tid).value;
+        let f = $(`#${tid}`).val();
+        try {
+            if (!fs.existsSync(f)){
+                fs.mkdirSync(f);
+            }
+        } catch (err) {    
+            console.log(`Error creating local ${tid}: ${err}`);
+            return false;
+        }    
+        f = f.replace(/\\/g, "/");
+        return f;
+    }
+    else {
+        return "";
+    }
 } // end createLocalDir
 
   
@@ -126,6 +142,42 @@ function replaceConsts(data) {
     return dta;
 } // end replaceTags
 
+function replaceConsts(data) {
+    //convert to JSON string
+    let sdta = JSON.stringify(data);
+    // replace constants
+    sdta = sdta.replace(/--WF__INDATA--/g, data["indata"]);
+    sdta = sdta.replace(/--WF__INDIR--/g, data["indir"]);
+    sdta = sdta.replace(/--WF__INFILE__NAMES--/g, data["infilenames"]);
+    sdta = sdta.replace(/--WF__INFILE__DB--/g, data["dbfile"]);
+    sdta = sdta.replace(/--WF__INFILE__CAT--/g, data["catfile"]);
+    sdta = sdta.replace(/--WF__OUTDIR--/g, data["outdir"]);
+    sdta = sdta.replace(/--WF__WKS__TMPDIR--/g, data["tmpdir"]);
+    sdta = sdta.replace(/--WF__WKS__RSTDIR--/g, data["rstdir"]);
+    sdta = sdta.replace(/--WF__WKS__LOGDIR--/g, data["logdir"]);
+    // convert back to array
+    let dta = JSON.parse(sdta);
+
+    return dta;
+} // end replaceTags
+
+function convertSelectedMethods(dismethods) {
+    // convert the selected methods in the checkbox
+    // into a list of task that would be applied in the workflow config fil
+    let methods = [];
+    let temp = {
+        'fdr': ['fdr'],
+        'pre_sanxot': ['pre_sanxot'],
+        'sanxot': ['aljamia','klibrate','scan2peptide','peptide2protein','protein2category','everything2all','collector']
+    };
+    for (var i = 0; i < dismethods.length; i++) {
+        let dismethod = dismethods[i];
+        if ( dismethod in temp ) {
+            methods = methods.concat(temp[dismethod]);
+        }
+    }
+    return methods;
+} // end convertSelectedMethods
 
 function createConfData(conf, params, func_addParams) {
     //file exists, get the contents
@@ -184,60 +236,46 @@ function createConfFile(data, outdir) {
     return [file, logfile];
 } // end createConfFile
 
+function endisConfMethod(data) {
+    // get the list of disable methods
+    let dismethods = [];    
+    $("#select-methods input:checkbox:not(:checked)").each(function(){
+        dismethods.push( this.id );
+    });
+    // check if all methods are disabled
+    metlength = $("#select-methods input:checkbox");
+    if ( metlength.length == dismethods.length ) {
+        console.log("All methods are disabled");
+        return false;
+    }
+    else {
+        // convert the list of checkbox methods to list of task methods
+        dismethods = convertSelectedMethods(dismethods);
+        // disable the methods in the config file
+        Object.entries(data["workflow"]["rules"]).forEach(([key, val]) => {
+            let name = val["name"];
+            if ( dismethods.includes(name) ) {
+                val["enabled"] = false;
+            }
+        });
+        return data;
+    }    
+} // end endisConfMethod
 
 // Export modules
 module.exports.createtasktableFile = createtasktableFile;
 module.exports.getInFileDir = getInFileDir;
 module.exports.createLocalDir = createLocalDir;
-module.exports.createConfFile = createConfFile;
 module.exports.addParamsInMethod = addParamsInMethod;
 module.exports.createConfData = createConfData;
 module.exports.createConfFile = createConfFile;
+module.exports.endisConfMethod = endisConfMethod;
 
 
 
 /*
- * Events
+ * Events for the general parameters: infile, indir, category file, database file
  */
-
-$("#select-methods :checkbox").on("change", function(){
-    if($(this).is(":checked")){
-        // Enable methods
-        $("#select-methods :checkbox").prop('disabled', false);
-        if( this.id == "fdr" ) {
-            // Show tab for the current method
-            $('a#params-pratio-tab').show();
-        }
-        else if( this.id == "pre_sanxot" ) {
-            // Show tab for the current method
-            $('a#tasktable-tab').show();
-        }
-        else if( this.id == "sanxot" ) {
-            // Show tab for the current method
-            $('a#tasktable-tab').show();
-        }
-    }
-    else if($(this).is(":not(:checked)")) {
-        // Disable methods depending on which one
-        if( this.id == "fdr" ) {
-            $("#select-methods :checkbox").prop('disabled', true);
-            $(`#select-methods #${this.id}`).prop('disabled', false);
-            // Hide tab for the current method and the disabled methods
-            $(`a#params-pratio-tab`).hide();
-        }
-        else if( this.id == "pre_sanxot" ) {
-            $("#select-methods :checkbox").prop('disabled', true);
-            $(`#select-methods #${this.id}`).prop('disabled', false);
-            $(`#select-methods #fdr`).prop('disabled', false);
-            // Hide tab for the current method and the disabled methods
-            $(`a#tasktable-tab`).hide();
-        }
-        else if( this.id == "sanxot" ) {
-            // Hide tab for the current method and the disabled methods
-            $(`a#tasktable-tab`).hide();
-        }
-    }
-});
 if ( document.getElementById('select-indir') !== null ) {
     document.getElementById('select-indir').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {

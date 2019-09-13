@@ -3,11 +3,16 @@ if (process.env.ISANXOT_MODE == "production") {
     console.log = function() {};
 }
 
-// Get workflow id
-let wfid = window.location.href.split("wfid=")[1];
-// Import workflow template
+// Import libraries
 let fs = require('fs');
 let path = require('path');
+
+// Get workflow id
+let wfid = window.location.href.split("wfid=")[1];
+var url = window.location.pathname;
+var filename = path.basename(url,'.html');
+
+// Import workflow template
 function importHTMLtemplate(wfhref) {
     var tid = path.basename(wfhref, '.html');
     if ( document.querySelector(`#${tid}`) !== null ) {
@@ -54,4 +59,11 @@ if ( wfid !== undefined ) {
     module.exports.tasktable = tasktable;
     module.exports.parameters = parameters;
 }
+else {
+    if ( filename == "processes" ) {
+        // add the module to process the jobs
+        require('./processor');
+    }
+}
+
 

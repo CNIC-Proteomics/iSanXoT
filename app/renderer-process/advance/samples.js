@@ -66,6 +66,29 @@ if ( document.getElementById('sample2') !== null ) {
     tt.container.handsontable('loadData', dtatest2);
   },false);  
 }
+if ( document.getElementById('sample3') !== null ) {
+  function disable_checkbox_method(id) {
+    $(`${id}`).prop('disabled', true);
+    $(`${id}`).prop('checked', false);
+  }
+  function discard_parameter(id) {
+      $(`div[name="${id}"]`).hide();
+      $(`#${id}`).attr("discard",true);
+  }
+
+  document.getElementById('sample3').addEventListener('click', function(){    
+    document.getElementById('indir').value = "D:\\projects\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
+    document.getElementById('outdir').value = "D:\\projects\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_wf_results_test_pratio";
+    disable_checkbox_method(`#select-methods #pre_sanxot`);
+    disable_checkbox_method(`#select-methods #sanxot`);
+    $(`a#tasktable-tab`).hide();
+    discard_parameter('hot');
+    discard_parameter('select-catfile');
+    discard_parameter('catfile');
+    discard_parameter('def-species');
+    document.getElementById('experiments').value = "TMT1,TMT2";
+},false);  
+}
 
 if ( document.getElementById('sample-clear') !== null ) {
   document.getElementById('sample-clear').addEventListener('click', function(){    

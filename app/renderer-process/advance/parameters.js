@@ -31,10 +31,22 @@ function addParams(data) {
     }
     if (document.querySelector('#hot')) {
         // get the list of unique experiments
-        let tasktable = $("#hot").data('handsontable')
+        let tasktable = $("#hot").data('handsontable');
         let expts = tasktable.getDataAtCol(0).filter(unique);
-        let val = expts.sort().join(",");
-        parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);
+        if ( expts.length > 0 ) {
+            let val = expts.sort().join(",");
+            parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);    
+        }
+        else if (document.querySelector('#experiments') && document.querySelector('#experiments').value != "") {
+            let val = document.querySelector('#experiments').value;
+            parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
     }
 
     return data
@@ -43,32 +55,32 @@ function addParams(data) {
 function createParameters(conf) {
     let params = {};
 
-    // get input directory
+    // REQUIRED: get input directory
     let indir = parametor.getInFileDir('indir');
     if ( !indir ) {
         exceptor.showMessageBox('Error Message', 'Input directory is required');
         return false;
     }
     else { params.indir = indir }
-    // get and create check and get: output directory
+    // REQUIRED: get and create check and get: output directory
     let outdir = parametor.createLocalDir('outdir');
     if ( !outdir ) {
         exceptor.showMessageBox('Error Message', 'Output directory is required');
         return false;
     }
     else { params.outdir = outdir }
-    // create tasktable file
+    // OPTIONAL: create tasktable file
     let dtablefile = parametor.createtasktableFile(outdir); 
-    if ( !dtablefile ) {
-        exceptor.showMessageBox('Error Message', 'Creating tasktable file');
-        return false;
-    }
-    // create category file
+    // if ( !dtablefile ) {
+    //     exceptor.showMessageBox('Error Message', 'Creating tasktable file');
+    //     return false;
+    // }
+    // OPTIONAL: create category file
     let catfile = parametor.getInFileDir('catfile');
-    if ( !catfile ) {
-        exceptor.showMessageBox('Error Message', 'Category file is required');
-        return false;
-    }
+    // if ( !catfile ) {
+    //     exceptor.showMessageBox('Error Message', 'Category file is required');
+    //     return false;
+    // }
     // create the config data
     let cfgdata = parametor.createConfData(conf, {
         'indir': indir,
@@ -78,6 +90,12 @@ function createParameters(conf) {
     }, addParams);
     if ( !cfgdata ) {
         exceptor.showMessageBox('Error Message', 'Creating config data');
+        return false;
+    }
+    // Enable-Disable methods
+    cfgdata = parametor.endisConfMethod(cfgdata);
+    if ( !cfgdata ) {
+        exceptor.showMessageBox('Error Message', 'All methods are disabled');
         return false;
     }
     // Create Config file
@@ -93,9 +111,90 @@ function createParameters(conf) {
     // get: num threads
     params.nthreads = document.querySelector('#nthreads').value;
 
+
     return params;
 }
 
 // Export modules
 module.exports.createParameters = createParameters;
 
+/*
+ * Events for the local parameters
+ */
+
+function enable_checkbox_method(id) {
+    $(`${id}`).prop('disabled', false);
+    $(`${id}`).prop('checked', true);
+}
+function disable_checkbox_method(id) {
+    $(`${id}`).prop('disabled', true);
+    $(`${id}`).prop('checked', false);
+}
+function accept_parameter(id) {
+    $(`div[name="${id}"]`).show();
+    $(`#${id}`).attr("discard",false);
+}
+function discard_parameter(id) {
+    $(`div[name="${id}"]`).hide();
+    $(`#${id}`).attr("discard",true);
+}
+
+$("#select-methods :checkbox").on("change", function(){
+    if($(this).is(":checked")){
+        // Enable methods
+        $("#select-methods :checkbox").prop('disabled', false);
+        if( this.id == "fdr" ) {
+            // enable the other methods
+            // enable_checkbox_method(`#select-methods #pre_sanxot`);
+            // enable_checkbox_method(`#select-methods #sanxot`);
+            // Show tab for the current method
+            $('a#params-pratio-tab').show();
+        }
+        else if( this.id == "pre_sanxot" ) {
+            // enable the other methods
+            // enable_checkbox_method(`#select-methods #sanxot`);
+            // Show tab for the current method
+            $('a#tasktable-tab').show();
+            // Accept the following parameters
+            accept_parameter('hot');
+        }
+        else if( this.id == "sanxot" ) {
+            // Show tab for the current method
+            $('a#tasktable-tab').show();
+            // Accept the following parameters
+            accept_parameter('select-catfile');
+            accept_parameter('catfile');
+            accept_parameter('def-species');
+        }
+    }
+    else if($(this).is(":not(:checked)")) {
+        // Disable methods depending on which one
+        if( this.id == "fdr" ) {
+            // disaable the other methods
+            disable_checkbox_method(`#select-methods #pre_sanxot`);
+            disable_checkbox_method(`#select-methods #sanxot`);
+            // Hide tab for the current method and the disabled methods
+            $(`a#params-pratio-tab`).hide();
+            // Discard the following parameters
+            discard_parameter('hot');
+        }
+        else if( this.id == "pre_sanxot" ) {
+            // disaable the other methods
+            disable_checkbox_method(`#select-methods #sanxot`);
+            // Hide tab for the current method and the disabled methods
+            $(`a#tasktable-tab`).hide();
+            // Discard the following parameters
+            discard_parameter('select-catfile');
+            discard_parameter('catfile');
+            discard_parameter('def-species');
+        }
+        else if( this.id == "sanxot" ) {
+            // Hide tab for the current method and the disabled methods
+            // $(`a#tasktable-tab`).hide();
+            // Discard the following parameters
+            discard_parameter('select-catfile');
+            discard_parameter('catfile');
+            discard_parameter('def-species');
+        }
+    }
+});

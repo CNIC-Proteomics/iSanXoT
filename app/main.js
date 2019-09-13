@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, Menu, BrowserWindow, ipcMain } = require('electron')
+const { app, Menu, BrowserWindow, ipcMain } = require('electron');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -40,12 +40,12 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true
     },
+    // resizable: false,
     icon: __dirname + '/assets/icons/molecule.png'
   })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-  // mainWindow.loadURL(`file://${__dirname}/index.html`)  
 
   // Remove console log in production mode
   if (process.env.ISANXOT_MODE == "production") {
@@ -91,17 +91,26 @@ app.on('window-all-closed', function () {
   // kill all processes
   console.log("** kill all processes");
   console.log( all_pids );
-  // all_pids['c_pids'].forEach(function(pids) {
-  //   pids.forEach(function(pid) {
-  //     // kill the process
-  //     console.log(`${pid} has been killed!`);
-  //     process.kill(pid);
-  //   });  
-  // });
-  // all_pids['pids'].forEach(function(pid) {
-  //   console.log(`${pid} main-process has been killed!`);
-  //   process.kill(pid);
-  // });
+  all_pids['c_pids'].forEach(function(pids) {
+    pids.forEach(function(pid) {
+      try {
+        console.log(`${pid} has been killed!`);
+        process.kill(pid);
+      }
+      catch (e) {
+        console.log(`error killing ${pid}: ${e}`);
+      }
+    });  
+  });
+  all_pids['pids'].forEach(function(pid) {
+    try {
+      console.log(`${pid} main-process has been killed!`);
+      process.kill(pid);
+    }
+    catch (e) {
+      console.log(`error killing ${pid}: ${e}`);
+    }
+  });
 });
 
 app.on('activate', function () {
@@ -126,18 +135,6 @@ ipcMain.on('load-page', function(event, arg) {
 // Get the PIDs
 ipcMain.on('send-pids', function(event, arg) {
   console.log('receive pids');
-});  
-
-
-// Get the PIDs
-ipcMain.on('send-pid', function(event, arg) {
-  console.log('receive pids');
   console.log(arg);
-  all_pids['pids'].push(arg);
-});  
-
-// Get the PIDs
-ipcMain.on('send-spid', function(event, arg) {
-  console.log(arg);
-  all_pids['c_pids'].push(arg);
+  all_pids = arg;
 });  

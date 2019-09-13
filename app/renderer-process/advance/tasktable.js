@@ -4,40 +4,22 @@
 
 let header = ["experiment", "name", "ratio_numerator", "ratio_denominator", "s>p FDR", "p>q FDR", "q>c FDR","s>p Var(x)", "p>q Var(x)", "q>c Var(x)"];
 
-// // nestedHeaders: [
-// //   ['A', {label: 'B', colspan: 8}, 'C'],
-// //   ['D', {label: 'E', colspan: 4}, {label: 'F', colspan: 4}, 'G'],
-// //   ['H', {label: 'I', colspan: 2}, {label: 'J', colspan: 2}, {label: 'K', colspan: 2}, {label: 'L', colspan: 2}, 'M'],
-// //   ['N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
-// // ]
-
-// let hot = document.getElementById('hot');
-// let container = new Handsontable(hot, {
-let container = $('#hot').handsontable({  
-data: [[]],
-colHeaders: header,
-// colHeaders: true,
-// nestedHeaders: header,
-minRows: 2,
-minCols: header.length,
-minSpareRows: 1,
-rowHeaders: true,
-contextMenu: true,
-manualColumnResize: true,
-// formulas: false,
-// manualRowMove: false,
-// manualColumnMove: false,
-// filters: false,
-// dropdownMenu: false,
-// mergeCells: false,
-// columnSorting: false,
-// sortIndicator: false,
-// autoColumnSize: {
-//     samplingRatio: 23
-// },
-// fixedRowsTop: 2,
-// fixedColumnsLeft: 3
+let container = $('#hot').handsontable({
+  data: [[]],
+  colWidths: 100,
+  width: '100%',
+  height: 590,
+  rowHeights: 23,
+  rowHeaders: true,
+  colHeaders: header,
+  minRows: 2,
+  minCols: header.length,
+  minSpareRows: 1,
+  contextMenu: true,
+  manualColumnResize: true,
+  licenseKey: 'non-commercial-and-evaluation'
 });
+
 
 $('a[id="tasktable-tab"]').on('shown.bs.tab', function (e) {
   $('#hot').handsontable('render');

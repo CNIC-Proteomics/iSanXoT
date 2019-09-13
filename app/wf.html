@@ -5,7 +5,7 @@
     <title>iSanXoT!</title>
     <!-- Imports CSS -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/handsontable.full.min.css">
+    <link rel="stylesheet" href="assets/css/handsontable-7.1.1.full.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <!-- Imports JS -->
     <script>
@@ -14,7 +14,7 @@
     <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
     <script src="assets/js/popper.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/handsontable.full.min.js"></script>
+    <script src="assets/js/handsontable-7.1.1.full.min.js"></script>
     <script src="assets/js/underscore-min.js"></script>
     <script>
       if (window.module) module = window.module;
@@ -30,8 +30,8 @@
   <footer><div class="footer" id="footer"></div></footer>
 
   <script>
-    // Global processes
-    var importer = require('./renderer-process/imports');
+    // Import the templates and global processes
+    require('./renderer-process/imports');
     // Print the version
     document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
   </script>

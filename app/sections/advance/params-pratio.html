@@ -1,12 +1,17 @@
 <template class="task-template" id="params-pratio">
   <section class="tab-content">
 
-    <div class="form-group row col-md-3">
+    <div class="form-group row col-md-4 experiments">
+      <label for="experiments">Experiments</label>
+      <input class="form-control" type="text" id="experiments" value="">
+    </div>
+
+    <div class="form-group row col-md-4">
       <label for="deltaMassThreshold">Write the threshold of the Delta Mass:</label>
       <input type="number" class="form-control" id="deltaMassThreshold" step="1" value="15" data-bind="value:replyNumber">
     </div>
 
-    <div class="form-group row col-md-3">
+    <div class="form-group row col-md-4">
       <label for="deltaMassAreas">Select the Delta Mass Areas, number of jumps (1, 3 or 5):</label>
       <select class="form-control" id="deltaMassAreas">
         <option value="1">1</option>
@@ -15,7 +20,7 @@
       </select>
     </div>
 
-    <div class="form-group row col-md-3">
+    <div class="form-group row col-md-4">
       <label for="tagDecoy">Write the label which describe your decoy sequences:</label>
       <input type="text" class="form-control" id="tagDecoy" value="_INV_">
     </div>
