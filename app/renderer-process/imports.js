@@ -27,8 +27,10 @@ function importHTMLtemplate(wfhref) {
 // Import main templates
 importHTMLtemplate(`${__dirname}/../sections/footer.html`);
 importHTMLtemplate(`${__dirname}/../sections/executor.html`);
+importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
-importHTMLtemplate(`${__dirname}/../sections/processes.html`);
+importHTMLtemplate(`${__dirname}/../sections/logger.html`);
+importHTMLtemplate(`${__dirname}/../sections/loader.html`);
 importHTMLtemplate(`${__dirname}/../sections/advance/help_adv.html`);
 importHTMLtemplate(`${__dirname}/../sections/lblfree/help_lblfree.html`);
 
@@ -52,8 +54,9 @@ if ( wfid !== undefined ) {
         var parameters = require('./lblfree/parameters');
         require('./lblfree/samples');
     }
-    // add the module to process the jobs
-    require('./processor');
+    // add the module to execute the jobs
+    // require('./processor');
+    require('./executor');
 
     // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
     module.exports.tasktable = tasktable;

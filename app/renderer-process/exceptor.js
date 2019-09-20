@@ -8,6 +8,23 @@ function showMessageBox(head, message, end=false) {
   }
 };
 
-// We assign properties to the `module.exports` property, or reassign `module.exports` it to something totally different.
-// In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
-module.exports.showMessageBox = showMessageBox;
+function loadingWorkflow() {
+  $(`.loading-page`).show();
+  $(document.body).css({'cursor' : 'wait'});
+  $(`#main`).css({'opacity' : 0.5});
+  $(`#executor`).css({'opacity' : 0.5});
+}
+
+function stopLoadingWorkflow() {
+  $(`.loading-page`).hide();
+  $(document.body).css({'cursor' : 'default'});
+  $(`#main`).css({'opacity' : 1});
+  $(`#executor`).css({'opacity' : 1});
+}
+
+// Exporting modules
+module.exports = {
+  showMessageBox:      showMessageBox,
+  loadingWorkflow:     loadingWorkflow,
+  stopLoadingWorkflow: stopLoadingWorkflow
+};

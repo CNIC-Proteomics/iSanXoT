@@ -1,21 +1,16 @@
 /*
   Global variables
 */
-const { ipcRenderer } = require('electron');
-let cProcess = require('child_process');
-let psTree = require(process.env.ISANXOT_NODE_PATH + '/ps-tree');
-let proc = null;
-let resizeId = null;
-let path = require('path');
-let importer = require('./imports');
 let exceptor = require('./exceptor');
-let logger = require('./logger');
+let sessioner = require('./sessioner');
+const { ipcRenderer } = require('electron');
+let psTree = require(process.env.ISANXOT_NODE_PATH + '/ps-tree');
+let fs = require('fs');
+let path = require('path');
+let resizeId = null;
 
 /* Firing resize event only when resizing is finished */
 function doneResizing() {
-    // by default:
-    // width: 1600,
-    // height: 850,
     // resize table from the window size
     let winwidth = $(window).width();
     let winheight = $(window).height();
@@ -33,8 +28,9 @@ $(window).resize(function() {
     resizeId = setTimeout(doneResizing, 250);
 });
 
-
 window.onload = function(e) {
+    // stop loading workflow
+    exceptor.stopLoadingWorkflow();
     // extract the session info    
     let pids = JSON.parse( window.sessionStorage.getItem("pids") );
     let logs = JSON.parse( window.sessionStorage.getItem("logs") );
@@ -72,177 +68,173 @@ window.onload = function(e) {
 };
 
 /* LOGGER SECTION */
-
-function createLogPanel(logpanel) {
-    let logdata = [];
-    if ( $('#hot_processes').length ) {
-        for (var i = 0; i < logpanel.length; i++) {
-            let pid = logpanel[i].pid;
-            let log = logpanel[i].file;
-            let wf  = logpanel[i].name;
-            logdata.push({
-                selected: null,
-                'pid': pid,
-                'workflow': wf,
-                'method': null,
-                'stime': null,
-                'etime': null,
-                'path': log,
-                __children: []
-            });
-        }
-        $('#hot_processes').handsontable({
-            data: logdata,
-            colHeaders: ['Selected', 'PID', 'Workflow', 'Methods', 'Start time', 'End time', 'Path'],
-            columns: [{            
-                data: 'selected',
-                type: 'checkbox'
-            },{
-                data: 'pid'
-            },{
-                data: 'workflow'
-            },{
-                data: 'method'
-            },{
-                data: 'stime'
-            },{
-                data: 'etime'
-            },{
-                data: 'path'
-            }],
-            rowHeaders: true,
-            nestedRows: true,
-            width: '100%',
-            height: 590,
-            licenseKey: 'non-commercial-and-evaluation'
-        });    
-    }
+const STATUS = {
+    1: 'starting',
+    2: 'running',
+    3: 'finished',
+    4: 'error',
+    5: 'stopped',
+    6: 'succesdfully'
 }
+// make Promise version of fs.readFile()
+fs.readFileAsync = function(filename, enc) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(filename, enc, function(err, data){
+            if (err) 
+                reject(err); 
+            else
+                resolve(data);
+        });
+    });
+};
+
+class logger {
+    constructor(logs) {
+        // accepts the init structure
+        //     [{
+        //     'pid': 'integer',
+        //     'name': 'string',
+        //     'status': 'integer',
+        //     'file': 'file',
+        //     }]
+        // init log structure
+        // get the list of pids and files
+        this.data = logs;
+        this.files = this.data.map(a => a.file);
+        this.pids = this.data.map(a => a.pid);
+
+    }
+    // utility function, return Promise
+    _getFile(filename) {
+        return fs.readFileAsync(filename, 'utf8');
+    }
+    _parseDate(date) {
+        let d  = new Date( date.toString().replace(/\[|\]/g,'') );
+        let d2 = `${d.getFullYear()}-${(d.getMonth()+1)}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+        return d2;
+    }
+    // parse text file
+    parseLogText(self, i, cont) {
+        // get current data log
+        let data = self[i];
+        // get the log content
+        let blocks = cont.split(/(\n\r){1,}/g);
+        // get log variables for the root process
+        if ( blocks.length >= 1 ) { data.status = 'running' }
+        data.selected = null;
+        data.perc   = '0.1%';
+        data.stime  = '-';
+        data.etime  = '-';
+        data.path  = path.dirname(data.file);
+        // get log variables for the sub-processes
+        data.__children = [];
+        for (var i = 0; i < blocks.length; i++) {
+            let block = blocks[i];
+            if ( block.search(/^\s+$/) == -1 ) {
+                let time = block.match(/\[.*?\]/g);
+                if ( i == 2 && time ) { data.stime = this._parseDate(time) };
+                if ( block.includes("Complete log") ) {
+                    data.status = 'finished';
+                    data.perc   = '100%';
+                    if ( time ) { data.etime = this._parseDate(time) };
+                }
+                let steps = block.match(/\s*steps\s*\(.*?\)/g);
+                if ( steps ) {
+                    let perc = block.match(/\(.*?\)/g);
+                    perc = perc.toString().replace(/\(|\)/g,'')
+                    data.perc = perc;
+                }
+            }
+        }
+    }
+    // create panel
+    createLogPanel(id) {
+        // read all the files using Promise.all to time when all async readFiles has completed.
+        let that = this;
+        let that_data = this.data;
+        Promise.all(this.files.map(this._getFile)).then(function(conts) {
+            for (var i = 0; i < that.pids.length; i++) {
+                that.parseLogText(that_data, i, conts[i]);
+            }
+            // create log table
+            $(`#${id}`).handsontable({
+                data: that_data,
+                colHeaders: ['Selected', 'PID', 'Workflow', 'Status', '%', 'Start time', 'End time', 'Path'],
+                columns: [{            
+                    data: 'selected',
+                    type: 'checkbox',
+                    className: "htCenter",
+                },{
+                    data: 'pid',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'name',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'status',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'perc',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'stime',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'etime',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'path',
+                    readOnly: true,
+                }],
+                rowHeaders: true,
+                // nestedRows: true,
+                width: '100%',
+                height: 590,
+                licenseKey: 'non-commercial-and-evaluation'
+            });
+        });
+    }    
+};
+
 
 function refreshLogger() {
-    let logpanel = [];
     // extract the session info
     let pids = JSON.parse( window.sessionStorage.getItem("pids") );
     let logs = JSON.parse( window.sessionStorage.getItem("logs") );
     let wfs  = JSON.parse( window.sessionStorage.getItem("wfs") );
-
+    let status = 1; // init the status
     // refresh the ids of child process from the pids
+    let logpanel = [];
     if ( pids !== null && logs !== null && pids.length == logs.length ) {
         for (var i = 0; i < pids.length; i++) {
             let pid = parseInt(pids[i]);
-            let log = logs[i];
-            let wf  = wfs[i];
-            let l = new logger.log(pid, log, wf);
-            logpanel.push(l);
+            let file = logs[i];
+            let name  = wfs[i];
+            logpanel.push({
+                'pid': pid,
+                'name': name,
+                'status': status,
+                'file': file,
+            });
         }
     }
-
-    // create Panel
-    createLogPanel(logpanel);
+    // create log Panel
+    let l = new logger(logpanel);
+    l.createLogPanel('hot_processes');
+    // refresh log panel
+    setTimeout(refreshLogger, 10000);
 }
-
-/* SESSION SECTION */
-
-// Add info to session
-function addProcToSession(pid, log, wf) {
-    // extract the session info
-    let pids = JSON.parse( window.sessionStorage.getItem("pids") );
-    let logs = JSON.parse( window.sessionStorage.getItem("logs") );
-    let wfs  = JSON.parse( window.sessionStorage.getItem("wfs") );
-    // create list of data
-    if ( pids === null ) { // init        
-        pids = [pid];
-        logs = [log];
-        wfs  = [wf];
-    }
-    else {
-        ipcRenderer.send('send-pid', pid);
-        pids.push(pid);
-        logs.push(log);
-        wfs.push(wf);
-    }
-    // save session info
-    window.sessionStorage.setItem("pids", JSON.stringify(pids));
-    window.sessionStorage.setItem("logs", JSON.stringify(logs));
-    window.sessionStorage.setItem("wfs",  JSON.stringify(wfs));
-};
-
-// Save the process id in the session storage
-function addProcessesToSession(pid, log, cfg) {
-    // get the name of workflow
-    let wfname = path.basename(cfg, '.json');
-
-    // the actual pid is for the CMD (shell). Then...
-    // get the pid for the first child process => the script pid
-    psTree(pid, function (err, children) {
-        for (var i = 0; i < children.length; i++) {
-            let p = children[i];
-            console.log(`${i} => ${p.PID}`);
-            if ( i == 0) {
-                console.log(p.PID);
-                // save the process id in the session storage
-                addProcToSession(p.PID, log, wfname)
-                // go to procceses section
-                ipcRenderer.send('load-page', `${__dirname}/../processes.html`);
-                break;
-            }
-        }
-    });
-};
-
-/* EXECUTION SECTION */
-
-// Exec process
-function execProcess(cmd, log, cfg) {
-    // eexecute command line
-    proc = cProcess.exec(cmd);
-
-    // save the process id in the session storage
-    addProcessesToSession(proc.pid, log, cfg);
-
-    // Handle on stderr
-    proc.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
-      exceptor.showMessageBox('Error Message', `${data}`);
-    });
-  
-    // Handle on exit event
-    proc.on('close', (code) => {
-        var preText = `Child exited with code ${code} : `;
-        console.info(preText);
-    });  
-};
-
 
 
 /*
  * Events
  */
-// Execute process
-if ( document.querySelector('#executor #start') !== null ) {
-    document.querySelector('#executor #start').addEventListener('click', function() {
-      // get the type of Workflow
-      let smkfile = importer.tasktable.smkfile;
-      let cfgfile = importer.tasktable.cfgfile;
-      // Check and retrieves parameters depending on the type of workflow
-      let params = importer.parameters.createParameters(cfgfile);
-      if ( params ) {
-        // Execute the workflow
-        let cmd_smk    = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" --rerun-incomplete`;
-        let cmd_unlock = `${cmd_smk} --unlock `;
-        let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;
-        // Sync process that Unlock the output directory
-        // First we unlock the ouput directory
-        let cmd1 = `${cmd_unlock} && ${cmd_clean}`
-        console.log(cmd1);
-        cProcess.execSync(cmd1);
-        // Then, we execute the workflow
-        let cmd2 = `${cmd_smk} > "${params.logfile}" 2>&1`;
-        console.log(cmd2);
-        execProcess(cmd2, params.logfile, cfgfile);
-      }
-    });
-}
 
 // Kill processes
 if ( document.querySelector('#processor #stop') !== null ) {
@@ -364,3 +356,4 @@ if ( document.querySelector('#processor #stop') !== null ) {
 //         licenseKey: 'non-commercial-and-evaluation'
 //         });        
 // }
+
