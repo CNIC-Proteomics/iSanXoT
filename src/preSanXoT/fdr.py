@@ -23,6 +23,7 @@ import dask.dataframe as dd
 from dask.delayed import delayed
 from distributed import Client
 import xml.etree.ElementTree as etree
+import shutil
 
 
 
@@ -176,26 +177,10 @@ def SequenceMod(df, mods):
     x = ["".join(list(itertools.chain.from_iterable(list(itertools.zip_longest(i,j,fillvalue=''))))) for i,j in list(zip(f,sa))]
     return x
 
-# def FdrXc(df, FDRlvl):
-#     '''
-#     Calculate FDR and filter by cXcorr
-#     '''
-#     # df = df.sort_values(by="cXcorr", ascending=False)
-#     df = df.sort_values(by=["XCorr","T_D"], ascending=False)
-#     df["rank"] = df.groupby("T_D").cumcount()+1
-#     df["rank_T"] = np.where(df["T_D"]==0, df["rank"], 0)
-#     df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
-#     df["rank_D"] = np.where(df["T_D"]==1, df["rank"], 0)
-#     df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
-#     df["FdrXc"] = df["rank_D"]/df["rank_T"]
-#     df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR
-#     df = df[ df["T_D"] == 0 ] # discard decoy
-#     return df
 def FdrXc(df, FDRlvl):
     '''
     Calculate FDR and filter by cXcorr
     '''
-    # df = df.sort_values(by="cXcorr", ascending=False)
     df = df.sort_values(by=["XCorr","T_D"], ascending=False)
     df["rank"] = df.groupby("T_D").cumcount()+1
     df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
@@ -259,16 +244,19 @@ def main(args):
 
 
     logging.info("processing the data dividing by experiments")
-    client = Client(n_workers=args.n_workers)
-    ddf = ddf.set_index('Experiment')
-    Exptr=Expt+[Expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
-    ddf = ddf.repartition(divisions=Exptr)
+    with Client(n_workers=args.n_workers) as client:
+        ddf = ddf.set_index('Experiment')
+        Exptr=Expt+[Expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
+        ddf = ddf.repartition(divisions=Exptr)
 
+        logging.info("map partitions")
+        d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt)
+        d = d.compute()
+        d.to_csv( args.outfile, sep="\t")
 
-    logging.info("map partitions")
-    d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt)
-    d = d.compute()
-    d.to_csv( args.outfile, sep="\t")
+    logging.info("remove temporal directory")
+    tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
+    shutil.rmtree(tmp_dir)
 
 
 
