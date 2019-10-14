@@ -26,7 +26,7 @@ $('a[id="tasktable-tab"]').on('shown.bs.tab', function (e) {
 });
 
 let smkfile = process.env.ISANXOT_SRC_HOME + '/wfs/wf_sanxot.smk';
-let cfgfile = process.env.ISANXOT_SRC_HOME + '/wfs/cfg/cfg_advance.json';
+let cfgfile = process.env.ISANXOT_SRC_HOME + '/wfs/cfg/cfg_basic.json';
 
 // We assign properties to the `module.exports` property, or reassign `module.exports` it to something totally different.
 // In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.

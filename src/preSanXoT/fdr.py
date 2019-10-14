@@ -86,17 +86,17 @@ def Jumps(df, JumpsAreas):
 
     return Deltamass,x
 
-def cXcorr(df):
+def cXCorr(df):
     '''
-    Calculate cXcorr
+    Calculate cXCorr
     '''
     rc=np.where(df['Charge']>=3, '1.22', '1').astype(float)
-    cXcorr1= np.log(df.XCorr/rc)/np.log(2*df.Sequence.str.len())
-    return cXcorr1
+    cXCorr1= np.log(df.XCorr/rc)/np.log(2*df.Sequence.str.len())
+    return cXCorr1
 
 def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     '''
-    Pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXcorr
+    Pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr
     '''    
     # read input file
     df = pd.read_csv(file, sep="\t")
@@ -112,8 +112,8 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     # correct monoisotopic mass
     df["JDeltaM [ppm]"],df["JDeltaM"] = Jumps(df, JumpsAreas)
     df = df[ df["JDeltaM [ppm]"].abs() <= deltaMassThreshold ]
-    # calculate cXcorr
-    df["cXcorr"] = cXcorr(df)
+    # calculate cXCorr
+    df["cXCorr"] = cXCorr(df)
     return df
 
 def ProteinsGenes(df, tagDecoy):
@@ -153,7 +153,7 @@ def SequenceMod(df, mods):
     Extract modifications and replace for final values
     '''
     # extract modifications and replace for final values
-    s = df.Modifications.replace(mods, regex=True)
+    s = df.Modifications.fillna('').replace(mods, regex=True)
     # create indexes list
     sn = list( s.replace({
         'foo': '', # Due the test part of DASK
@@ -177,11 +177,12 @@ def SequenceMod(df, mods):
     x = ["".join(list(itertools.chain.from_iterable(list(itertools.zip_longest(i,j,fillvalue=''))))) for i,j in list(zip(f,sa))]
     return x
 
-def FdrXc(df, FDRlvl):
+def FdrXc(df, typeXCorr, FDRlvl):
     '''
-    Calculate FDR and filter by cXcorr
+    Calculate FDR and filter by cXCorr
     '''
-    df = df.sort_values(by=["XCorr","T_D"], ascending=False)
+    # df = df.sort_values(by=["XCorr","T_D"], ascending=False)
+    df = df.sort_values(by=[typeXCorr,"T_D"], ascending=False)
     df["rank"] = df.groupby("T_D").cumcount()+1
     df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
     df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
@@ -192,12 +193,12 @@ def FdrXc(df, FDRlvl):
     df = df[ df["T_D"] == 1 ] # discard decoy
     return df
 
-def pro(ddf, FDRlvl, mods, tagDecoy, Expt):
+def pro(ddf, typeXCorr, FDRlvl, mods, tagDecoy, Expt):
     '''
-    Multi-task function: Calculate FDR and filter by cXcorr, create sequence with the mono_mas by mods, retrieve the list of protein,gene and species
+    Multi-task function: Calculate FDR and filter by cXCorr, create sequence with the mono_mas by mods, retrieve the list of protein,gene and species
     '''
-    # calculate FDR and filter by cXcorr
-    ddf = FdrXc(ddf, FDRlvl)
+    # calculate FDR and filter by cXCorr
+    ddf = FdrXc(ddf, typeXCorr, FDRlvl)
     # extract modifications and replace for final values
     if mods:
         ddf["SequenceMod"] = SequenceMod(ddf, mods)
@@ -222,6 +223,7 @@ def main(args):
     deltaMassThreshold = args.threshold
     tagDecoy = args.lab_decoy
     FDRlvl = args.fdr
+    typeXCorr = args.type_xcorr
     JumpsAreas = args.jump_areas
     Expt = args.expt.split(",")
     Expt.sort()
@@ -234,7 +236,7 @@ def main(args):
     logging.debug(infiles)
 
 
-    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXcorr")
+    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr")
     ddf = dd.from_delayed([delayed(preProcessing) (file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas) for file in infiles])
 
 
@@ -250,7 +252,7 @@ def main(args):
         ddf = ddf.repartition(divisions=Exptr)
 
         logging.info("map partitions")
-        d = ddf.map_partitions(pro, FDRlvl, modifications, tagDecoy, Expt)
+        d = ddf.map_partitions(pro, typeXCorr, FDRlvl, modifications, tagDecoy, Expt)
         d = d.compute()
         d.to_csv( args.outfile, sep="\t")
 
@@ -276,6 +278,7 @@ if __name__ == "__main__":
     parser.add_argument('-i',  '--indir', required=True, help='Input directory')
     parser.add_argument('-e',  '--expt', required=True, type=str, help='String with the list of Experiments separated by comma')
     parser.add_argument('-f',  '--fdr', type=float, default=0.01, help='FDR value (default: %(default)s)')
+    parser.add_argument('-x',  '--type_xcorr', type=str, choices=['XCorr','cXCorr'], default='XCorr', help='Calculate FDR from the type of XCorr (default: %(default)s)')
     parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
     parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')

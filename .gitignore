@@ -19,6 +19,10 @@ src/*/*.pyc
 src/*/__pycache__
 src/*/*.Rproj
 
+# install
+install/*/__pycache__
+
+
 # preSanXoT
 
 # SanXoT

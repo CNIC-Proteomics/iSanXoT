@@ -30,6 +30,27 @@ input:disabled, button:disabled {
     cursor: not-allowed;
 }
 
+/* Init page */
+#accordion {
+    margin: 20px 10px 0 10px;
+}
+#accordion button {
+    text-decoration: none;
+    color: goldenrod;
+}
+#accordion a.btn {
+    color: #fff;
+    background-color: slategray;
+    border-color: black;
+    margin-left: 0.3em;
+}
+#accordion .card-header {
+    font-weight: 400;
+    font-size: 1rem;
+    color: goldenrod;
+    cursor: pointer;
+}
+
 /* Tab settings */
 section.tab-content {
     margin-bottom: 10px;
@@ -90,6 +111,9 @@ section.tab-content > .form-inline {
     width: 100%;
 }
 
+[name="experiments"] {
+    display: none;
+}
 
 /* executor */
 #executor button#start {

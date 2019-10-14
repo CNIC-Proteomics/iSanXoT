@@ -43,6 +43,25 @@ for r in rul:
 
 
     # rule that works on the directories:
+    # from "SOMEWHERE INDIR" => TMPDIR
+    if r["enabled"] and r["executor"] == "indir_to_tmpdir":
+        rule:
+            '''
+            Execute rules with one input directory
+            '''
+            threads: r["threads"]
+            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            params:
+                name=r["name"]
+            output:
+                "{indir}/{exp}/{fname}".format(indir=TMP_OUTDIR, exp=e, fname=f) for e in INDATA for f in r["outputs"]
+            log:
+                LOG_OUTDIR+"/"+r["name"]+".log"
+            run:
+                run_rule(input, output, log, params,wildcards)
+
+
+    # rule that works on the directories:
     # from "SOMEWHERE INDIR" => RSTDIR
     if r["enabled"] and r["executor"] == "indir_to_rstdir":
         rule:
@@ -141,6 +160,28 @@ for r in rul:
                 RST_OUTDIR+"/"+fname for fname in r["outputs"]
             log:
                 LOG_OUTDIR+"/"+r["name"]+".log"
+            run:
+                run_rule(input, output, log, params,wildcards)
+
+
+    # rule that works on the directories:
+    # from TMPDIR => TMPDIR
+    if r["enabled"] and r["executor"] == "tmpdir_to_tmpdir":
+        rule:
+            '''
+            Execute rules that work over the experiment directory
+            '''
+            threads: r["threads"]
+            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            params:
+                name=r["name"]
+            input:
+                TMP_OUTDIR+"/{exp}/"+fname for fname in r["inputs"]
+            output:
+                # "{indir}/{exp}/{name}/{fname}".format(indir=TMP_OUTDIR, exp=e, name=n, fname=f) for e in INDATA for n in INDATA[e]["names"] for f in r["outputs"]
+                TMP_OUTDIR+"/{exp}/{name}/"+fname for fname in r["outputs"]
+            log:
+                LOG_OUTDIR+"/"+r["name"]+"_{exp}_{name}.log"
             run:
                 run_rule(input, output, log, params,wildcards)
 

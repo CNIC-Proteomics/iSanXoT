@@ -14,41 +14,6 @@ function addParams(data) {
     if ( document.querySelector('#discardOutliers') && document.querySelector('#discardOutliers').checked ) {
         parametor.addParamsInMethod(data["workflow"]["rules"], [4,5,6], [0,2], `--tags="!out"`)
     }
-    // pRatio ------
-    // add ncpu
-    parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--n_workers ${document.querySelector('#nthreads').value}`);
-    if (document.querySelector('#deltaMassThreshold')) {
-        let val = document.querySelector('#deltaMassThreshold').value;
-        parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--threshold ${val}`);
-    }
-    if (document.querySelector('#deltaMassAreas')) {
-        let val = document.querySelector('#deltaMassAreas').value;
-        parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--jump_areas ${val}`);
-    }
-    if (document.querySelector('#tagDecoy')) {
-        let val = document.querySelector('#tagDecoy').value;
-        parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--lab_decoy ${val}`);
-    }
-    if (document.querySelector('#hot')) {
-        // get the list of unique experiments
-        let tasktable = $("#hot").data('handsontable');
-        let expts = tasktable.getDataAtCol(0).filter(unique);
-        if ( expts.length > 0 ) {
-            let val = expts.sort().join(",");
-            parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);    
-        }
-        else if (document.querySelector('#experiments') && document.querySelector('#experiments').value != "") {
-            let val = document.querySelector('#experiments').value;
-            parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        return false;
-    }
-
     return data
 } // end addParams
 
@@ -164,7 +129,6 @@ $("#select-methods :checkbox").on("change", function(){
             // Accept the following parameters
             accept_parameter('select-catfile');
             accept_parameter('catfile');
-            accept_parameter('def-species');
         }
     }
     else if($(this).is(":not(:checked)")) {
@@ -186,7 +150,6 @@ $("#select-methods :checkbox").on("change", function(){
             // Discard the following parameters
             discard_parameter('select-catfile');
             discard_parameter('catfile');
-            discard_parameter('def-species');
         }
         else if( this.id == "sanxot" ) {
             // Hide tab for the current method and the disabled methods
@@ -194,7 +157,6 @@ $("#select-methods :checkbox").on("change", function(){
             // Discard the following parameters
             discard_parameter('select-catfile');
             discard_parameter('catfile');
-            discard_parameter('def-species');
         }
     }
 });

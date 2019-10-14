@@ -4,19 +4,57 @@ import pandas
 import numpy
 import re
 import dask
-from dask.distributed import Client
 import dask.dataframe as dd
+from dask.delayed import delayed
+from dask.distributed import Client
 
 
 class builder:
     '''
     Builder class
     '''
-    def __init__(self, infile, nworkers):
+    def __init__(self, nworkers, datfile, infiles):
         '''
         Converter builder
         '''
-        self.df = pandas.read_csv(infile, sep="\t", low_memory=False)        
+        # number of CPU's
+        self.nworkers = nworkers
+        # self.client = Client( n_workers=self.nworkers )
+        # get the ratios and experiments from the data file
+        self.expt, self.ratios = self.infiles_ratios(datfile)
+        # create dataframe from the input file(s)
+        if isinstance(infiles, str):
+            # self.df = pandas.read_csv(infiles, sep="\t", low_memory=False)
+            self.ddf = dd.from_delayed( delayed(self._preProcessing)(infiles, self.expt) )
+        elif isinstance(infiles, list):
+            # d = dd.from_delayed( [delayed(self._preProcessing)(file) for file in infiles] )
+            # self.df = d.compute()
+            self.ddf = dd.from_delayed( [delayed(self._preProcessing)(file, self.expt) for file in infiles] )
+
+            
+    def _preProcessing(self, file, expt):
+        '''
+        Pre-processing the data: join the files
+        '''
+        # read input file
+        df = pandas.read_csv(file, sep="\t")
+        df["Experiment"] = next((x for x in expt if x in file), False)
+        return df
+
+
+    def infiles_ratios(self, ifile):
+        '''
+        Handles the input data (workflow file)
+        '''
+        # get the matrix with the ratios
+        indata = pandas.read_csv(ifile, usecols=["experiment","ratio_numerator","ratio_denominator"], converters={"experiment":str, "ratio_numerator":str, "ratio_denominator":str})
+        ratios = indata.groupby("ratio_denominator")["ratio_numerator"].unique()
+        ratios = ratios.reset_index().values.tolist()
+        # get the list of sorted experiments discarding empty values
+        expt = list( filter(None, indata["experiment"].unique()) )
+        expt.sort()
+        return expt, ratios
+
 
     def infiles_adv(self, ifile):
         '''
@@ -48,11 +86,12 @@ class builder:
                     lblCtr[exp][ratio_den].append(ratio_num)
         return Expt, lblCtr
 
+
     def _calc_ratio(self, df, ControlTag, label):
         '''
         Calculate ratios: Xs, Vs
         '''
-        # calculate the mean for the control tags
+        # calculate the mean for the control tags (denominator)
         ct = "-".join(ControlTag)+"_Mean" if len(ControlTag) > 1 else "-".join(ControlTag)
         df[ct] = df[ControlTag].mean(axis=1)
         # calculate the Xs
@@ -69,33 +108,57 @@ class builder:
         df = pandas.concat([df,Xs,Vs,Vab], axis=1)
         return df    
 
-    def calculate_ratio(self, expt, lblCtr):
+    def _calculate_ratio(self, df, ratios):
         '''
         Calculate the ratios
         '''
-        # get the name of current experiment
-        df = self.df
-        for exp in expt:
-            if exp in lblCtr:
-                for ControlTag,label in lblCtr[exp].items():
-                    # create the numerator lists
-                    labels = []
-                    for lbl in label:
-                        if ',' in lbl:
-                            lbl = lbl.split(",")
-                            lb = "-".join(lbl)+"_Mean" if len(lbl) > 1 else "-".join(lbl)
-                            df[lb] = df[lbl].mean(axis=1)
-                            labels.append( lb )
-                        else:
-                            labels.append( lbl )
-                    ControlTag = ControlTag.split(",")
-                    df = self._calc_ratio(df, ControlTag, labels)
+        # get the type of ratios we have to do
+        for rat in ratios:
+            ControlTag = rat[0]
+            label = rat[1]
+            ControlTag = ControlTag.split(",")
+            # create the numerator tags
+            labels = []
+            for lbl in label:
+                # if apply, calculate the mean for the numerator tags (list)
+                if ',' in lbl:
+                    lbl = lbl.split(",")
+                    lb = "-".join(lbl)+"_Mean" if len(lbl) > 1 else "-".join(lbl)
+                    df[lb] = df[lbl].mean(axis=1)
+                    labels.append( lb )
+                else:
+                    labels.append( lbl )
+            df = self._calc_ratio(df, ControlTag, labels)
         return df
 
-    def to_csv(self, df, outfile):
+    def calculate_ratio(self):
+        '''
+        Calculate the ratios
+        '''
+        # client = Client( n_workers=self.nworkers )
+        # self.ddf = self.ddf.set_index('Experiment')
+        # Exptr = self.expt + [self.expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
+        # self.ddf = self.ddf.repartition(divisions=Exptr)
+        # # self.ddf = self.ddf.map_partitions(self._calculate_ratio, self.ratios)
+
+        with Client(n_workers=self.nworkers) as client:
+            self.ddf = self.ddf.set_index('Experiment')
+            Exptr = self.expt + [self.expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
+            self.ddf = self.ddf.repartition(divisions=Exptr)
+            # self.ddf = self.ddf.map_partitions(self._calculate_ratio, self.ratios)
+            self.ddf.to_csv( os.path.join(self.outdir,"*/ID-q.tsv"), sep="\t", name_function=self.name)
+
+
+    def name(self, i):
+        self.expt.sort()
+        return self.expt[i]
+
+    def to_csv(self, outdir):
         '''
         Print to CSV
         '''
-        if df is not None:
-            df.to_csv(outfile, sep="\t", index=False)
+        if self.ddf is not None:
+            self.ddf.to_csv( os.path.join(outdir,"*/ID-q.tsv"), sep="\t", name_function=self.name)
+            self.client.close()
+
 

@@ -72,7 +72,7 @@ CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/install/get-pip.py"  --no-wa
 ECHO **
 ECHO **
 ECHO ** install required packages
-CMD /C " "%PYTHON3x_HOME%/tools/Scripts/pip3.exe" install numpy matplotlib scipy snakemake pandas pprint multiprocess times more-itertools concurrent-utils dask toolz cloudpickle distributed biopython --no-warn-script-location "
+CMD /C " "%PYTHON3x_HOME%/tools/Scripts/pip3.exe" install numpy fsspec matplotlib scipy snakemake pandas pprint multiprocess times more-itertools concurrent-utils dask toolz cloudpickle distributed biopython --no-warn-script-location "
 
 
 :: download and install npm ----------------------
@@ -96,8 +96,7 @@ CMD /C " "%NODE_HOME%/npm" install ps-tree --global "
 ECHO **
 ECHO **
 ECHO ** download databases
-REM dl=1 is VERY IMPORTANT!!
-SET  DB_URL=https://www.dropbox.com/sh/yjtczrabfcy1gh1/AAAh0zgVwoXA7HIvkPwkSOO6a?dl=1
+SET  DB_URL=https://www.cnic.es/nextcloud/s/PkTwfCFRLn4MZ3o/download
 CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/install/src/download_dbs.py" "%DB_URL%" "%SRC_HOME%/dbs" "
 
 

@@ -25,26 +25,36 @@ function importHTMLtemplate(wfhref) {
 };
 
 // Import main templates
+importHTMLtemplate(`${__dirname}/../sections/init.html`);
 importHTMLtemplate(`${__dirname}/../sections/footer.html`);
 importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
-importHTMLtemplate(`${__dirname}/../sections/advance/help_adv.html`);
+importHTMLtemplate(`${__dirname}/../sections/basic/help_basic.html`);
+importHTMLtemplate(`${__dirname}/../sections/ptm/help_ptm.html`);
 importHTMLtemplate(`${__dirname}/../sections/lblfree/help_lblfree.html`);
 
 // Import workflow templates
 // add workflow modules: specific modules, processor, exceptor
 if ( wfid !== undefined ) {
-    if ( wfid.includes("advance") ) {
-        importHTMLtemplate(`${__dirname}/../sections/advance/main.html`);
-        importHTMLtemplate(`${__dirname}/../sections/advance/tasks.html`);
-        importHTMLtemplate(`${__dirname}/../sections/advance/tasktable.html`);
-        importHTMLtemplate(`${__dirname}/../sections/advance/params-pratio.html`);
-        var tasktable = require(`./advance/tasktable`);
-        var parameters = require('./advance/parameters');
-        require('./advance/samples');
+    if ( wfid.includes("basic") ) {
+        importHTMLtemplate(`${__dirname}/../sections/basic/main.html`);
+        importHTMLtemplate(`${__dirname}/../sections/basic/tasks.html`);
+        importHTMLtemplate(`${__dirname}/../sections/basic/tasktable.html`);
+        importHTMLtemplate(`${__dirname}/../sections/basic/params-pratio.html`);
+        var tasktable = require(`./basic/tasktable`);
+        var parameters = require('./basic/parameters');
+        require('./basic/samples');
+    }
+    else if ( wfid.includes("ptm") ) {
+        importHTMLtemplate(`${__dirname}/../sections/ptm/main.html`);
+        importHTMLtemplate(`${__dirname}/../sections/ptm/tasks.html`);
+        importHTMLtemplate(`${__dirname}/../sections/ptm/tasktable.html`);
+        var tasktable = require('./ptm/tasktable');
+        var parameters = require('./ptm/parameters');
+        require('./ptm/samples');
     }
     else if ( wfid.includes("lblfree") ) {
         importHTMLtemplate(`${__dirname}/../sections/lblfree/main.html`);

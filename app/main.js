@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, Menu, BrowserWindow, ipcMain } = require('electron');
+const { app, Menu, BrowserWindow, ipcMain, dialog } = require('electron');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -16,12 +16,18 @@ let template = [
     { role: 'quit', accelerator: 'Shift+Ctrl+Q' }
   ]},
   { label: "Workflows", submenu: [
-    { label: 'Advanced Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=advance`) } },
+    { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
+    { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
     { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } }
   ]},
+  { label: "Preferences", submenu: [
+    { label: 'Download Databases', click() { mainWindow.loadFile('downdb.html') } },
+    { label: 'Check for Updates', click() { mainWindow.loadFile('checkupdates.html') } },
+  ]},  
   { label: "Help", submenu: [
     { label: 'General', click() { mainWindow.loadFile('help.html') } },
-    { label: 'Advanced workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_adv`) } },
+    { label: 'Basic workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
+    { label: 'PTM workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
     { label: 'Label-Free workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } }
   ]},  
 ]
@@ -44,7 +50,7 @@ function createWindow () {
       nodeIntegration: true
     },
     // resizable: false,
-    icon: __dirname + '/assets/icons/molecule.png'
+    icon: __dirname + '/assets/icons/molecule.png',
   })
 
   // and load the index.html of the app.
@@ -57,6 +63,17 @@ function createWindow () {
   else { // Debug mode    
     mainWindow.webContents.openDevTools()
   }
+
+  // Emitted when the window is closed.
+  mainWindow.on('close', function (e) {
+    let choice = dialog.showMessageBox( mainWindow,{
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm',
+        message: 'Do you really want to close the application?'
+    })
+    if (choice === 1) e.preventDefault()
+  })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function (e) {
@@ -72,6 +89,7 @@ function createWindow () {
   Menu.setApplicationMenu(menu)
 
 }; // end createWindow
+
 
 
 /*

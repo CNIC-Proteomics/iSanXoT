@@ -118,12 +118,17 @@ def setup_outfiles_from_indata():
             if rule["executor"] == "on_outdir" or rule["executor"] == "indir_to_outdir" or rule["executor"] == "infiles_to_outdir":
                 yield expand(["{outdir}/{fname}"], outdir=OUTDIR, fname=outputs)
 
+            # rules that work on experiment directories
+            if rule["executor"] == "indir_to_tmpdir":
+                for exp, indat in INDATA.items():
+                    yield expand(["{outdir}/{exp}/{fname}"], outdir=TMP_OUTDIR, exp=exp, fname=outputs)
+
             # rules that work on another directories
             if rule["executor"] == "on_rstdir" or rule["executor"] == "outdir_to_rstdir" or rule["executor"] == "tmpdir_to_rstdir" or rule["executor"] == "indir_to_rstdir":
                 yield expand(["{outdir}/{fname}"], outdir=RST_OUTDIR, fname=outputs)
 
             # rules that work on experiment directories
-            if rule["executor"] == "on_tmpdir" or rule["executor"] == "outdir_to_tmpdir":
+            if rule["executor"] == "on_tmpdir" or rule["executor"] == "outdir_to_tmpdir" or rule["executor"] == "tmpdir_to_tmpdir":
                 for exp, indat in INDATA.items():
                     for name in indat["names"]:
                         yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=TMP_OUTDIR, exp=exp, name=name, fname=outputs)
