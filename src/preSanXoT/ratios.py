@@ -31,13 +31,14 @@ from dask.distributed import Client
 # Local functions #
 ###################
 
-def pre_processing(file, expt):
+def pre_processing(file, expt=None):
     '''
     Pre-processing the data: join the files
     '''    
     # read input file if has teh experiment
     df = pandas.read_csv(file, sep="\t")
-    df["Experiment"] = next((x for x in expt if x in file), False)
+    if expt:
+        df["Experiment"] = next((x for x in expt if x in file), False)
     return df
 
 def infiles_ratios(ifile):
@@ -139,31 +140,44 @@ def main(args):
         parser.print_help(sys.stderr)
         sys.exit("\n\nERROR: we need at least one kind of input: infile or indir\n")
 
+
     logging.info("get the ratios and experiments from the data file")
     expt, ratios = infiles_ratios(args.datfile)
+
 
     logging.info("get the input file or the list of input files")
     if args.infile:
         logging.debug(args.infile)
-        ddf = dd.from_delayed( delayed(pre_processing)(args.infile, expt) )
+        ddf = dd.from_delayed( delayed(pre_processing)(args.infile) )
     elif args.indir:        
         infiles_aux = glob.glob( os.path.join(args.indir,"**/ID.tsv"), recursive=True )
         infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in expt) ]
         logging.debug(infiles)
         ddf = dd.from_delayed( [delayed(pre_processing)(file, expt) for file in infiles] )
 
+
     logging.info('create dask client')
     with Client(n_workers=args.n_workers) as client:
         logging.info('repartition by experiments')
         ddf = ddf.set_index('Experiment')
+        logging.debug(expt)
         Exptr = expt + [expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
+        # Exptr = expt
+        # outs = [ os.path.join(args.outdir,e,"kk.tsv") for e in expt ]
+        # ddf.to_csv( outs, sep="\t", line_terminator='\n')
         ddf = ddf.repartition(divisions=Exptr)
         
         logging.info("calculate ratios")
         ddf = ddf.map_partitions(calculate_ratio, ratios)
         
         logging.info('print output file')
-        outfiles = [ os.path.join(args.outdir,e,"ID-q.tsv") for e in expt ]
+        outfiles = []
+        for e in expt:
+            outdir_exp = args.outdir+"/"+e
+            if not os.path.exists(outdir_exp):
+                os.makedirs(outdir_exp, exist_ok=False)
+            outfiles.append(outdir_exp+"/ID-q.tsv")
+        # outfiles = [ os.path.join(args.outdir,e,"ID-q.tsv") for e in expt ]
         logging.debug( outfiles )
         ddf.to_csv( outfiles, sep="\t", line_terminator='\n')
 
@@ -171,6 +185,7 @@ def main(args):
 
     logging.info("remove temporal directory")
     tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
+    logging.debug(tmp_dir)
     shutil.rmtree(tmp_dir)
 
 
@@ -182,7 +197,7 @@ if __name__ == "__main__":
         description='Calculate the ratios',
         epilog='''
         Example:
-            python pre_sanxot.py
+            python ratios.py
         ''', formatter_class=RawTextHelpFormatter)
     required = parser.add_argument_group('required arguments')
     conditional = parser.add_argument_group('conditional arguments')

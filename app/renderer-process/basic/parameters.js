@@ -38,16 +38,17 @@ function addParams(data) {
         parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--type_xcorr ${val}`);
     }
     if (document.querySelector('#hot')) {
-        console.log("log");
         // get the list of unique experiments
         let tasktable = $("#hot").data('handsontable');
         let expts = tasktable.getDataAtCol(0).filter(unique);
         if ( !$(`#hot`).attr("discard") && expts.length > 0 ) {
             let val = expts.sort().join(",");
+            val = val.replace(/\r?\n|\r|\s/gm, ""); // remove all spaces and breakes
             parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);    
         }
         else if (document.querySelector('#experiments') && document.querySelector('#experiments').value != "") {
             let val = document.querySelector('#experiments').value;
+            val = val.replace(/\r?\n|\r|\s/gm, ""); // remove all spaces and breakes
             parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);
         }
         else {

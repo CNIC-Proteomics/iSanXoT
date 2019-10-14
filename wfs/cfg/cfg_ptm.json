@@ -19,7 +19,7 @@
       "inputs":  [],
       "outputs": ["ID-q.tsv"],
       "methods": [{
-        "script": "preSanXoT/pre_sanxot.py",
+        "script": "preSanXoT/ratios.py",
         "inputs":  { "--indir": "--WF__INDIR--" },
         "params":  "--datfile \"--WF__INDATA--\"  --outdir \"--WF__WKS__TMPDIR--\""
       }]
