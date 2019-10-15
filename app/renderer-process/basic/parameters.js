@@ -155,12 +155,12 @@ $("#select-methods :checkbox").on("change", function(){
         $("#select-methods :checkbox").prop('disabled', false);
         if( this.id == "fdr" ) {
             // enable the other methods
-            // enable_checkbox_method(`#select-methods #pre_sanxot`);
+            // enable_checkbox_method(`#select-methods #ratios`);
             // enable_checkbox_method(`#select-methods #sanxot`);
             // Show tab for the current method
             $('a#params-pratio-tab').show();
         }
-        else if( this.id == "pre_sanxot" ) {
+        else if( this.id == "ratios" ) {
             // enable the other methods
             // enable_checkbox_method(`#select-methods #sanxot`);
             // Show tab for the current method
@@ -181,14 +181,14 @@ $("#select-methods :checkbox").on("change", function(){
         // Disable methods depending on which one
         if( this.id == "fdr" ) {
             // disaable the other methods
-            disable_checkbox_method(`#select-methods #pre_sanxot`);
+            disable_checkbox_method(`#select-methods #ratios`);
             disable_checkbox_method(`#select-methods #sanxot`);
             // Hide tab for the current method and the disabled methods
             $(`a#params-pratio-tab`).hide();
             // Discard the following parameters
             discard_parameter('hot');
         }
-        else if( this.id == "pre_sanxot" ) {
+        else if( this.id == "ratios" ) {
             // disaable the other methods
             disable_checkbox_method(`#select-methods #sanxot`);
             // Hide tab for the current method and the disabled methods

@@ -167,7 +167,7 @@ function convertSelectedMethods(dismethods) {
     let methods = [];
     let temp = {
         'fdr': ['fdr'],
-        'pre_sanxot': ['pre_sanxot'],
+        'ratios': ['ratios'],
         'sanxot': ['aljamia','klibrate','scan2peptide','peptide2protein','protein2category','everything2all','collector']
     };
     for (var i = 0; i < dismethods.length; i++) {

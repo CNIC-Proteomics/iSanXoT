@@ -79,7 +79,7 @@ if ( document.getElementById('sample3') !== null ) {
   document.getElementById('sample3').addEventListener('click', function(){    
     document.getElementById('indir').value = "D:\\projects\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
     document.getElementById('outdir').value = "D:\\projects\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_wf_results_test_pratio";
-    disable_checkbox_method(`#select-methods #pre_sanxot`);
+    disable_checkbox_method(`#select-methods #ratios`);
     disable_checkbox_method(`#select-methods #sanxot`);
     $(`a#tasktable-tab`).hide();
     discard_parameter('hot');

@@ -11,7 +11,7 @@
   "workflow": {
     "verbose": true,
     "rules": [{
-      "name": "pre_sanxot",
+      "name": "ratios",
       "description": "Calculation of ratios (Xs, Vs,...)",
       "executor": "indir_to_tmpdir",
       "enabled": true,

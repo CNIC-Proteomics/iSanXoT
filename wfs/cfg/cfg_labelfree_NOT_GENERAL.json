@@ -26,7 +26,7 @@
         "params":  "--dbfile \"--WF__INFILE__DB--\""
       }]
     },{
-      "name": "pre_sanxot",
+      "name": "ratios",
       "description": "Calculation of ratios (Xs, Vs,...)",
       "executor": "on_outdir",
       "enabled": true,
@@ -34,7 +34,7 @@
       "inputs":  ["ID.tsv"],
       "outputs": ["ID-q.tsv"],
       "methods": [{
-        "script": "preSanXoT/pre_sanxot.py",
+        "script": "preSanXoT/ratios.py",
         "inputs":  { "--infile": "ID.tsv" },
         "outputs": { "--outfile": "ID-q.tsv" },
         "params":  "--datfile \"--WF__INDATA--\""

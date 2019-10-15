@@ -49,7 +49,8 @@ def create_modifications(ddf):
         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
         if delta:
             mono_mass = delta.get('mono_mass')
-            modifications[m] = mono_mass
+            m2 = r'\('+str(m)+r'\)'
+            modifications[m2] = '('+mono_mass+')'
     return modifications
 
 def targetdecoy(df, tagDecoy):
@@ -100,6 +101,14 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     '''    
     # read input file
     df = pd.read_csv(file, sep="\t")
+    # rename columns
+    df.rename(columns={
+        'MHplus in Da': 'MH+ [Da]',
+        'Theo MHplus in Da': 'Theo. MH+ [Da]',
+        'Delta M in ppm': 'DeltaM [ppm]',
+        'Spectrum File': 'Spectrum_File',
+        'First Scan': 'Scan'
+    }, inplace=True)
     # delete suffix in the headers coming from PD 2.3
     col = list(df.columns.values)
     col[:] = [s.replace('Abundance: ', '') for s in col]
@@ -122,11 +131,11 @@ def ProteinsGenes(df, tagDecoy):
     '''
     def _pattern_gene(i):
         m = re.search('GN=([^\s]*)', i)
-        r = m.group(1) if m else 'NaN'
+        r = m.group(1) if m else ''
         return r
     def _pattern_species(i):
         m = re.search('OS=([^\s]+\s+[^\s]+)', i)
-        r = m.group(1) if m else 'NaN'
+        r = m.group(1) if m else ''
         return r
     a = list(df["Protein Accessions"].fillna("").str.split(";"))
     d = list(df["Protein Descriptions"].fillna("").str.split(";"))
@@ -160,7 +169,7 @@ def SequenceMod(df, mods):
         '(\S*N-Term\S*)': '',
         '\([^)]*\)': '',
         '(\s)': '',
-        '([A-Z])': ''
+        '([A-Z])': '',
     }, regex=True).str.split(";") )
     sn = [list(filter(None,i)) for i in sn]
     sn = [[int(i) for i in j] for j in sn]
@@ -204,11 +213,11 @@ def pro(ddf, typeXCorr, FDRlvl, mods, tagDecoy, Expt):
         ddf["SequenceMod"] = SequenceMod(ddf, mods)
     # extract the redundance protein/genes discarding DECOY proteins
     ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
-    # rename columns
-    ddf.rename(columns={
-        "Spectrum File": "Spectrum_File",
-        "First Scan": "Scan"
-    }, inplace=True)
+    # # rename columns
+    # ddf.rename(columns={
+    #     "Spectrum File": "Spectrum_File",
+    #     "First Scan": "Scan"
+    # }, inplace=True)
     return ddf
 
 
@@ -231,7 +240,7 @@ def main(args):
 
   
     logging.info("extract the list of files from the given experiments")
-    infiles_aux = glob.glob( os.path.join(inputfolder,"*_PSMs.txt"), recursive=True )
+    infiles_aux = glob.glob( os.path.join(inputfolder,"**/*_PSMs.txt"), recursive=True )
     infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in Expt) ]
     logging.debug(infiles)
 
