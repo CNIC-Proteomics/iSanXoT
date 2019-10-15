@@ -44,7 +44,7 @@ for r in rul:
 
     # rule that works on the directories:
     # from "SOMEWHERE INDIR" => TMPDIR
-    if r["enabled"] and r["executor"] == "indir_to_tmpdir":
+    if r["enabled"] and r["executor"] == "indir_to_expdir":
         rule:
             '''
             Execute rules with one input directory
@@ -102,6 +102,28 @@ for r in rul:
 
 
     # rule that works on the directories:
+    # from "SOMEWHERE INFILES" => OUTDIR
+    if r["enabled"] and r["executor"] == "outdir_to_expdir":
+        print( r )
+        rule:
+            '''
+            Rules for the cases: accepts input and output files without the modification of directories
+            '''
+            threads: r["threads"]
+            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            params:
+                name=r["name"]
+            input:
+                OUTDIR+"/"+fname for fname in r["inputs"]
+            output:
+                "{indir}/{exp}/{fname}".format(indir=TMP_OUTDIR, exp=e, fname=f) for e in INDATA for f in r["outputs"]
+            log:
+                LOG_OUTDIR+"/"+r["name"]+".log"
+            run:
+                run_rule(input, output, log, params,wildcards)
+
+
+    # rule that works on the directories:
     # from OUTDIR => OUTDIR
     if r["enabled"] and r["executor"] == "on_outdir":
         rule:
@@ -124,7 +146,7 @@ for r in rul:
 
     # rule that works on the directories:
     # from TMPDIR => TMPDIR
-    if r["enabled"] and r["executor"] == "on_tmpdir":
+    if r["enabled"] and r["executor"] == "on_namedir":
         rule:
             '''
             Execute rules that work over the experiment directory
@@ -166,7 +188,7 @@ for r in rul:
 
     # rule that works on the directories:
     # from TMPDIR => TMPDIR
-    if r["enabled"] and r["executor"] == "tmpdir_to_tmpdir":
+    if r["enabled"] and r["executor"] == "expdir_to_namedir":
         rule:
             '''
             Execute rules that work over the experiment directory
@@ -188,7 +210,7 @@ for r in rul:
 
     # rule that works on the directories:
     # from OUTDIR => TMPDIR
-    if r["enabled"] and r["executor"] == "outdir_to_tmpdir":
+    if r["enabled"] and r["executor"] == "outdir_to_namedir":
         rule:
             '''
             Execute the rule for most of scripts of SanXoT
@@ -229,7 +251,7 @@ for r in rul:
 
     # rule that works on the directories:
     # from TMPDIR => RSTDIR
-    if r["enabled"] and r["executor"] == "tmpdir_to_rstdir":
+    if r["enabled"] and r["executor"] == "namedir_to_rstdir":
         rule:
             '''
             Execute the rule for most of scripts of SanXoT

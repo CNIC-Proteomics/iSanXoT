@@ -114,27 +114,27 @@ def setup_outfiles_from_indata():
             inputs  = rule["inputs"]
             outputs = rule["outputs"]
 
-            # rules that work on another directories
+            # rules where the outputs are saved in the main output directory
             if rule["executor"] == "on_outdir" or rule["executor"] == "indir_to_outdir" or rule["executor"] == "infiles_to_outdir":
                 yield expand(["{outdir}/{fname}"], outdir=OUTDIR, fname=outputs)
 
-            # rules that work on experiment directories
-            if rule["executor"] == "indir_to_tmpdir":
+            # rules where the outputs are saved in the experiment directories
+            if rule["executor"] == "indir_to_expdir" or rule["executor"] == "outdir_to_expdir":
                 for exp, indat in INDATA.items():
                     yield expand(["{outdir}/{exp}/{fname}"], outdir=TMP_OUTDIR, exp=exp, fname=outputs)
 
-            # rules that work on another directories
-            if rule["executor"] == "on_rstdir" or rule["executor"] == "outdir_to_rstdir" or rule["executor"] == "tmpdir_to_rstdir" or rule["executor"] == "indir_to_rstdir":
+            # rules where the outputs are saved in the result directories
+            if rule["executor"] == "on_rstdir" or rule["executor"] == "outdir_to_rstdir" or rule["executor"] == "namedir_to_rstdir" or rule["executor"] == "indir_to_rstdir":
                 yield expand(["{outdir}/{fname}"], outdir=RST_OUTDIR, fname=outputs)
 
-            # rules that work on experiment directories
-            if rule["executor"] == "on_tmpdir" or rule["executor"] == "outdir_to_tmpdir" or rule["executor"] == "tmpdir_to_tmpdir":
+            # rules where the outputs are saved in the name directories
+            if rule["executor"] == "on_namedir" or rule["executor"] == "outdir_to_namedir" or rule["executor"] == "expdir_to_namedir":
                 for exp, indat in INDATA.items():
                     for name in indat["names"]:
                         yield expand(["{outdir}/{exp}/{name}/{fname}"], outdir=TMP_OUTDIR, exp=exp, name=name, fname=outputs)
 
 
-def replace_params(in_param, optrep=None, indir=None, tmpdir=None):
+def replace_params(in_param, optrep=None, indir=None, namedir=None):
     '''
     Replace the variable values for the parameters
     '''
@@ -147,7 +147,7 @@ def replace_params(in_param, optrep=None, indir=None, tmpdir=None):
     return output
 
 
-def extract_method_parameters(method, indir, outdir, optparam=None, optrep=None, tmpdir=None):
+def extract_method_parameters(method, indir, outdir, optparam=None, optrep=None, namedir=None):
     '''
     Extract command execution of a method from the from an unique output file name
     '''
@@ -184,16 +184,16 @@ def extract_method(rule_name, outputs):
     return r
 
 
-def execute_methods(methods, indir, outdir, log, optparam=None, optrep=None, tmpdir=None):
+def execute_methods(methods, indir, outdir, log, optparam=None, optrep=None, namedir=None):
     cmd  = ''
     # prepare temporal workspace
-    if tmpdir:
-        os.makedirs(tmpdir, exist_ok=True)
+    if namedir:
+        os.makedirs(namedir, exist_ok=True)
     # create command line for the whole methods
     for method in methods:
         interpret = ISANXOT_PYTHON3x_HOME+'/tools/python'
         script    = ISANXOT_SRC_HOME+'/src/'+method["script"]
-        inputs, params, outputs = extract_method_parameters(method, indir, outdir, optparam=optparam, optrep=optrep, tmpdir=tmpdir)
+        inputs, params, outputs = extract_method_parameters(method, indir, outdir, optparam=optparam, optrep=optrep, namedir=namedir)
         cmd  += '"{}" "{}" {} {} {} 1>> "{}" 2>&1 && '.format(interpret, script, inputs, params, outputs, log)
     cmd = re.sub(r'&&\s*$', '', cmd)
     shell(cmd)

@@ -328,8 +328,8 @@ if ( document.getElementById('def-catfile') !== null ) {
             document.getElementById("select-catfile").disabled = false;
         }
         else {
-            let dbsdir = process.env.ISANXOT_SRC_HOME + '/dbs';
-            let files = fs.readdirSync(dbsdir).filter(fn => fn.startsWith(this.value) & fn.endsWith('.tsv'));
+            let dbsdir = process.env.ISANXOT_SRC_HOME + '/dbs/current_release';
+            let files = fs.readdirSync(dbsdir).filter(fn => fn.startsWith(this.value) & fn.endsWith('.cat.tsv'));
             document.getElementById('catfile').value = dbsdir + '/' + files[0];    
             document.getElementById("catfile").disabled = true;
             document.getElementById("select-catfile").disabled = true;

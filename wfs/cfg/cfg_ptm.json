@@ -13,7 +13,7 @@
     "rules": [{
       "name": "ratios",
       "description": "Calculation of ratios (Xs, Vs,...)",
-      "executor": "indir_to_tmpdir",
+      "executor": "indir_to_expdir",
       "enabled": true,
       "threads": 3,
       "inputs":  [],
@@ -26,7 +26,7 @@
     },{
         "name": "aljamia",
         "description": "Extract information from ID-q file",
-        "executor": "tmpdir_to_tmpdir",
+        "executor": "expdir_to_namedir",
         "enabled": true,
         "threads": 3,
         "inputs":  ["ID-q.tsv"],
@@ -65,7 +65,7 @@
     },{
       "name": "aljamia_cat",
       "description": "Concatenate files from aljamia",
-      "executor": "on_tmpdir",
+      "executor": "on_namedir",
       "enabled": true,
       "threads": 1,
       "inputs":  ["s2p_rels.ptm.tsv", "s2p_rels.noptm.tsv", "p2q_rels.ptm.tsv", "p2q_rels.noptm.tsv"],
@@ -82,7 +82,7 @@
     },{
       "name": "klibrate",
       "description": "SanXoT node: calibrate",
-      "executor": "on_tmpdir",
+      "executor": "on_namedir",
       "enabled": true,
       "threads": 3,
       "inputs":  ["u_scans.ptm.tsv", "u_scans.noptm.tsv", "s2p_rels.tsv"],
@@ -114,7 +114,7 @@ set copypeptide=copy "%BaseFolder%\%%j\TMT\Sanxot\%%i\data\peptide_noMOD.xls"+"%
     },{
       "name": "scan2peptide",
       "description": "SanXoT node: scan to peptide",
-      "executor": "on_tmpdir",
+      "executor": "on_namedir",
       "enabled": true,
       "threads": 3,
       "inputs":  ["scans.tsv", "s2p_rels.tsv"],
