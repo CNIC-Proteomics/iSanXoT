@@ -29,10 +29,6 @@ def replace_consts(config):
     cfg_string = cfg_string.replace("--WF__WKS__RSTDIR--", rstdir)
     cfg_string = cfg_string.replace("--WF__WKS__LOGDIR--", logdir)
     config = json.loads(cfg_string)
-    # write data in a file. 
-    # cfg_file = open(outdir+"/isanxot_cfg_2.json","w")  
-    # cfg_file.writelines( json.dumps(json.loads(cfg_string), indent=2, sort_keys=False) ) 
-    # cfg_file.close()
     return config
 
 # Env. variables

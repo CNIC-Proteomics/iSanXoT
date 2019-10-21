@@ -104,7 +104,6 @@ for r in rul:
     # rule that works on the directories:
     # from "SOMEWHERE INFILES" => OUTDIR
     if r["enabled"] and r["executor"] == "outdir_to_expdir":
-        print( r )
         rule:
             '''
             Rules for the cases: accepts input and output files without the modification of directories

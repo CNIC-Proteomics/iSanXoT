@@ -15,7 +15,7 @@
       "description": "Calculation of FDR",
       "executor": "indir_to_outdir",
       "enabled": true,
-      "threads": 3,
+      "threads": 30,
       "inputs":  [],
       "outputs": ["ID.tsv"],
       "methods": [{
@@ -29,7 +29,7 @@
       "description": "Calculation of ratios (Xs, Vs,...)",
       "executor": "outdir_to_expdir",
       "enabled": true,
-      "threads": 3,
+      "threads": 30,
       "inputs":  ["ID.tsv"],
       "outputs": ["ID-q.tsv"],
       "methods": [{

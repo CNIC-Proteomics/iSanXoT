@@ -1,8 +1,3 @@
-// Remove console log in production mode
-if (process.env.ISANXOT_MODE == "production") {
-    console.log = function() {};
-}
-
 // Import libraries
 let fs = require('fs');
 let path = require('path');

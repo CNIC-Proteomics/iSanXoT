@@ -12,13 +12,14 @@ SET  SRC_HOME=%SRC_HOME:~0,-1%
 
 ECHO **
 SET  MODE="production"
-SET  LIB_VERSION=0.1
 SET  LIB_NAME=iSanXoT
+SET  LIB_VERSION=%1
 SET  LIB_PATH="%HOMEDRIVE%%HOMEPATH%/%LIB_NAME%"
 SET  /p LIB_PATH="** Enter the path where %LIB_NAME% libraries will be saved (by default %LIB_PATH%): "
 SET  LIB_PATH=%LIB_PATH:"=%
-REM SET  LIB_PATH=D:\%LIB_NAME%\library
 SET  LIB_HOME=%LIB_PATH%/%LIB_VERSION%
+
+ECHO %LIB_HOME%
 
 ECHO **
 SET  PYTHON3x_VERSION=3.6.7
@@ -28,7 +29,6 @@ SET  PYTHON3x_HOME=%PYTHON3x_HOME:"=%
 ECHO **
 SET  NODE_HOME=%LIB_HOME%/node
 SET  NODE_PATH=%NODE_HOME%/node_modules
-
 
 :: create env variables ----------------------
 ECHO **
@@ -40,7 +40,6 @@ ECHO %PYTHON3x_HOME%
 ECHO %NODE_HOME%
 ECHO %NODE_PATH%
 SETX ISANXOT_MODE "%MODE%"
-SETX ISANXOT_SRC_HOME "%SRC_HOME%"
 SETX ISANXOT_LIB_HOME "%LIB_HOME%"
 SETX ISANXOT_PYTHON3x_HOME "%PYTHON3x_HOME%"
 SETX ISANXOT_NODE_HOME "%NODE_HOME%"
@@ -53,19 +52,20 @@ SETX GIT_PYTHON_REFRESH quiet
 :: create library directory ----------------------
 IF NOT EXIST "%LIB_HOME%" MD "%LIB_HOME%"
 
+GOTO :EndProcess
 
 :: install the 'python' ----------------------
 ECHO **
 ECHO **
 ECHO ** install the 'python'
-CMD /C " "%SRC_HOME%/install/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%LIB_HOME%" "
+CMD /C " "%SRC_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%LIB_HOME%" "
 
 
 :: install the PIP package ----------------------
 ECHO **
 ECHO **
 ECHO ** install the 'pip' package
-CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/install/get-pip.py"  --no-warn-script-location "
+CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/get-pip.py"  --no-warn-script-location "
 
 
 :: install required packages ----------------------
@@ -80,7 +80,7 @@ ECHO **
 ECHO **
 ECHO ** download and install npm
 SET  NODE_URL=https://nodejs.org/dist/v10.14.2/node-v10.14.2-win-x64.zip
-CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/install/src/install_url_pkg.py" "%NODE_URL%" "%NODE_HOME%" "%LIB_HOME%/tmp" "
+CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/install_url_pkg.py" "%NODE_URL%" "%NODE_HOME%" "%LIB_HOME%/tmp" "
 
 
 :: install electron package ----------------------
@@ -97,7 +97,7 @@ ECHO **
 ECHO **
 ECHO ** download databases
 SET  DB_URL=https://www.cnic.es/nextcloud/s/PkTwfCFRLn4MZ3o/download
-CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/install/src/download_dbs.py" "%DB_URL%" "%SRC_HOME%/dbs" "
+CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/download_dbs.py" "%DB_URL%" "%SRC_HOME%/../dbs" "
 
 
 

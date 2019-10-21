@@ -150,7 +150,7 @@ def main(args):
         logging.debug(args.infile)
         ddf = dd.from_delayed( delayed(pre_processing)(args.infile) )
     elif args.indir:        
-        infiles_aux = glob.glob( os.path.join(args.indir,"**/ID.tsv"), recursive=True )
+        infiles_aux = glob.glob( os.path.join(args.indir,"ID.tsv"), recursive=True )
         infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in expt) ]
         logging.debug(infiles)
         ddf = dd.from_delayed( [delayed(pre_processing)(file, expt) for file in infiles] )

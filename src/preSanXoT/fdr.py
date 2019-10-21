@@ -240,7 +240,7 @@ def main(args):
 
   
     logging.info("extract the list of files from the given experiments")
-    infiles_aux = glob.glob( os.path.join(inputfolder,"**/*_PSMs.txt"), recursive=True )
+    infiles_aux = glob.glob( os.path.join(inputfolder,"*_PSMs.txt"), recursive=True )
     infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in Expt) ]
     logging.debug(infiles)
 
