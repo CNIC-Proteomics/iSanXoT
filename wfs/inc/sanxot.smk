@@ -26,6 +26,20 @@ def create_ad_hoc_params(method, wildcards):
             rep["--PARAMS__FDR--"]        = lbl_fdr
             rep["--PARAMS__VARIANCE--"]   = lbl_var
         
+    elif method == "scan2peptide_ptm":
+        if wildcards and wildcards.exp and wildcards.name:
+            lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["s>p FDR"])
+            try:
+                if type(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"]) is bool:
+                    lbl_var = " -V s2p_noptm_infoFile.txt "
+                else:
+                    f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
+                    lbl_var = " -v {} ".format(str(f))
+            except:
+                lbl_var = " -V s2p_noptm_infoFile.txt "
+            rep["--PARAMS__FDR--"]        = lbl_fdr
+            rep["--PARAMS__VARIANCE--"]   = lbl_var
+
     elif method == "peptide2protein":
         if wildcards and wildcards.exp and wildcards.name:
             lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["p>q FDR"])

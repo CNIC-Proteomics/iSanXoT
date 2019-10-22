@@ -96,7 +96,7 @@ CMD /C " "%NODE_HOME%/npm" install ps-tree --global "
 ECHO **
 ECHO **
 ECHO ** download databases
-SET  DB_URL=https://www.cnic.es/nextcloud/s/PkTwfCFRLn4MZ3o/download
+SET  DB_URL=https://www.cnic.es/nextcloud/index.php/s/Pm6AJ65XQjeBM5G/download
 CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/download_dbs.py" "%DB_URL%" "%SRC_HOME%/../dbs" "
 
 

@@ -30,8 +30,9 @@ for r in rul:
             '''
             Execute rules with one input directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             output:
@@ -43,14 +44,15 @@ for r in rul:
 
 
     # rule that works on the directories:
-    # from "SOMEWHERE INDIR" => TMPDIR
+    # from "SOMEWHERE INDIR" => EXPDIR
     if r["enabled"] and r["executor"] == "indir_to_expdir":
         rule:
             '''
             Execute rules with one input directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             output:
@@ -68,8 +70,9 @@ for r in rul:
             '''
             Execute rules with one input directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             output:
@@ -87,8 +90,9 @@ for r in rul:
             '''
             Rules for the cases: accepts input and output files without the modification of directories
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -102,14 +106,15 @@ for r in rul:
 
 
     # rule that works on the directories:
-    # from "SOMEWHERE INFILES" => OUTDIR
+    # from "SOMEWHERE INFILES" => EXPDIR
     if r["enabled"] and r["executor"] == "outdir_to_expdir":
         rule:
             '''
             Rules for the cases: accepts input and output files without the modification of directories
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -129,8 +134,9 @@ for r in rul:
             '''
             Execute rules that work over the experiment directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -144,14 +150,15 @@ for r in rul:
 
 
     # rule that works on the directories:
-    # from TMPDIR => TMPDIR
+    # from NAMEDIR => NAMEDIR
     if r["enabled"] and r["executor"] == "on_namedir":
         rule:
             '''
             Execute rules that work over the experiment directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -171,8 +178,9 @@ for r in rul:
             '''
             Execute rules that work over the experiment directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -186,14 +194,15 @@ for r in rul:
 
 
     # rule that works on the directories:
-    # from TMPDIR => TMPDIR
+    # from NAMEDIR => NAMEDIR
     if r["enabled"] and r["executor"] == "expdir_to_namedir":
         rule:
             '''
             Execute rules that work over the experiment directory
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -208,14 +217,15 @@ for r in rul:
 
 
     # rule that works on the directories:
-    # from OUTDIR => TMPDIR
+    # from OUTDIR => NAMEDIR
     if r["enabled"] and r["executor"] == "outdir_to_namedir":
         rule:
             '''
             Execute the rule for most of scripts of SanXoT
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -235,8 +245,9 @@ for r in rul:
             '''
             Execute the rule for most of scripts of SanXoT
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:
@@ -249,14 +260,15 @@ for r in rul:
                 run_rule(input, output, log, params,wildcards)
 
     # rule that works on the directories:
-    # from TMPDIR => RSTDIR
+    # from NAMEDIR => RSTDIR
     if r["enabled"] and r["executor"] == "namedir_to_rstdir":
         rule:
             '''
             Execute the rule for most of scripts of SanXoT
             '''
-            threads: r["threads"]
-            message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
             params:
                 name=r["name"]
             input:

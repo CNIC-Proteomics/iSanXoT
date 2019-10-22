@@ -12,7 +12,7 @@ function addParams(data) {
     // discard outliers -----
     // add tags into 'scan2peptide', peptide2protein','protein2category' for sanxot1 and sanxot2
     if ( document.querySelector('#discardOutliers') && document.querySelector('#discardOutliers').checked ) {
-        parametor.addParamsInMethod(data["workflow"]["rules"], [4,5,6], [0,2], `--tags="!out"`)
+        parametor.addParamsInMethod(data["workflow"]["rules"], [4,5,7], [2], `--tags="!out"`)
     }
     return data
 } // end addParams

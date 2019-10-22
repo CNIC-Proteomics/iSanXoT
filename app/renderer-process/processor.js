@@ -138,9 +138,9 @@ class logger {
                     data.perc   = '100%';
                     if ( time ) { data.etime = this._parseDate(time) };
                 }
-                let steps = block.match(/\s*steps\s*\(.*?\)/g);
-                if ( steps ) {
-                    let perc = block.match(/\(.*?\)/g);
+                let steps = block.match(/\s*steps\s*\(.*?\)\s*done/g);
+                if ( steps && steps.length > 0) {
+                    let perc = steps[0].match(/\(.*?\)/g);
                     perc = perc.toString().replace(/\(|\)/g,'')
                     data.perc = perc;
                 }

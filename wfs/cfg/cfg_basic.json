@@ -15,7 +15,6 @@
       "description": "Calculation of FDR",
       "executor": "indir_to_outdir",
       "enabled": true,
-      "threads": 30,
       "inputs":  [],
       "outputs": ["ID.tsv"],
       "methods": [{
@@ -29,7 +28,6 @@
       "description": "Calculation of ratios (Xs, Vs,...)",
       "executor": "outdir_to_expdir",
       "enabled": true,
-      "threads": 30,
       "inputs":  ["ID.tsv"],
       "outputs": ["ID-q.tsv"],
       "methods": [{
@@ -42,7 +40,6 @@
       "description": "Extract information from ID-q file",
       "executor": "expdir_to_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["ID-q.tsv"],
       "outputs": ["u_scans.tsv", "s2p_rels.tsv", "p2q_rels.tsv"],
       "methods": [{
@@ -66,7 +63,6 @@
       "description": "SanXoT node: calibrate",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["u_scans.tsv", "s2p_rels.tsv"],
       "outputs": ["scans.tsv"],
       "methods": [{
@@ -80,7 +76,6 @@
       "description": "SanXoT node: scan to peptide",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["scans.tsv", "s2p_rels.tsv"],
       "outputs": ["peptides.tsv"],
       "methods": [{
@@ -102,7 +97,6 @@
       "description": "SanXoT node: peptide to protein",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["peptides.tsv", "p2q_rels.tsv"],
       "outputs": ["proteins.tsv"],
       "methods": [{
@@ -124,7 +118,6 @@
       "description": "SanXoT node: protein to category",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["proteins.tsv"],
       "outputs": ["categories.tsv"],
       "methods": [{
@@ -146,7 +139,6 @@
       "description": "SanXoT node: peptide/protein/category to all",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["peptides.tsv", "proteins.tsv", "categories.tsv"],
       "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
       "methods": [{
@@ -170,7 +162,6 @@
       "description": "Merge the results of SanXoT nodes",
       "executor": "namedir_to_rstdir",
       "enabled": true,
-      "threads": 1,
       "inputs":  ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
       "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
       "methods": [{

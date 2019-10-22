@@ -15,20 +15,18 @@
       "description": "Calculation of ratios (Xs, Vs,...)",
       "executor": "indir_to_expdir",
       "enabled": true,
-      "threads": 3,
       "inputs":  [],
       "outputs": ["ID-q.tsv"],
       "methods": [{
         "script": "preSanXoT/ratios.py",
         "inputs":  { "--indir": "--WF__INDIR--" },
-        "params":  "--datfile \"--WF__INDATA--\"  --outdir \"--WF__WKS__TMPDIR--\""
+        "params":  "--datfile \"--WF__INDATA--\"  --outdir \"--WF__WKS__TMPDIR--\" -v"
       }]
     },{
         "name": "aljamia",
         "description": "Extract information from ID-q file",
         "executor": "expdir_to_namedir",
         "enabled": true,
-        "threads": 3,
         "inputs":  ["ID-q.tsv"],
         "outputs": ["u_scans.ptm.tsv", "u_scans.noptm.tsv", "s2p_rels.ptm.tsv", "s2p_rels.noptm.tsv", "p2q_rels.ptm.tsv", "p2q_rels.noptm.tsv"],
         "methods": [{
@@ -67,7 +65,6 @@
       "description": "Concatenate files from aljamia",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 1,
       "inputs":  ["s2p_rels.ptm.tsv", "s2p_rels.noptm.tsv", "p2q_rels.ptm.tsv", "p2q_rels.noptm.tsv"],
       "outputs": ["s2p_rels.tsv", "p2q_rels.tsv"],
       "methods": [{
@@ -84,7 +81,6 @@
       "description": "SanXoT node: calibrate",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
       "inputs":  ["u_scans.ptm.tsv", "u_scans.noptm.tsv", "s2p_rels.tsv"],
       "outputs": ["scans.ptm.tsv", "scans.noptm.tsv"],
       "methods": [{
@@ -97,44 +93,146 @@
         "inputs":  { "-d": "u_scans.noptm.tsv" },
         "outputs": { "-r": "s2p_rels.tsv", "-o": "scans.noptm.tsv" },
         "params":  "-a s2p_noptm -g "
-      }]
-
-:: SANXOT S2P -----------------
-set sanxotS2P_in_outs_NM=sanxot.exe -aS2P_inOuts_noMOD -p"%BaseFolder%\%%j\TMT\Sanxot\%%i\data" 
--d"scan_noMOD.xls" -r"%BaseFolder%\%%j\TMT\Sanxot\%%i\additional_data\S2P_RelationsFile.xls" -g
-set sanxotsieveSP_NM=sanxotsieve.exe -aS2POuts_noMOD -p"%BaseFolder%\%%j\TMT\Sanxot\%%i\data" -d"scan_noMOD.xls" -r"%BaseFolder%\%%j\TMT\Sanxot\%%i\additional_data\S2P_RelationsFile.xls" -f0.01 -V"S2P_inOuts_noMOD_infoFile.txt"
-set sanxotS2P_no_outs_NM=sanxot.exe -aS2P_noOuts_noMOD -p"%BaseFolder%\%%j\TMT\Sanxot\%%i\data" -d"scan_noMOD.xls" -r"%BaseFolder%\%%j\TMT\Sanxot\%%i\data\S2POuts_noMOD_tagged.xls" -o"peptide_noMOD.xls" -g -V"S2P_inOuts_noMOD_infoFile.txt" -f --tags="!out"
-
-set sanxotS2P_in_outs_PTM=sanxot.exe -aS2P_inOuts_MOD -p"%BaseFolder%\%%j\TMT\Sanxot\%%i\data" -d"scan_MOD.xls" -r"%BaseFolder%\%%j\TMT\Sanxot\%%i\additional_data\S2P_RelationsFile.xls" -g -f -V"S2P_inOuts_noMOD_infoFile.txt"
-set sanxotsieveSP_PTM=sanxotsieve.exe -aS2POuts_MOD -p"%BaseFolder%\%%j\TMT\Sanxot\%%i\data" -d"scan_MOD.xls" -r"%BaseFolder%\%%j\TMT\Sanxot\%%i\additional_data\S2P_RelationsFile.xls" -f0.01 -V"S2P_inOuts_noMOD_infoFile.txt"
-set sanxotS2P_no_outs_PTM=sanxot.exe -aS2P_noOuts_MOD -p"%BaseFolder%\%%j\TMT\Sanxot\%%i\data" -d"scan_MOD.xls" -r"%BaseFolder%\%%j\TMT\Sanxot\%%i\data\S2POuts_MOD_tagged.xls" -o"peptide_MOD.xls" -g -V"S2P_inOuts_noMOD_infoFile.txt" -f --tags="!out"
-
-set copypeptide=copy "%BaseFolder%\%%j\TMT\Sanxot\%%i\data\peptide_noMOD.xls"+"%BaseFolder%\%%j\TMT\Sanxot\%%i\data\peptide_MOD.xls" "%BaseFolder%\%%j\TMT\Sanxot\%%i\data\peptide.xls"
-      
+      }]      
     },{
-      "name": "scan2peptide",
+      "name": "scan2peptide_ptm",
       "description": "SanXoT node: scan to peptide",
       "executor": "on_namedir",
       "enabled": true,
-      "threads": 3,
-      "inputs":  ["scans.tsv", "s2p_rels.tsv"],
-      "outputs": ["peptides.tsv"],
+      "inputs":  ["scans.noptm.tsv", "s2p_rels.tsv"],
+      "outputs": ["peptides.noptm.tsv", "s2p_noptm_infoFile.txt"],
       "methods": [{
         "script": "SanXoT/sanxot.py",
-        "inputs":  { "-d": "scans.tsv", "-r": "s2p_rels.tsv" },
-        "params":  "-a s2p -g -b -s"
+        "inputs":  { "-d": "scans.noptm.tsv", "-r": "s2p_rels.tsv" },
+        "params":  "-a s2p_noptm -g -b -s"
       },{
         "script": "SanXoT/sanxotsieve.py",
-        "inputs":  { "-d": "scans.tsv", "-r": "s2p_rels.tsv" },
+        "inputs":  { "-d": "scans.noptm.tsv", "-r": "s2p_rels.tsv" },
         "params":  "--PARAMS__FDR-- --PARAMS__VARIANCE--"
       },{
         "script": "SanXoT/sanxot.py",
-        "inputs":  { "-d": "scans.tsv", "-r": "scans_tagged.tsv" },
-        "outputs": { "-o": "peptides.tsv" },
-        "params":  "-a s2p -g -f --PARAMS__VARIANCE--"
+        "inputs":  { "-d": "scans.noptm.tsv", "-r": "scans.noptm_tagged.tsv" },
+        "outputs": { "-o": "peptides.noptm.tsv" },
+        "params":  "-a s2p_noptm -g -f --PARAMS__VARIANCE--"
       }]  
-  
-
+    },{
+      "name": "scan2peptide_ptm",
+      "description": "SanXoT node: scan to peptide",
+      "executor": "on_namedir",
+      "enabled": true,
+      "inputs":  ["scans.ptm.tsv", "s2p_rels.tsv", "s2p_noptm_infoFile.txt"],
+      "outputs": ["peptides.ptm.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "scans.ptm.tsv", "-r": "s2p_rels.tsv" },
+        "params":  "-a s2p_ptm -g -b -s"
+      },{
+        "script": "SanXoT/sanxotsieve.py",
+        "inputs":  { "-d": "scans.ptm.tsv", "-r": "s2p_rels.tsv" },
+        "params":  "--PARAMS__FDR-- --PARAMS__VARIANCE--"
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "scans.ptm.tsv", "-r": "scans.ptm_tagged.tsv" },
+        "outputs": { "-o": "peptides.ptm.tsv" },
+        "params":  "-a s2p_ptm -g -f --PARAMS__VARIANCE--"
+      }]    
+    },{
+      "name": "concatenate",
+      "description": "Concatenate files from scan2peptide",
+      "executor": "on_namedir",
+      "enabled": true,
+      "inputs":  ["peptides.noptm.tsv", "peptides.ptm.tsv"],
+      "outputs": ["peptides.tsv"],
+      "methods": [{
+        "script": "SanXoT/concatenate.py",
+        "inputs":  { "--infiles": ["peptides.noptm.tsv", "peptides.ptm.tsv"] },
+        "outputs": { "--outfile": "peptides.tsv" }
+      }]  
+    },{
+      "name": "peptide2protein",
+      "description": "SanXoT node: peptide to protein",
+      "executor": "on_namedir",
+      "enabled": true,
+      "inputs":  ["peptides.tsv", "p2q_rels.tsv"],
+      "outputs": ["proteins.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "peptides.tsv", "-r": "p2q_rels.tsv" },
+        "params":  "-a p2q -g -b -s"
+      },{
+        "script": "SanXoT/sanxotsieve.py",
+        "inputs":  { "-d": "peptides.tsv", "-r": "p2q_rels.tsv" },
+        "params":  "--PARAMS__FDR-- --PARAMS__VARIANCE--"
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "peptides.tsv", "-r": "peptides_tagged.tsv" },
+        "outputs": { "-o": "proteins.tsv" },
+        "params":  "-a p2q -g -f --PARAMS__VARIANCE--"
+      }]  
+    },{
+      "name": "protein2category",
+      "description": "SanXoT node: protein to category",
+      "executor": "on_namedir",
+      "enabled": true,
+      "inputs":  ["proteins.tsv"],
+      "outputs": ["categories.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "proteins.tsv" },
+        "params":  "-a q2c -g -b -s -r \"--WF__INFILE__CAT--\""
+      },{
+        "script": "SanXoT/sanxotsieve.py",
+        "inputs":  { "-d": "proteins.tsv" },
+        "params":  "-r \"--WF__INFILE__CAT--\" --PARAMS__FDR-- --PARAMS__VARIANCE--"
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "proteins.tsv", "-r": "proteins_tagged.tsv" },
+        "outputs": { "-o": "categories.tsv" },
+        "params":  "-a q2c -g -f --PARAMS__VARIANCE--"
+      }]
+    },{
+      "name": "everything2all",
+      "description": "SanXoT node: peptide/protein/category to all",
+      "executor": "on_namedir",
+      "enabled": true,
+      "inputs":  ["peptides.tsv", "proteins.tsv", "categories.tsv"],
+      "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "methods": [{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "peptides.tsv" },
+        "outputs": { "-z": "p2a_outStats.tsv" },
+        "params":  "-a p2a -C -g "
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "proteins.tsv" },
+        "outputs": { "-z": "q2a_outStats.tsv" },
+        "params":  "-a q2a -C -g -f "
+      },{
+        "script": "SanXoT/sanxot.py",
+        "inputs":  { "-d": "categories.tsv" },
+        "outputs": { "-z": "c2a_outStats.tsv" },
+        "params":  "-a c2a -C -g -f -v 0"
+      }]  
+    },{
+      "name": "collector",
+      "description": "Merge the results of SanXoT nodes",
+      "executor": "namedir_to_rstdir",
+      "enabled": true,
+      "inputs":  ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "methods": [{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "p2a_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex p2a_outStats.tsv"
+      },{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "q2a_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex q2a_outStats.tsv"
+      },{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "c2a_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex c2a_outStats.tsv"
+      }]  
     }]
   }
 }
