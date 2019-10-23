@@ -2,6 +2,7 @@
   "indata": "",
   "indir": "",
   "infilenames": [],
+  "species": "",
   "dbfile": "",
   "catfile": "",
   "outdir": "",
@@ -13,50 +14,62 @@
     "rules": [{
       "name": "fdr",
       "description": "Calculation of FDR",
-      "executor": "indir_to_outdir",
+      "executor": "indir_to_expdir",
       "enabled": true,
       "inputs":  [],
       "outputs": ["ID.tsv"],
       "methods": [{
         "script": "preSanXoT/fdr.py",
         "inputs":  { "--indir": "--WF__INDIR--" },
-        "outputs": { "--outfile": "ID.tsv" },
-        "params":  "-v "
+        "params":  " --outdir \"--WF__WKS__TMPDIR--\" -v"
       }]
     },{
       "name": "ratios",
       "description": "Calculation of ratios (Xs, Vs,...)",
-      "executor": "outdir_to_expdir",
+      "executor": "on_expdir",
       "enabled": true,
       "inputs":  ["ID.tsv"],
       "outputs": ["ID-q.tsv"],
       "methods": [{
         "script": "preSanXoT/ratios.py",
         "inputs":  { "--infile": "ID.tsv" },
-        "params":  "--datfile \"--WF__INDATA--\" --outdir \"--WF__WKS__TMPDIR--\" -v"
+        "params":  "--datfile \"--WF__INDATA--\" -v"
       }]
+    },{
+      "name": "masterq",
+      "description": "Calculation of Master Protein",
+      "executor": "on_expdir",
+      "enabled": true,
+      "inputs":  ["ID-q.tsv"],
+      "outputs": ["ID-mq.tsv"],
+      "methods": [{
+        "script": "preSanXoT/masterQ.py",
+        "inputs":  { "--infile": "ID-q.tsv" },
+        "outputs": { "--outfile": "ID-mq.tsv" },
+        "params":  "--species \"--WF__SPECIES--\" --pretxt \"sp\" --indb \"--WF__INFILE__DB--\" -v"        
+      }]  
     },{
       "name": "aljamia",
       "description": "Extract information from ID-q file",
       "executor": "expdir_to_namedir",
       "enabled": true,
-      "inputs":  ["ID-q.tsv"],
+      "inputs":  ["ID-mq.tsv"],
       "outputs": ["u_scans.tsv", "s2p_rels.tsv", "p2q_rels.tsv"],
       "methods": [{
         "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
+        "inputs":  { "-x": "ID-mq.tsv" },
         "outputs": { "-o": "u_scans.tsv" },
         "params":  "-i [Spectrum_File]-[Scan]-[Charge] -j [Xs_--TAG--_vs_--CONTROLTAG--] -k [Vs_--TAG--_vs_--CONTROLTAG--]"
       },{
         "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
+        "inputs":  { "-x": "ID-mq.tsv" },
         "outputs": { "-o": "s2p_rels.tsv" },
         "params":  "-i [SequenceMod] -j [Spectrum_File]-[Scan]-[Charge]"
       },{
         "script": "SanXoT/aljamia.py",
-        "inputs":  { "-x": "ID-q.tsv" },
+        "inputs":  { "-x": "ID-mq.tsv" },
         "outputs": { "-o": "p2q_rels.tsv" },
-        "params":  "-i [Protein] -j [SequenceMod]"
+        "params":  "-i [MasterQ] -j [SequenceMod]"
       }]
     },{
       "name": "klibrate",

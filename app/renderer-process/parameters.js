@@ -87,6 +87,16 @@ function getInFileDir(tid) {
     }
 } // end getInFileDir
 
+function getInValue(tid) {
+    if ( !$(`#${tid}`).attr("discard") ) {
+        let f = $(`#${tid}`).val();
+        return f;
+    }
+    else {
+        return "";
+    }
+} // end getInValue
+
 function createLocalDir(tid) {
     if ( !$(`#${tid}`).attr("discard") ) {
         // let f = document.querySelector('#'+tid).value;
@@ -130,6 +140,7 @@ function replaceConsts(data) {
     sdta = sdta.replace(/--WF__INDATA--/g, data["indata"]);
     sdta = sdta.replace(/--WF__INDIR--/g, data["indir"]);
     sdta = sdta.replace(/--WF__INFILE__NAMES--/g, data["infilenames"]);
+    sdta = sdta.replace(/--WF__SPECIES--/g, data["species"]);
     sdta = sdta.replace(/--WF__INFILE__DB--/g, data["dbfile"]);
     sdta = sdta.replace(/--WF__INFILE__CAT--/g, data["catfile"]);
     sdta = sdta.replace(/--WF__OUTDIR--/g, data["outdir"]);
@@ -140,26 +151,7 @@ function replaceConsts(data) {
     let dta = JSON.parse(sdta);
 
     return dta;
-} // end replaceTags
-
-function replaceConsts(data) {
-    //convert to JSON string
-    let sdta = JSON.stringify(data);
-    // replace constants
-    sdta = sdta.replace(/--WF__INDATA--/g, data["indata"]);
-    sdta = sdta.replace(/--WF__INDIR--/g, data["indir"]);
-    sdta = sdta.replace(/--WF__INFILE__NAMES--/g, data["infilenames"]);
-    sdta = sdta.replace(/--WF__INFILE__DB--/g, data["dbfile"]);
-    sdta = sdta.replace(/--WF__INFILE__CAT--/g, data["catfile"]);
-    sdta = sdta.replace(/--WF__OUTDIR--/g, data["outdir"]);
-    sdta = sdta.replace(/--WF__WKS__TMPDIR--/g, data["tmpdir"]);
-    sdta = sdta.replace(/--WF__WKS__RSTDIR--/g, data["rstdir"]);
-    sdta = sdta.replace(/--WF__WKS__LOGDIR--/g, data["logdir"]);
-    // convert back to array
-    let dta = JSON.parse(sdta);
-
-    return dta;
-} // end replaceTags
+} // end replaceConsts
 
 function convertSelectedMethods(dismethods) {
     // convert the selected methods in the checkbox
@@ -167,6 +159,7 @@ function convertSelectedMethods(dismethods) {
     let methods = [];
     let temp = {
         'fdr': ['fdr'],
+        'masterq': ['masterq'],
         'ratios': ['ratios'],
         'sanxot': ['aljamia','klibrate','scan2peptide','peptide2protein','protein2category','everything2all','collector']
     };
@@ -202,6 +195,8 @@ function createConfData(conf, params, func_addParams) {
         data['rstdir'] = params['outdir']+'/results';
         data['logdir'] = params['outdir']+'/logs';
     }
+    // species
+    if ('species' in params) { data['species'] = params['species']; }
     // add category
     if ('catfile' in params) { data['catfile'] = params['catfile']; }
     // add db file
@@ -265,6 +260,7 @@ function endisConfMethod(data) {
 // Export modules
 module.exports.createtasktableFile = createtasktableFile;
 module.exports.getInFileDir = getInFileDir;
+module.exports.getInValue = getInValue;
 module.exports.createLocalDir = createLocalDir;
 module.exports.addParamsInMethod = addParamsInMethod;
 module.exports.createConfData = createConfData;
@@ -298,6 +294,7 @@ if ( document.getElementById('select-indir') !== null ) {
         }); 
     },false);    
 }
+
 if ( document.getElementById('select-infile') !== null ) {
     document.getElementById('select-infile').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
@@ -309,6 +306,7 @@ if ( document.getElementById('select-infile') !== null ) {
         });
     });
 }
+
 if ( document.getElementById('select-outdir') !== null ) {
     document.getElementById('select-outdir').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
@@ -320,6 +318,45 @@ if ( document.getElementById('select-outdir') !== null ) {
         }); 
     },false);
 }
+
+// if ( document.getElementById('species') !== null ) {
+//     document.getElementById('species').addEventListener('change', function(){
+//         if ( this.value === "personal" ) {
+//             document.getElementById('dbfile').value = "";
+//             document.getElementById("dbfile").disabled = false;
+//             document.getElementById("select-dbfile").disabled = false;
+//         }
+//     });
+// }
+
+if ( document.getElementById('def-dbfile') !== null ) {
+    document.getElementById('def-dbfile').addEventListener('change', function(){
+        if ( this.value === "personal" ) {
+            document.getElementById('dbfile').value = "";
+            document.getElementById("dbfile").disabled = false;
+            document.getElementById("select-dbfile").disabled = false;
+        }
+        else {
+            let dbsdir = process.env.ISANXOT_SRC_HOME + '/dbs/current_release';
+            let files = fs.readdirSync(dbsdir).filter(fn => fn.startsWith(this.value) & fn.endsWith('.fasta'));
+            document.getElementById('dbfile').value = dbsdir + '/' + files[0];    
+            document.getElementById("dbfile").disabled = true;
+            document.getElementById("select-dbfile").disabled = true;
+        }
+    });
+}
+if ( document.getElementById('select-catfile') !== null ) {
+    document.getElementById('select-catfile').addEventListener('click', function(){
+        dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
+            if( files === undefined ){
+                console.log("No category file selected");
+            } else{
+                document.getElementById("catfile").value = files[0];
+            }
+        });
+    });
+}
+
 if ( document.getElementById('def-catfile') !== null ) {
     document.getElementById('def-catfile').addEventListener('change', function(){
         if ( this.value === "personal" ) {

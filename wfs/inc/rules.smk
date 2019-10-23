@@ -132,7 +132,7 @@ for r in rul:
     if r["enabled"] and r["executor"] == "on_outdir":
         rule:
             '''
-            Execute rules that work over the experiment directory
+            Execute rules that work over the main output directory
             '''
             # threads: r["threads"]
             # message: "{}: executing with {} threads".format(r["name"], "{threads}")
@@ -148,6 +148,27 @@ for r in rul:
             run:
                 run_rule(input, output, log, params,wildcards)
 
+
+    # rule that works on the directories:
+    # from EXPDIR => EXPDIR
+    if r["enabled"] and r["executor"] == "on_expdir":
+        rule:
+            '''
+            Execute rules that work over the experiment directory
+            '''
+            # threads: r["threads"]
+            # message: "{}: executing with {} threads".format(r["name"], "{threads}")
+            message: "{}: executing".format(r["name"])
+            params:
+                name=r["name"]
+            input:
+                TMP_OUTDIR+"/{exp}/"+fname for fname in r["inputs"]
+            output:
+                TMP_OUTDIR+"/{exp}/"+fname for fname in r["outputs"]
+            log:
+                LOG_OUTDIR+"/"+r["name"]+"_{exp}.log"
+            run:
+                run_rule(input, output, log, params,wildcards)
 
     # rule that works on the directories:
     # from NAMEDIR => NAMEDIR

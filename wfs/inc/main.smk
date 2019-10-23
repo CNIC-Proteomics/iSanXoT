@@ -115,7 +115,7 @@ def setup_outfiles_from_indata():
                 yield expand(["{outdir}/{fname}"], outdir=OUTDIR, fname=outputs)
 
             # rules where the outputs are saved in the experiment directories
-            if rule["executor"] == "indir_to_expdir" or rule["executor"] == "outdir_to_expdir":
+            if rule["executor"] == "indir_to_expdir" or rule["executor"] == "outdir_to_expdir" or rule["executor"] == "on_expdir":
                 for exp, indat in INDATA.items():
                     yield expand(["{outdir}/{exp}/{fname}"], outdir=TMP_OUTDIR, exp=exp, fname=outputs)
 

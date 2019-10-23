@@ -30,22 +30,7 @@ ECHO **
 SET  NODE_HOME=%LIB_HOME%/node
 SET  NODE_PATH=%NODE_HOME%/node_modules
 
-:: create env variables ----------------------
-ECHO **
-ECHO **
-ECHO ** create the env. variables
-ECHO %SRC_HOME%
-ECHO %LIB_HOME%
-ECHO %PYTHON3x_HOME%
-ECHO %NODE_HOME%
-ECHO %NODE_PATH%
-SETX ISANXOT_MODE "%MODE%"
-SETX ISANXOT_LIB_HOME "%LIB_HOME%"
-SETX ISANXOT_PYTHON3x_HOME "%PYTHON3x_HOME%"
-SETX ISANXOT_NODE_HOME "%NODE_HOME%"
-SETX ISANXOT_NODE_PATH "%NODE_PATH%"
-
-REM Stablish this env variable for the git python
+:: Stablish this env variable for the git python
 SETX GIT_PYTHON_REFRESH quiet
 
 
@@ -99,9 +84,28 @@ SET  DB_URL=https://www.cnic.es/nextcloud/index.php/s/Pm6AJ65XQjeBM5G/download
 CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/download_dbs.py" "%DB_URL%" "%SRC_HOME%/../dbs" "
 
 
+:: TODO!!! ----- 
+:: CAPTURE THE ERROR IN BATCH
 
 GOTO :EndProcess
 
 :: wait to Enter => Good installation
 :EndProcess
+
+    :: create env variables ----------------------
+    ECHO **
+    ECHO **
+    ECHO ** create the env. variables
+    ECHO %SRC_HOME%
+    ECHO %LIB_HOME%
+    ECHO %PYTHON3x_HOME%
+    ECHO %NODE_HOME%
+    ECHO %NODE_PATH%
+    SETX ISANXOT_MODE "%MODE%"
+    SETX ISANXOT_LIB_HOME "%LIB_HOME%"
+    SETX ISANXOT_PYTHON3x_HOME "%PYTHON3x_HOME%"
+    SETX ISANXOT_NODE_HOME "%NODE_HOME%"
+    SETX ISANXOT_NODE_PATH "%NODE_PATH%"
+
+
     SET /P DUMMY=End of installation. Hit ENTER to continue...

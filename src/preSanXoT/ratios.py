@@ -143,50 +143,56 @@ def main(args):
 
     logging.info("get the ratios and experiments from the data file")
     expt, ratios = infiles_ratios(args.datfile)
+    logging.debug(expt)
+    logging.debug(ratios)
 
 
-    logging.info("get the input file or the list of input files")
     if args.infile:
+        logging.info("get indata from input file")
         logging.debug(args.infile)
-        ddf = dd.from_delayed( delayed(pre_processing)(args.infile) )
-    elif args.indir:        
+        df = pandas.read_csv(args.infile, sep="\t")
+        
+        logging.info("calculate ratios")
+        df = calculate_ratio(df, ratios)
+
+        logging.info('print output file')
+        outfile = os.path.dirname(os.path.realpath(args.infile)) + "/ID-q.tsv"
+        df.to_csv(outfile, sep="\t")
+
+    elif args.indir:
+        logging.info("get indata from a list of files")
         infiles_aux = glob.glob( os.path.join(args.indir,"*/ID.tsv"), recursive=True )
         infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in expt) ]
         logging.debug(infiles)
         ddf = dd.from_delayed( [delayed(pre_processing)(file, expt) for file in infiles] )
 
+        logging.info('create dask client')
+        with Client(n_workers=args.n_workers) as client:
+            logging.info('repartition by experiments')
+            ddf = ddf.set_index('Experiment')
+            Exptr = expt + [expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
+            ddf = ddf.repartition(divisions=Exptr)
+            
+            logging.info("calculate ratios")
+            ddf = ddf.map_partitions(calculate_ratio, ratios)
+            
+            logging.info('print output file')
+            outfiles = []
+            outdir = args.outdir if args.outdir else args.indir
+            for e in expt:
+                outdir_exp = outdir+"/"+e
+                if not os.path.exists(outdir_exp):
+                    os.makedirs(outdir_exp, exist_ok=False)
+                outfiles.append(outdir_exp+"/ID-q.tsv")
+            logging.debug(outfiles)
+            ddf.to_csv(outfiles, sep="\t", line_terminator='\n')
 
-    logging.info('create dask client')
-    with Client(n_workers=args.n_workers) as client:
-        logging.info('repartition by experiments')
-        ddf = ddf.set_index('Experiment')
-        logging.debug(expt)
-        Exptr = expt + [expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
-        # Exptr = expt
-        # outs = [ os.path.join(args.outdir,e,"kk.tsv") for e in expt ]
-        # ddf.to_csv( outs, sep="\t", line_terminator='\n')
-        ddf = ddf.repartition(divisions=Exptr)
-        
-        logging.info("calculate ratios")
-        ddf = ddf.map_partitions(calculate_ratio, ratios)
-        
-        logging.info('print output file')
-        outfiles = []
-        for e in expt:
-            outdir_exp = args.outdir+"/"+e
-            if not os.path.exists(outdir_exp):
-                os.makedirs(outdir_exp, exist_ok=False)
-            outfiles.append(outdir_exp+"/ID-q.tsv")
-        # outfiles = [ os.path.join(args.outdir,e,"ID-q.tsv") for e in expt ]
-        logging.debug( outfiles )
-        ddf.to_csv( outfiles, sep="\t", line_terminator='\n')
+            ddf.compute()
 
-        ddf.compute()
-
-    logging.info("remove temporal directory")
-    tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
-    logging.debug(tmp_dir)
-    shutil.rmtree(tmp_dir)
+        logging.info("remove temporal directory")
+        tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
+        logging.debug(tmp_dir)
+        shutil.rmtree(tmp_dir)
 
 
 
@@ -206,8 +212,8 @@ if __name__ == "__main__":
     conditional.add_argument('-id', '--indir', help='Input directory where are saved the identification files: ID.tsv')
 
     required.add_argument('-d',  '--datfile', required=True, help='File with the input data: experiments, task-name, ratio (num/den),...')
-    required.add_argument('-o',  '--outdir', required=True, help='Output directory where the ID-q file will be saved')
-
+    
+    parser.add_argument('-o',  '--outdir', help='Output directory where the ID-q file will be saved')
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
 

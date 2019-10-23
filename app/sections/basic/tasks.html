@@ -1,5 +1,6 @@
 <template class="task-template" id="tasks">
   <section class="tab-content">
+
     <h6 for="select-methods">Select methods</h6>
     <div class="in form-group row">
       <div class="form-group col checkbox-container" id="select-methods">
@@ -12,11 +13,27 @@
           <label for="ratios">Calculate the ratios</label>
         </div>
         <div>
+          <input type="checkbox" id="masterq" checked>
+          <label for="masterq">Calculate the masterQ</label>
+        </div>  
+        <div>
           <input type="checkbox" id="sanxot" checked>
-          <label for="sanxot">Calculate the quantification</label>
+          <label for="sanxot">Calculate the statistics</label>
         </div>
       </div>
     </div>
+
+    <h6 for="select-species">Choose the Species</h6>
+    <div class="out form-inline row">
+      <div class="input-group col">
+        <select class="custom-select" id="species">
+          <option value="Homo sapiens">Human</option>
+          <option value="Mus musculus">Mouse</option>
+          <option value="Sus scrofa">Pig</option>
+        </select>
+      </div>
+    </div>
+
     <h6 for="select-indir">Select input directory</h6>
     <div class="in form-inline row">
       <div class="input-group col">
@@ -26,6 +43,7 @@
         </div>
       </div>
     </div>
+
     <h6 for="select-outdir">Select output directory</h6>
     <div class="out form-inline row">
       <div class="input-group col">
@@ -36,8 +54,31 @@
       </div>
     </div>
 
+    <div name="select-dbfile">
+      <h6 for="select-dbfile">Choose a DataBase file <small>(by default, or your personal file)</small></h6>
+      <div class="form-group row">
+        <div class="form-group row col">
+          <select class="custom-select" id="def-dbfile">
+            <option value="human">category for Human</option>
+            <option value="mouse">category for Mouse</option>
+            <option value="pig">category for Pig</option>
+            <option value="personal">Or choose your file...</option>
+          </select>
+        </div>
+        <div class="form-group row col">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Select your database file" id="dbfile" value="" disabled/>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="select-dbfile" disabled>Choose a file</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div name="select-catfile">
-      <h6 for="select-catfile">Choose a Category file (by default, or your category file)</h6>
+      <h6 for="select-catfile">Choose a Category file <small>(by default, or your personal file)</small></h6>
       <div class="form-group row">
         <div class="form-group row col">
           <select class="custom-select" id="def-catfile">
@@ -57,23 +98,7 @@
         </div>
       </div>
     </div>
-
-    <!-- <div name="def-species">
-      <h6 for="select-catfile">Choose the Species</h6>
-      <div class="out form-inline row">
-        <div class="input-group col">
-          <select class="custom-select" id="def-species">
-            <option value="Homo sapiens">Human</option>
-            <option value="Mus musculus">Mouse</option>
-            <option value="Sus scrofa">Pig</option>
-          </select>
-        </div>
-      </div>
-    </div> -->
-
+  
   </section>
 
-  <script type="text/javascript">
-    // require('./renderer-process/basic/tasks')
-  </script>
 </template>

@@ -12,7 +12,7 @@ function addParams(data) {
     // discard outliers -----
     // add tags into 'scan2peptide', peptide2protein','protein2category' for sanxot1 and sanxot2
     if ( document.querySelector('#discardOutliers') && document.querySelector('#discardOutliers').checked ) {
-        parametor.addParamsInMethod(data["workflow"]["rules"], [4,5,6], [0,2], `--tags="!out"`)
+        parametor.addParamsInMethod(data["workflow"]["rules"], [5,6,7], [0,2], `--tags="!out"`)
     }
     // pRatio ------
     // add ncpu
@@ -86,17 +86,19 @@ function createParameters(conf) {
     //     return false;
     // }
     // OPTIONAL: create category file
+    let species = parametor.getInValue('species');
+    // OPTIONAL: create category file
+    let dbfile = parametor.getInFileDir('dbfile');
+    // OPTIONAL: create category file
     let catfile = parametor.getInFileDir('catfile');
-    // if ( !catfile ) {
-    //     exceptor.showMessageBox('Error Message', 'Category file is required');
-    //     return false;
-    // }
     // create the config data
     let cfgdata = parametor.createConfData(conf, {
         'indir': indir,
         'outdir': outdir,
         'tskfile': dtablefile,
-        'catfile': catfile
+        'species': species,
+        'catfile': catfile,
+        'dbfile': dbfile
     }, addParams);
     if ( !cfgdata ) {
         exceptor.showMessageBox('Error Message', 'Creating config data');

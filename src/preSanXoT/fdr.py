@@ -261,9 +261,22 @@ def main(args):
         ddf = ddf.repartition(divisions=Exptr)
 
         logging.info("map partitions")
-        d = ddf.map_partitions(pro, typeXCorr, FDRlvl, modifications, tagDecoy, Expt)
-        d = d.compute()
-        d.to_csv( args.outfile, sep="\t")
+        ddf = ddf.map_partitions(pro, typeXCorr, FDRlvl, modifications, tagDecoy, Expt)
+        # ddf = d.compute()
+        # ddf.to_csv( args.outfile, sep="\t")
+
+        logging.info('print output file')
+        outfiles = []
+        for e in Expt:
+            outdir_exp = args.outdir+"/"+e
+            if not os.path.exists(outdir_exp):
+                os.makedirs(outdir_exp, exist_ok=False)
+            outfiles.append(outdir_exp+"/ID.tsv")
+        logging.debug( outfiles )
+        ddf.to_csv( outfiles, sep="\t", line_terminator='\n')
+
+        ddf.compute()
+
 
     logging.info("remove temporal directory")
     tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
@@ -291,7 +304,7 @@ if __name__ == "__main__":
     parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
     parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
-    parser.add_argument('-o',  '--outfile',   required=True, help='Output file')
+    parser.add_argument('-o',  '--outdir',   required=True, help='Output directory')
     parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
