@@ -52,7 +52,6 @@ SETX GIT_PYTHON_REFRESH quiet
 :: create library directory ----------------------
 IF NOT EXIST "%LIB_HOME%" MD "%LIB_HOME%"
 
-GOTO :EndProcess
 
 :: install the 'python' ----------------------
 ECHO **
