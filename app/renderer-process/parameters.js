@@ -345,13 +345,13 @@ if ( document.getElementById('def-dbfile') !== null ) {
         }
     });
 }
-if ( document.getElementById('select-catfile') !== null ) {
-    document.getElementById('select-catfile').addEventListener('click', function(){
+if ( document.getElementById('select-dbfile') !== null ) {
+    document.getElementById('select-dbfile').addEventListener('click', function(){
         dialog.showOpenDialog({ properties: ['openFile']}, function (files) {
             if( files === undefined ){
-                console.log("No category file selected");
+                console.log("No database file selected");
             } else{
-                document.getElementById("catfile").value = files[0];
+                document.getElementById("dbfile").value = files[0];
             }
         });
     });
