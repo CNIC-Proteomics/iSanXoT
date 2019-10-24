@@ -96,9 +96,10 @@ def _calc_ratio(df, ControlTag, label):
     # calculate the Xs
     Xs = df[label].divide(df[ct], axis=0).applymap(numpy.log2)
     Xs = Xs.add_prefix("Xs_").add_suffix("_vs_"+ct)
-    Vs = df[label].gt(df[ct], axis=0)
     # calculate the Vs
+    Vs = df[label].gt(df[ct], axis=0)
     Vs = Vs.mask(Vs==False,df[ct], axis=0).mask(Vs==True, df[label], axis=0)
+    Vs = (Vs*Xs.notna().values).replace(0,"")
     Vs = Vs.add_prefix("Vs_").add_suffix("_vs_"+ct)
     #calculate the absolute values for all
     Vab = df[label]
