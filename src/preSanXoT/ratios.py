@@ -158,7 +158,7 @@ def main(args):
 
         logging.info('print output file')
         outfile = os.path.dirname(os.path.realpath(args.infile)) + "/ID-q.tsv"
-        df.to_csv(outfile, sep="\t")
+        df.to_csv(outfile, sep="\t", index=False)
 
     elif args.indir:
         logging.info("get indata from a list of files")

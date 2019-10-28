@@ -6,10 +6,12 @@ import sys
 import argparse
 import logging
 import pandas
+import numpy as np
 import re
+import itertools
 from Bio import SeqIO
 
-# import pprint
+import pprint
 
 
 # Module metadata variables
@@ -22,6 +24,7 @@ __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
 INCOLS = ['SequenceMod', 'Protein', 'Protein_Redundancy', 'Protein_Descriptions']
+
 
 class corrector:
     '''
@@ -47,8 +50,8 @@ class corrector:
         df = self.indat[cols]
         # create the report with the peptides and proteins
         [self.peptides, self.proteins] = self.get_reports(df, incols)
-        # logging.debug( "PEPTIDES:\n"+pprint.pformat(self.peptides) )
-        # logging.debug( "PROTEINS:\n"+pprint.pformat(self.proteins) )
+        logging.debug( "PEPTIDES:\n"+pprint.pformat(self.peptides) )
+        logging.debug( "PROTEINS:\n"+pprint.pformat(self.proteins) )
 
 
     def _extract_proteins_species(self, in_ids, seq, peptides):
@@ -70,21 +73,15 @@ class corrector:
             # extract descriptions, if apply
             if len(in_ids) >= 3 and in_ids[2] != "":
                 desc = in_ids[2].split(";")
-            # create report for the protein ...
-            # and description
+            # create report for the protein adding the description from the FASTA file
             for i, p_id in enumerate(ids):
-                if p_id != "":                    
-                    p_dsc = desc[i] if len(ids) == len(desc) else p_id
+                if p_id != "" and p_id in self.indb:
+                    p_dsc = ">"+self.indb[p_id].description
+                    p_db = self.indb[p_id].name.split("|")[0]
+                    p_len = len(self.indb[p_id].seq)
                     if p_id not in peptides[seq]['proteins']:
-                        peptides[seq]['proteins'][p_id] = { 'id': p_id, 'dsc': p_dsc, 'scans': 1}
-                        prot_ids[p_id] = { 'id': p_id, 'dsc': p_dsc }
-                        if p_id in self.indb:
-                            db = self.indb[p_id].name.split("|")[0]
-                            s_len = len(self.indb[p_id].seq)
-                            peptides[seq]['proteins'][p_id]['db'] = db
-                            peptides[seq]['proteins'][p_id]['len'] = s_len
-                            prot_ids[p_id]['db'] = db
-                            prot_ids[p_id]['len'] = s_len
+                        peptides[seq]['proteins'][p_id] = { 'id': p_id, 'dsc': p_dsc, 'db': p_db, 'len': p_len, 'scans': 1}
+                        prot_ids[p_id] = { 'id': p_id, 'dsc': p_dsc, 'db': p_db, 'len': p_len }
                     else:
                         peptides[seq]['proteins'][p_id]['scans'] += 1
                     # extract species
@@ -95,6 +92,9 @@ class corrector:
                         if sp not in peptides[seq]['species']:
                             peptides[seq]['proteins'][p_id]['species'] = sp
                             peptides[seq]['species'].append( sp )
+                else:
+                    sys.exit("ERROR: we don't find '{}' in the FASTA file!".format(p_id))
+
         return prot_ids
 
     def get_reports(self, df, incols):
@@ -175,6 +175,7 @@ class corrector:
             for pretxt in self.pretxt:
                 if pretxt == 'sp' or pretxt == 'tr': # get proteins in SwissProt or TrEMBL
                     pmat = list( filter( lambda x: 'db' in x and x['db'] == pretxt, prots) )
+                    print( pmat )
                 else: # another kind of regular expression
                     pmat = list( filter( lambda x: re.match(r'.*'+pretxt+'.*', x['dsc'], re.I | re.M), prots) )
                 # keep the matches                
@@ -239,7 +240,7 @@ class corrector:
             elif len(hprot) > 1:
                 hprot,hdeci = self._unique_protein_decision(hprot)
             # create list with the peptide solution
-            rst = hprot['id']
+            rst = hprot['dsc']
 
         return rst,hdeci
 
@@ -296,29 +297,229 @@ class corrector:
         if self.outdat is not None and not self.outdat.empty:
             self.outdat.to_csv(outfile, sep="\t", index=False)
 
- 
-def _print_exception(code, msg):
+
+
+
+
+
+# -------
+def add_descriptions(df, indb, tagDecoy):
     '''
-    Print the code message
+    Add the description for the proteins. Extract the genes (with redundances) and species discarding DECOY proteins
     '''
-    logging.exception(msg)
-    sys.exit(code)
+    # local functions
+    def get_fasta_desc(qs):
+        def _get_desc(q):
+            if q in indb:
+                return ">"+indb[q].description
+            else:
+                return ''
+        b = list(map(_get_desc, qs))
+        return b
+    def get_protein_len(qs):
+        def _get_len(q):
+            if q in indb:
+                return str(len(indb[q].seq))
+            else:
+                return ''
+        b = list(map(_get_len, qs))
+        return b
+    def _pattern_gene(i):
+        m = re.search('GN=([^\s]*)', i)
+        r = m.group(1) if m else ''
+        return r
+    def _pattern_species(i):
+        m = re.search('OS=([^\s]+\s+[^\s]+)', i)
+        r = m.group(1) if m else ''
+        return r
+    # create a list of tuples with the (ProteinID,ProteinDescription,ProteinLength)
+    a = list(df["Protein Accessions"].fillna("").str.split("\s*;\s*"))
+    d = list(map(get_fasta_desc, a))
+    l = list(map(get_protein_len, a))
+    da = [ list(itertools.chain(list(itertools.zip_longest(i,j,k,fillvalue='')))) for i,j,k in list(zip(d,a,l)) ]    
+    # sort and discard the DECOY proteins and the proteins without description
+    da = [ [i for i in sorted(s) if not (tagDecoy in i) and all(i)] for s in da ]
+    # get a list with the tuple 1 (ProteinDescription)
+    p = [ [i[0] for i in s] for s in da ]
+    # from the list of protein description: the first element, and the rest (redundancy)
+    pm = [ i[0] for i in p ]
+    pr = [ "_||_".join(i[1:]) for i in p ]
+    # get the list of protein length
+    pl = [ [i[2] for i in s] for s in da ]
+    pl = [ ";".join(i) for i in pl ]
+    # get the gene from the main protein
+    gm = [_pattern_gene(i) for i in pm]
+    # get the gene from the protein redundances
+    gr = [ [_pattern_gene(i) for i in j.split("_||_")] for j in pr]
+    # unique and without empty
+    gr = [ list(filter(None, list(set(i)) )) for i in gr]
+    gr = [ ";".join(set(i)) for i in gr ]
+    # get the list of unique species
+    s = [ [_pattern_species(i) for i in j] for j in p ]
+    s = [ ";".join(set(i)) for i in s ]
+    # return
+    return pm,pr,pl,gm,gr,s
+
+def get_num_peptides(df):
+    '''
+    Create the report with the protein values
+    '''
+    # create a list with the concatenate of Protein + ProteinRedundancy    
+    x = df["Protein"] + "_||_"+ df["Protein_Redundancy"]
+    x = x.str.replace(r'\_\|\|\_$', "")
+    x = list(x.str.split(r'\_\|\|\_'))
+    # create a list with the length of proteins (Protein + ProteinRedundancy)
+    y = list(df["Protein_Length"].str.split(";"))
+    # create a list of tuples with the (Proteins-all- + ProteinLength-all-
+    df.loc[:,'proteins_plus_lengths'] = [ list(map(lambda a,b: str(a)+"_||_"+str(b), i, j)) for i,j in list(zip(x,y)) ]
+    # create df with the list of peptides and proteins by row
+    lst_cols = 'proteins_plus_lengths'
+    df2 = pandas.DataFrame({
+            col:np.repeat(df[col].values, df[lst_cols].str.len()) for col in df.columns.drop(lst_cols)
+            }).assign(**{lst_cols:np.concatenate(df[lst_cols].values)})
+    # group by protein and sum the number of peptides
+    df2 = df2.groupby('proteins_plus_lengths')['SequenceMod'].count().reset_index()
+    # extract the length
+    df2[['Proteins','Lengths']] = df2['proteins_plus_lengths'].str.split("\_\|\|\_" , expand=True)
+    # rename and drop
+    df2.rename(columns={'SequenceMod': 'num_peptides'}, inplace=True)
+    df2.drop(columns=['proteins_plus_lengths'], inplace=True)
+#    df2['Lengths'] = df2['Lengths'].astype('int')
+    df2['Lengths'] = pandas.to_numeric(df2['Lengths'], errors='coerce')
+    # return
+    return df2
+
+def _master_decision(prots, pretxt):
+    '''
+    Take an unique protein based on
+    '''
+    hprot = None
+    decision = 0
+
+#    prots.to_csv("00.tsv", sep="\t")
+    
+    # 1. the preferenced text, if apply
+    # How many proteins match to the list of regexp
+    # Here we can apply features as Species, type of database (Sw or Tr), etc.
+    # If there is only one protein, we found
+    # It works in order. Selective
+    if pretxt is not None:
+        for rtxt in pretxt.split(","):            
+            pmat = prots.loc[prots['Proteins'].str.match(r'.*'+rtxt+'.*'),:]            
+            if pmat is not None and len(pmat.index) == 1:
+                hprot = pmat.iloc[0]['Proteins']
+                decision = 1
+            elif pmat is not None and len(pmat.index) > 1:
+                prots = pmat
+                
+                
+#    prots.to_csv("11.tsv", sep="\t")
+
+    # 2. Take the sorted sequence, if apply
+    # Extract the proteins with the minimum lenght of aminoacids
+    # If there is only one protein, we found
+    # It works in order. Selective
+    if hprot is None and decision == 0:
+        pmat = prots[prots['Lengths']==prots['Lengths'].min()].dropna(axis=1, thresh=1).dropna()
+        if prots is not None and len(prots.index) == 1:
+            hprot = prots.iloc[0]['Proteins']
+            decision = 2
+        elif pmat is not None and len(pmat.index) > 1:
+            prots = pmat
+
+#    prots.to_csv("22.tsv", sep="\t")
+    
+    # 3. Alphabetic order
+    # Extract the first protein
+    if hprot is None and decision == 0:
+        prots = prots.sort_values('Proteins')
+        prots = prots.iloc[0]
+        hprot = prots['Proteins']
+        decision = 3
+    # return
+    return hprot,decision
+
+
+def _master_protein(prots, proteins, pretxt):
+    '''
+    Calculate the master protein for one PSM
+    '''    
+    # get the proteins for the peptide
+    x = proteins.loc[proteins['Proteins'].isin(prots)]
+    # get the proteins with the maximum num of peptides
+    y = x[x['num_peptides']==x['num_peptides'].max()].dropna(axis=1, thresh=1).dropna()
+    # if there is only one protein, we get it
+    # otherwise, we need a decision
+    if len(y.index) == 1:
+        mq = y['Proteins'].iloc[0]
+        mq_t = -1    
+    else:
+        mq,mq_t = _master_decision(y, pretxt)
+    # return
+    return mq,mq_t
+    
+    
+    
+def get_master_protein(df, proteins, pretxt):
+    '''
+    Calculate the master protein for each PSM
+    '''    
+    # create a list with the concate of Protein + ProteinRedundancy
+    x = df["Protein"] + "_||_"+ df["Protein_Redundancy"]
+    x = x.str.replace(r'\_\|\|\_$', "")
+    a = list(x.str.split(r'\_\|\|\_'))
+    # calculate the master protein for each PSM
+    m,t = [ _master_protein(i, proteins, pretxt) for i in a ]
+    # return
+    return m,t
 
 def main(args):
     '''
     Main function
     '''
-    logging.info('create corrector object')
-    co = corrector(args.infile, args.species, args.pretxt, args.indb, args.columns)
+    # get the index of proteins: for UniProt case!! (key_function)
+    logging.info('create a UniProt report')
+    indb = SeqIO.index(args.indb, "fasta", key_function=lambda rec : rec.split("|")[1])
 
-    logging.info('calculate the unique protein')
-    co.get_unique_protein()
+    logging.info('read infile')
+    indat = pandas.read_csv(args.infile, sep="\t", na_values=['NA'], low_memory=False)
 
-    logging.info('merge with the input data file')
-    co.merge_w_indat()
+    # add the description for the proteins.
+    # extract the genes (with redundances) and species.
+    # discarding DECOY proteins
+    logging.info('create a report with the proteins info')
+    indat["Protein"],indat["Protein_Redundancy"],indat["Protein_Length"],indat["Gene"],indat["Gene_Redundancy"],indat["Species"] = add_descriptions(indat, indb, args.lab_decoy)
+    
+#    logging.info('create the report with the peptides and proteins')
+#    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
+#
+#    logging.info('calculate the masterQ')
+#    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
+##    indat["MasterQ"] = get_master_protein(indat, proteins, args.pretxt)
 
     logging.info('print output')
-    co.to_csv(args.outfile)
+    indat.to_csv(args.outfile, sep="\t", index=False)
+
+
+
+
+
+
+    # -----
+    # logging.info('create corrector object')
+    # co = corrector(args.infile, args.species, args.pretxt, args.indb, args.columns)
+
+    # logging.info('add the fasta description for each protein')
+    # co.add_prot_gen_description()
+
+    # logging.info('calculate the unique protein')
+    # co.get_unique_protein()
+
+    # logging.info('merge with the input data file')
+    # co.merge_w_indat()
+
+    # logging.info('print output')
+    # co.to_csv(args.outfile)
 
 
 if __name__ == "__main__":
@@ -327,24 +528,19 @@ if __name__ == "__main__":
         description='Create the relationship table for peptide2protein method (get unique protein)',
         epilog='''Examples:
         python  src/SanXoT/rels2pq_unique.py
-          -i ID-q.txt
-          -c "SequenceMod,Protein,Protein_Redundancy,Protein_Descriptions"
-          -s "Homo sapiens"
-          -p "sp"
+          -i ID-q.tsv
           -d Human_jul14.curated.fasta
-          -r p2q_rels_unique.tsv
+          -l "_INV_"
+          -p "Homo sapiens,sp"
+          -o ID-mq.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-i',  '--infile',  required=True, help='ID-q input file')
-    parser.add_argument('-c',  '--columns',  help='Columns to extract from the input file')
-    parser.add_argument('-o',  '--outfile',  required=True, help='Output file with the masterQ column')
-
-    parser.add_argument('-s',  '--species', help='First filter based on the species name')
-    parser.add_argument('-p',  '--pretxt',  nargs='+', type=str, help='in the case of a tie, we apply teh preferenced text checked in the comment line of a protein. Eg. Organism, etc.')
     parser.add_argument('-d',  '--indb',    help='in the case of a tie, we apply the sorted protein sequence using the given FASTA file')
-
-    parser.add_argument('-l',  '--logfile',  help='Output file with the log tracks')
-    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
+    parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
+    parser.add_argument('-p',  '--pretxt',  type=str, help='in the case of a tie, we apply teh preferenced text checked in the comment line of a protein. Eg. Organism, etc.')
+    parser.add_argument('-o',  '--outfile', required=True, help='Output file with the masterQ column')
+    parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
     # set-up logging

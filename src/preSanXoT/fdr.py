@@ -57,10 +57,8 @@ def targetdecoy(df, tagDecoy):
     '''
     Assing target and decoy proteins
     '''    
-    z=list(df["Protein Accessions"].str.split(";"))
-    p=[(all(tagDecoy  in item for item in i )) for i in z]
-    # p=list(map(int, p))
-    # return p
+    z = list(df["Protein Accessions"].str.split(";"))
+    p = [(all(tagDecoy  in item for item in i )) for i in z]
     r = [0 if i==True else 1 for i in p]
     return r
 
@@ -68,7 +66,6 @@ def Jumps(df, JumpsAreas):
     '''
     Correct monoisotopic mass
     '''
-    # s1=(df["Theo. MH+ [Da]"]-df["MH+ [Da]"])/df["Theo. MH+ [Da]"]*1e6
     s1=df["DeltaM [ppm]"]
     s2=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-1.003355))/df["Theo. MH+ [Da]"]*1e6
     s3=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+1.003355))/df["Theo. MH+ [Da]"]*1e6
@@ -125,37 +122,37 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     df["cXCorr"] = cXCorr(df)
     return df
 
-def ProteinsGenes(df, tagDecoy):
-    '''
-    Extract the protein, genes (with redundances) and species discarding DECOY proteins
-    '''
-    def _pattern_gene(i):
-        m = re.search('GN=([^\s]*)', i)
-        r = m.group(1) if m else ''
-        return r
-    def _pattern_species(i):
-        m = re.search('OS=([^\s]+\s+[^\s]+)', i)
-        r = m.group(1) if m else ''
-        return r
-    a = list(df["Protein Accessions"].fillna("").str.split(";"))
-    d = list(df["Protein Descriptions"].fillna("").str.split(";"))
-    ad = [ list(itertools.chain(list(itertools.zip_longest(i,j,fillvalue='')))) for i,j in list(zip(a,d)) ]
-    ad = [ ["|".join(i) for i in s] for s in ad ]
-    # discard DECOY proteins and sort
-    ad = [ [i for i in sorted(s) if not (tagDecoy in i)] for s in ad ]
-    # get the protein list: the first element, the rest => reduncances, and descriptions
-    p = [ [i.split("|")[0].strip() for i in s] for s in ad ]
-    pm = [ i[0] for i in p ]
-    pr = [ ";".join(i[1:]) for i in p ]
-    pd = [ ";".join(i) for i in ad ]
-    # get the gene list: the first element, the rest => reduncances
-    g = [ [_pattern_gene(i) for i in s] for s in ad ]
-    gm = [ i[0] for i in g ]
-    gr = [ ";".join(i[1:]) for i in g ]
-    # get the list of unique species
-    x = [ [_pattern_species(i) for i in s] for s in ad ]
-    s = [ ";".join(set(i)) for i in x ]
-    return pm,pr,pd,gm,gr,s
+# def ProteinsGenes(df, tagDecoy):
+#     '''
+#     Extract the protein, genes (with redundances) and species discarding DECOY proteins
+#     '''
+#     def _pattern_gene(i):
+#         m = re.search('GN=([^\s]*)', i)
+#         r = m.group(1) if m else ''
+#         return r
+#     def _pattern_species(i):
+#         m = re.search('OS=([^\s]+\s+[^\s]+)', i)
+#         r = m.group(1) if m else ''
+#         return r
+#     a = list(df["Protein Accessions"].fillna("").str.split(";"))
+#     d = list(df["Protein Descriptions"].fillna("").str.split(";"))
+#     ad = [ list(itertools.chain(list(itertools.zip_longest(i,j,fillvalue='')))) for i,j in list(zip(a,d)) ]
+#     ad = [ ["|".join(i) for i in s] for s in ad ]
+#     # discard DECOY proteins and sort
+#     ad = [ [i for i in sorted(s) if not (tagDecoy in i)] for s in ad ]
+#     # get the protein list: the first element, the rest => reduncances, and descriptions
+#     p = [ [i.split("|")[0].strip() for i in s] for s in ad ]
+#     pm = [ i[0] for i in p ]
+#     pr = [ ";".join(i[1:]) for i in p ]
+#     pd = [ ";".join(i) for i in ad ]
+#     # get the gene list: the first element, the rest => reduncances
+#     g = [ [_pattern_gene(i) for i in s] for s in ad ]
+#     gm = [ i[0] for i in g ]
+#     gr = [ ";".join(i[1:]) for i in g ]
+#     # get the list of unique species
+#     x = [ [_pattern_species(i) for i in s] for s in ad ]
+#     s = [ ";".join(set(i)) for i in x ]
+#     return pm,pr,pd,gm,gr,s
 
 def SequenceMod(df, mods):
     '''
@@ -211,13 +208,8 @@ def pro(ddf, typeXCorr, FDRlvl, mods, tagDecoy, Expt):
     # extract modifications and replace for final values
     if mods:
         ddf["SequenceMod"] = SequenceMod(ddf, mods)
-    # extract the redundance protein/genes discarding DECOY proteins
-    ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
-    # # rename columns
-    # ddf.rename(columns={
-    #     "Spectrum File": "Spectrum_File",
-    #     "First Scan": "Scan"
-    # }, inplace=True)
+    # # extract the redundance protein/genes discarding DECOY proteins
+    # ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
     return ddf
 
 

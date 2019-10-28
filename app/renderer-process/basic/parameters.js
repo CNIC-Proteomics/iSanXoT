@@ -27,7 +27,7 @@ function addParams(data) {
     }
     if (document.querySelector('#tagDecoy')) {
         let val = document.querySelector('#tagDecoy').value;
-        parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--lab_decoy ${val}`);
+        parametor.addParamsInMethod(data["workflow"]["rules"], [0,1], [0], `--lab_decoy ${val}`);
     }
     if (document.querySelector('#filterFDR')) {
         let val = document.querySelector('#filterFDR').value;

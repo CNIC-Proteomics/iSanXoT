@@ -51,9 +51,10 @@ if ( document.getElementById('sample') !== null ) {
     document.getElementById('indir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Busqueda_PD";
     document.getElementById('outdir').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2_wf_results";
     document.getElementById('def-catfile').value = 'human';
-    document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + '\\dbs\\current_release\\human_sw-tr.cat.tsv';
-    document.getElementById('def-dbfile').value = 'human';
-    document.getElementById('dbfile').value = process.env.ISANXOT_SRC_HOME + '\\dbs\\current_release\\human_sw-tr.fasta';
+    document.getElementById('catfile').value = process.env.ISANXOT_SRC_HOME + '\\dbs\\current_release\\human_UP000005640_201910_sw-tr.cat.tsv';
+    document.getElementById('def-dbfile').value = 'personal';
+    document.getElementById('dbfile').value = process.env.ISANXOT_SRC_HOME + "\\tests\\PESA omicas\\3a_Cohorte_120_V2\\Human_jul14.fasta";
+    document.getElementById('experiments').value = "TMT1,TMT2";
     // tt.container.loadData(dtatest);
     tt.container.handsontable('loadData', dtatest);
     document.getElementById('tagDecoy').value = '_INV_';
