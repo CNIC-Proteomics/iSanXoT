@@ -11,7 +11,6 @@ import re
 import itertools
 from Bio import SeqIO
 
-import pprint
 
 
 # Module metadata variables
@@ -395,9 +394,6 @@ def _master_decision(prots, pretxt):
     '''
     hprot = None
     decision = 0
-
-#    prots.to_csv("00.tsv", sep="\t")
-    
     # 1. the preferenced text, if apply
     # How many proteins match to the list of regexp
     # Here we can apply features as Species, type of database (Sw or Tr), etc.
@@ -411,10 +407,6 @@ def _master_decision(prots, pretxt):
                 decision = 1
             elif pmat is not None and len(pmat.index) > 1:
                 prots = pmat
-                
-                
-#    prots.to_csv("11.tsv", sep="\t")
-
     # 2. Take the sorted sequence, if apply
     # Extract the proteins with the minimum lenght of aminoacids
     # If there is only one protein, we found
@@ -426,9 +418,6 @@ def _master_decision(prots, pretxt):
             decision = 2
         elif pmat is not None and len(pmat.index) > 1:
             prots = pmat
-
-#    prots.to_csv("22.tsv", sep="\t")
-    
     # 3. Alphabetic order
     # Extract the first protein
     if hprot is None and decision == 0:
@@ -456,7 +445,7 @@ def _master_protein(prots, proteins, pretxt):
     else:
         mq,mq_t = _master_decision(y, pretxt)
     # return
-    return mq,mq_t
+    return mq
     
     
     
@@ -469,9 +458,21 @@ def get_master_protein(df, proteins, pretxt):
     x = x.str.replace(r'\_\|\|\_$', "")
     a = list(x.str.split(r'\_\|\|\_'))
     # calculate the master protein for each PSM
-    m,t = [ _master_protein(i, proteins, pretxt) for i in a ]
+    m = [ _master_protein(i, proteins, pretxt) for i in a ]
     # return
-    return m,t
+    return m
+
+def get_fasta_report(file):
+    '''
+    Create the FASTA report
+    '''
+    def _create_key_id(rec):
+        if (rec.startswith("sp") or rec.startswith("tr")) and "|" in rec:
+            return rec.split("|")[1]
+        else:
+            return rec
+    indb = SeqIO.index(file, "fasta", key_function=_create_key_id)
+    return indb
 
 def main(args):
     '''
@@ -479,8 +480,8 @@ def main(args):
     '''
     # get the index of proteins: for UniProt case!! (key_function)
     logging.info('create a UniProt report')
-    indb = SeqIO.index(args.indb, "fasta", key_function=lambda rec : rec.split("|")[1])
-
+    indb = get_fasta_report(args.indb)
+    
     logging.info('read infile')
     indat = pandas.read_csv(args.infile, sep="\t", na_values=['NA'], low_memory=False)
 
@@ -494,8 +495,8 @@ def main(args):
 #    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
 #
 #    logging.info('calculate the masterQ')
-#    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
-##    indat["MasterQ"] = get_master_protein(indat, proteins, args.pretxt)
+##    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
+#    indat["MasterQ"] = get_master_protein(indat, proteins, args.pretxt)
 
     logging.info('print output')
     indat.to_csv(args.outfile, sep="\t", index=False)
