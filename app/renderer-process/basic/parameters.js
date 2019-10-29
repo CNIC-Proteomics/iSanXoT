@@ -46,11 +46,18 @@ function addParams(data) {
             val = val.replace(/\r?\n|\r|\s/gm, ""); // remove all spaces and breakes
             parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);    
         }
-        else if (document.querySelector('#experiments') && document.querySelector('#experiments').value != "") {
-            let val = document.querySelector('#experiments').value;
-            val = val.replace(/\r?\n|\r|\s/gm, ""); // remove all spaces and breakes
-            parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);
-        }
+        // else if (document.querySelector('#experiments') && document.querySelector('#experiments').value != "") {
+        //     let val = document.querySelector('#experiments').value;
+        //     val = val.replace(/\r?\n|\r|\s/gm, ""); // remove all spaces and breakes
+        //     parametor.addParamsInMethod(data["workflow"]["rules"], [0], [0], `--expt ${val}`);
+        //     // create tasktable
+        //     let dat = [['experiment']];
+        //     let vals = val.split(",")
+        //     for (var i = 0; i < vals.length; i++) {
+        //         dat[i+1] = [vals[i]];
+        //     }
+        //     let file = parametor.createtasktableFileFromData(dat, data['outdir']);
+        // }
         else {
             return false;
         }
@@ -79,12 +86,12 @@ function createParameters(conf) {
         return false;
     }
     else { params.outdir = outdir }
-    // OPTIONAL: create tasktable file
+    // REQUIRED: create tasktable file
     let dtablefile = parametor.createtasktableFile(outdir); 
-    // if ( !dtablefile ) {
-    //     exceptor.showMessageBox('Error Message', 'Creating tasktable file');
-    //     return false;
-    // }
+    if ( !dtablefile ) {
+        exceptor.showMessageBox('Error Message', 'Creating tasktable file');
+        return false;
+    }
     // OPTIONAL: create category file
     let species = parametor.getInValue('species');
     // OPTIONAL: create category file
@@ -168,8 +175,8 @@ $("#select-methods :checkbox").on("change", function(){
             // Show tab for the current method
             $('a#tasktable-tab').show();
             // Accept the following parameters
-            accept_parameter('hot');
-            discard_parameter('experiments');
+            // accept_parameter('hot');
+            // discard_parameter('experiments');
         }
         else if( this.id == "sanxot" ) {
             // Show tab for the current method
@@ -186,17 +193,17 @@ $("#select-methods :checkbox").on("change", function(){
             disable_checkbox_method(`#select-methods #ratios`);
             disable_checkbox_method(`#select-methods #sanxot`);
             // Hide tab for the current method and the disabled methods
-            $(`a#params-pratio-tab`).hide();
+            // $(`a#params-pratio-tab`).hide();
             // Discard the following parameters
-            discard_parameter('hot');
+            // discard_parameter('hot');
         }
         else if( this.id == "ratios" ) {
             // disaable the other methods
             disable_checkbox_method(`#select-methods #sanxot`);
             // Hide tab for the current method and the disabled methods
-            $(`a#tasktable-tab`).hide();
+            // $(`a#tasktable-tab`).hide();
             // Discard the following parameters
-            discard_parameter('hot');
+            // discard_parameter('hot');
             discard_parameter('select-catfile');
             discard_parameter('catfile');
             // Accepts

@@ -36,6 +36,13 @@ function exporttasktableCSV(tasktable) {
     });
     return csvContent;
 }
+// function exportMatrixCSV(data) {
+//     let csvContent = "";
+//     data.forEach(function(row) {
+//         csvContent += row.join(",") + "\n";
+//     });
+//     return csvContent;
+// }
 
 // Create tasktable file
 function createtasktableFile(outdir) {
@@ -63,6 +70,30 @@ function createtasktableFile(outdir) {
     }
 }
 
+// // Create tasktable file
+// function createtasktableFileFromData(data,outdir) {
+//     if ( data.length > 0 ) {
+//         // export matrix to CSV
+//         try {
+//             var cont = exportMatrixCSV(data);
+//         } catch (err) {
+//             console.log(`Error exporting matrix: ${err}`);
+//             return false;
+//         }
+//         // write file sync
+//         let file = outdir +'/'+ dtablefilename;
+//         try {
+//             fs.writeFileSync(file, cont, 'utf-8');
+//         } catch (err) {    
+//             console.log(`Error writing tasktable file: ${err}`);
+//             return false;
+//         }
+//         return file;
+//     }
+//     else {
+//         return "";
+//     }
+// }
 
 /*
 * Global functions
@@ -259,6 +290,7 @@ function endisConfMethod(data) {
 
 // Export modules
 module.exports.createtasktableFile = createtasktableFile;
+// module.exports.createtasktableFileFromData = createtasktableFileFromData;
 module.exports.getInFileDir = getInFileDir;
 module.exports.getInValue = getInValue;
 module.exports.createLocalDir = createLocalDir;
@@ -338,7 +370,7 @@ if ( document.getElementById('def-dbfile') !== null ) {
         }
         else {
             let dbsdir = process.env.ISANXOT_SRC_HOME + '/dbs/current_release';
-            let files = fs.readdirSync(dbsdir).filter(fn => fn.startsWith(this.value) & fn.endsWith('.fasta'));
+            let files = fs.readdirSync(dbsdir).filter(fn => fn.startsWith(this.value) & fn.endsWith('.target.fasta'));
             document.getElementById('dbfile').value = dbsdir + '/' + files[0];    
             document.getElementById("dbfile").disabled = true;
             document.getElementById("select-dbfile").disabled = true;
