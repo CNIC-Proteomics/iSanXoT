@@ -340,22 +340,25 @@ def add_descriptions(df, indb, tagDecoy):
     da = [ [i for i in sorted(s) if not (tagDecoy in i) and all(i)] for s in da ]
     # get a list with the tuple 1 (ProteinDescription)
     p = [ [i[0] for i in s] for s in da ]
-    # from the list of protein description: the first element, and the rest (redundancy)
-    pm = [ i[0] for i in p ]
-    pr = [ "_||_".join(i[1:]) for i in p ]
-    # get the list of protein length
-    pl = [ [i[2] for i in s] for s in da ]
-    pl = [ ";".join(i) for i in pl ]
-    # get the gene from the main protein
-    gm = [_pattern_gene(i) for i in pm]
-    # get the gene from the protein redundances
-    gr = [ [_pattern_gene(i) for i in j.split("_||_")] for j in pr]
-    # unique and without empty
-    gr = [ list(filter(None, list(set(i)) )) for i in gr]
-    gr = [ ";".join(set(i)) for i in gr ]
-    # get the list of unique species
-    s = [ [_pattern_species(i) for i in j] for j in p ]
-    s = [ ";".join(set(i)) for i in s ]
+    try:
+        # from the list of protein description: the first element, and the rest (redundancy)
+        pm = [ i[0] for i in p ]
+        pr = [ "_||_".join(i[1:]) for i in p ]
+        # get the list of protein length
+        pl = [ [i[2] for i in s] for s in da ]
+        pl = [ ";".join(i) for i in pl ]
+        # get the gene from the main protein
+        gm = [_pattern_gene(i) for i in pm]
+        # get the gene from the protein redundances
+        gr = [ [_pattern_gene(i) for i in j.split("_||_")] for j in pr]
+        # unique and without empty
+        gr = [ list(filter(None, list(set(i)) )) for i in gr]
+        gr = [ ";".join(set(i)) for i in gr ]
+        # get the list of unique species
+        s = [ [_pattern_species(i) for i in j] for j in p ]
+        s = [ ";".join(set(i)) for i in s ]
+    except:
+        sys.exit("ERROR!! The FASTA file does not contain all protein hits")    
     # return
     return pm,pr,pl,gm,gr,s
 
@@ -387,6 +390,7 @@ def get_num_peptides(df):
     df2['Lengths'] = pandas.to_numeric(df2['Lengths'], errors='coerce')
     # return
     return df2
+
 
 def _master_decision(prots, pretxt):
     '''
@@ -427,12 +431,10 @@ def _master_decision(prots, pretxt):
         decision = 3
     # return
     return hprot,decision
-
-
 def _master_protein(prots, proteins, pretxt):
     '''
     Calculate the master protein for one PSM
-    '''    
+    '''
     # get the proteins for the peptide
     x = proteins.loc[proteins['Proteins'].isin(prots)]
     # get the proteins with the maximum num of peptides
@@ -445,22 +447,23 @@ def _master_protein(prots, proteins, pretxt):
     else:
         mq,mq_t = _master_decision(y, pretxt)
     # return
-    return mq
-    
-    
-    
+    return mq,mq_t
 def get_master_protein(df, proteins, pretxt):
     '''
     Calculate the master protein for each PSM
-    '''    
+    '''  
+#    df = indat
+#    pretxt = args.pretxt 
+#    
     # create a list with the concate of Protein + ProteinRedundancy
     x = df["Protein"] + "_||_"+ df["Protein_Redundancy"]
     x = x.str.replace(r'\_\|\|\_$', "")
     a = list(x.str.split(r'\_\|\|\_'))
     # calculate the master protein for each PSM
-    m = [ _master_protein(i, proteins, pretxt) for i in a ]
+    m,t = zip(*[ _master_protein(i, proteins, pretxt) for i in a ])
     # return
-    return m
+    return m,t
+
 
 def get_fasta_report(file):
     '''
@@ -477,7 +480,33 @@ def get_fasta_report(file):
 def main(args):
     '''
     Main function
-    '''
+    '''    
+#    import os
+#    import sys
+#    import argparse
+#    import logging
+#    import pandas
+#    import numpy as np
+#    import re
+#    import itertools
+#    from Bio import SeqIO
+#    parser = argparse.ArgumentParser(
+#        description='Create the relationship table for peptide2protein method (get unique protein)',
+#        epilog='''Examples:
+#        python  src/SanXoT/rels2pq_unique.py
+#          -i ID-q.tsv
+#          -d Human_jul14.curated.fasta
+#          -l "_INV_"
+#          -p "Homo sapiens,sp"
+#          -o ID-mq.tsv
+#        ''',
+#        formatter_class=argparse.RawTextHelpFormatter)
+#    args = parser.parse_args()
+#    args.indb = "D:\projects\iSanXoT/tests/check_masterQ/Human_jul14.fasta"
+#    args.infile = "D:\projects\iSanXoT/tests/check_masterQ/test_ID-q.tsv"
+#    args.lab_decoy = "_INV_"
+#    args.pretxt = "Homo sapiens,sp"
+
     # get the index of proteins: for UniProt case!! (key_function)
     logging.info('create a UniProt report')
     indb = get_fasta_report(args.indb)
@@ -490,13 +519,14 @@ def main(args):
     # discarding DECOY proteins
     logging.info('create a report with the proteins info')
     indat["Protein"],indat["Protein_Redundancy"],indat["Protein_Length"],indat["Gene"],indat["Gene_Redundancy"],indat["Species"] = add_descriptions(indat, indb, args.lab_decoy)
+#    indat.loc[:,"Protein"],indat.loc[:,"Protein_Redundancy"],indat.loc[:,"Protein_Length"],indat.loc[:,"Gene"],indat.loc[:,"Gene_Redundancy"],indat.loc[:,"Species"] = add_descriptions(indat, indb, args.lab_decoy)
     
-#    logging.info('create the report with the peptides and proteins')
-#    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
-#
-#    logging.info('calculate the masterQ')
-##    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
-#    indat["MasterQ"] = get_master_protein(indat, proteins, args.pretxt)
+    logging.info('create the report with the peptides and proteins')
+    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
+#    proteins.to_csv("kk.tsv", sep="\t", index=False)
+    
+    logging.info('calculate the masterQ')
+    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
 
     logging.info('print output')
     indat.to_csv(args.outfile, sep="\t", index=False)
