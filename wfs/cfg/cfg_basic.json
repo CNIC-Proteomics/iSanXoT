@@ -111,7 +111,7 @@
       "executor": "on_namedir",
       "enabled": true,
       "inputs":  ["peptides.tsv", "p2q_rels.tsv"],
-      "outputs": ["proteins.tsv"],
+      "outputs": ["proteins.tsv", "p2q_outStats.tsv"],
       "methods": [{
         "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "peptides.tsv", "-r": "p2q_rels.tsv" },
@@ -132,7 +132,7 @@
       "executor": "on_namedir",
       "enabled": true,
       "inputs":  ["proteins.tsv"],
-      "outputs": ["categories.tsv"],
+      "outputs": ["categories.tsv", "q2c_outStats.tsv"],
       "methods": [{
         "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "proteins.tsv" },
@@ -175,8 +175,8 @@
       "description": "Merge the results of SanXoT nodes",
       "executor": "namedir_to_rstdir",
       "enabled": true,
-      "inputs":  ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
-      "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"],
+      "inputs":  ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv", "p2q_outStats.tsv", "q2c_outStats.tsv"],
+      "outputs": ["p2a_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv", "p2q_outStats.tsv", "q2c_outStats.tsv"],
       "methods": [{
         "script": "SanXoT/collector.py",
         "outputs": { "--outfile": "p2a_outStats.tsv" },
@@ -189,6 +189,14 @@
         "script": "SanXoT/collector.py",
         "outputs": { "--outfile": "c2a_outStats.tsv" },
         "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex c2a_outStats.tsv"
+      },{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "p2q_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex p2q_outStats.tsv"
+      },{
+        "script": "SanXoT/collector.py",
+        "outputs": { "--outfile": "q2c_outStats.tsv" },
+        "params":  "--indir \"--WF__WKS__TMPDIR--\"  --regex q2c_outStats.tsv"  
       }]
     }]
   }
