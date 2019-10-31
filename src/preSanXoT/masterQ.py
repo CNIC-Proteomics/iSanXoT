@@ -49,8 +49,6 @@ class corrector:
         df = self.indat[cols]
         # create the report with the peptides and proteins
         [self.peptides, self.proteins] = self.get_reports(df, incols)
-        logging.debug( "PEPTIDES:\n"+pprint.pformat(self.peptides) )
-        logging.debug( "PROTEINS:\n"+pprint.pformat(self.proteins) )
 
 
     def _extract_proteins_species(self, in_ids, seq, peptides):
@@ -337,7 +335,7 @@ def add_descriptions(df, indb, tagDecoy):
     l = list(map(get_protein_len, a))
     da = [ list(itertools.chain(list(itertools.zip_longest(i,j,k,fillvalue='')))) for i,j,k in list(zip(d,a,l)) ]    
     # sort and discard the DECOY proteins and the proteins without description
-    da = [ [i for i in sorted(s) if not (tagDecoy in i) and all(i)] for s in da ]
+    da = [ [i for i in sorted(s) if not (tagDecoy in i[0]) and all(i)] for s in da ]    
     # get a list with the tuple 1 (ProteinDescription)
     p = [ [i[0] for i in s] for s in da ]
     try:
