@@ -163,7 +163,7 @@
         "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "proteins.tsv" },
         "outputs": { "-z": "q2a_outStats.tsv" },
-        "params":  "-a q2a -C -g -f "
+        "params":  "-a q2a -C -g -f --PARAMS__VARIANCE--"
       },{
         "script": "SanXoT/sanxot.py",
         "inputs":  { "-d": "categories.tsv" },
