@@ -518,11 +518,11 @@ def main(args):
     logging.info('create a report with the proteins info')
     indat["Protein"],indat["Protein_Redundancy"],indat["Protein_Length"],indat["Gene"],indat["Gene_Redundancy"],indat["Species"] = add_descriptions(indat, indb, args.lab_decoy)
     
-#    logging.info('create the report with the peptides and proteins')
-#    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
-#    
-#    logging.info('calculate the masterQ')
-#    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
+    logging.info('create the report with the peptides and proteins')
+    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
+
+    logging.info('calculate the masterQ')
+    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
 
     logging.info('print output')
     indat.to_csv(args.outfile, sep="\t", index=False)
