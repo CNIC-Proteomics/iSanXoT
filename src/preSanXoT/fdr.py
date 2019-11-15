@@ -16,34 +16,56 @@ import glob
 import itertools
 import argparse
 import logging
-import re
 import pandas as pd
 import numpy as np
-import dask.dataframe as dd
-from dask.delayed import delayed
-from distributed import Client
 import xml.etree.ElementTree as etree
-import shutil
-
-
+import multiprocessing
+import concurrent.futures
+from itertools import repeat
 
 ###################
 # Local functions #
 ###################
+# def create_modifications(ddf):
+#     '''
+#     Create modifications dictionary from xml-doc of UNIMOD
+#     '''
+#     # declare
+#     modifications = {}
+#     # create xml-doc from UNIMOD
+#     localdir = os.path.dirname(os.path.abspath(__file__))
+#     root = etree.parse(localdir+'/unimod.xml').getroot()
+#     ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
+#     xdoc_mods = root.find('umod:modifications', ns)
+#     # extract the unique labels of modifications from the input files
+#     m = ddf['Modifications'].str.extractall(r'\(([^\)]*)')
+#     lmods = np.unique(m.values)
+#     # extract the delta mono_mass for each modification
+#     for m in lmods:
+#         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
+#         if delta:
+#             mono_mass = delta.get('mono_mass')
+#             m2 = r'\('+str(m)+r'\)'
+#             modifications[m2] = '('+mono_mass+')'
+#     return modifications
 def create_modifications(ddf):
     '''
     Create modifications dictionary from xml-doc of UNIMOD
     '''
+    # extract the unique labels of modifications from the input files
+    m = ddf['Modifications'].str.extractall(r'\(([^\)]*)')
+    m = m.values
+    return m
+
+def _join_modifications(mods):
     # declare
     modifications = {}
+    lmods = np.unique(mods)
     # create xml-doc from UNIMOD
     localdir = os.path.dirname(os.path.abspath(__file__))
     root = etree.parse(localdir+'/unimod.xml').getroot()
     ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
     xdoc_mods = root.find('umod:modifications', ns)
-    # extract the unique labels of modifications from the input files
-    m = ddf['Modifications'].str.extractall(r'\(([^\)]*)').compute()
-    lmods = np.unique(m.values)
     # extract the delta mono_mass for each modification
     for m in lmods:
         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
@@ -52,6 +74,7 @@ def create_modifications(ddf):
             m2 = r'\('+str(m)+r'\)'
             modifications[m2] = '('+mono_mass+')'
     return modifications
+
 
 def targetdecoy(df, tagDecoy):
     '''
@@ -111,7 +134,8 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     col[:] = [s.replace('Abundance: ', '') for s in col]
     df.columns = col
     # add Experiment column
-    df["Experiment"] = next((x for x in Expt if x in file), False)
+    Expt1=[".*("+i+")[\W|\_]+.*" for i in Expt]
+    df["Experiment"] = df["Spectrum_File"].replace(dict(itertools.zip_longest(Expt1,[],fillvalue="\\1")),regex=True) 
     # assing target and decoy proteins
     df["T_D"] = targetdecoy(df, tagDecoy)
     df = df[df["Search Engine Rank"] == 1 ]
@@ -121,38 +145,6 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     # calculate cXCorr
     df["cXCorr"] = cXCorr(df)
     return df
-
-# def ProteinsGenes(df, tagDecoy):
-#     '''
-#     Extract the protein, genes (with redundances) and species discarding DECOY proteins
-#     '''
-#     def _pattern_gene(i):
-#         m = re.search('GN=([^\s]*)', i)
-#         r = m.group(1) if m else ''
-#         return r
-#     def _pattern_species(i):
-#         m = re.search('OS=([^\s]+\s+[^\s]+)', i)
-#         r = m.group(1) if m else ''
-#         return r
-#     a = list(df["Protein Accessions"].fillna("").str.split(";"))
-#     d = list(df["Protein Descriptions"].fillna("").str.split(";"))
-#     ad = [ list(itertools.chain(list(itertools.zip_longest(i,j,fillvalue='')))) for i,j in list(zip(a,d)) ]
-#     ad = [ ["|".join(i) for i in s] for s in ad ]
-#     # discard DECOY proteins and sort
-#     ad = [ [i for i in sorted(s) if not (tagDecoy in i)] for s in ad ]
-#     # get the protein list: the first element, the rest => reduncances, and descriptions
-#     p = [ [i.split("|")[0].strip() for i in s] for s in ad ]
-#     pm = [ i[0] for i in p ]
-#     pr = [ ";".join(i[1:]) for i in p ]
-#     pd = [ ";".join(i) for i in ad ]
-#     # get the gene list: the first element, the rest => reduncances
-#     g = [ [_pattern_gene(i) for i in s] for s in ad ]
-#     gm = [ i[0] for i in g ]
-#     gr = [ ";".join(i[1:]) for i in g ]
-#     # get the list of unique species
-#     x = [ [_pattern_species(i) for i in s] for s in ad ]
-#     s = [ ";".join(set(i)) for i in x ]
-#     return pm,pr,pd,gm,gr,s
 
 def SequenceMod(df, mods):
     '''
@@ -183,12 +175,17 @@ def SequenceMod(df, mods):
     x = ["".join(list(itertools.chain.from_iterable(list(itertools.zip_longest(i,j,fillvalue=''))))) for i,j in list(zip(f,sa))]
     return x
 
-def FdrXc(df, typeXCorr, FDRlvl):
+def FdrXc(df, outdir, typeXCorr, FDRlvl, mods):
     '''
     Calculate FDR and filter by cXCorr
     '''
-    # df = df.sort_values(by=["XCorr","T_D"], ascending=False)
-    df = df.sort_values(by=[typeXCorr,"T_D"], ascending=False)
+    # get the experiment names from the input tuple df=(exp,df)
+    # create workspace
+    outdir_e = os.path.join(outdir, df[0])
+    if not os.path.exists(outdir_e):
+        os.makedirs(outdir_e, exist_ok=False)
+    # get the dataframe from the input tuple df=(exp,df)
+    df = df[1].sort_values(by=[typeXCorr,"T_D"], ascending=False)
     df["rank"] = df.groupby("T_D").cumcount()+1
     df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
     df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
@@ -197,20 +194,12 @@ def FdrXc(df, typeXCorr, FDRlvl):
     df["FdrXc"] = df["rank_D"]/df["rank_T"]
     df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR
     df = df[ df["T_D"] == 1 ] # discard decoy
-    return df
-
-def pro(ddf, typeXCorr, FDRlvl, mods, tagDecoy, Expt):
-    '''
-    Multi-task function: Calculate FDR and filter by cXCorr, create sequence with the mono_mas by mods, retrieve the list of protein,gene and species
-    '''
-    # calculate FDR and filter by cXCorr
-    ddf = FdrXc(ddf, typeXCorr, FDRlvl)
-    # extract modifications and replace for final values
     if mods:
-        ddf["SequenceMod"] = SequenceMod(ddf, mods)
-    # # extract the redundance protein/genes discarding DECOY proteins
-    # ddf["Protein"],ddf["Protein_Redundancy"],ddf["Protein_Descriptions"],ddf["Gene"],ddf["Gene_Redundancy"],ddf["Species"] = ProteinsGenes(ddf, tagDecoy)
-    return ddf
+        df["SequenceMod"] = SequenceMod(df, mods)
+    # print the experiment files
+    df.to_csv(os.path.join(outdir_e, "ID.tsv"), sep="\t", index=False)
+    
+
 
 
 
@@ -229,7 +218,7 @@ def main(args):
     Expt = args.expt.split(",")
     Expt.sort()
     logging.debug(Expt)
-
+    
   
     logging.info("extract the list of files from the given experiments")
     infiles_aux = glob.glob( os.path.join(inputfolder,"*_PSMs.txt"), recursive=True )
@@ -237,49 +226,29 @@ def main(args):
     logging.debug(infiles)
 
 
-    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr")
-    ddf = dd.from_delayed([delayed(preProcessing) (file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas) for file in infiles])
+    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr")    
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
+        ddf = executor.map(preProcessing,infiles,repeat(Expt),repeat(deltaMassThreshold),repeat(tagDecoy),repeat(JumpsAreas))    
+    ddf = pd.concat(ddf)
+   
 
-
-    logging.info("create modifications dictionary from xml-doc of UNIMOD")
-    modifications = create_modifications(ddf)
+    i = int(len(ddf)/args.n_workers)
+    logging.info("create modifications dictionary from xml-doc of UNIMOD: "+str(i))
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+        mods = executor.map(create_modifications, ddf, chunksize=i)
+    mods = np.concatenate(mods)
+    # modifications = create_modifications(ddf)
+    modifications = _join_modifications(mods)
     logging.debug(modifications)
 
 
-    logging.info("processing the data dividing by experiments")
-    with Client(n_workers=args.n_workers) as client:
-        ddf = ddf.set_index('Experiment')
-        Exptr=Expt+[Expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
-        ddf = ddf.repartition(divisions=Exptr)
-
-        logging.info("map partitions")
-        ddf = ddf.map_partitions(pro, typeXCorr, FDRlvl, modifications, tagDecoy, Expt)
-        # ddf = d.compute()
-        # ddf.to_csv( args.outfile, sep="\t")
-
-        logging.info('print output file')
-        outfiles = []
-        for e in Expt:
-            outdir_exp = args.outdir+"/"+e
-            if not os.path.exists(outdir_exp):
-                os.makedirs(outdir_exp, exist_ok=False)
-            outfiles.append(outdir_exp+"/ID.tsv")
-        logging.debug( outfiles )
-        ddf.to_csv( outfiles, sep="\t", line_terminator='\n')
-
-        ddf.compute()
+    logging.info("calculate the FDR by experiment")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+        executor.map(FdrXc, list(ddf.groupby("Experiment")), repeat(args.outdir), repeat(typeXCorr), repeat(FDRlvl), repeat(modifications))
 
 
-    logging.info("remove temporal directory")
-    tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
-    shutil.rmtree(tmp_dir)
-
-
-
-
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
     # parse arguments
     parser = argparse.ArgumentParser(
         description='Calculate the FDR',
