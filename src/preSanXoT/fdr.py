@@ -134,7 +134,7 @@ def preProcessing(file, Expt, deltaMassThreshold, tagDecoy, JumpsAreas):
     col[:] = [s.replace('Abundance: ', '') for s in col]
     df.columns = col
     # add Experiment column
-    Expt1=[".*("+i+")[\W|\_]+.*" for i in Expt]
+    Expt1=[".*[\W|\_]+("+i+")[\W|\_]+.*" for i in Expt]
     df["Experiment"] = df["Spectrum_File"].replace(dict(itertools.zip_longest(Expt1,[],fillvalue="\\1")),regex=True) 
     # assing target and decoy proteins
     df["T_D"] = targetdecoy(df, tagDecoy)
