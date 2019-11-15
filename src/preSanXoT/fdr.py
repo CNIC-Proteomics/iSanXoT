@@ -18,6 +18,7 @@ import argparse
 import logging
 import pandas as pd
 import numpy as np
+import re
 import xml.etree.ElementTree as etree
 import multiprocessing
 import concurrent.futures
@@ -26,41 +27,18 @@ from itertools import repeat
 ###################
 # Local functions #
 ###################
-# def create_modifications(ddf):
-#     '''
-#     Create modifications dictionary from xml-doc of UNIMOD
-#     '''
-#     # declare
-#     modifications = {}
-#     # create xml-doc from UNIMOD
-#     localdir = os.path.dirname(os.path.abspath(__file__))
-#     root = etree.parse(localdir+'/unimod.xml').getroot()
-#     ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
-#     xdoc_mods = root.find('umod:modifications', ns)
-#     # extract the unique labels of modifications from the input files
-#     m = ddf['Modifications'].str.extractall(r'\(([^\)]*)')
-#     lmods = np.unique(m.values)
-#     # extract the delta mono_mass for each modification
-#     for m in lmods:
-#         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
-#         if delta:
-#             mono_mass = delta.get('mono_mass')
-#             m2 = r'\('+str(m)+r'\)'
-#             modifications[m2] = '('+mono_mass+')'
-#     return modifications
-def create_modifications(ddf):
+def extract_modifications(s_ddf):
     '''
     Create modifications dictionary from xml-doc of UNIMOD
     '''
     # extract the unique labels of modifications from the input files
-    m = ddf['Modifications'].str.extractall(r'\(([^\)]*)')
-    m = m.values
+    m = re.findall(r'\(([^\)]*)\)', s_ddf)
     return m
 
-def _join_modifications(mods):
+def join_modifications(mods):
     # declare
     modifications = {}
-    lmods = np.unique(mods)
+    lmods = np.unique( list(itertools.chain.from_iterable(mods)) )
     # create xml-doc from UNIMOD
     localdir = os.path.dirname(os.path.abspath(__file__))
     root = etree.parse(localdir+'/unimod.xml').getroot()
@@ -154,7 +132,6 @@ def SequenceMod(df, mods):
     s = df.Modifications.fillna('').replace(mods, regex=True)
     # create indexes list
     sn = list( s.replace({
-        'foo': '', # Due the test part of DASK
         '(\S*N-Term\S*)': '',
         '\([^)]*\)': '',
         '(\s)': '',
@@ -222,23 +199,21 @@ def main(args):
   
     logging.info("extract the list of files from the given experiments")
     infiles_aux = glob.glob( os.path.join(inputfolder,"*_PSMs.txt"), recursive=True )
-    infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in Expt) ]
+    infiles = [ f for f in infiles_aux if any(re.match(r'.*[\W|\_]+('+x+')[\W|\_]+.*', os.path.splitext(f)[0]) for x in Expt) ]
     logging.debug(infiles)
 
 
     logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr")    
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
         ddf = executor.map(preProcessing,infiles,repeat(Expt),repeat(deltaMassThreshold),repeat(tagDecoy),repeat(JumpsAreas))    
+    logging.info("concat")
     ddf = pd.concat(ddf)
-   
 
-    i = int(len(ddf)/args.n_workers)
-    logging.info("create modifications dictionary from xml-doc of UNIMOD: "+str(i))
+      
+    logging.info("create modifications dictionary from xml-doc of UNIMOD")
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        mods = executor.map(create_modifications, ddf, chunksize=i)
-    mods = np.concatenate(mods)
-    # modifications = create_modifications(ddf)
-    modifications = _join_modifications(mods)
+        mods = executor.map(extract_modifications, ddf['Modifications'], chunksize=int(len(ddf)/args.n_workers))
+    modifications = join_modifications(mods)
     logging.debug(modifications)
 
 
