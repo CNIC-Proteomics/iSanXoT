@@ -293,11 +293,11 @@ if __name__ == "__main__":
     parser.add_argument('-e',  '--expt', required=True, type=str, help='String with the list of Experiments separated by comma')
     parser.add_argument('-f',  '--fdr', type=float, default=0.01, help='FDR value (default: %(default)s)')
     parser.add_argument('-x',  '--type_xcorr', type=str, choices=['XCorr','cXCorr'], default='XCorr', help='Calculate FDR from the type of XCorr (default: %(default)s)')
-    parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
+    parser.add_argument('-t',  '--threshold', type=int, default=15, help='Threshold of delta mass (default: %(default)s)')
     parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
     parser.add_argument('-o',  '--outdir',   required=True, help='Output directory')
-    parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
     # logging debug level. By default, info level

@@ -567,7 +567,7 @@ if __name__ == "__main__":
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
     parser.add_argument('-p',  '--pretxt',  type=str, help='in the case of a tie, we apply teh preferenced text checked in the comment line of a protein. Eg. Organism, etc.')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the masterQ column')
-    parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
     # set-up logging

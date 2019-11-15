@@ -216,7 +216,7 @@ if __name__ == "__main__":
     
     parser.add_argument('-o',  '--outdir', help='Output directory where the ID-q file will be saved')
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
 
     args = parser.parse_args()
 
