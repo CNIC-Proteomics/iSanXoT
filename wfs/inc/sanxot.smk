@@ -16,11 +16,20 @@ def create_ad_hoc_params(method, wildcards):
         if wildcards and wildcards.exp and wildcards.name:
             lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["s>p FDR"])
             try:
-                if INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"].replace(" ", "").lower() == "false":
-                    lbl_var = " -V s2p_infoFile.txt "
+                if isinstance(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"], str):                    
+                    if INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"].replace(" ", "").lower() == "false":
+                        lbl_var = " -V s2p_infoFile.txt "
+                    else:
+                        f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
+                        lbl_var = " -v {} ".format(str(f))
                 else:
                     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
                     lbl_var = " -v {} ".format(str(f))
+                # if INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"].replace(" ", "").lower() == "false":
+                #     lbl_var = " -V s2p_infoFile.txt "
+                # else:
+                #     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
+                #     lbl_var = " -v {} ".format(str(f))
             except:
                 lbl_var = " -V s2p_infoFile.txt "
             rep["--PARAMS__FDR--"]        = lbl_fdr
@@ -30,11 +39,20 @@ def create_ad_hoc_params(method, wildcards):
         if wildcards and wildcards.exp and wildcards.name:
             lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["s>p FDR"])
             try:
-                if INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"].replace(" ", "").lower() == "false":    
-                    lbl_var = " -V s2p_noptm_infoFile.txt "
+                if isinstance(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"], str):                    
+                    if INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"].replace(" ", "").lower() == "false":
+                        lbl_var = " -V s2p_noptm_infoFile.txt "
+                    else:
+                        f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
+                        lbl_var = " -v {} ".format(str(f))
                 else:
                     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
                     lbl_var = " -v {} ".format(str(f))
+                # if INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"].replace(" ", "").lower() == "false":    
+                #     lbl_var = " -V s2p_noptm_infoFile.txt "
+                # else:
+                #     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["s>p Var"])
+                #     lbl_var = " -v {} ".format(str(f))
             except:
                 lbl_var = " -V s2p_noptm_infoFile.txt "
             rep["--PARAMS__FDR--"]        = lbl_fdr
@@ -44,11 +62,20 @@ def create_ad_hoc_params(method, wildcards):
         if wildcards and wildcards.exp and wildcards.name:
             lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["p>q FDR"])
             try:
-                if INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"].replace(" ", "").lower() == "false":
-                    lbl_var = " -V p2q_infoFile.txt "
+                if isinstance(INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"], str):                    
+                    if INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"].replace(" ", "").lower() == "false":
+                        lbl_var = " -V p2q_infoFile.txt "
+                    else:
+                        f = float(INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"])
+                        lbl_var = " -v {} ".format(str(f))
                 else:
                     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"])
                     lbl_var = " -v {} ".format(str(f))
+                # if INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"].replace(" ", "").lower() == "false":
+                #     lbl_var = " -V p2q_infoFile.txt "
+                # else:
+                #     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["p>q Var"])
+                #     lbl_var = " -v {} ".format(str(f))
             except:
                 lbl_var = " -V p2q_infoFile.txt "
             rep["--PARAMS__FDR--"]        = lbl_fdr
@@ -58,8 +85,12 @@ def create_ad_hoc_params(method, wildcards):
         if wildcards and wildcards.exp and wildcards.name:
             lbl_fdr = " -f {} ".format(INDATA[wildcards.exp]["names"][wildcards.name]["q>c FDR"])
             try:
-                if INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"].replace(" ", "").lower() == "false":
-                    lbl_var = " -V q2c_infoFile.txt "
+                if isinstance(INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"], str):                    
+                    if INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"].replace(" ", "").lower() == "false":
+                        lbl_var = " -V q2c_infoFile.txt "
+                    else:
+                        f = float(INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"])
+                        lbl_var = " -v {} ".format(str(f))
                 else:
                     f = float(INDATA[wildcards.exp]["names"][wildcards.name]["q>c Var"])
                     lbl_var = " -v {} ".format(str(f))
