@@ -27,7 +27,7 @@ function execProcess(cmd, log, wfname) {
     proc = cProcess.exec(cmd);
 
     // save the process id in the session storage
-    sessioner.addProcessesToSession(proc.pid, log, wfname, `${__dirname}/../processes.html`);
+    // sessioner.addProcessesToSession(proc.pid, log, wfname, `${__dirname}/../processes.html`);
 
     // Handle on stderr
     proc.stderr.on('data', (data) => {
@@ -62,7 +62,7 @@ if ( document.querySelector('#executor #start') !== null ) {
             exceptor.loadingWorkflow();
             // Execute the workflow
             setTimeout(function() {
-                let cmd_smk    = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" --rerun-incomplete `;
+                let cmd_smk    = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" --rerun-incomplete  --printshellcmds`;
                 //  --dryrun --printshellcmds
                 let cmd_unlock = `${cmd_smk} --unlock `;
                 let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;

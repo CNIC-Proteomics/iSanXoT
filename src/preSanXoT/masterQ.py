@@ -310,7 +310,7 @@ def add_descriptions(df, indb, tagDecoy):
             if q in indb:
                 return ">"+indb[q].description
             else:
-                return ''
+                return q
         b = list(map(_get_desc, qs))
         return b
     def get_protein_len(qs):
@@ -318,7 +318,7 @@ def add_descriptions(df, indb, tagDecoy):
             if q in indb:
                 return str(len(indb[q].seq))
             else:
-                return ''
+                return '-1'
         b = list(map(_get_len, qs))
         return b
     def _pattern_gene(i):
@@ -355,8 +355,8 @@ def add_descriptions(df, indb, tagDecoy):
         # get the list of unique species
         s = [ [_pattern_species(i) for i in j] for j in p ]
         s = [ ";".join(set(i)) for i in s ]
-    except:
-        sys.exit("ERROR!! The FASTA file does not contain all protein hits")    
+    except Exception as ex:
+        sys.exit("ERROR!! The FASTA file does not contain all protein hits: "+str(ex) )
     # return
     return pm,pr,pl,gm,gr,s
 
@@ -450,9 +450,6 @@ def get_master_protein(df, proteins, pretxt):
     '''
     Calculate the master protein for each PSM
     '''  
-#    df = indat
-#    pretxt = args.pretxt 
-#    
     # create a list with the concate of Protein + ProteinRedundancy
     x = df["Protein"] + "_||_"+ df["Protein_Redundancy"]
     x = x.str.replace(r'\_\|\|\_$', "")
@@ -479,32 +476,6 @@ def main(args):
     '''
     Main function
     '''    
-#    import os
-#    import sys
-#    import argparse
-#    import logging
-#    import pandas
-#    import numpy as np
-#    import re
-#    import itertools
-#    from Bio import SeqIO
-#    parser = argparse.ArgumentParser(
-#        description='Create the relationship table for peptide2protein method (get unique protein)',
-#        epilog='''Examples:
-#        python  src/SanXoT/rels2pq_unique.py
-#          -i ID-q.tsv
-#          -d Human_jul14.curated.fasta
-#          -l "_INV_"
-#          -p "Homo sapiens,sp"
-#          -o ID-mq.tsv
-#        ''',
-#        formatter_class=argparse.RawTextHelpFormatter)
-#    args = parser.parse_args()
-#    args.indb = "D:\projects\iSanXoT/tests/check_masterQ/Human_jul14.fasta"
-#    args.infile = "D:\projects\iSanXoT/tests/check_masterQ/test_ID-q.tsv"
-#    args.lab_decoy = "_INV_"
-#    args.pretxt = "Homo sapiens,sp"
-
     # get the index of proteins: for UniProt case!! (key_function)
     logging.info('create a UniProt report')
     indb = get_fasta_report(args.indb)
@@ -521,8 +492,8 @@ def main(args):
     logging.info('create the report with the peptides and proteins')
     proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
 
-    logging.info('calculate the masterQ')
-    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
+    # logging.info('calculate the masterQ')
+    # indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
 
     logging.info('print output')
     indat.to_csv(args.outfile, sep="\t", index=False)
@@ -533,6 +504,8 @@ def main(args):
 
 
     # -----
+    # DEPRECATED 
+    # ------
     # logging.info('create corrector object')
     # co = corrector(args.infile, args.species, args.pretxt, args.indb, args.columns)
 
@@ -547,6 +520,9 @@ def main(args):
 
     # logging.info('print output')
     # co.to_csv(args.outfile)
+    # -----
+    # DEPRECATED 
+    # ------
 
 
 if __name__ == "__main__":
