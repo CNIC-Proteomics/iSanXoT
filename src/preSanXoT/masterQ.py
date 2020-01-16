@@ -488,9 +488,14 @@ def main(args):
     # discarding DECOY proteins
     logging.info('create a report with the proteins info')
     indat["Protein"],indat["Protein_Redundancy"],indat["Protein_Length"],indat["Gene"],indat["Gene_Redundancy"],indat["Species"] = add_descriptions(indat, indb, args.lab_decoy)
+
+# TODO!!!
+# IMPROVE THE MASTERQ METHOD!! FASTER!!!
+# IDEA:
+# CREATE A COLUMN WITH THE NUMBER OF PSM's AND PEPTIDIES FOR EACH PROTEIN USING DATAFRAME GROUPBY
     
-    logging.info('create the report with the peptides and proteins')
-    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
+    # logging.info('create the report with the peptides and proteins')
+    # proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
 
     # logging.info('calculate the masterQ')
     # indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
