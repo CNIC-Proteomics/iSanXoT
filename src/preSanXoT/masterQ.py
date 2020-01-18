@@ -551,9 +551,6 @@ if __name__ == "__main__":
     parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
-    # set-up logging
-    scriptname = os.path.splitext( os.path.basename(__file__) )[0]
-
     # logging debug level. By default, info level
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG,
