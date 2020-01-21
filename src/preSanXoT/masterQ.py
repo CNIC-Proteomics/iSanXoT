@@ -323,6 +323,7 @@ def add_descriptions(df, indb, tagDecoy):
         return b
     def _pattern_gene(i):
         m = re.search('GN=([^\s]*)', i)
+        # r = "'"+m.group(1) if m else '' # Stop automatically changing numbers to dates in Excel
         r = m.group(1) if m else ''
         return r
     def _pattern_species(i):
