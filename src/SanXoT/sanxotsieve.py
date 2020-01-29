@@ -341,7 +341,7 @@ Use -H or --advanced-help for more details.""")
 
 def main(argv):
 	
-	version = "v0.17"
+	version = "v0.18"
 	analysisName = ""
 	analysisFolder = ""
 	varianceSeed = 0.001
@@ -540,9 +540,18 @@ def main(argv):
 
 if __name__ == "__main__":
     # begin: jmrc
-    print("** {} - {} - start script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), " ".join([x for x in sys.argv]) ))
+    # get the name of script with the type of step (if apply)
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    if '-a' in sys.argv:
+        i = sys.argv.index('-a')
+        s = sys.argv[i+1]
+        s = s.upper()+'_' if not s.startswith('-') else ''
+        script_name = s + script_name
+    print( "{} - {} - {} - start script : {}".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p"), " ".join([x for x in sys.argv])) )
     # end: jmrc
+
     main(sys.argv[1:])
+
     # begin: jmrc
-    print("** {} - {} - end  script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), os.path.basename(__file__) ))
+    print( "{} - {} - {} - end script".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p")) )
     # end: jmrc

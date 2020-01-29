@@ -751,7 +751,7 @@ def main(argv):
 
 	# begin: jmrc
 	# version = "v1.17"
-	version = "v1.18"
+	version = "v1.19"
 	# end: jmrc
 	fileName = ""
 	outFile = ""
@@ -960,18 +960,25 @@ def main(argv):
 	
 	stats.saveFile(outFile, resultingData, header)
 	
-	if len(logFile) > 0:
-		stats.saveFile(logFile, logList, "LOG FILE")
+	# begin: jmrc
+	# disable log file due an error in isanxot workflow (snakemake)
+ 	# if len(logFile) > 0:
+	# 	stats.saveFile(logFile, logList, "LOG FILE")
+	# end: jmrc
 
 #######################################################
 
 if __name__ == "__main__":
     # begin: jmrc
-    print("** {} - {} - start script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), " ".join([x for x in sys.argv]) ))
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    print( "{} - {} - {} - start script : {}".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p"), " ".join([x for x in sys.argv])) )
     # end: jmrc
+    
     main(sys.argv[1:])
+    
     # begin: jmrc
-    print("** {} - {} - end  script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), os.path.basename(__file__) ))
+    print( "{} - {} - {} - end script".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p")) )
     # end: jmrc
 	
 	

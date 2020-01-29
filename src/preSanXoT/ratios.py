@@ -15,86 +15,65 @@ import sys
 import argparse
 from argparse import RawTextHelpFormatter
 import logging
-import glob
-import shutil
-
-import pandas
-import numpy
 import re
-import dask
-import dask.dataframe as dd
-from dask.delayed import delayed
-from dask.distributed import Client
+import io
+import pandas as pd
+import numpy as np
+import concurrent.futures
+from itertools import repeat
 
 
 ###################
 # Local functions #
 ###################
-
-def pre_processing(file, expt=None):
+def read_command_table(ifiles):
     '''
-    Pre-processing the data: join the files
-    '''    
-    # read input file if has teh experiment
-    df = pandas.read_csv(file, sep="\t")
-    if expt:
-        df["Experiment"] = next((x for x in expt if x in file), False)
-    return df
-
-def infiles_ratios(ifile):
+    read the multiple input files to string and split by command
+    create a list of tuples (command, dataframe with parameters)
+    dropping empty rows and empty columns
+    create a dictionary with the concatenation of dataframes for each command
+    {command} = concat.dataframes
     '''
-    Handles the input data (workflow file)
+    indata = dict()
+    idta = ''
+    for f in ifiles.split(";"):
+        with open(f, "r") as file:
+            idta += file.read()
+    match = re.findall(r'\s*#([^\s]*)\s*([^#]*)', idta, re.I | re.M)
+    idta = [(c,pd.read_csv(io.StringIO(l), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')) for c,l in match]    
+    for c, d in idta:
+        if c in indata:
+            indata[c] = pd.concat( [indata[c], d], sort=False)
+        else:
+            for c2 in c.split('&'):
+                indata[c2] = d
+    return indata
+
+def filter_by_exp_from_ratios(idf, iratios):
+    '''
+    Filter the input dataframe from the given experiments.
+    Get the list of ratios
     '''
     # get the matrix with the ratios
-    indata = pandas.read_csv(ifile, usecols=["experiment","ratio_numerator","ratio_denominator"], converters={"experiment":str, "ratio_numerator":str, "ratio_denominator":str})
-    ratios = indata.groupby("ratio_denominator")["ratio_numerator"].unique()
+    ratios = iratios.groupby("ratio_denominator")["ratio_numerator"].unique()
     ratios = ratios.reset_index().values.tolist()
     # get the list of sorted experiments discarding empty values
-    expt = list( filter(None, indata["experiment"].unique()) )
-    expt.sort()
-    return expt, ratios
-
-
-def infiles_adv(self, ifile):
-    '''
-    Handles the input data (workflow file)
-    '''
-    indata = pandas.read_csv(ifile, converters={"experiment":str, "name":str, "ratio_numerator":str, "ratio_denominator":str})
-    lblCtr = {}
-    # get the list of sorted experiments discarding empty values
-    Expt = list( filter(None, indata["experiment"].unique()) )
-    Expt.sort()
-    # for each row
-    for idx, indat in indata.iterrows():
-        exp    = indat["experiment"]
-        ratio_num = indat["ratio_numerator"]
-        ratio_den = indat["ratio_denominator"]
-        # ratio numerator and denominator have to be defined
-        if not pandas.isnull(exp) and not exp == "" and not pandas.isnull(ratio_num) and not ratio_num == "" and not pandas.isnull(ratio_den) and not ratio_den == "":
-            ratio_num = re.sub(r'\n*', '', ratio_num)
-            ratio_num = re.sub(r'\s*', '', ratio_num)
-            ratio_den = re.sub(r'\n*', '', ratio_den)
-            ratio_den = re.sub(r'\s*', '', ratio_den)
-            # save for each experiment
-            # the means apply to a list of unique tags (num)
-            if exp not in lblCtr:
-                lblCtr[exp] = {}
-            if ratio_den not in lblCtr[exp]:
-                lblCtr[exp][ratio_den] = []
-            if ratio_num not in lblCtr[exp][ratio_den]:
-                lblCtr[exp][ratio_den].append(ratio_num)
-    return Expt, lblCtr
+    expt = list( filter(None, iratios["experiment"].unique()) )
+    # filter the input dataframe by the experiments in the RATIOS table
+    idf = idf[idf['Experiment'].isin(expt)]
+    return idf, ratios
 
 
 def _calc_ratio(df, ControlTag, label):
     '''
     Calculate ratios: Xs, Vs
     '''
+    df = df[1]
     # calculate the mean for the control tags (denominator)
     ct = "-".join(ControlTag)+"_Mean" if len(ControlTag) > 1 else "-".join(ControlTag)
     df[ct] = df[ControlTag].mean(axis=1)
     # calculate the Xs
-    Xs = df[label].divide(df[ct], axis=0).applymap(numpy.log2)
+    Xs = df[label].divide(df[ct], axis=0).applymap(np.log2)
     Xs = Xs.add_prefix("Xs_").add_suffix("_vs_"+ct)
     # calculate the Vs
     Vs = df[label].gt(df[ct], axis=0)
@@ -105,7 +84,7 @@ def _calc_ratio(df, ControlTag, label):
     Vab = df[label]
     Vab = Vab.add_prefix("Vs_").add_suffix("_ABS")
     # concatenate all ratios
-    df = pandas.concat([df,Xs,Vs,Vab], axis=1)
+    df = pd.concat([df,Xs,Vs,Vab], axis=1)
     return df    
 
 def calculate_ratio(df, ratios):
@@ -136,64 +115,32 @@ def main(args):
     '''
     Main function
     '''
-    logging.info("check parameters")
-    if not args.infile and not args.indir:
-        parser.print_help(sys.stderr)
-        sys.exit("\n\nERROR: we need at least one kind of input: infile or indir\n")
+    # read the file to string and split by command
+    # create a list of tuples (command, dataframe with parameters)
+    # dropping empty rows and empty columns
+    # create a dictionary with the concatenation of dataframes for each command
+    # {command} = concat.dataframes
+    logging.info("read the input file with the commands")
+    indata = read_command_table(args.intbl)
 
+    logging.info("read input file")
+    ddf = pd.read_csv(args.infile, sep="\t")
 
     logging.info("get the ratios and experiments from the data file")
-    expt, ratios = infiles_ratios(args.datfile)
-    logging.debug(expt)
+    ddf, ratios = filter_by_exp_from_ratios(ddf, indata['RATIOS'])
     logging.debug(ratios)
 
+    logging.info("calculate the ratios (in parallel by experiment)")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+        ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
+    ddf = pd.concat(ddf)
+    # ddf = calculate_ratio(list(ddf.groupby("Experiment")), ratios)
+    
+    logging.info('print output')
+    ddf.to_csv(args.outfile, sep="\t", index=False)
 
-    if args.infile:
-        logging.info("get indata from input file")
-        logging.debug(args.infile)
-        df = pandas.read_csv(args.infile, sep="\t")
-        
-        logging.info("calculate ratios")
-        df = calculate_ratio(df, ratios)
 
-        logging.info('print output file')
-        outfile = os.path.dirname(os.path.realpath(args.infile)) + "/ID-q.tsv"
-        df.to_csv(outfile, sep="\t", index=False)
 
-    elif args.indir:
-        logging.info("get indata from a list of files")
-        infiles_aux = glob.glob( os.path.join(args.indir,"*/ID.tsv"), recursive=True )
-        infiles = [ f for f in infiles_aux if any(x in os.path.splitext(f)[0] for x in expt) ]
-        logging.debug(infiles)
-        ddf = dd.from_delayed( [delayed(pre_processing)(file, expt) for file in infiles] )
-
-        logging.info('create dask client')
-        with Client(n_workers=args.n_workers) as client:
-            logging.info('repartition by experiments')
-            ddf = ddf.set_index('Experiment')
-            Exptr = expt + [expt[-1]] # I don´t know why but we have to repeat the last experiment in the list for the repartition
-            ddf = ddf.repartition(divisions=Exptr)
-            
-            logging.info("calculate ratios")
-            ddf = ddf.map_partitions(calculate_ratio, ratios)
-            
-            logging.info('print output file')
-            outfiles = []
-            outdir = args.outdir if args.outdir else args.indir
-            for e in expt:
-                outdir_exp = outdir+"/"+e
-                if not os.path.exists(outdir_exp):
-                    os.makedirs(outdir_exp, exist_ok=False)
-                outfiles.append(outdir_exp+"/ID-q.tsv")
-            logging.debug(outfiles)
-            ddf.to_csv(outfiles, sep="\t", line_terminator='\n')
-
-            ddf.compute()
-
-        logging.info("remove temporal directory")
-        tmp_dir = "{}/{}".format(os.getcwd(), 'dask-worker-space')
-        logging.debug(tmp_dir)
-        shutil.rmtree(tmp_dir)
 
 
 
@@ -206,28 +153,24 @@ if __name__ == "__main__":
         Example:
             python ratios.py
         ''', formatter_class=RawTextHelpFormatter)
-    required = parser.add_argument_group('required arguments')
-    conditional = parser.add_argument_group('conditional arguments')
-
-    conditional.add_argument('-if', '--infile', help='Input file with Identification: ID.tsv')
-    conditional.add_argument('-id', '--indir', help='Input directory where are saved the identification files: ID.tsv')
-
-    required.add_argument('-d',  '--datfile', required=True, help='File with the input data: experiments, task-name, ratio (num/den),...')
-    
-    parser.add_argument('-o',  '--outdir', help='Output directory where the ID-q file will be saved')
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
-
+    parser.add_argument('-i', '--infile', help='Input file with Identification: ID.tsv')
+    parser.add_argument('-t',  '--intbl', required=True, help='File with the input data: file, experiments')
+    parser.add_argument('-o',  '--outfile', help='Output file with the ratios')
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
+    
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
 
     # logging debug level. By default, info level
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p')
     else:
         logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p')
 
     # start main function

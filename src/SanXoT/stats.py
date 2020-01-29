@@ -19,7 +19,7 @@ import math
 #######################################################
 
 def version():
-	return "v0.58"
+	return "v0.59"
 
 #------------------------------------------------------
 
@@ -208,16 +208,21 @@ def removeDuplicates(inputList):
 def removeEmptyRows(inputList, in_cols):
 
 	outputList = inputList[:]
+	outputList.sort()
 	icols = in_cols.split(",")
-
+	
 	i = 0
 
-	while i < len(outputList):
+	while i < len(outputList) - 1:
+		r = False
 		for ic in icols:
-			if outputList[i][int(ic)] == "":
-				del outputList[i]
-			else: i += 1
-
+ 			if outputList[i][int(ic)] == "":
+ 				r = True
+ 				break
+		if r:
+			del outputList[i]
+		else: i += 1
+	
 	return outputList
 # end: jmrc
 

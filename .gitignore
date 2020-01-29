@@ -1,3 +1,4 @@
+# ignore this
 # Visual Studio Code
 # R and RStudio files
 .vscode
@@ -5,6 +6,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.spyproject
 
 # DBs files
 dbs/*

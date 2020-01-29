@@ -619,7 +619,7 @@ klibrate.py -gf -v0.02922 -k35.28 -dC:\\temp\\originalDataFile.txt -rC:\\temp\\r
 
 def main(argv):
 	
-	version = "v1.18"
+	version = "v1.19"
 	verbose = True
 	showGraph = True
 	graphDPI = 100 # default of Matplotlib's savefig method
@@ -852,9 +852,18 @@ def main(argv):
 
 if __name__ == "__main__":
     # begin: jmrc
-    print("** {} - {} - start script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), " ".join([x for x in sys.argv]) ))
+    # get the name of script with the type of step (if apply)
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    if '-a' in sys.argv:
+        i = sys.argv.index('-a')
+        s = sys.argv[i+1]
+        s = s.upper()+'_' if not s.startswith('-') else ''
+        script_name = s + script_name
+    print( "{} - {} - {} - start script : {}".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p"), " ".join([x for x in sys.argv])) )
     # end: jmrc
+
     main(sys.argv[1:])
+
     # begin: jmrc
-    print("** {} - {} - end  script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), os.path.basename(__file__) ))
+    print( "{} - {} - {} - end script".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p")) )
     # end: jmrc

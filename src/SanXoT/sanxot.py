@@ -1058,7 +1058,7 @@ Use -H or --advanced-help for more details.""")
 def main(argv):
 
 	# general
-	version = "v2.17"
+	version = "v2.18"
 	
 	# filename options
 	analysisName = ""
@@ -1137,7 +1137,10 @@ def main(argv):
 	logList = [["SanXoT " + version], ["Start: " + strftime("%Y-%m-%d %H:%M:%S")]]
 	
 	try:
-		opts, args = getopt.getopt(argv, "a:p:v:d:r:o:u:z:m:M:l:L:G:V:A:B:w:y:t:W:Z:bgsfFRCDTJhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "higherlevel=", "lowernormw=", "lowernormv=", "outstats=", "maxiterations=", "minseed=", "graphlimits=", "infofile=", "outgraph=", "outrandom=", "outconfluence=", "varconf=", "varconfpercent=", "graphtitle=", "graphlinewidth=", "labelfontsize=", "varfile=", "no-verbose", "no-graph", "no-steps", "forceparameters", "forcenegativevariance", "emergencyvariance", "emergencysweep", "sweepdecimals=", "randomise", "confluence", "removeduplicateupper", "help", "advanced-help", "minimalgraphticks", "includeorphans" , "randomtimer", "randomseed=", "xlabel=", "ylabel=", "tags=", "word-operators"])
+        # begin: jmrc
+        # opts, args = getopt.getopt(argv, "a:p:v:d:r:o:u:z:m:M:l:L:G:V:A:B:w:y:t:W:Z:bgsfFRCDTJhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "higherlevel=", "lowernormw=", "lowernormv=", "outstats=", "maxiterations=", "minseed=", "graphlimits=", "infofile=", "outgraph=", "outrandom=", "outconfluence=", "varconf=", "varconfpercent=", "graphtitle=", "graphlinewidth=", "labelfontsize=", "varfile=", "no-verbose", "no-graph", "no-steps", "forceparameters", "forcenegativevariance", "emergencyvariance", "emergencysweep", "sweepdecimals=", "randomise", "confluence", "removeduplicateupper", "help", "advanced-help", "minimalgraphticks", "includeorphans" , "randomtimer", "randomseed=", "xlabel=", "ylabel=", "tags=", "word-operators"])
+		opts, args = getopt.getopt(argv, "a:p:v:d:r:o:u:U:z:m:M:l:L:G:V:A:B:w:y:t:W:Z:bgsfFRCDTJhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "higherlevel=", "lowernormw=", "lowernormv=", "outstats=", "maxiterations=", "minseed=", "graphlimits=", "infofile=", "outgraph=", "outrandom=", "outconfluence=", "varconf=", "varconfpercent=", "graphtitle=", "graphlinewidth=", "labelfontsize=", "varfile=", "no-verbose", "no-graph", "no-steps", "forceparameters", "forcenegativevariance", "emergencyvariance", "emergencysweep", "sweepdecimals=", "randomise", "confluence", "removeduplicateupper", "help", "advanced-help", "minimalgraphticks", "includeorphans" , "randomtimer", "randomseed=", "xlabel=", "ylabel=", "tags=", "word-operators"])
+        # end: jmrc
 	except getopt.GetoptError:
 		logList.append(["Error while getting parameters."])
 		stats.saveFile(infoFile, logList, "INFO FILE")
@@ -1493,9 +1496,18 @@ def main(argv):
 
 if __name__ == "__main__":
     # begin: jmrc
-    print("** {} - {} - start script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), " ".join([x for x in sys.argv]) ))
+    # get the name of script with the type of step (if apply)
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    if '-a' in sys.argv:
+        i = sys.argv.index('-a')
+        s = sys.argv[i+1]
+        s = s.upper()+'_' if not s.startswith('-') else ''
+        script_name = s + script_name
+    print( "{} - {} - {} - start script : {}".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p"), " ".join([x for x in sys.argv])) )
     # end: jmrc
+
     main(sys.argv[1:])
+
     # begin: jmrc
-    print("** {} - {} - end  script : {}".format( strftime("%Y-%m-%d %H:%M:%S"), os.getpid(), os.path.basename(__file__) ))
+    print( "{} - {} - {} - end script".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p")) )
     # end: jmrc

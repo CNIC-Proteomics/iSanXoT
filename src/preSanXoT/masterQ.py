@@ -9,6 +9,8 @@ import pandas
 import numpy as np
 import re
 import itertools
+import concurrent.futures
+import pandas as pd
 from Bio import SeqIO
 
 
@@ -310,7 +312,7 @@ def add_descriptions(df, indb, tagDecoy):
             if q in indb:
                 return ">"+indb[q].description
             else:
-                return ''
+                return q
         b = list(map(_get_desc, qs))
         return b
     def get_protein_len(qs):
@@ -318,12 +320,12 @@ def add_descriptions(df, indb, tagDecoy):
             if q in indb:
                 return str(len(indb[q].seq))
             else:
-                return ''
+                return '-1'
         b = list(map(_get_len, qs))
         return b
     def _pattern_gene(i):
         m = re.search('GN=([^\s]*)', i)
-        r = m.group(1) if m else ''
+        r = "'"+m.group(1) if m else '' # Stop automatically changing numbers to dates in Excel
         return r
     def _pattern_species(i):
         m = re.search('OS=([^\s]+\s+[^\s]+)', i)
@@ -355,8 +357,8 @@ def add_descriptions(df, indb, tagDecoy):
         # get the list of unique species
         s = [ [_pattern_species(i) for i in j] for j in p ]
         s = [ ";".join(set(i)) for i in s ]
-    except:
-        sys.exit("ERROR!! The FASTA file does not contain all protein hits")    
+    except Exception as ex:
+        sys.exit("ERROR!! The FASTA file does not contain all protein hits: "+str(ex) )
     # return
     return pm,pr,pl,gm,gr,s
 
@@ -450,9 +452,6 @@ def get_master_protein(df, proteins, pretxt):
     '''
     Calculate the master protein for each PSM
     '''  
-#    df = indat
-#    pretxt = args.pretxt 
-#    
     # create a list with the concate of Protein + ProteinRedundancy
     x = df["Protein"] + "_||_"+ df["Protein_Redundancy"]
     x = x.str.replace(r'\_\|\|\_$', "")
@@ -475,54 +474,40 @@ def get_fasta_report(file):
     indb = SeqIO.index(file, "fasta", key_function=_create_key_id)
     return indb
 
+def read_infiles(file):
+    indat = pandas.read_csv(file, sep="\t", na_values=['NA'], low_memory=False)
+    return indat
+
 def main(args):
     '''
     Main function
     '''    
-#    import os
-#    import sys
-#    import argparse
-#    import logging
-#    import pandas
-#    import numpy as np
-#    import re
-#    import itertools
-#    from Bio import SeqIO
-#    parser = argparse.ArgumentParser(
-#        description='Create the relationship table for peptide2protein method (get unique protein)',
-#        epilog='''Examples:
-#        python  src/SanXoT/rels2pq_unique.py
-#          -i ID-q.tsv
-#          -d Human_jul14.curated.fasta
-#          -l "_INV_"
-#          -p "Homo sapiens,sp"
-#          -o ID-mq.tsv
-#        ''',
-#        formatter_class=argparse.RawTextHelpFormatter)
-#    args = parser.parse_args()
-#    args.indb = "D:\projects\iSanXoT/tests/check_masterQ/Human_jul14.fasta"
-#    args.infile = "D:\projects\iSanXoT/tests/check_masterQ/test_ID-q.tsv"
-#    args.lab_decoy = "_INV_"
-#    args.pretxt = "Homo sapiens,sp"
-
     # get the index of proteins: for UniProt case!! (key_function)
     logging.info('create a UniProt report')
     indb = get_fasta_report(args.indb)
+        
+    logging.info("read files")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
+        indat = executor.map(read_infiles,args.infiles.split(";"))
+    indat = pd.concat(indat)
     
-    logging.info('read infile')
-    indat = pandas.read_csv(args.infile, sep="\t", na_values=['NA'], low_memory=False)
 
     # add the description for the proteins.
     # extract the genes (with redundances) and species.
     # discarding DECOY proteins
     logging.info('create a report with the proteins info')
     indat["Protein"],indat["Protein_Redundancy"],indat["Protein_Length"],indat["Gene"],indat["Gene_Redundancy"],indat["Species"] = add_descriptions(indat, indb, args.lab_decoy)
-    
-    logging.info('create the report with the peptides and proteins')
-    proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
 
-    logging.info('calculate the masterQ')
-    indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
+# TODO!!!
+# IMPROVE THE MASTERQ METHOD!! FASTER!!!
+# IDEA:
+# CREATE A COLUMN WITH THE NUMBER OF PSM's AND PEPTIDIES FOR EACH PROTEIN USING DATAFRAME GROUPBY
+    
+    # logging.info('create the report with the peptides and proteins')
+    # proteins = get_num_peptides( indat[['SequenceMod','Protein','Protein_Redundancy','Protein_Length']] )
+
+    # logging.info('calculate the masterQ')
+    # indat["MasterQ"],indat["MasterQ_Tag"] = get_master_protein(indat, proteins, args.pretxt)
 
     logging.info('print output')
     indat.to_csv(args.outfile, sep="\t", index=False)
@@ -533,6 +518,8 @@ def main(args):
 
 
     # -----
+    # DEPRECATED 
+    # ------
     # logging.info('create corrector object')
     # co = corrector(args.infile, args.species, args.pretxt, args.indb, args.columns)
 
@@ -547,6 +534,9 @@ def main(args):
 
     # logging.info('print output')
     # co.to_csv(args.outfile)
+    # -----
+    # DEPRECATED 
+    # ------
 
 
 if __name__ == "__main__":
@@ -555,32 +545,33 @@ if __name__ == "__main__":
         description='Create the relationship table for peptide2protein method (get unique protein)',
         epilog='''Examples:
         python  src/SanXoT/rels2pq_unique.py
-          -i ID-q.tsv
+          -ii TMT1/ID-q.tsv;TMT2/ID-q.tsv
           -d Human_jul14.curated.fasta
           -l "_INV_"
           -p "Homo sapiens,sp"
           -o ID-mq.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-i',  '--infile',  required=True, help='ID-q input file')
+    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
+    parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple input files separated by comma')
     parser.add_argument('-d',  '--indb',    help='in the case of a tie, we apply the sorted protein sequence using the given FASTA file')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
     parser.add_argument('-p',  '--pretxt',  type=str, help='in the case of a tie, we apply teh preferenced text checked in the comment line of a protein. Eg. Organism, etc.')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the masterQ column')
-    parser.add_argument('-v', dest='verbose', action='store_true', help="Increase output verbosity")
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
-    # set-up logging
-    scriptname = os.path.splitext( os.path.basename(__file__) )[0]
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
 
     # logging debug level. By default, info level
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p')
     else:
         logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p')
 
     # start main function
