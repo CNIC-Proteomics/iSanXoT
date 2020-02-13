@@ -158,63 +158,63 @@ function discard_parameter(id) {
     $(`#${id}`).attr("discard",true);
 }
 
-$("#select-methods :checkbox").on("change", function(){
-    if($(this).is(":checked")){
-        // Enable methods
-        $("#select-methods :checkbox").prop('disabled', false);
-        if( this.id == "fdr" ) {
-            // enable the other methods
-            // enable_checkbox_method(`#select-methods #ratios`);
-            // enable_checkbox_method(`#select-methods #sanxot`);
-            // Show tab for the current method
-            $('a#params-pratio-tab').show();
-        }
-        else if( this.id == "ratios" ) {
-            // enable the other methods
-            // enable_checkbox_method(`#select-methods #sanxot`);
-            // Show tab for the current method
-            $('a#tasktable-tab').show();
-            // Accept the following parameters
-            // accept_parameter('hot');
-            // discard_parameter('experiments');
-        }
-        else if( this.id == "sanxot" ) {
-            // Show tab for the current method
-            $('a#tasktable-tab').show();
-            // Accept the following parameters
-            accept_parameter('select-catfile');
-            accept_parameter('catfile');
-        }
-    }
-    else if($(this).is(":not(:checked)")) {
-        // Disable methods depending on which one
-        if( this.id == "fdr" ) {
-            // disaable the other methods
-            disable_checkbox_method(`#select-methods #ratios`);
-            disable_checkbox_method(`#select-methods #sanxot`);
-            // Hide tab for the current method and the disabled methods
-            // $(`a#params-pratio-tab`).hide();
-            // Discard the following parameters
-            // discard_parameter('hot');
-        }
-        else if( this.id == "ratios" ) {
-            // disaable the other methods
-            disable_checkbox_method(`#select-methods #sanxot`);
-            // Hide tab for the current method and the disabled methods
-            // $(`a#tasktable-tab`).hide();
-            // Discard the following parameters
-            // discard_parameter('hot');
-            discard_parameter('select-catfile');
-            discard_parameter('catfile');
-            // Accepts
-            accept_parameter('experiments');
-        }
-        else if( this.id == "sanxot" ) {
-            // Hide tab for the current method and the disabled methods
-            // $(`a#tasktable-tab`).hide();
-            // Discard the following parameters
-            discard_parameter('select-catfile');
-            discard_parameter('catfile');
-        }
-    }
-});
+// $("#select-methods :checkbox").on("change", function(){
+//     if($(this).is(":checked")){
+//         // Enable methods
+//         $("#select-methods :checkbox").prop('disabled', false);
+//         if( this.id == "fdr" ) {
+//             // enable the other methods
+//             // enable_checkbox_method(`#select-methods #ratios`);
+//             // enable_checkbox_method(`#select-methods #sanxot`);
+//             // Show tab for the current method
+//             $('a#params-pratio-tab').show();
+//         }
+//         else if( this.id == "ratios" ) {
+//             // enable the other methods
+//             // enable_checkbox_method(`#select-methods #sanxot`);
+//             // Show tab for the current method
+//             $('a#tasktable-tab').show();
+//             // Accept the following parameters
+//             // accept_parameter('hot');
+//             // discard_parameter('experiments');
+//         }
+//         else if( this.id == "sanxot" ) {
+//             // Show tab for the current method
+//             $('a#tasktable-tab').show();
+//             // Accept the following parameters
+//             accept_parameter('select-catfile');
+//             accept_parameter('catfile');
+//         }
+//     }
+//     else if($(this).is(":not(:checked)")) {
+//         // Disable methods depending on which one
+//         if( this.id == "fdr" ) {
+//             // disaable the other methods
+//             disable_checkbox_method(`#select-methods #ratios`);
+//             disable_checkbox_method(`#select-methods #sanxot`);
+//             // Hide tab for the current method and the disabled methods
+//             // $(`a#params-pratio-tab`).hide();
+//             // Discard the following parameters
+//             // discard_parameter('hot');
+//         }
+//         else if( this.id == "ratios" ) {
+//             // disaable the other methods
+//             disable_checkbox_method(`#select-methods #sanxot`);
+//             // Hide tab for the current method and the disabled methods
+//             // $(`a#tasktable-tab`).hide();
+//             // Discard the following parameters
+//             // discard_parameter('hot');
+//             discard_parameter('select-catfile');
+//             discard_parameter('catfile');
+//             // Accepts
+//             accept_parameter('experiments');
+//         }
+//         else if( this.id == "sanxot" ) {
+//             // Hide tab for the current method and the disabled methods
+//             // $(`a#tasktable-tab`).hide();
+//             // Discard the following parameters
+//             discard_parameter('select-catfile');
+//             discard_parameter('catfile');
+//         }
+//     }
+// });
