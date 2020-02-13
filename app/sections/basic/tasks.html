@@ -1,29 +1,29 @@
 <template class="task-template" id="tasks">
   <section class="tab-content">
 
-    <h6 for="select-methods">Select methods</h6>
+    <h6 for="select-methods">Select task</h6>
     <div class="in form-group row">
       <div class="form-group col checkbox-container" id="select-methods">
         <div>
           <input type="checkbox" id="fdr" checked>
-          <label for="fdr">Calculate the FDR</label>
+          <label for="fdr">Validation by FDR</label>
         </div>
         <div>
           <input type="checkbox" id="masterq" checked>
-          <label for="masterq">Calculate the masterQ</label>
+          <label for="masterq">Preparation of masterQ table</label>
         </div>  
         <div>
           <input type="checkbox" id="ratios" checked>
-          <label for="ratios">Calculate the ratios</label>
+          <label for="ratios">Ratio calculation</label>
         </div>
         <div>
           <input type="checkbox" id="sanxot" checked>
-          <label for="sanxot">Calculate the statistics</label>
+          <label for="sanxot">Statistics</label>
         </div>
       </div>
     </div>
 
-    <h6 for="select-species">Choose the Species</h6>
+    <h6 for="select-species">Select Species</h6>
     <div class="out form-inline row">
       <div class="input-group col">
         <select class="custom-select" id="species">
@@ -34,42 +34,42 @@
       </div>
     </div>
 
-    <h6 for="select-indir">Select input directory</h6>
+    <h6 for="select-indir">Select input folder</h6>
     <div class="in form-inline row">
       <div class="input-group col">
         <input type="text" class="form-control" placeholder="" id="indir">
         <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button" id="select-indir">Choose directory</button>
+          <button class="btn btn-outline-secondary" type="button" id="select-indir">Choose folder</button>
         </div>
       </div>
     </div>
 
-    <h6 for="select-outdir">Select output directory</h6>
+    <h6 for="select-outdir">Select output folder</h6>
     <div class="out form-inline row">
       <div class="input-group col">
         <input type="text" class="form-control" placeholder="" id="outdir">
         <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button" id="select-outdir">Choose directory</button>
+          <button class="btn btn-outline-secondary" type="button" id="select-outdir">Choose folder</button>
         </div>
       </div>
     </div>
 
     <div name="select-dbfile">
-      <h6 for="select-dbfile">Choose a DataBase file <small>(by default, or your personal file)</small></h6>
+      <h6 for="select-dbfile">Select protein database</h6>
       <div class="form-group row">
         <div class="form-group row col">
           <select class="custom-select" id="def-dbfile">
-            <option value="human">category for Human</option>
-            <option value="mouse">category for Mouse</option>
-            <option value="pig">category for Pig</option>
-            <option value="personal">Or choose your file...</option>
+            <option value="human">Human protein database</option>
+            <option value="mouse">Mouse protein database</option>
+            <option value="pig">Pig protein database</option>
+            <option value="personal">User-provided protein database...</option>
           </select>
         </div>
         <div class="form-group row col">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Select your database file" id="dbfile" value="" disabled/>
+            <input type="text" class="form-control" placeholder="Select your protein database file" id="dbfile" value="" disabled/>
             <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" id="select-dbfile" disabled>Choose a file</button>
+              <button class="btn btn-outline-secondary" type="button" id="select-dbfile" disabled>Select file</button>
             </div>
           </div>
         </div>
@@ -78,21 +78,21 @@
 
 
     <div name="select-catfile">
-      <h6 for="select-catfile">Choose a Category file <small>(by default, or your personal file)</small></h6>
+      <h6 for="select-catfile">Select protein-category relation file</h6>
       <div class="form-group row">
         <div class="form-group row col">
           <select class="custom-select" id="def-catfile">
-            <option value="human">category for Human</option>
-            <option value="mouse">category for Mouse</option>
-            <option value="pig">category for Pig</option>
-            <option value="personal">Or choose your file...</option>
+            <option value="human">Human protein-category relation file</option>
+            <option value="mouse">Mouse protein-category relation file</option>
+            <option value="pig">Pig protein-category relation file</option>
+            <option value="personal">User-provided protein-category relation file...</option>
           </select>
         </div>
         <div class="form-group row col">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Select your category file" id="catfile" value="" disabled/>
+            <input type="text" class="form-control" placeholder="Select your protein-category relation file" id="catfile" value="" disabled/>
             <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" id="select-catfile" disabled>Choose a file</button>
+              <button class="btn btn-outline-secondary" type="button" id="select-catfile" disabled>Select file</button>
             </div>
           </div>
         </div>
