@@ -32,7 +32,7 @@ def extract_modifications(s_ddf):
     Create modifications dictionary from xml-doc of UNIMOD
     '''
     # extract the unique labels of modifications from the input files
-    m = re.findall(r'\(([^\)]*)\)', s_ddf)
+    m = re.findall(r'\(([^\)]*)\)', str(s_ddf))
     return m
 
 def join_modifications(mods):
