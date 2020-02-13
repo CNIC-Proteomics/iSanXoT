@@ -1,8 +1,6 @@
 # iSanXoT
 
-Workflow for quantitative high-throughput proteomics, systems biology and the statistical analysis, integration and comparison of experiments.
-This workflow was developed by the Cardiovascular Proteomics Lab/Proteomic Unit at CNIC
-
+The iSanXoT software application is a bioinformatics resource developed in the Cardiovascular Proteomics Laboratory at Centro Nacional de Investigaciones Cardiovasculares (CNIC). Conceived as an integrated tool, iSanXoT is aimed at the statistical, quantitative analysis of proteomics experiments based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach. The outcome is a precise quantitation of not only protein abundance changes, but also alterations to protein function.
 
 # Installation
 
