@@ -45,8 +45,11 @@ def infiles_ratios(ifile):
     '''
     Handles the input data (workflow file)
     '''
+    # read table striping columns and remove spaces
+    indata = pandas.read_csv(ifile, usecols=["experiment","ratio_numerator","ratio_denominator"], converters={"experiment":str, "ratio_numerator":str, "ratio_denominator":str})    
+    indata[indata.columns] = indata.apply(lambda x: x.str.strip())
+    indata[indata.columns] = indata.apply(lambda x: x.str.replace(' ',''))
     # get the matrix with the ratios
-    indata = pandas.read_csv(ifile, usecols=["experiment","ratio_numerator","ratio_denominator"], converters={"experiment":str, "ratio_numerator":str, "ratio_denominator":str})
     ratios = indata.groupby("ratio_denominator")["ratio_numerator"].unique()
     ratios = ratios.reset_index().values.tolist()
     # get the list of sorted experiments discarding empty values

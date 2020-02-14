@@ -96,8 +96,16 @@ function createParameters(conf) {
     let species = parametor.getInValue('species');
     // OPTIONAL: create category file
     let dbfile = parametor.getInFileDir('dbfile');
+    if ( !dbfile ) {
+        exceptor.showMessageBox('Error Message', 'DBfile does not exist');
+        return false;
+    }
     // OPTIONAL: create category file
     let catfile = parametor.getInFileDir('catfile');
+    if ( !catfile ) {
+        exceptor.showMessageBox('Error Message', 'Catfile does not exist');
+        return false;
+    }
     // create the config data
     let cfgdata = parametor.createConfData(conf, {
         'indir': indir,
