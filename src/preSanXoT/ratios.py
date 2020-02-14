@@ -47,8 +47,8 @@ def infiles_ratios(ifile):
     '''
     # read table striping columns and remove spaces
     indata = pandas.read_csv(ifile, usecols=["experiment","ratio_numerator","ratio_denominator"], converters={"experiment":str, "ratio_numerator":str, "ratio_denominator":str})    
-    indata[indata.columns] = indata.apply(lambda x: x.str.strip())
-    indata[indata.columns] = indata.apply(lambda x: x.str.replace(' ',''))
+    indata[["ratio_numerator","ratio_denominator"]] = indata[["ratio_numerator","ratio_denominator"]].apply(lambda x: x.str.strip())
+    indata[["ratio_numerator","ratio_denominator"]] = indata[["ratio_numerator","ratio_denominator"]].apply(lambda x: x.str.replace(' ',''))
     # get the matrix with the ratios
     ratios = indata.groupby("ratio_denominator")["ratio_numerator"].unique()
     ratios = ratios.reset_index().values.tolist()

@@ -59,8 +59,10 @@ def load_indata(ifile):
     # init 
     indata,indata_expto,indata_names = {},[],[]
 
-    # read input data
+    # read table striping columns and remove spaces
     df_indata = pandas.read_csv(ifile, converters={"experiment":str, "name":str, "ratio_numerator":str, "ratio_denominator":str})
+    df_indata[["ratio_numerator","ratio_denominator"]] = df_indata[["ratio_numerator","ratio_denominator"]].apply(lambda x: x.str.strip())
+    df_indata[["ratio_numerator","ratio_denominator"]] = df_indata[["ratio_numerator","ratio_denominator"]].apply(lambda x: x.str.replace(' ',''))
 
     # load experiments and names
     indata_expto = df_indata["experiment"].unique()
