@@ -74,6 +74,8 @@ ECHO ** install electron package
 CMD /C " "%NODE_HOME%/npm" config set scripts-prepend-node-path true"
 CMD /C " "%NODE_HOME%/npm" install electron --save-dev --save-exact --global "
 CMD /C " "%NODE_HOME%/npm" install ps-tree --global "
+CMD /C " "%NODE_HOME%/npm" install xlsx --global "
+CMD /C " "%NODE_HOME%/npm" install js-yaml --global "
 
 
 :: download databases ----------------------

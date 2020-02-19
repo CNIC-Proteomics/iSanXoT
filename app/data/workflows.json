@@ -1,0 +1,196 @@
+[{
+  "id": "basic",
+  "label": "Basic Workflow",
+  "sdesc": "Short description for Basic Workflow",
+  "description": "Long description for Basic Workflow. You can include HTML",
+  "prj_workspace": {
+    "expdir": "exps",
+    "tmpdir": "names",
+    "rstdir": "reports",
+    "logdir": "logs"    
+  },
+  "works": [{
+    "id": "main_inputs",
+    "label": "Inputs",
+    "description": "Short description for the current work (tab)",
+    "file": "main_inputs.tsv",
+    "cmds": [{
+      "id": "CREATE_ID",
+      "label": "Select Input Files",
+      "visible": true,
+      "panel": "panels/main_inputs.html",
+      "params": [
+        { "type": "required", "name": "infile" },
+        { "type": "required", "name": "experiment" }
+      ]
+    }]
+  },{
+    "id": "identification",
+    "label": "Identification",
+    "description": "Short description for the current work (tab)",
+    "file": "identification.tsv",
+    "cmds": [{
+      "id": "FDR",
+      "label": "FDR",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "experiment" },
+        { "type": "required", "name": "threshold" },
+        { "type": "required", "name": "jump_areas" },
+        { "type": "required", "name": "lab_decoy" },
+        { "type": "required", "name": "fdr" },
+        { "type": "required", "name": "type_xcorr" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    },{
+      "id": "MASTERQ",
+      "label": "Rels. p2q",
+      "visible": false,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "experiment" },
+        { "type": "required", "name": "pretxt" },
+        { "type": "required", "name": "lab_decoy" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    },{
+      "id": "RELS_TABLE",
+      "label": "Rels. s2p",
+      "visible": false,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "input" },
+        { "type": "required", "name": "inf_header" },
+        { "type": "required", "name": "sup_header" },
+        { "type": "required", "name": "3rd_headers" },
+        { "type": "required", "name": "output" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    }]
+  },{
+    "id": "stats_quantification",
+    "label": "Stats Quantification",
+    "description": "Short description for the current work (tab)",
+    "file": "stats_quantification.tsv",
+    "cmds": [{
+      "id": "RATIOS-WSPP_SBT",
+      "label": "WSPP - SBT",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "experiment" },
+        { "type": "required", "name": "name" },
+        { "type": "required", "name": "ratio_numerator" },
+        { "type": "required", "name": "ratio_denominator" },
+        { "type": "optional", "name": "p>q_Tag" },
+        { "type": "optional", "name": "p>a_Tag" },
+        { "type": "optional", "name": "c>a_Tag" },
+        { "type": "optional", "name": "s>p_FDR" },
+        { "type": "optional", "name": "p>q_FDR" },
+        { "type": "optional", "name": "q>c_FDR" },
+        { "type": "optional", "name": "s>p_Var(x)" },
+        { "type": "optional", "name": "p>q_Var(x)" },
+        { "type": "optional", "name": "q>c_Var(x)" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    }]
+  },{
+    "id": "integration",
+    "label": "Integration",
+    "description": "Short description for the current work (tab)",
+    "file": "integration.tsv",
+    "cmds": [{
+      "id": "COMBINE",
+      "label": "Combine",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "input" },
+        { "type": "required", "name": "output" },
+        { "type": "required", "name": "level" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    },{
+      "id": "RELS_TABLE",
+      "label": "Create Rels.",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "input" },
+        { "type": "required", "name": "inf_header" },
+        { "type": "required", "name": "sup_header" },
+        { "type": "required", "name": "3rd_headers" },
+        { "type": "required", "name": "output" },
+        { "type": "optional", "name": "more_params" }
+      ]  
+    },{
+      "id": "INTEGRATE",
+      "label": "Integrate",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "input" },
+        { "type": "required", "name": "inf_level" },
+        { "type": "required", "name": "sup_level" },
+        { "type": "required", "name": "rel_table" },
+        { "type": "required", "name": "output" },
+        { "type": "optional", "name": "Tag" },
+        { "type": "optional", "name": "FDR" },
+        { "type": "optional", "name": "Var(x)" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    }]
+  },{
+    "id": "reports",
+    "label": "Reports",
+    "description": "Short description for the current work (tab)",
+    "file": "reports.tsv",
+    "cmds": [{
+      "id": "REPORT",
+      "label": "Report",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "input" },
+        { "type": "required", "name": "inf_level" },
+        { "type": "required", "name": "sup_level" },
+        { "type": "required", "name": "output" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    }]
+  }]
+},{
+  "id": "ptm",
+  "label": "PTM Workflow",
+  "sdesc": "Short description for PTM Workflow",
+  "description": "Long description for PTM Workflow. You can include HTML",
+  "prj_dir": "data/ptm",
+  "cfg_file": "config.yaml",
+  "works": [{
+    "id": "main_inputs",
+    "label": "Inputs",
+    "description": "Short description for the current work (tab)",
+    "file": "main_inputs.tsv"
+  },{
+    "id": "identification",
+    "label": "FDR",
+    "description": "Short description for the current work (tab)",
+    "file": "identification.tsv"
+  },{
+    "id": "stats_quantification",
+    "label": "Stats Quantification",
+    "description": "Short description for the current work (tab)",
+    "file": "stats_quantification.tsv"
+  },{
+    "id": "integration",
+    "label": "Integration",
+    "description": "Short description for the current work (tab)",
+    "file": "integration.tsv"
+  },{
+    "id": "reports",
+    "label": "Reports",
+    "description": "Short description for the current work (tab)",
+    "file": "reports.tsv"
+  }]
+}]

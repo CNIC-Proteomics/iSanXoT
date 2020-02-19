@@ -11,6 +11,8 @@ __status__ = "Development"
 
 import os
 import sys
+import glob
+
 import argparse
 import logging
 import copy
@@ -40,7 +42,7 @@ def read_command_table(ifiles):
     '''
     indata = dict()
     idta = ''
-    for f in ifiles.split(";"):
+    for f in ifiles:
         with open(f, "r") as file:
             idta += file.read()
     match = re.findall(r'\s*#([^\s]*)\s*([^#]*)', idta, re.I | re.M)
@@ -49,10 +51,47 @@ def read_command_table(ifiles):
         if c in indata:
             indata[c] = pd.concat( [indata[c], d], sort=False)
         else:
-            for c2 in c.split('&'):
+            for c2 in c.split('-'):
                 indata[c2] = d
     return indata
 
+def check_command_parameters(indata):
+    '''
+    check the tasktable parameters for each command:
+        1. check whether there are duplicates in the output directories
+        2. check whether the values of '* Var(x)' are False or a float    
+    '''
+    # local functions
+    def get_set_unique_list(list):
+        uniq_set = set()
+        uniq_list = []
+        dup_list = []
+        for item in list:
+            if item not in uniq_set:
+                uniq_list.append(item)
+                uniq_set.add(item)
+            else:
+                dup_list.append(item)
+        return [uniq_list, dup_list]
+
+    # init variables
+    outdirs = []
+    # iterate over all commands
+    for cmd,df in indata.items():
+        # discard RATIOS command because the tasktable is duplicated with WSPP_SBT
+        if cmd != 'RATIOS':
+            # create a list with all output directories for each command
+            if 'name' in df.columns:
+                outdirs.extend(df['name'].values)
+            elif 'output' in df.columns:
+                outdirs.extend(df['output'].values)
+
+    # check if there are duplicates in the output directories
+    if outdirs:
+        if len(outdirs) != len(set(outdirs)):
+            uniq_list, dup_list = get_set_unique_list(outdirs)
+            sys.exit("ERROR!! There are dupplicated outdirs: {}".format(dup_list))
+    
 def replace_val_rec(data, repl):
     '''
     Replace substring from the list of dictionary, recursively
@@ -226,7 +265,7 @@ def add_rules(row, *trules):
     '''
     Create rule list for each command
     '''
-    r = copy.deepcopy(trules)
+    r = list(copy.deepcopy(trules))
     data_params = list(row.index.values)
     for i in range(len(r)):
         trule = r[i]
@@ -240,7 +279,7 @@ def add_rules_createID(df, trules, val):
     '''
     Create rule list for each command
     '''
-    r = tuple(copy.deepcopy(trules))
+    r = list(copy.deepcopy(trules))
     for i in range(len(r)):
         trule = r[i]
         # add data parameters in the infiles/outfiles
@@ -315,91 +354,108 @@ def add_params_cline(rules):
 def main(args):
     '''
     Main function
-    '''    
-    # read the multiple input files to string and split by command
+    '''
+    # read the multiple input files (TSV) from the input dir to string
+    # split by command
     # create a list of tuples (command, dataframe with parameters)
     # dropping empty rows and empty columns
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
-    indata = read_command_table(args.infiles)
-       
+    infiles = glob.glob( os.path.join(args.indir,"*.tsv"), recursive=True )    
+    indata = read_command_table(infiles)
+    
+    
+    
     # TODO CHECK THE INPUT TABLE!!!!!
     # COMPRUEBA QUE:
     # 1. La columna de 'names' es unica
     # 2. Que para las columnas de '* Var(x)' los valores o es False o un float
+    logging.info("check the tasktable parameters for each command")
+    check_command_parameters(indata)
     
     
+    # init the output file with the given attributes of workflow
+    logging.info("init the output file with the attributes of given workflow")
+    with open(args.attfile, 'r') as stream:
+        try:
+            tpl = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            sys.exit("ERROR!! Reading the attributes file of workflow: {}".format(exc))
+
     
+
     # read the templates of commands
     logging.info("read the template of commands")
     with open(args.intpl, 'r') as stream:
         try:
-            tpl = yaml.safe_load(stream)
+            tpl_cmds = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             sys.exit("ERROR!! Reading the template of commands: {}".format(exc))
-       
+
     
     # get the unique commands from the input table
     logging.info("get the unique commands from the input table")
     cmds = list(indata.keys())
-    dels = [i for i in tpl['commands'] if not (i['name'] in cmds)]
+    dels = [i for i in tpl_cmds['commands'] if not (i['name'] in cmds)]
     for c in dels:
-        del tpl['commands'][ tpl['commands'].index(c) ]
+        del tpl_cmds['commands'][ tpl_cmds['commands'].index(c) ]
+
     
+    # merge the workflow attributes with the templates of commands
+    tpl.update(tpl_cmds)
+
+
+    # # 1. replace output directory constant in the whole template
+    # logging.info("replace output directory constant in the whole template")
+    # repl = {
+    #         '__MAIN_INPUTS_OUTDIR__':  tpl['main_inputs']['outdir']
+    # }
+    # tpl = replace_val_rec(tpl, repl)
+                
+    # replace the constants for the command templates
+    logging.info("replace the constants for the command templates")
+    repl = {        
+            '__ISANXOT_SRC_HOME__':         os.environ['ISANXOT_SRC_HOME'],
+            '__ISANXOT_PYTHON3x_HOME__':    os.environ['ISANXOT_PYTHON3x_HOME'],
+            '__NCPU__':                     str(tpl['ncpu']),
+            '__WF_VERBOSE__':               str(tpl['verbose']),
+            '__MAIN_INPUTS_EXPDIR__':       tpl['expdir'],
+            '__MAIN_INPUTS_TMPDIR__':       tpl['tmpdir'],
+            '__MAIN_INPUTS_RSTDIR__':       tpl['rstdir'],
+            '__MAIN_INPUTS_LOGDIR__':       tpl['logdir'],
+            '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
+            '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
+            '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
+    }
+    # add the replacements for the data files of tasktable commands
+    for datfile in tpl['datfiles']:
+        l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
+        repl[l] = datfile['file']    
+    tpl = replace_val_rec(tpl, repl)
+    
+    # mandatory: work with the CREATE_ID command
+    cmd = 'CREATE_ID'
+    if cmd in indata:
+        df = indata['CREATE_ID']
+        icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
+        if icmd:
+            i = icmd[0]
+            # assign the global variable
+            # get the list of unique experiments (in string)
+            global EXPERIMENTS
+            EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
+            # replace constants
+            tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+            # add the parameters into each rule
+            tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
+            # add the whole parametes (infiles, outfiles, params) to command line
+            add_params_cline( tpl['commands'][i]['rules'] )
+        del indata[cmd]
     
     logging.info("fill the parameters and rules for each command")
     for cmd,df in indata.items():
-        if cmd == 'MAIN_INPUTS': # always HAS TO BE THE FIRST COMMAND from the input dataframe
-            # add main inputs
-            # replace constant
-            logging.info("add main inputs in config")
-            add_values(indata['MAIN_INPUTS'], tpl['main_inputs'])
-            repl = {
-                    '__MAIN_INPUTS_OUTDIR__':  tpl['main_inputs']['outdir']
-            }
-            tpl['main_inputs'] = replace_val_rec(tpl['main_inputs'], repl)
-                        
-            # replace constants from the main_inputs
-            # This variable is used for the next commands!!
-            logging.info("create fill the parameters for each command")
-            repl = {
-                
-                    '__ISANXOT_SRC_HOME__':         os.environ['ISANXOT_SRC_HOME'],
-                    '__ISANXOT_PYTHON3x_HOME__':    os.environ['ISANXOT_PYTHON3x_HOME'],                    
-                    '__NCPU__':                     str(tpl['ncpu']),
-                    '__WF_VERBOSE__':               str(tpl['verbose']),
-                    '__MAIN_INPUTS_DATFILE_INP__':  tpl['main_inputs']['datfiles']['inp'],
-                    '__MAIN_INPUTS_DATFILE_IDE__':  tpl['main_inputs']['datfiles']['ide'],
-                    '__MAIN_INPUTS_DATFILE_STS__':  tpl['main_inputs']['datfiles']['sts'],
-                    '__MAIN_INPUTS_DATFILE_INT__':  tpl['main_inputs']['datfiles']['int'],
-                    '__MAIN_INPUTS_DATFILE_REP__':  tpl['main_inputs']['datfiles']['rep'],
-                    '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
-                    '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
-                    '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
-                    '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],                    
-                    '__MAIN_INPUTS_EXPDIR__':       tpl['main_inputs']['expdir'],
-                    '__MAIN_INPUTS_TMPDIR__':       tpl['main_inputs']['tmpdir'],
-                    '__MAIN_INPUTS_RSTDIR__':       tpl['main_inputs']['rstdir'],
-                    '__MAIN_INPUTS_LOGDIR__':       tpl['main_inputs']['logdir'],
-            }
-            
-        elif cmd == 'CREATE_ID':
-            icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
-            if icmd:
-                i = icmd[0]
-                # assign the global variable
-                # get the list of unique experiments (in string)
-                global EXPERIMENTS
-                EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
-                # replace constants
-                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
-                # add the parameters into each rule
-                tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
-                # add the whole parametes (infiles, outfiles, params) to command line
-                add_params_cline( tpl['commands'][i]['rules'] )
-
-        elif cmd == 'RATIOS':
+        if cmd == 'RATIOS':
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
@@ -442,9 +498,10 @@ if __name__ == "__main__":
         Example:
             python table2cfg.py
         ''')        
-    parser.add_argument('-ii', '--infiles',  required=True, help='Multiple input files separated by comma')
-    parser.add_argument('-t',  '--intpl',    required=True, help='Template of commands (yaml format)')
-    parser.add_argument('-o',  '--outfile',   required=True, help='Config file to be execute by snakemake')
+    parser.add_argument('-a', '--attfile', required=True, help='Input file with the attributes of given workflow: name, ncpu, version, etc. (YMAL format)')
+    parser.add_argument('-t', '--intpl',   required=True, help='Template of commands (yaml format)')
+    parser.add_argument('-i', '--indir',   required=True, help='Input directory where iSanXoT config files are saved')
+    parser.add_argument('-o', '--outfile', required=True, help='Config file to be execute by snakemake')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

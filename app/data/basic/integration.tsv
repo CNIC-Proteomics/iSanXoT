@@ -1,0 +1,13 @@
+#COMBINE								
+input	output	level	more_params					
+"wt1,wt2"	wt_prot	proteins						
+"wt1,wt2"	wt_cat	categories						
+								
+#RELS_TABLE								
+input	inf_header	sup_header	3rd_headers	output	more_params			
+*/ID-fdr	SequenceMod	Spectrum_File-Scan-Charge		rels_scan2peptide				
+ID-mq	Protein	SequenceMod		rels_peptide2protein				
+								
+#INTEGRATE								
+input	output	inf_level	sup_level	rel_table	Tag	FDR	Var(x)	more_params
+wt_prot	wt	comb_dat	sup_dat	comb_rel		0.01	FALSE	

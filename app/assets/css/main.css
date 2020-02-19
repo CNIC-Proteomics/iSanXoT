@@ -1,11 +1,18 @@
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 body {
+    font-family: 'Poppins', sans-serif;
+    background: #fafafa;
     padding: 5px;
-    font-size: .8em;
+    font-size: .77em;
 }
-section.content {
-    margin-top: 1em;
-    margin-bottom: 1em;
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
 }
+
 section.executor, section.processor {
     position: fixed;
     left: 0;
@@ -14,7 +21,7 @@ section.executor, section.processor {
     padding: 1em;
     background-color: goldenrod;
     height: 5em;
-    z-index: 2;
+    z-index: 1000;
 }
 footer {
     position: fixed;
@@ -24,13 +31,15 @@ footer {
     height: 1.7em;
     text-align: right;
     background-color: #f0f0f0;
-    z-index: 2;
+    z-index: 1000;
 }
 input:disabled, button:disabled {
     cursor: not-allowed;
 }
 
-/* Init page */
+/* ---------------------------------------------------
+    INIT PAGE
+----------------------------------------------------- */
 #accordion {
     margin: 20px 10px 0 10px;
 }
@@ -51,71 +60,83 @@ input:disabled, button:disabled {
     cursor: pointer;
 }
 
-/* Tab settings */
-section.tab-content {
-    margin-bottom: 10px;
-    padding-right: 0.3em;
-    padding-left: 0.3em;
-    /* width: 99%; */
-}
+/* ---------------------------------------------------
+    WORKFLOW PAGE
+----------------------------------------------------- */
 
+/* Tab settings */
+.tab-content {
+    padding: .1em 0 0 0;
+    /* height: 51.5em; */
+    height: 626px;
+}
 .tabs-main .tab-pane {
     overflow-y: auto;
     overflow-x: auto;
-    width: 100%;   
+    width: 100%;
+    height: 100%;
 }
 .tabs-parameters .tab-pane {
     width: 100%;   
 }
-.tab-content {
-    padding: .5em;
-}
 
-/* parameters */
-.form-inline.row {
-    margin-right: 0;
-    margin-left: 0;
-}
-.input-group.col {
-    padding-left: 0;
-    padding-right: 0;
-}
-.form-group.row {
-    margin-right: 0;
-    margin-left: 0;
-    margin-bottom: .6em;
-    padding-left: 0;
-    padding-right: 0;
-}
-.form-group.row > [class^="col-"] {
-    padding-right: 0;
-    padding-left: 0;
-    margin-right: 1em;
-}
-.form-control {
-    font-size: inherit;
-}
-
-input#indir, input#outdir, input#modfile, input#catfile {
-    /* width: 400px; */
-    /* width: 100%; */
-}
-#tasktable [type^="button"] {
-    /* margin-top: 3px; */
-}
-input#modfile, input#catfile {
-    /* margin-right: 3px; */
-}
-section.tab-content > .form-inline {
-    margin-bottom: 5px;
+#page {
     width: 100%;
+    transition: all 0.3s;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+div[class^="col-"] {
+    padding: 0 .5em 0 0;
+}
+.col-11 {
+    margin-bottom: 30px;
 }
 
-[name="experiments"] {
-    display: none;
+#page .page-header {
+    height: auto;
+    background-color: #6d7fcc;
+    color: white;
+    font-size: 1.8em;
+    padding: .3em;
+    text-align: center;
 }
 
-/* executor */
+/* sidebar */
+#sidebar .sidebar-header {
+    font-size: 1.8em;
+    padding: .3em;
+}
+
+#sidebar {
+    /* width: 80px; */
+    background: #7386D5;
+    color: #fff;
+    text-align: center;
+    height: 100%;
+}
+#sidebar ul {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+}
+
+#sidebar ul li a {
+    cursor: pointer;
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+
+/* ---------------------------------------------------
+    EXECUTOR
+----------------------------------------------------- */
 #executor button#start {
     color: #fff;
     background-color: slategray;
@@ -126,7 +147,9 @@ section.tab-content > .form-inline {
     margin-left: 0.1em;
 }
 
-/* loader */
+/* ---------------------------------------------------
+    LOADER
+----------------------------------------------------- */
 .loading-page {
     z-index: 10000;
     background: transparent;
@@ -178,3 +201,56 @@ section.tab-content > .form-inline {
     from{ bottom:-100px; opacity:0 } 
     to{ bottom:0; opacity:1 }
 }
+
+/*
+ * ---------------------------------------------------
+ *   PANEL-SECTION: MAIN_INPUTS
+ * -----------------------------------------------------
+ */
+#panel-main_inputs {
+    margin-top: .6em;
+}
+.form-inline.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+.input-group.col {
+    padding-left: 0;
+    padding-right: 0;
+}
+.form-group.row {    
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: .6em;
+}
+.form-group.row > [class^="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: 1em;
+}
+.form-control {
+    font-size: inherit;
+}
+#species, #indir, #outdir, #modfile, #dbfile, #catfile, #def-dbfile, #def-catfile,
+#select-indir, #select-outdir, #select-dbfile, #select-catfile {
+    height: 30px;
+}
+section.tab-content > .form-inline {
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+/*
+ * ---------------------------------------------------
+ *   PANEL-SECTION: ADVANCED PARAMETERS
+ * -----------------------------------------------------
+ */
+#panel-advance {
+    margin-top: .6em;
+    margin-bottom: .6em;
+    float: right;
+}
+.toggle.btn {
+    min-height: 1.875rem;
+}
+  

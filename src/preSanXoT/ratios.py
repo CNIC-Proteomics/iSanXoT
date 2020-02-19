@@ -45,7 +45,7 @@ def read_command_table(ifiles):
         if c in indata:
             indata[c] = pd.concat( [indata[c], d], sort=False)
         else:
-            for c2 in c.split('&'):
+            for c2 in c.split('-'):
                 indata[c2] = d
     return indata
 

@@ -62,7 +62,8 @@ if ( document.querySelector('#executor #start') !== null ) {
             exceptor.loadingWorkflow();
             // Execute the workflow
             setTimeout(function() {
-                let cmd_smk    = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" --rerun-incomplete `;
+                let cmd_smk    = `"${process.env.ISANXOT_PYTHON3x_HOME}/tools/Scripts/snakemake.exe" --configfile "${params.cfgfile}" --snakefile "${smkfile}" --cores ${params.nthreads} --directory "${params.outdir}" --rerun-incomplete --keep-going`;
+                // cmd_smk += (process.env.ISANXOT_MODE == "production") ? " --printshellcmds" : "";
                 //  --dryrun --printshellcmds
                 let cmd_unlock = `${cmd_smk} --unlock `;
                 let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;

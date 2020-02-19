@@ -1,9 +1,9 @@
 import os
 
 # Load global variables need for workflow
-TMP_OUTDIR         = config['main_inputs']['tmpdir']
-RST_OUTDIR         = config['main_inputs']['rstdir']
-LOG_OUTDIR         = config['main_inputs']['logdir']
+TMP_OUTDIR         = config['tmpdir']
+RST_OUTDIR         = config['rstdir']
+LOG_OUTDIR         = config['logdir']
 
 # ------------- #
 # Local Methods #

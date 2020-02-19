@@ -12,13 +12,15 @@ let all_pids = { 'pids':[], 'c_pids':[] };
 let template = [
   { label: "Menu", submenu: [    
     { label: 'Init', click() { mainWindow.loadFile('index.html') } },
-    { label: 'Processes', click() { mainWindow.loadFile('processes.html') } },
+    { label: 'Load project...', click() { openLoadProject() } },
     { role: 'quit', accelerator: 'Shift+Ctrl+Q' }
   ]},
   { label: "Workflows", submenu: [
-    { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
-    { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
-    { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } }
+    { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic&pdir=${__dirname}/data`) } },
+    { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm&pdir=${__dirname}/data`) } },
+    { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree&pdir=${__dirname}/data`) } },
+    { type: 'separator' },
+    { label: 'Processes', click() { mainWindow.loadFile('processes.html') } }
   ]},
   { label: "Preferences", submenu: [
     { label: 'Download Databases', click() { mainWindow.loadFile('downdb.html') } },
@@ -44,13 +46,15 @@ const menu = Menu.buildFromTemplate(template)
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 850,
-    webPreferences: {
-      nodeIntegration: true
+    'minWidth': 1074,
+    'minHeight': 850,
+    'width': 1250,
+    'height': 850,
+    'webPreferences': {
+      'nodeIntegration': true
     },
     // resizable: false,
-    icon: __dirname + '/assets/icons/molecule.png',
+    'icon': __dirname + '/assets/icons/molecule.png',
   })
 
   // and load the index.html of the app.
@@ -90,7 +94,21 @@ function createWindow () {
 
 }; // end createWindow
 
+/*
+Local functions
+*/
 
+function openLoadProject() {
+  dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
+    if(dirs === undefined) {
+      console.log("No output directory selected");
+    } else {
+      let dir = dirs[0];
+      console.log(dirs);
+      mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${dir}`)
+    }
+}); 
+};
 
 /*
 App functions

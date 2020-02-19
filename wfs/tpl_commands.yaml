@@ -1,27 +1,4 @@
 ---
-name: basic
-pid: 69
-ncpu: 4
-verbose: "-vv"
-
-main_inputs:
-  infilenames: []
-  indir: ''
-  species: ''
-  dbfile: ''
-  catfile: ''
-  outdir: ''
-  datfiles:
-    inp:   __MAIN_INPUTS_OUTDIR__/.isanxot_inp.tsv
-    ide:   __MAIN_INPUTS_OUTDIR__/.isanxot_ide.tsv
-    sts:   __MAIN_INPUTS_OUTDIR__/.isanxot_sts.tsv
-    int:   __MAIN_INPUTS_OUTDIR__/.isanxot_int.tsv
-    rep:   __MAIN_INPUTS_OUTDIR__/.isanxot_rep.tsv
-  expdir:  __MAIN_INPUTS_OUTDIR__/exps
-  tmpdir:  __MAIN_INPUTS_OUTDIR__/names
-  rstdir:  __MAIN_INPUTS_OUTDIR__/reports
-  logdir:  __MAIN_INPUTS_OUTDIR__/logs
-
 commands:
 
 ###################
@@ -207,8 +184,6 @@ commands:
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/s2p_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides.tsv
-      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides_lowerNormW.tsv
-      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides_lowerNormV.tsv
     parameters:
       s>p_Var(x):
         -v: ''
@@ -251,8 +226,6 @@ commands:
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins.tsv
-      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins_lowerNormW.tsv
-      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins_lowerNormV.tsv
     parameters:
       p>q_Var(x):
         -v: ''
@@ -295,8 +268,6 @@ commands:
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2c_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories.tsv
-      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories_lowerNormW.tsv
-      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories_lowerNormV.tsv
     parameters:
       q>c_Var(x):
         -v: ''
@@ -312,6 +283,8 @@ commands:
     outfiles:
       -z: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2a_outStats.tsv
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2a_variance.txt
+      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides_lowerNormW.tsv
+      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides_lowerNormV.tsv
     parameters:
       p>a_Tag:
         --tags: ''
@@ -324,6 +297,8 @@ commands:
     outfiles:
       -z: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2a_outStats.tsv
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2a_variance.txt
+      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins_lowerNormW.tsv
+      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins_lowerNormV.tsv
     parameters:
       q>a_Var(x):
         -v: ''
@@ -337,6 +312,8 @@ commands:
     outfiles:
       -z: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/c2a_outStats.tsv
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/c2a_variance.txt
+      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories_lowerNormW.tsv
+      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories_lowerNormV.tsv
     parameters:
       c>a_Var(x):
         -v: 0

@@ -3,9 +3,7 @@ let dialog = remote.dialog;
 
 function showMessageBox(head, message, end=false) {
   dialog.showErrorBox(head, message);
-  if ( end ) {
-    
-  }
+  if (end) throw new Error(message);
 };
 
 function loadingWorkflow() {

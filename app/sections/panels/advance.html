@@ -1,0 +1,80 @@
+<template class="task-template" id="panel-advance">
+  <div id="panel-advance">
+    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Enable advanced options" data-off="Disable advanced options" data-onstyle="light" data-offstyle="dark" data-width="250px" data-height="30px" data-size="sm" onchange="toggleAdvParameters(this)" checked>
+  </div>
+<script>
+  var importer = require(`${__dirname}/renderer-process/imports`);
+  // var exceptor = require(`${__dirname}/renderer-process/exceptor`);
+
+  // // Get the first object from ID value of workflows.json file
+  // function getObjectFromID(data, id) {
+  //   let rst = data.filter(obj => { return obj.id === `${id}` });
+  //   if ( !rst || jQuery.isEmptyObject(rst) ) {
+  //     console.log(data);
+  //     console.log(id);
+  //     exceptor.showMessageBox('Error Message', `getObjectFromID function is not working`, end=true);
+  //   }
+  //   rst = rst[0]; // get the firt(unique) element
+  //   return rst;
+  // }
+  // // Get the list of optionals parameters from workflows.json file
+  // function getIndexParamsFromType(data, t) {
+  //   function findWithAttr(array, attr, value) {
+  //     let rst = [];
+  //     for(var i = 0; i < array.length; i += 1) {
+  //       if(array[i][attr] === value) {
+  //         rst.push(i);
+  //       }
+  //     }
+  //     return rst;
+  //   }
+  //   let rst = findWithAttr(data, 'type', t);
+  //   if ( !rst || rst.length == 0 ) {
+  //     console.log(data);
+  //     console.log(t);
+  //     exceptor.showMessageBox('Error Message', `getIndexParamsFromType function is not working`, end=true);
+  //   }
+  //   return rst;
+  // }
+
+  function toggleAdvParameters(t) {
+    // Import variables
+    let wf_id = importer.wf_id;
+    let wf = importer.wf;
+   
+    // Get work attributes from the id
+    let wk_id = importer.getWorkIDFromElements();
+    // let wk = getObjectFromID(wf['works'], wk_id);
+    let wk = importer.getObjectFromID(wf['works'], wk_id);
+    if ( wf === undefined ) {
+      console.log(wk_id);
+      exceptor.showMessageBox('Error Message', `Getting the 'works' attributes from the id`, end=true);
+    }
+
+    // Get cmd attributes from the id
+    let cmd_id = importer.getCmdIDFromElements();
+    // let cmd = getObjectFromID(wk['cmds'], cmd_id);
+    let cmd = importer.getObjectFromID(wk['cmds'], cmd_id);
+    if ( cmd === undefined ) {
+      console.log(cmd_id);
+      exceptor.showMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
+    }
+
+    // Get the list of optionals parameters
+    // let opt = getIndexParamsFromType(cmd['params'], 'optional');
+    let opt = importer.getIndexParamsFromType(cmd['params'], 'optional');
+    if ( opt === undefined ) {
+      exceptor.showMessageBox('Error Message', `Getting the 'optional parameters'`, end=true);
+    }
+
+    // Show/Hide 'hiddenColumns'
+    if ( $(t).prop('checked') ) {
+      $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': opt, 'indicators': false } });
+    }
+    else {
+      $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': [], 'indicators': false } });
+    }
+  }
+
+</script>
+</template>
