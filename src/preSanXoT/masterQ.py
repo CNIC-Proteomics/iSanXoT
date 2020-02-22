@@ -321,6 +321,10 @@ def add_descriptions(df, indb, tagDecoy):
                 return '-1'
         b = list(map(_get_len, qs))
         return b
+    def _get_desc_id(q):
+        m = re.search('^([^\|]*\|[^\|]*)', q)
+        r = "'"+m.group(1) if m else '' # Stop automatically changing numbers to dates in Excel
+        return r
     def _pattern_gene(i):
         m = re.search('GN=([^\s]*)', i)
         r = "'"+m.group(1) if m else '' # Stop automatically changing numbers to dates in Excel
@@ -335,7 +339,8 @@ def add_descriptions(df, indb, tagDecoy):
     l = list(map(get_protein_len, a))
     da = [ list(itertools.chain(list(itertools.zip_longest(i,j,k,fillvalue='')))) for i,j,k in list(zip(d,a,l)) ]    
     # sort and discard the DECOY proteins and the proteins without description
-    da = [ [i for i in sorted(s) if not (tagDecoy in i[0]) and all(i)] for s in da ]    
+    # for the correct sorting of accession id of isoform, we have to extract the first part of FASTA description (por ejemplo, sp|P16112-2)
+    da = [ [i for i in sorted(s, key=lambda x: _get_desc_id(x[0])) if not (tagDecoy in i[0]) and all(i)] for s in da ]    
     # get a list with the tuple 1 (ProteinDescription)
     p = [ [i[0] for i in s] for s in da ]
     try:
