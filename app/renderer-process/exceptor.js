@@ -7,7 +7,7 @@ function showMessageBox(head, message, end=false) {
 };
 
 function loadingWorkflow() {
-  $(`.loading-page`).show();
+  $(`#loader`).show();
   $(document.body).css({'cursor' : 'wait'});
   $(`#main`).css({'opacity' : 0.5});
   $(`#executor`).css({'opacity' : 0.5});
