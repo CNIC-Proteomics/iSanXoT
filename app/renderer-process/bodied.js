@@ -2,21 +2,12 @@
  * Import libraries
  */
 let fs = require('fs');
-let path = require('path');
 let exceptor = require('./exceptor');
 let importer = require('./imports');
 
 /*
  * Local functions
  */
-
-// // Get the most recent execution directory
-// // the files has to be sorted by name
-// function getMostRecentDir(dir) {
-//   // the files has to be sorted by name
-//   let files = fs.readdirSync(dir).reverse();
-//   return (files.length > 0)? files[0] : undefined;
-// }
 
 // Convert workbook to json
 function to_json(workbook) {
@@ -95,88 +86,18 @@ function extract_list_cmds(tbl) {
   return report;  
 };
 
-
-//  /*
-//  * Local variables
-//  */
-
-// // Get input parameters (from URL)
-// let url_params = new URLSearchParams(window.location.search);
-// let pdir = url_params.get('pdir');
-// let wf_id = url_params.get('wfid');
-
-// // // Extract the workflow attributes
-// // let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`));
-// // Get the workflow attributes
-// let wfs = importer.wfs;
-
-// /*
-//  * Main
-//  */
-
-// // Check variables
-// if ( !pdir ) {
-//   console.log(url_params);
-//   exceptor.showMessageBox('Error Message', `Project directory is not defined`, end=true);
-// }
-// else if ( !wf_id ) {
-//   console.log(url_params);
-//   exceptor.showMessageBox('Error Message', `Type of workflow is not defined`, end=true);
-// }
-
-// // Get workflow id from the load project
-// if ( wf_id == "load" ) {
-
-//   pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_results'
-  
-
-
-//   // Extract the workflow attributes
-//   pdir += '/.isanxot' // add the directory where data files of isanxot is 
-//   // Add the most recent execution
-//   let d = getMostRecentDir(pdir);
-//   if ( !d ) {
-//     console.log(pdir);
-//     exceptor.showMessageBox('Error Message', `Extracting the most recent execution`, end=true);
-//   }  
-//   pdir += `/${d}`;
-//   // Check if config file exits
-//   // let cfgfile = `${pdir}/config.yaml`;
-//   let cfgfile = `${pdir}/config0.yaml`;
-//   if (fs.existsSync(cfgfile)) {
-//     // open config file
-//     let cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
-//     // get the wofkflow name
-//     if ( cfg.hasOwnProperty('name') ) wf_id = cfg['name'];
-//   }
-//   else {
-//     console.log(cfgfile);
-//     exceptor.showMessageBox('Error Message', `Openning the config file`, end=true);
-//   }
-// }
-// else {
-//   // add the directory where data files of isanxot is 
-//   pdir += `/${wf_id}`;
-// }
-
-
-
-// // Get workflow attributes from the wf_id
-// let wf = importer.getObjectFromID(wfs, wf_id);
-// if ( wf === undefined ) {
-//   console.log(wf_id);
-//   exceptor.showMessageBox('Error Message', `Getting the 'workflow' attributes from the id`, end=true);
-// }
-
-
-
  /*
  * Import varialbles
  */
 
-let pdir = importer.pdir;
-let wf_id = importer.wf_id;
-let wf = importer.wf;
+let wf       = importer.wf;
+let wf_id    = importer.wf_id;
+let pdir     = importer.pdir;
+let pdir_def = importer.pdir_def;
+
+console.log(wf_id);
+console.log(pdir);
+
 
 /*
  * Main
@@ -200,11 +121,19 @@ for (var i = 0; i < wf['works'].length; i++) {
   let tbl_cmds = {};
   let cmds = {};
   try {
-    tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) );
-    if ( tbl_cmds ) { tbl_cmds = tbl_cmds['Sheet1']; }
-    else {
-      console.log(tbl_cmds);
-      exceptor.showMessageBox('Error Message', `Extracting the tables of commands`, end=true);
+    if (fs.existsSync(`${wk_file}`)) {
+      tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) );
+      if ( tbl_cmds ) {
+        tbl_cmds = tbl_cmds['Sheet1']
+      }
+      else {
+        console.log(tbl_cmds);
+        exceptor.showMessageBox('Error Message', `Extracting the tables of commands`, end=true);
+      }
+    }
+    else { // default table
+      wk_file = `${pdir_def}/${wf_id}/${wk['file']}`;
+      tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) )['Sheet1'];
     }
   } catch (ex) {
     console.log(wk_file);
@@ -227,7 +156,7 @@ for (var i = 0; i < wf['works'].length; i++) {
   importer.importHTMLtemplate(`${__dirname}/../sections/page.html`, `#bodied #${wk_id}`);
 
 
-  // For each commands:
+  // Iterate over all commands
   // create html sidebar and the tasktable
   for (var j = 0; j < cmds.length; j++) {
     // get variables
@@ -334,3 +263,6 @@ for (var i = 0; i < wf['works'].length; i++) {
 } // end loop of works (tabs)
 
 
+// add values to Main_Inputs panel, if apply
+// function in the 'main_inputs' template
+addValuesMainInputsPanel();

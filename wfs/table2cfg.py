@@ -382,6 +382,8 @@ def main(args):
             tpl = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             sys.exit("ERROR!! Reading the attributes file of workflow: {}".format(exc))
+    # remove the date_id folder from the data files
+    tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
 
     
 
@@ -405,14 +407,7 @@ def main(args):
     # merge the workflow attributes with the templates of commands
     tpl.update(tpl_cmds)
 
-
-    # # 1. replace output directory constant in the whole template
-    # logging.info("replace output directory constant in the whole template")
-    # repl = {
-    #         '__MAIN_INPUTS_OUTDIR__':  tpl['main_inputs']['outdir']
-    # }
-    # tpl = replace_val_rec(tpl, repl)
-                
+               
     # replace the constants for the command templates
     logging.info("replace the constants for the command templates")
     repl = {        
@@ -420,10 +415,10 @@ def main(args):
             '__ISANXOT_PYTHON3x_HOME__':    os.environ['ISANXOT_PYTHON3x_HOME'],
             '__NCPU__':                     str(tpl['ncpu']),
             '__WF_VERBOSE__':               str(tpl['verbose']),
-            '__MAIN_INPUTS_EXPDIR__':       tpl['expdir'],
-            '__MAIN_INPUTS_TMPDIR__':       tpl['tmpdir'],
-            '__MAIN_INPUTS_RSTDIR__':       tpl['rstdir'],
-            '__MAIN_INPUTS_LOGDIR__':       tpl['logdir'],
+            '__MAIN_INPUTS_EXPDIR__':       tpl['prj_workspace']['expdir'],
+            '__MAIN_INPUTS_TMPDIR__':       tpl['prj_workspace']['tmpdir'],
+            '__MAIN_INPUTS_RSTDIR__':       tpl['prj_workspace']['rstdir'],
+            '__MAIN_INPUTS_LOGDIR__':       tpl['prj_workspace']['logdir'],
             '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
             '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],

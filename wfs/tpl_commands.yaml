@@ -9,7 +9,7 @@ commands:
   rules:
   - name: createID
     infiles:
-      -t: __MAIN_INPUTS_DATFILE_INP__
+      -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
     outfiles:        
       -x: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
     parameters:
@@ -110,7 +110,7 @@ commands:
       -o: __MAIN_INPUTS_EXPDIR__/ID-q.tsv
     parameters:
       datfile:
-        -t: __MAIN_INPUTS_DATFILE_STS__
+        -t: __MAIN_INPUTS_DATFILE_STATS_QUANTIFICATION__
     more_params: ''
     cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/preSanXoT/ratios.py" __WF_VERBOSE__ '
 ###################

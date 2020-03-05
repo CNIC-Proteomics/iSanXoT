@@ -6,7 +6,7 @@
     <div class="input-group col-sm">
       <input type="text" class="form-control" placeholder="" id="indir">
       <div class="input-group-append">
-        <button class="btn btn-outline-secondary btn-sm" type="button" id="select-indir">Choose folder</button>
+        <button class="btn btn-outline-secondary btn-sm select-indir" type="button">Choose folder</button>
       </div>
     </div>
   </div>
@@ -16,7 +16,7 @@
     <div class="input-group col-sm">
       <input type="text" class="form-control" placeholder="" id="outdir">
       <div class="input-group-append">
-        <button class="btn btn-outline-secondary btn-sm" type="button" id="select-outdir">Choose folder</button>
+        <button class="btn btn-outline-secondary btn-sm select-outdir" type="button">Choose folder</button>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@
     <h6 for="select-dbfile">Select protein database</h6>
     <div class="form-group row">
       <div class="form-group row col-sm">
-        <select class="custom-select" id="def-dbfile">
+        <select class="custom-select def-dbfile">
           <option value="human">Human protein database</option>
           <option value="mouse">Mouse protein database</option>
           <option value="pig">Pig protein database</option>
@@ -47,7 +47,7 @@
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Select your protein database file" id="dbfile" value="" disabled="">
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm" type="button" id="select-dbfile" disabled="">Select file</button>
+            <button class="btn btn-outline-secondary btn-sm select-dbfile" type="button" disabled="">Select file</button>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
     <h6 for="select-catfile">Select protein-category relation file</h6>
     <div class="form-group row">
       <div class="form-group row col-sm">
-        <select class="custom-select" id="def-catfile">
+        <select class="custom-select def-catfile">
           <option value="human">Human protein-category relation file</option>
           <option value="mouse">Mouse protein-category relation file</option>
           <option value="pig">Pig protein-category relation file</option>
@@ -69,15 +69,54 @@
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Select your protein-category relation file" id="catfile" value="" disabled="">
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm" type="button" id="select-catfile" disabled="">Select file</button>
+            <button class="btn btn-outline-secondary btn-sm select-catfile" type="button" disabled="">Select file</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </div>  
+  <h6>Select input files</h6>
 
-  
-
-  
 </div>
+<script>
+  // Add values to Main_Inputs panel, if apply
+  function addValuesMainInputsPanel() {
+    // Imported variables
+    let importer = require(`${__dirname}/renderer-process/imports`);
+    let wf_exec  = importer.wf_exec;
+    let wk_id = importer.getWorkIDFromElements(); // get current work id
+    let cmd_id = importer.getCmdIDFromElements(); // get the current cmd id
+
+    if ( 'main_inputs' === wk_id ) {
+      // Add main inputs
+      if ( wf_exec !== undefined ) {
+        if ( 'main_inputs' in wf_exec ) {
+          $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #species`).val(`${wf_exec['main_inputs']['species']}`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #def-dbfile`).val(`personal`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['main_inputs']['dbfile']}`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #def-catfile`).val(`personal`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['main_inputs']['catfile']}`);
+          $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
+        }
+      }
+    }
+  }
+// Create object with the Main_Inputs data extracting from the HTML Elements
+function createObjFromMainInputsPanel() {
+  let rst = {};
+  let main_inputs = $(`#panel-main_inputs [id]`);
+  for (var i = 0; i < main_inputs.length; i++) {
+    let inp = main_inputs[i];
+    let id = $(inp).attr('id');
+    let val = $(inp).val();
+    rst[id] = val;
+  }
+  return rst;
+}
+
+
+</script>
 </template>

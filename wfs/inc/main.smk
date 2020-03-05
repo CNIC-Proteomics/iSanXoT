@@ -1,10 +1,5 @@
 import os
 
-# Load global variables need for workflow
-TMP_OUTDIR         = config['tmpdir']
-RST_OUTDIR         = config['rstdir']
-LOG_OUTDIR         = config['logdir']
-
 # ------------- #
 # Local Methods #
 # ------------- #
@@ -39,9 +34,7 @@ def run_rule(input, output, log, params, wildcards):
     Execute the command line for each rule
     '''
     cr = params['index']
-    logfile = params['log']
     crule = CRULES[cr]
-    # cmd = "{} >> \"{}\" 2>&1".format(crule['cline'], logfile)
     cmd = "{}".format(crule['cline'])
     # cmd = "touch "
     # for out in output:
@@ -55,9 +48,6 @@ def run_rule(input, output, log, params, wildcards):
 # extract the rules
 CRULES = load_rules(config)
 
-# prepare log space
-os.makedirs(LOG_OUTDIR, exist_ok=True)
-
 # ------------------ #
 # Executors of rules #
 # ------------------ #
@@ -70,7 +60,6 @@ for cr, crule in enumerate(CRULES):
         message: "{}: executing!!!".format(crule["name"])
         params:
             index=cr,
-            log=LOG_OUTDIR+"/"+crule["name"]+".log"
         input:
             "{file}".format(file=file) for i,files in crule["infiles"].items() for file in files.split(";")
         output:

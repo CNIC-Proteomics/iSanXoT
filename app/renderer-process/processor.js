@@ -7,26 +7,6 @@ const { ipcRenderer } = require('electron');
 let psTree = require(process.env.ISANXOT_NODE_PATH + '/ps-tree');
 let fs = require('fs');
 let path = require('path');
-let resizeId = null;
-
-/* Firing resize event only when resizing is finished */
-function doneResizing() {
-    // resize table from the window size
-    let winwidth = $(window).width();
-    let winheight = $(window).height();
-    if ( $('#hot').length ) {
-        let newheight = winheight - 178;
-        $('#hot').handsontable('updateSettings',{height: newheight});
-    }
-    if ( $('#hot_processes').length ) {
-        let newheight = winheight - 92;
-        $('#hot_processes').handsontable('updateSettings',{height: newheight});
-    }
-}
-$(window).resize(function() {
-    clearTimeout(resizeId);
-    resizeId = setTimeout(doneResizing, 250);
-});
 
 window.onload = function(e) {
     // stop loading workflow
@@ -61,8 +41,6 @@ window.onload = function(e) {
             });            
         }
     }
-    // resize table from the window size
-    doneResizing();
     // refresh log panel
     refreshLogger();
 };
@@ -159,7 +137,21 @@ class logger {
             // create log table
             $(`#${id}`).handsontable({
                 data: that_data,
-                colHeaders: ['Selected', 'PID', 'Workflow', 'Status', '%', 'Start time', 'End time', 'Path'],
+                // colHeaders: ['Selected', 'PID', 'Workflow', 'Status', '%', 'Start time', 'End time', 'Path'],
+                colHeaders: ['Selected', 'PID', 'Status', '%', 'Start time', 'End time', 'Path'],
+                afterSelection: function(r,c) {
+                    let data = this.getDataAtRow(r);
+                    let logfile = `${data[6]}/isanxot.log`;
+                    let s = fs.readFileSync(logfile);
+                    $('#hot_processes_panel').html(s.toString());
+                    // $('#hot_processes_panel').focus().val("").val(s.toString());
+                    // cache textarea as we need it more than once
+                    var val = $('#hot_processes_panel').val();
+                    // if the value doesn't end in a space, add one
+                    if (val.charAt(val.length-1) != " ") { val += " "; }
+                    // focus textarea, clear value, re-apply
+                    $('#hot_processes_panel').focus().val("MIERDA").val(val);
+                },
                 columns: [{            
                     data: 'selected',
                     type: 'checkbox',
@@ -168,10 +160,10 @@ class logger {
                     data: 'pid',
                     readOnly: true,
                     className: "htCenter",
-                },{
-                    data: 'name',
-                    readOnly: true,
-                    className: "htCenter",
+                // },{
+                //     data: 'name',
+                //     readOnly: true,
+                //     className: "htCenter",
                 },{
                     data: 'status',
                     readOnly: true,
@@ -195,7 +187,7 @@ class logger {
                 rowHeaders: true,
                 // nestedRows: true,
                 width: '100%',
-                height: 590,
+                height: 'auto',
                 licenseKey: 'non-commercial-and-evaluation'
             });
         });
@@ -218,7 +210,7 @@ function refreshLogger() {
             let name  = wfs[i];
             logpanel.push({
                 'pid': pid,
-                'name': name,
+                // 'name': name,
                 'status': status,
                 'file': file,
             });
@@ -269,91 +261,3 @@ if ( document.querySelector('#processor #stop') !== null ) {
         }
     });
 }
-
-
-
-// var sourceDataObject = [
-//     {
-//     pid: 77,
-//       workflow: 'Best Rock Performance',
-//       selected: null,
-//       method: null,
-//       stime: null,
-//       __children: [
-//         {
-//           method: 'Don\'t Wanna Fight',
-//           artist: 'Alabama Shakes',
-//           stime: 'ATO Records'
-//         }, {
-//           method: 'What Kind Of Man',
-//           artist: 'Florence & The Machine',
-//           stime: 'Republic'
-//         }, {
-//           method: 'Something From Nothing',
-//           artist: 'Foo Fighters',
-//           stime: 'RCA Records'
-//         }, {
-//           method: 'Ex\'s & Oh\'s',
-//           artist: 'Elle King',
-//           stime: 'RCA Records'
-//         }, {
-//           method: 'Moaning Lisa Smile',
-//           artist: 'Wolf Alice',
-//           stime: 'RCA Records/Dirty Hit'
-//         }
-//       ]
-//     },{
-//         pid: 88,
-//         workflow: 'Best Metal Performance',
-//       __children: [
-//         {
-//           method: 'Cirice',
-//           artist: 'Ghost',
-//           stime: 'Loma Vista Recordings'
-//         }, {
-//           method: 'Identity',
-//           artist: 'August Burns Red',
-//           stime: 'Fearless Records'
-//         }, {
-//           method: '512',
-//           artist: 'Lamb Of God',
-//           stime: 'Epic Records'
-//         }, {
-//           method: 'Thank You',
-//           artist: 'Sevendust',
-//           stime: '7Bros Records'
-//         }, {
-//           method: 'Custer',
-//           artist: 'Slipknot',
-//           stime: 'Roadrunner Records'
-//         }
-//     ]
-// }];
-
-// if ( $('#hot_processes').length ) {
-//     let container = $('#hot_processes').handsontable({
-//         data: sourceDataObject,
-//         rowHeaders: true,
-//         colHeaders: ['Selected', 'PID', 'Workflow', 'Method', 'Start time', 'End time'],
-//         columns: [{            
-//             data: 'selected',
-//             type: 'checkbox'
-//         },{
-//             data: 'pid'
-//         },{
-//             data: 'workflow'
-//         },{
-//             data: 'method'
-//         },{
-//             data: 'stime'
-//         },{
-//             data: 'etime'
-//         }],
-//         nestedRows: true,
-//         contextMenu: true,
-//         width: '100%',
-//         height: 590,      
-//         licenseKey: 'non-commercial-and-evaluation'
-//         });        
-// }
-

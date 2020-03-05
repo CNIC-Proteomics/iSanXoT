@@ -16,9 +16,9 @@ let template = [
     { role: 'quit', accelerator: 'Shift+Ctrl+Q' }
   ]},
   { label: "Workflows", submenu: [
-    { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic&pdir=${__dirname}/data`) } },
-    { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm&pdir=${__dirname}/data`) } },
-    { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree&pdir=${__dirname}/data`) } },
+    { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
+    { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
+    { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
     { type: 'separator' },
     { label: 'Processes', click() { mainWindow.loadFile('processes.html') } }
   ]},
@@ -99,7 +99,7 @@ Local functions
 */
 
 function openLoadProject() {
-  dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
+  dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
     if(dirs === undefined) {
       console.log("No output directory selected");
     } else {
@@ -107,7 +107,17 @@ function openLoadProject() {
       console.log(dirs);
       mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${dir}`)
     }
-}); 
+});  
+//   dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
+    
+//     if(dirs === undefined) {
+//       console.log("No output directory selected");
+//     } else {
+//       let dir = dirs[0];
+//       console.log(dirs);
+//       mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${dir}`)
+//     }
+// }); 
 };
 
 /*

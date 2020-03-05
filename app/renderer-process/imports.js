@@ -42,13 +42,10 @@ function doneResizing() {
         let newheight = winheight - 165;
         $(`.tab-content`).height(newheight);
     }
-    // if ( $('.tasktable').length ) {
-    //     let newheight = winheight - 178;
-    //     for (let tbl in $('.tasktable') ) {
-    //         // $('.tasktable:visible').handsontable('updateSettings',{height: newheight});
-    //         // $(tbl).handsontable('updateSettings',{height: newheight});
-    //     }
-    // }
+    if ( $('#hot_processes_panel').length ) {
+        let newheight = winheight - 175;
+        $(`#hot_processes_panel`).height(newheight);
+    }
 }
 $(window).resize(function() {
     clearTimeout(resizeId);
@@ -58,8 +55,13 @@ $(window).resize(function() {
 // Get the most recent execution directory
 // the files has to be sorted by name
 function getMostRecentDir(dir) {
+    var getDirectories = source =>
+    fs.readdirSync(source, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
     // the files has to be sorted by name
-    let files = fs.readdirSync(dir).reverse();
+    // let files = fs.readdirSync(dir).reverse();
+    let files = getDirectories(dir);
     return (files.length > 0)? files[0] : undefined;
 }  
 // Get a string with the local date
@@ -69,26 +71,26 @@ function getWFDate() {
     Y = d.getFullYear();
     M = ('0' + (d.getMonth()+1)).slice(-2)
     D = ('0' + d.getDate()).slice(-2)
-    h = d.getHours().toString();
+    h = ('0' + d.getHours()).slice(-2)
     m = ('0' + d.getMinutes()).slice(-2);
     s = ('0' + d.getSeconds()).slice(-2);
     return Y+M+D+h+m+s;
 }
-
+// Get the id of current Workflow extracting from the HTML Elements
 function getWorkflowIDFromElements() {
     let id = $(`#bodied h3.text-center`).attr('name'); // get the id from the html tag
     return id;
 }
+// Get the id of current Work extracting from the HTML Elements
 function getWorkIDFromElements() {
     let id = $("#bodied .worklist li .active").attr('name');
     return id;
 }
-
+// Get the id of current Command extracting from the HTML Elements
 function getCmdIDFromElements() {
     let id = $(`#bodied .tab-pane.active .page-header`).attr('name'); // get the id from the html tag
     return id;
 }
-
 // Get the first object from ID value of workflows.json file
 function getObjectFromID(data, id) {
     let rst = data.filter(obj => { return obj.id === `${id}` });
@@ -121,22 +123,24 @@ function extractWorkflowAttributes() {
     let url_params = new URLSearchParams(window.location.search);
     let pdir = url_params.get('pdir');
     let wf_id = url_params.get('wfid');
+    let cfg = undefined;
+    let pdir_def = `${__dirname}/../data`;
 
-    // Check variables
-    if ( !wf_id ) {
+    // Apply depending the type of workflow
+    if ( !wf_id ) { // mandatory the value
         console.log(url_params);
         exceptor.showMessageBox('Error Message', `Type of workflow is not defined`, end=true);
     }
-    if ( !pdir ) {
-        console.log(url_params);
-        exceptor.showMessageBox('Error Message', `Project directory is not defined`, end=true);
-    }
-
-    // Get workflow id from the load project
-    if ( wf_id == "load" ) {
+    else if ( wf_id == "load" ) { // load the workflow
 
         pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_results'
 
+
+        // Mandatory the project directory if 
+        if ( !pdir ) {
+            console.log(url_params);
+            exceptor.showMessageBox('Error Message', `Project directory is not defined`, end=true);
+        }
 
         // Extract the workflow attributes
         pdir += '/.isanxot' // add the directory where data files of isanxot is 
@@ -148,11 +152,10 @@ function extractWorkflowAttributes() {
         }  
         pdir += `/${d}`;
         // Check if config file exits
-        // let cfgfile = `${pdir}/config.yaml`;
-        let cfgfile = `${pdir}/config0.yaml`;
+        let cfgfile = `${pdir}/config.yaml`;
         if (fs.existsSync(cfgfile)) {
         // open config file
-        let cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
+        cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
         // get the wofkflow name
         if ( cfg.hasOwnProperty('name') ) wf_id = cfg['name'];
         }
@@ -161,20 +164,16 @@ function extractWorkflowAttributes() {
         exceptor.showMessageBox('Error Message', `Openning the config file`, end=true);
         }
     }
-    else {
-        // add the directory where data files of isanxot is 
-        pdir += `/${wf_id}`;
+    else { // default workflow. Add the local directory with the data files of workflow        
+        pdir = `${pdir_def}/${wf_id}`;
     }
 
     // Get workflow attributes from the wf_id
     let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`));
     let wf = getObjectFromID(wfs, wf_id);
-    return [wf_id, pdir, wf];
+    return [pdir_def, pdir, wf_id, wf, cfg];
 }
 
-
-// // Get the workflow attributes
-// let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`));
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports.importHTMLtemplate = importHTMLtemplate;
@@ -198,17 +197,21 @@ importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
-importHTMLtemplate(`${__dirname}/../sections/basic/help_basic.html`);
-importHTMLtemplate(`${__dirname}/../sections/ptm/help_ptm.html`);
-importHTMLtemplate(`${__dirname}/../sections/lblfree/help_lblfree.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/basic.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/ptm.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/lblfree.html`);
 
 // Get input parameters (from URL)
 let filename = path.basename(window.location.pathname,'.html');
 if ( filename == "wf" ) {
     // Export workflow attributes
-    [ module.exports.wf_id,
-      module.exports.pdir,
-      module.exports.wf] = extractWorkflowAttributes();    
+    [
+        module.exports.pdir_def,
+        module.exports.pdir,
+        module.exports.wf_id,
+        module.exports.wf,
+        module.exports.wf_exec
+    ] = extractWorkflowAttributes();    
     // add full-body 
     require(`./bodied`);
     // add the module to execute the jobs
