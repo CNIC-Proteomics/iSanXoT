@@ -255,31 +255,31 @@ if ( document.querySelector('#executor #start') !== null ) {
         exceptor.loadingWorkflow();
         // Execute the workflow
         setTimeout(function() {
-            // imported variables
-            let wf = importer.wf;
-            let wf_date_id = importer.getWFDate();
-            // get the output directory
-            let outdir = $(`#main_inputs #outdir`).val();
-            // prepare the workspace of project
-            let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
-            // create datafiles
-            let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
-            // Exec: create config file for the execution of workflow
-            execTable2Cfg({
-                'indir': dte_dir,
-                'attfile': attfile,
-                'outfile': `${dte_dir}/config.yaml`,
-                'logdir': log_dir
-            });
-            // Copy only the files that are different
-            copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
-            // Exec: execute snakemake
-            execSnakeMake({
-                'configfile': `${outdir}/.isanxot/config.yaml`,
-                'nthreads':   `${document.querySelector('#nthreads').value}`,
-                'directory':  `${outdir}`,
-                'logfile':    `${log_dir}/isanxot.log`
-            });
+            // // imported variables
+            // let wf = importer.wf;
+            // let wf_date_id = importer.getWFDate();
+            // // get the output directory
+            // let outdir = $(`#main_inputs #outdir`).val();
+            // // prepare the workspace of project
+            // let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
+            // // create datafiles
+            // let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
+            // // Exec: create config file for the execution of workflow
+            // execTable2Cfg({
+            //     'indir': dte_dir,
+            //     'attfile': attfile,
+            //     'outfile': `${dte_dir}/config.yaml`,
+            //     'logdir': log_dir
+            // });
+            // // Copy only the files that are different
+            // copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
+            // // Exec: execute snakemake
+            // execSnakeMake({
+            //     'configfile': `${outdir}/.isanxot/config.yaml`,
+            //     'nthreads':   `${document.querySelector('#nthreads').value}`,
+            //     'directory':  `${outdir}`,
+            //     'logfile':    `${log_dir}/isanxot.log`
+            // });
         }, 1000); // due the execSync block everything, we have to wait until loading event is finished
     });
 }

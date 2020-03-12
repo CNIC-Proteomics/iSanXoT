@@ -143,6 +143,8 @@ class logger {
                     let data = this.getDataAtRow(r);
                     let logfile = `${data[6]}/isanxot.log`;
                     let s = fs.readFileSync(logfile);
+                    console.log("AFTERSELÑE");
+                    console.log(s);
                     $('#hot_processes_panel').html(s.toString());
                     // $('#hot_processes_panel').focus().val("").val(s.toString());
                     // cache textarea as we need it more than once
