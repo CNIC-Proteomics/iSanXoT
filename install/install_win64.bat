@@ -80,7 +80,7 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
     IF NOT EXIST "%PYTHON3x_SCRIPT%" (
         ECHO **
         ECHO ** install the 'python'
-        CMD /C " "%INSTALL_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%ISANXOT_LIB_HOME%" && ROBOCOPY "%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%" "%ISANXOT_LIB_HOME%/python" /NFL /NDL /NJH /NJS /NC /NS /NP /E /MOVE "
+        CMD /C " "%INSTALL_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%ISANXOT_LIB_HOME%" "
         :: if everything was fine or not
         IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
         ECHO **
