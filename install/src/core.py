@@ -4,6 +4,8 @@ import urllib.request, urllib.parse, urllib.error
 import urllib.parse
 import zipfile
 import shutil
+import time
+
 
 
 class builder:
@@ -32,9 +34,11 @@ class builder:
         Download the file from the URL
         '''
         # get the file name from the URL
-        split = urllib.parse.urlsplit(url)
-        file = outdir + '/' + outfile if outfile else split.path.split("/")[-1]
+        url_fname = urllib.parse.urlsplit(url)
+        outfile = outfile if outfile else url_fname.path.split("/")[-1]
+        file = f"{outdir}/{outfile}"
         # downlaod
+        print( f"URL: {url} > FILE: {file}")
         urllib.request.urlretrieve(url, file)
         return file
 
@@ -52,7 +56,17 @@ class builder:
         dirs = [ name for name in os.listdir(srcdir) if os.path.isdir(os.path.join(srcdir, name)) ]
         srcdir = srcdir + '/' + dirs[0]
         print((srcdir +" > "+ trgdir))
-        os.rename( srcdir, trgdir)
+        # os.rename( srcdir, trgdir)
+        startTime = time.clock()
+        while 1:
+            try:
+                os.rename(srcdir, trgdir)
+                break
+            except OSError:
+                if (time.clock() - startTime) > 5:
+                    raise
+                else:
+                    time.sleep(0)
 
     def remove_dir(self, dirs):
         '''

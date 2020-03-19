@@ -16,7 +16,7 @@ commands:
       outdir:
         -o: __MAIN_INPUTS_EXPDIR__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/preSanXoT/createID.py" -w __NCPU__ __WF_VERBOSE__'
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createID.py" -w __NCPU__ __WF_VERBOSE__'
 ###################
 
 
@@ -44,7 +44,7 @@ commands:
       type_xcorr:
         -x: cXCorr
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/preSanXoT/fdr.py" -w __NCPU__ __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/fdr.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
 
 
@@ -68,7 +68,7 @@ commands:
       lab_decoy:
         -l: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/preSanXoT/masterQ.py" -w __NCPU__ __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/masterQ.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
 
 
@@ -92,7 +92,7 @@ commands:
       3rd_header:
         -k: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/preSanXoT/createRels.py" __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createRels.py" __WF_VERBOSE__ '
 ###################
 
 
@@ -112,7 +112,7 @@ commands:
       datfile:
         -t: __MAIN_INPUTS_DATFILE_STATS_QUANTIFICATION__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/preSanXoT/ratios.py" __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/ratios.py" __WF_VERBOSE__ '
 ###################
 
 
@@ -138,7 +138,7 @@ commands:
         -f: "[Experiment]==__WF_EXPERIMENT__"
         -e: "0,1,2"
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/aljamia.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/aljamia.py" '
   - name: wspp_klibrate
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/u_scans.tsv
@@ -148,7 +148,7 @@ commands:
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans_variance.txt
     parameters:
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/klibrate.py" -a scans -g '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/klibrate.py" -a scans -g '
 
   # Rule: scan2peptide ---
   - name: wspp_s2p_sanxot1
@@ -162,7 +162,7 @@ commands:
       s>p_Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a s2p -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a s2p -g -b -s '
   - name: wspp_s2p_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans.tsv
@@ -176,7 +176,7 @@ commands:
       s>p_Var(x):
         -v: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a s2p '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a s2p '
   - name: wspp_s2p_sanxot2
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans.tsv
@@ -190,7 +190,7 @@ commands:
       s>p_Tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a s2p -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a s2p -g -f '
 
   # Rule: peptide2protein ---
   - name: wspp_p2q_sanxot1
@@ -204,7 +204,7 @@ commands:
       p>q_Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a p2q -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a p2q -g -b -s '
   - name: wspp_p2q_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides.tsv
@@ -218,7 +218,7 @@ commands:
       p>q_Var(x):
         -v: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a p2q '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a p2q '
   - name: wspp_p2q_sanxot2
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides.tsv
@@ -232,7 +232,7 @@ commands:
       p>q_Tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a p2q -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a p2q -g -f '
 
   # Rule: protein2category ---
   - name: wspp_q2c_sanxot1
@@ -246,7 +246,7 @@ commands:
       q>c_Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a q2c -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a q2c -g -b -s '
   - name: wspp_q2c_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins.tsv
@@ -260,7 +260,7 @@ commands:
       q>c_Var(x):
         -v: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a q2c '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a q2c '
   - name: wspp_q2c_sanxot2
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins.tsv
@@ -274,7 +274,7 @@ commands:
       q>c_Tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a q2c -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a q2c -g -f '
 
   # Rule: everything2all ---
   - name: wspp_p2a_sanxot1
@@ -289,7 +289,7 @@ commands:
       p>a_Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a p2a -C -g '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a p2a -C -g '
   - name: wspp_q2a_sanxot1
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins.tsv
@@ -305,7 +305,7 @@ commands:
       q>a_Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a q2a -C -g '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a q2a -C -g '
   - name: wspp_c2a_sanxot1
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories.tsv
@@ -320,7 +320,7 @@ commands:
       c>a_Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a c2a -C -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a c2a -C -g -f '
 ###################
 
 
@@ -338,7 +338,7 @@ commands:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_tags.tsv
     parameters:
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/createCardenioTags.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createCardenioTags.py" '
   - name: cardenio
     infiles:
       -t: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_tags.tsv
@@ -349,7 +349,7 @@ commands:
       outdir:
         -p: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/cardenio.py" -a comb '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/cardenio.py" -a comb '
 ###################
 
 
@@ -373,7 +373,7 @@ commands:
       Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -b -s '
   - name: wspp_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/__WF_INF_LEVEL__.tsv
@@ -389,7 +389,7 @@ commands:
       Var(x):
         -v: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a wspp '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a wspp '
   - name: wspp_sanxot2
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/__WF_INF_LEVEL__.tsv
@@ -407,7 +407,7 @@ commands:
       Tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -f '
 ###################
 
 
@@ -431,7 +431,7 @@ commands:
       minelements:
         -n: 2
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsqueezer.py" -a squeezed '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsqueezer.py" -a squeezed '
   - name: sanxot_gauss
     infiles:
       -z: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2a_outStats.tsv
@@ -448,6 +448,6 @@ commands:
       graphfontsize:
         -s: 5
     more_params: ''
-    cline: '"__ISANXOT_PYTHON3x_HOME__/tools/python" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotgauss.py" -a sigmoids -g '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotgauss.py" -a sigmoids -g '
 ###################
 

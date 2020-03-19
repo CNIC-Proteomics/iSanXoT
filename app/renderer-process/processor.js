@@ -4,7 +4,7 @@
 let exceptor = require('./exceptor');
 let sessioner = require('./sessioner');
 const { ipcRenderer } = require('electron');
-let psTree = require(process.env.ISANXOT_NODE_PATH + '/ps-tree');
+let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`);
 let fs = require('fs');
 let path = require('path');
 

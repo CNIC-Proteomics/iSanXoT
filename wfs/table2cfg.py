@@ -28,6 +28,9 @@ import pandas as pd
 # Global variables #
 ####################
 EXPERIMENTS = None # obtained from the CREATE_ID command
+ISANXOT_SRC_HOME = f"{os.path.dirname(__file__)}/.."
+ISANXOT_PYTHON_EXEC = sys.executable
+
 
 ###################
 # Local functions #
@@ -411,8 +414,8 @@ def main(args):
     # replace the constants for the command templates
     logging.info("replace the constants for the command templates")
     repl = {        
-            '__ISANXOT_SRC_HOME__':         os.environ['ISANXOT_SRC_HOME'],
-            '__ISANXOT_PYTHON3x_HOME__':    os.environ['ISANXOT_PYTHON3x_HOME'],
+            '__ISANXOT_SRC_HOME__':         ISANXOT_SRC_HOME,
+            '__ISANXOT_PYTHON_EXEC__':      ISANXOT_PYTHON_EXEC,
             '__NCPU__':                     str(tpl['ncpu']),
             '__WF_VERBOSE__':               str(tpl['verbose']),
             '__MAIN_INPUTS_EXPDIR__':       tpl['prj_workspace']['expdir'],

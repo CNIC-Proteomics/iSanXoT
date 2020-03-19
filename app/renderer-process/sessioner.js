@@ -2,8 +2,7 @@
   Global variables
 */
 const { ipcRenderer } = require('electron');
-let psTree = require(process.env.ISANXOT_NODE_PATH + '/ps-tree');
-
+let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`);
 
 // Add info to session
 function addProcToSession(pid, log, wf) {

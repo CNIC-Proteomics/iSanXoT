@@ -12,45 +12,83 @@ CD "%SRC_HOME%"
 
 :: check env varibles are defined
 :: get the lib version version
-FOR /f %%i in ('CALL "%SRC_HOME%/install/win/jsonextractor.bat" app/package.json version') do SET ISANXOT_VERSION=%%i
+FOR /f "tokens=2 delims=: " %%l in ('FINDSTR /r "version" "%SRC_HOME%\\app\\package.json" ') do SET ISANXOT_VERSION=%%l
 SET ISANXOT_VERSION=%ISANXOT_VERSION:"=%
 FOR /f "tokens=1,2 delims=." %%a in (^"%ISANXOT_VERSION:"=.%^") do SET LIB_VERSION=%%a.%%b
 
 
 :: install the packages or not, that the question
-:: check env varibles are defined
-:: check the version of current library
-IF "%ISANXOT_NODE_PATH%"=="" SET r=true
 IF "%ISANXOT_LIB_HOME%"==""  SET r=true
 FOR %%f in (%ISANXOT_LIB_HOME%) do SET LIB_VERSION_C=%%~nxf
-IF not "%LIB_VERSION%"=="%LIB_VERSION_C%"  SET r=true
-IF "%r%" == "true" (
-    GOTO :installPackages
-)
+IF NOT "%LIB_VERSION%"=="%LIB_VERSION_C%"  SET r=true
+
+:: the library path is empty or the version is different
+IF "%r%" == "true" GOTO :installPackages
+:: the library path does not exist
+IF NOT EXIST "%ISANXOT_LIB_HOME%" GOTO :installPackages
 
 
-:: execute application in background
-GOTO :executeISANXOT
+:: update packages if apply
+GOTO :updatePackages
 
 
 
 
 
-:: Local Functions ------------
+:: --------------- ::
+:: Local Functions ::
+:: --------------- ::
 
-:: if library path is not defined, then install the packages
+
+:: ------------------------------------------------
 :installPackages
+:: if library path is not defined, then install the packages
     ECHO ** install iSanXoT packages
-    CALL install/install_win64.bat %LIB_VERSION%
+    SET C="install/install_win64.bat" initInstallation %LIB_VERSION%
+    ECHO %C%
+    CALL %C%
+    :: if everything was fine or not
+    IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
+    :: everything was fine
     GOTO :executeISANXOT
 
-:: execute application in background
+
+:: ------------------------------------------------
+:updatePackages
+:: if library path is defined, then update the packages
+    ECHO ** update iSanXoT packages
+    SET C="install/install_win64.bat" updateInstallation "%ISANXOT_LIB_HOME%"
+    ECHO %C%
+    CALL %C%
+    :: if everything was fine or not
+    IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
+    :: everything was fine
+    GOTO :executeISANXOT
+
+
+:: ------------------------------------------------
 :executeISANXOT
-    ECHO ** running iSanXoT
-    START "iSanXoT" "%ISANXOT_NODE_PATH%/electron/dist/electron.exe" "%SRC_HOME%/app"
+:: execute application in background
+    ECHO ** execute iSanXoT
+    SET  ISANXOT_LIB_HOME=%ISANXOT_LIB_HOME:"=%
+    SET C="%ISANXOT_LIB_HOME%/node/node_modules/electron/dist/electron.exe" "%SRC_HOME%/app"
+    ECHO %C%
+    START "iSanXoT" %C%
+    :: if everything was fine or not
+    IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
+    :: everything was fine
     GOTO :EndProcess
 
 
+:: ------------------------------------------------
+:wrongProcess
+:: Process was not completed
+    ECHO **
+    ECHO ** ERROR: The execution was not completed successfully!!
+    GOTO :EndProcess
+
+
+:: ------------------------------------------------
 :EndProcess
-    :: wait to Enter => Good installation
-    SET /P DUMMY=The application has been closed. Hit ENTER to continue...
+:: Execution has finished
+    REM SET /P DUMMY=End of execution. Hit ENTER to continue...
