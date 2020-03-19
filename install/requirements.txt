@@ -1,4 +1,4 @@
-$MANAGER=python.3.6.7/tools/Scripts/pip
+$MANAGER=python/tools/Scripts/pip
 install --no-warn-script-location	numpy==1.17.3
 install --no-warn-script-location	fsspec==0.5.2
 install --no-warn-script-location	matplotlib==3.1.1
