@@ -125,6 +125,18 @@ def create_report_requirements(file):
         f.close()
     return report
 
+def create_str_requirements(req):
+    '''
+    Create string with the manager and its required packages
+    '''
+    cont = ''
+    for manager,packages in req.items():
+        cont += f"{manager}\n"
+        for pkg,iparams in packages.items():
+            cont += f"{iparams}\t{pkg}\n"
+    return cont
+
+
 
 #################
 # Main function #
@@ -143,48 +155,51 @@ def main():
     if not req_loc:
 
         # look through the new requirements
-        requirement_cont = '' # string with the new requirments
         for manager,packages in req_new.items():
             # install package manager
             iok = install_pkg_manager(manager)
-            requirement_cont += f"{manager}\n"
+            req_loc[manager] = {}
             # install package's
             for pkg,iparams in packages.items():
                 write_ok = install_package(manager, iparams, pkg)
-                # write into local requirement file
+                # save the new required package
                 if write_ok:
-                    requirement_cont += f"{iparams}\t{pkg}\n"
+                    req_loc[manager][pkg] = iparams
 
-        # write into local requirement file
-        if requirement_cont != '':
-            with open(requirement_loc_file, "a") as file:
-                file.write(requirement_cont)
+        # write string with the new requiremens into local file
+        if req_loc:
+            cont = create_str_requirements(req_loc)
+            if cont != '':
+                with open(requirement_loc_file, "w") as file:
+                    file.write(cont)
     
 
     # upgrade the library
     else:
         
         # look through the new requirements
-        requirement_cont = '' # string with the new requirments
         for manager,packages in req_new.items():
             # check if the new package manager is already installed
             if not manager in req_loc:
                 # install package manager
                 iok = install_pkg_manager(manager)
-                requirement_cont += f"{manager}\n"
+                req_loc[manager] = {}
             # install package's
             for pkg,iparams in packages.items():
                 # check if the new package is already installed
                 if not manager in req_loc or not pkg in req_loc[manager]:
                     write_ok = install_package(manager, iparams, pkg)
-                    # write into local requirement file
+                    # save the new required package
                     if write_ok:
-                        requirement_cont += f"{iparams}\t{pkg}\n"
+                        req_loc[manager][pkg] = iparams
 
-        # write into local requirement file
-        if requirement_cont != '':
-            with open(requirement_loc_file, "a") as file:
-                file.write(requirement_cont)
+        # write string with the new requiremens into local file
+        if req_loc:
+            cont = create_str_requirements(req_loc)
+            if cont != '':
+                with open(requirement_loc_file, "w") as file:
+                    file.write(cont)
+
 
 
 # TODO!!! ADD THE EXECUTION OF THIS PYTHON SCRIPT!!

@@ -80,15 +80,15 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
     IF NOT EXIST "%PYTHON3x_SCRIPT%" (
         ECHO **
         ECHO ** install the 'python'
-        CMD /C " "%INSTALL_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%ISANXOT_LIB_HOME%" "
-        REM CMD /C " "%INSTALL_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%ISANXOT_LIB_HOME%/tmp" && REN "%ISANXOT_LIB_HOME%/tmp/python.%PYTHON3x_VERSION%" ../python"
+        CMD /C " "%INSTALL_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%ISANXOT_LIB_HOME%" && ROBOCOPY "%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%" "%ISANXOT_LIB_HOME%/python" /NFL /NDL /NJH /NJS /NC /NS /NP /E /MOVE "
         :: if everything was fine or not
         IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
     )
 
-    :: upgrade library
+
+    :: install/upgrade libraries
     ECHO **
-    ECHO ** upgrade library
+    ECHO ** install/upgrade libraries
     CMD /C " "%PYTHON3x_HOME%/tools/python" "%INSTALL_HOME%/src/installer.py" "%INSTALL_HOME%"  "%ISANXOT_LIB_HOME%" "
     :: if everything was fine or not
     IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
