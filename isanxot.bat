@@ -44,9 +44,7 @@ GOTO :updatePackages
 :installPackages
 :: if library path is not defined, then install the packages
     ECHO ** install iSanXoT packages
-    SET C="install/install_win64.bat" initInstallation %LIB_VERSION%
-    ECHO %C%
-    CALL %C%
+    CALL "install/install_win64.bat" initInstallation %LIB_VERSION%
     :: if everything was fine or not
     IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
     :: everything was fine
@@ -57,9 +55,7 @@ GOTO :updatePackages
 :updatePackages
 :: if library path is defined, then update the packages
     ECHO ** update iSanXoT packages
-    SET C="install/install_win64.bat" updateInstallation "%ISANXOT_LIB_HOME%"
-    ECHO %C%
-    CALL %C%
+    CALL "install/install_win64.bat" updateInstallation "%ISANXOT_LIB_HOME%"
     :: if everything was fine or not
     IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
     :: everything was fine
@@ -71,9 +67,7 @@ GOTO :updatePackages
 :: execute application in background
     ECHO ** execute iSanXoT
     SET  ISANXOT_LIB_HOME=%ISANXOT_LIB_HOME:"=%
-    SET C="%ISANXOT_LIB_HOME%/node/node_modules/electron/dist/electron.exe" "%SRC_HOME%/app"
-    ECHO %C%
-    START "iSanXoT" %C%
+    START "iSanXoT" "%ISANXOT_LIB_HOME%/node/node_modules/electron/dist/electron.exe" "%SRC_HOME%/app"
     :: if everything was fine or not
     IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
     :: everything was fine
@@ -91,4 +85,4 @@ GOTO :updatePackages
 :: ------------------------------------------------
 :EndProcess
 :: Execution has finished
-    REM SET /P DUMMY=End of execution. Hit ENTER to continue...
+    SET /P DUMMY=End of execution. Hit ENTER to continue...
