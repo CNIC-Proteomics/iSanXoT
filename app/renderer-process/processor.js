@@ -143,16 +143,12 @@ class logger {
                     let data = this.getDataAtRow(r);
                     let logfile = `${data[6]}/isanxot.log`;
                     let s = fs.readFileSync(logfile);
-                    console.log("AFTERSELÑE");
-                    console.log(s);
                     $('#hot_processes_panel').html(s.toString());
-                    // $('#hot_processes_panel').focus().val("").val(s.toString());
-                    // cache textarea as we need it more than once
-                    var val = $('#hot_processes_panel').val();
-                    // if the value doesn't end in a space, add one
-                    if (val.charAt(val.length-1) != " ") { val += " "; }
-                    // focus textarea, clear value, re-apply
-                    $('#hot_processes_panel').focus().val("MIERDA").val(val);
+                    // scroll to down
+                    var psconsole = $('#hot_processes_panel');
+                    if (psconsole.length) {
+                        psconsole.scrollTop(psconsole[0].scrollHeight - psconsole.height());
+                    }
                 },
                 columns: [{            
                     data: 'selected',

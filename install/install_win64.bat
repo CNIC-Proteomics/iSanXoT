@@ -73,7 +73,7 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
     SET  PYTHON3x_VERSION=3.6.7
     SET  PYTHON3x_HOME=%ISANXOT_LIB_HOME%/python
     REM SET  PYTHON3x_HOME="%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%"
-    REM SET  PYTHON3x_HOME=%PYTHON3x_HOME:"=%
+    SET  PYTHON3x_HOME=%PYTHON3x_HOME:"=%
 
     :: install the 'python' executable if it does not exist
     SET PYTHON3x_SCRIPT=%PYTHON3x_HOME%/tools/python.exe
@@ -135,4 +135,3 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
 :: ------------------------------------------------
 :EndProcess
 :: Installation has finished
-    REM SET /P DUMMY=End of installation. Hit ENTER to continue...

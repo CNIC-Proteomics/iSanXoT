@@ -220,7 +220,7 @@ function execProcess(cmd, log, wfname) {
 
 function execTable2Cfg(params) {
     let intpl = `${process.env.ISANXOT_SRC_HOME}/wfs/tpl_commands.yaml`;
-    let cmd = `"${process.env.ISANXOT_LIB_HOME}/python.3.6.7/tools/python" "${process.env.ISANXOT_SRC_HOME}/wfs/table2cfg.py" \
+    let cmd = `"${process.env.ISANXOT_LIB_HOME}/python/tools/python" "${process.env.ISANXOT_SRC_HOME}/wfs/table2cfg.py" \
     --attfile "${params.attfile}" \
     --indir "${params.indir}" \
     --intpl "${intpl}" \
@@ -229,7 +229,7 @@ function execTable2Cfg(params) {
 };
 function execSnakeMake(params) {
     let smkfile = `${process.env.ISANXOT_SRC_HOME}/wfs/wf_sanxot.smk`;
-    let cmd_smk = `"${process.env.ISANXOT_LIB_HOME}/python.3.6.7/tools/Scripts/snakemake.exe" \
+    let cmd_smk = `"${process.env.ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe" \
     --configfile "${params.configfile}" \
     --snakefile "${smkfile}" \
     --cores ${params.nthreads} \
