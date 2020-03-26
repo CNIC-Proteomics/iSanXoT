@@ -79,31 +79,43 @@
 
 </div>
 <script>
-  // Add values to Main_Inputs panel, if apply
-  function addValuesMainInputsPanel() {
-    // Imported variables
-    let importer = require(`${__dirname}/renderer-process/imports`);
-    let wf_exec  = importer.wf_exec;
-    let wk_id = importer.getWorkIDFromElements(); // get current work id
-    let cmd_id = importer.getCmdIDFromElements(); // get the current cmd id
+// Add values to Main_Inputs panel, if apply
+function addValuesMainInputsPanel() {
+  // Imported variables
+  let importer = require(`${__dirname}/renderer-process/imports`);
+  let wf_exec  = importer.wf_exec;
+  let wk_id = importer.getWorkIDFromElements(); // get current work id
+  let cmd_id = importer.getCmdIDFromElements(); // get the current cmd id
 
-    if ( 'main_inputs' === wk_id ) {
-      // Add main inputs
-      if ( wf_exec !== undefined ) {
-        if ( 'main_inputs' in wf_exec ) {
-          $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #species`).val(`${wf_exec['main_inputs']['species']}`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #def-dbfile`).val(`personal`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['main_inputs']['dbfile']}`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #def-catfile`).val(`personal`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['main_inputs']['catfile']}`);
-          $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
-        }
+  if ( 'main_inputs' === wk_id ) {
+    // Add main inputs
+    if ( wf_exec !== undefined ) {
+      if ( 'main_inputs' in wf_exec ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #species`).val(`${wf_exec['main_inputs']['species']}`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).val(`personal`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['main_inputs']['dbfile']}`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
+        $(`#${wk_id} #page-tasktable-${cmd_id} .def-catfile`).val(`personal`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['main_inputs']['catfile']}`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
       }
     }
   }
+  console.log(wk_id);
+  // Events
+  $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).change(function() {
+    if ( this.value === "personal" ) {
+      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
+    }
+  });
+  $(`#${wk_id} #page-tasktable-${cmd_id} .def-catfile`).change(function() {
+    if ( this.value === "personal" ) {
+      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
+    }
+  });
+}
 // Create object with the Main_Inputs data extracting from the HTML Elements
 function createObjFromMainInputsPanel() {
   let rst = {};
@@ -116,7 +128,6 @@ function createObjFromMainInputsPanel() {
   }
   return rst;
 }
-
 
 </script>
 </template>
