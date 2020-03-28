@@ -60,6 +60,9 @@ def main(args):
     logging.info("remove duplicates")
     outdat.drop_duplicates(inplace=True)
 
+    logging.info("remove row with any empty columns")
+    outdat.dropna(inplace=True)
+
     logging.info('print output')
     outdat.to_csv(args.outfile, sep="\t", index=False)
 

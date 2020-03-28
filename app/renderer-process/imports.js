@@ -31,9 +31,8 @@ function importHTMLtemplate(wfhref, tid) {
     }
 };
 
-// for the resize of window
-var resizeId = null;
 // Resize table from the window size
+var resizeId = null;
 function doneResizing() {
     // resize table from the window size
     let winwidth = $(window).width();
@@ -47,9 +46,15 @@ function doneResizing() {
         $(`#hot_processes_panel`).height(newheight);
     }
 }
+
+// Function when the windows is resize
 $(window).resize(function() {
     clearTimeout(resizeId);
     resizeId = setTimeout(doneResizing, 250);
+});
+// Operations when the html document is ready
+$(document).ready(function() {
+    doneResizing();
 });
 
 // Get the most recent execution directory
@@ -58,7 +63,8 @@ function getMostRecentDir(dir) {
     var getDirectories = source =>
     fs.readdirSync(source, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name);
+        .map(dirent => dirent.name)
+        .reverse();
     // the files has to be sorted by name
     // let files = fs.readdirSync(dir).reverse();
     let files = getDirectories(dir);
@@ -133,7 +139,8 @@ function extractWorkflowAttributes() {
     }
     else if ( wf_id == "load" ) { // load the workflow
 
-        pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_results'
+        // pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_results'
+        // pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\test_2'
 
 
         // Mandatory the project directory if 
@@ -169,7 +176,7 @@ function extractWorkflowAttributes() {
     }
 
     // Get workflow attributes from the wf_id
-    let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`));
+    let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`) );
     let wf = getObjectFromID(wfs, wf_id);
     return [pdir_def, pdir, wf_id, wf, cfg];
 }

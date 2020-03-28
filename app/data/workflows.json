@@ -46,7 +46,7 @@
     },{
       "id": "MASTERQ",
       "label": "Rels. p2q",
-      "visible": false,
+      "visible": true,
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "name": "experiment" },
@@ -57,7 +57,7 @@
     },{
       "id": "RELS_TABLE",
       "label": "Rels. s2p",
-      "visible": false,
+      "visible": true,
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "name": "input" },

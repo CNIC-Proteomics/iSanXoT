@@ -99,12 +99,18 @@ Local functions
 */
 
 function openLoadProject() {
+  console.log("openDIR");
   dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
     if(dirs === undefined) {
       console.log("No output directory selected");
-    } else {
-      let dir = dirs[0];
+    }
+    else if (!('filePaths' in dirs )) {
+      console.log("No output directory selected");
+    }
+    else {
+      let dir = dirs['filePaths'][0];
       console.log(dirs);
+      console.log(dir);
       mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${dir}`)
     }
 });  

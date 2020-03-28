@@ -77,7 +77,7 @@ def _calc_ratio(df, ControlTag, label):
     '''
     df = df[1]
     # calculate the mean for the control tags (denominator)
-    ct = "-".join(ControlTag)+"_Mean" if len(ControlTag) > 1 else "-".join(ControlTag)
+    ct = "-".join(ControlTag)+"_Mean"
     df[ct] = df[ControlTag].mean(axis=1)
     # calculate the Xs
     Xs = df[label].divide(df[ct], axis=0).applymap(np.log2)
@@ -109,7 +109,7 @@ def calculate_ratio(df, ratios):
             # if apply, calculate the mean for the numerator tags (list)
             if ',' in lbl:
                 lbl = lbl.split(",")
-                lb = "-".join(lbl)+"_Mean" if len(lbl) > 1 else "-".join(lbl)
+                lb = "-".join(lbl)+"_Mean"
                 df[lb] = df[lbl].mean(axis=1)
                 labels.append( lb )
             else:
