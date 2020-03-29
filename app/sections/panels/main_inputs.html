@@ -82,6 +82,8 @@
 // Add values to Main_Inputs panel, if apply
 function addValuesMainInputsPanel() {
   // Imported variables
+  let remote = require('electron').remote;
+  let dialog = remote.dialog;
   let importer = require(`${__dirname}/renderer-process/imports`);
   let wf_exec  = importer.wf_exec;
   let wk_id = importer.getWorkIDFromElements(); // get current work id
@@ -103,8 +105,39 @@ function addValuesMainInputsPanel() {
       }
     }
   }
-  console.log(wk_id);
+  
+  console.log( `#${wk_id} #page-tasktable-${cmd_id} #indir` );
+
   // Events
+  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-indir`).click(function() {
+    dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
+      if(dirs === undefined) {
+        console.log("No output directory selected");
+      }
+      else if (!('filePaths' in dirs )) {
+        console.log("No output directory selected");
+      }
+      else {
+        let dir = dirs['filePaths'][0];
+        $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${dir}`);
+      }
+    });
+  });
+  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-outdir`).click(function() {
+    dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
+      if(dirs === undefined) {
+        console.log("No output directory selected");
+      }
+      else if (!('filePaths' in dirs )) {
+        console.log("No output directory selected");
+      }
+      else {
+        let dir = dirs['filePaths'][0];
+        $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${dir}`);
+      }
+    });
+  });
+
   $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).change(function() {
     if ( this.value === "personal" ) {
       $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
@@ -115,6 +148,7 @@ function addValuesMainInputsPanel() {
       $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
     }
   });
+
 }
 // Create object with the Main_Inputs data extracting from the HTML Elements
 function createObjFromMainInputsPanel() {

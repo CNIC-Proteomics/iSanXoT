@@ -1,5 +1,5 @@
-let remote = require('electron').remote; 
-let dialog = remote.dialog; 
+let remote = require('electron').remote;
+let dialog = remote.dialog;
 
 function showMessageBox(head, message, end=false) {
   dialog.showErrorBox(head, message);
