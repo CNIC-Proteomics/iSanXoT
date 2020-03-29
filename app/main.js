@@ -98,32 +98,37 @@ function createWindow () {
 Local functions
 */
 
+// local function: add the project folder
+function addInputsFileDirectoy(inputs, errsms) {
+  if(inputs === undefined) {
+    console.log(`${errsms}: input is undefined`);
+    exceptor.showMessageBox('Error Message', `${errsms}`);
+  }
+  else if (inputs.canceled) {
+    console.log(`${errsms}: canceled operation`);
+  }
+  else if (!('filePaths' in inputs )) {
+    console.log(`${errsms}: filePaths does not defined`);
+    exceptor.showMessageBox('Error Message', `${errsms}`);
+  }
+  else {
+    if ( inputs['filePaths'].length == 0 ) {
+      console.log(`${errsms}: filePaths is empty`);
+      exceptor.showMessageBox('Error Message', `${errsms}`);
+    }
+    else {
+      let file = inputs['filePaths'][0];
+      mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${file}`);
+    }
+  }
+};
+
+// Load project folder
 function openLoadProject() {
   console.log("openDIR");
   dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
-    if(dirs === undefined) {
-      console.log("No output directory selected");
-    }
-    else if (!('filePaths' in dirs )) {
-      console.log("No output directory selected");
-    }
-    else {
-      let dir = dirs['filePaths'][0];
-      console.log(dirs);
-      console.log(dir);
-      mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${dir}`)
-    }
-});  
-//   dialog.showOpenDialog({ properties: ['openDirectory']}, function (dirs) {
-    
-//     if(dirs === undefined) {
-//       console.log("No output directory selected");
-//     } else {
-//       let dir = dirs[0];
-//       console.log(dirs);
-//       mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${dir}`)
-//     }
-// }); 
+    addInputsFileDirectoy(dirs, `No project folder selected`);
+  });  
 };
 
 /*

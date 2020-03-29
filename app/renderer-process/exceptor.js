@@ -1,8 +1,13 @@
+/*
+  Global variables
+*/
+const { ipcRenderer } = require('electron');
 let remote = require('electron').remote;
 let dialog = remote.dialog;
 
-function showMessageBox(head, message, end=false) {
+function showMessageBox(head, message, end=false, page=undefined) {
   dialog.showErrorBox(head, message);
+  if (page) ipcRenderer.send('load-page', page);
   if (end) throw new Error(message);
 };
 
