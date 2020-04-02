@@ -13,7 +13,7 @@ let template = [
   { label: "Menu", submenu: [    
     { label: 'Init', click() { mainWindow.loadFile('index.html') } },
     { label: 'Load project...', click() { openLoadProject() } },
-    { role: 'quit', accelerator: 'Shift+Ctrl+Q' }
+    { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { label: "Workflows", submenu: [
     { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
@@ -43,6 +43,11 @@ if (process.env.ISANXOT_MODE != "production") {
 // create menu
 const menu = Menu.buildFromTemplate(template)
 
+/*
+Local functions
+*/
+
+// Create the main Window
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -68,35 +73,29 @@ function createWindow () {
     mainWindow.webContents.openDevTools()
   }
 
-  // Emitted when the window is closed.
-  mainWindow.on('close', function (e) {
-    let choice = dialog.showMessageBox( mainWindow,{
-        type: 'question',
-        buttons: ['Yes', 'No'],
-        title: 'Confirm',
-        message: 'Do you really want to close the application?'
-    })
-    if (choice === 1) e.preventDefault()
+  mainWindow.focus()
+
+  // Emitted when the window is starting to be close.
+  mainWindow.on('close', function(event) {
+    console.log("** close1 windows");
+    let choice = reallyWantToClose();
+    if (choice === 1) event.preventDefault();  
   })
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', function (e) {
+  mainWindow.on('closed', function(e) {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    console.log("** close windows");
+    console.log("** close2 windows");
     mainWindow = null
-    app.quit();
+    app.quit();  
   })
   
   // Set application menu
   Menu.setApplicationMenu(menu)
 
 }; // end createWindow
-
-/*
-Local functions
-*/
 
 // local function: add the project folder
 function addInputsFileDirectoy(inputs, errsms) {
@@ -134,25 +133,20 @@ function openLoadProject() {
   });
 };
 
-/*
-App functions
-*/
+// Prevent the close of app
+function reallyWantToClose() {
+  let opts = {      
+    type: 'question',
+    buttons: ['Yes', 'No'],
+    title: 'Confirm',
+    message: 'Do you really want to close the application?'
+  };
+  let choice = dialog.showMessageBoxSync(mainWindow, opts);
+  return choice;
+};
 
-// This method will be called when Electron has finished initialization 
-// and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
-
-// before quit: App close handler
-app.on('before-quit', () => {
-  mainWindow.removeAllListeners('close');
-  mainWindow.close();
-});
-
-// When all windows are closed...
-app.on('window-all-closed', function () {
-  // kill all processes
-  console.log("** kill all processes");
+// Kill processes
+function KillProcceses(all_pids) {
   console.log( all_pids );
   all_pids['c_pids'].forEach(function(pids) {
     pids.forEach(function(pid) {
@@ -174,6 +168,45 @@ app.on('window-all-closed', function () {
       console.log(`error killing ${pid}: ${e}`);
     }
   });
+};
+
+
+/*
+App functions
+*/
+
+// This method will be called when Electron has finished initialization 
+// and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+// app.on('ready', createWindow);
+app.on('ready', function (event) {
+  console.log("ready");
+  createWindow();
+  // app on top
+  mainWindow.setAlwaysOnTop(true);
+  // once a time, we get off the top
+  setTimeout(function() {
+    mainWindow.setAlwaysOnTop(false);
+  },1000);
+
+  // console.log("ready 2");
+
+});
+
+
+
+// before quit: App close handler
+app.on('before-quit', function (event) {
+  console.log("** before-quit");
+  mainWindow.removeAllListeners('close');
+  mainWindow.close();  
+});
+
+// When all windows are closed...
+app.on('window-all-closed', function () {
+  // kill all processes
+  console.log("** kill all processes");
+  KillProcceses(all_pids);
 });
 
 app.on('activate', function () {
