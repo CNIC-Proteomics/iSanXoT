@@ -142,33 +142,34 @@ function extractWorkflowAttributes() {
         // pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_results'
         // pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\test_2'
 
+        // Add the hidden folder where config files are saving
+        pdir += '/.isanxot'
 
         // Mandatory the project directory if 
-        if ( !pdir ) {
+        if ( !fs.existsSync(pdir) ) {
             console.log(url_params);
-            exceptor.showMessageBox('Error Message', `Project directory is not defined`, end=true);
+            exceptor.showMessageBox('Error Message', `Project directory is not defined`, end=false, page=`${__dirname}/../index.html`);
         }
 
-        // Extract the workflow attributes
-        pdir += '/.isanxot' // add the directory where data files of isanxot is 
         // Add the most recent execution
         let d = getMostRecentDir(pdir);
         if ( !d ) {
-        console.log(pdir);
-        exceptor.showMessageBox('Error Message', `Extracting the most recent execution`, end=true);
+            console.log(pdir);
+            exceptor.showMessageBox('Error Message', `Extracting the most recent execution`, end=true);
         }  
         pdir += `/${d}`;
+
         // Check if config file exits
         let cfgfile = `${pdir}/config.yaml`;
-        if (fs.existsSync(cfgfile)) {
-        // open config file
-        cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
-        // get the wofkflow name
-        if ( cfg.hasOwnProperty('name') ) wf_id = cfg['name'];
+        if ( !fs.existsSync(cfgfile) ) {
+            console.log(cfgfile);
+            exceptor.showMessageBox('Error Message', `Openning the config file`, end=true, page=`${__dirname}/../index.html`);
         }
         else {
-        console.log(cfgfile);
-        exceptor.showMessageBox('Error Message', `Openning the config file`, end=true);
+            // open config file
+            cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
+            // get the wofkflow name
+            if ( cfg.hasOwnProperty('name') ) wf_id = cfg['name'];
         }
     }
     else { // default workflow. Add the local directory with the data files of workflow        

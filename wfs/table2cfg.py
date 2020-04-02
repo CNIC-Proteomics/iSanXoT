@@ -12,7 +12,6 @@ __status__ = "Development"
 import os
 import sys
 import glob
-
 import argparse
 import logging
 import copy
@@ -22,7 +21,6 @@ import json
 import yaml
 import shlex
 import pandas as pd
-import numpy as np
 
 
 ####################
@@ -271,6 +269,19 @@ def add_datparams(p, trule, ival):
 
 
 
+def _add_corrected_files(trule):
+    '''
+    add the correct files if '*' asterisk is in the path
+    '''
+    for k,files in trule.items():
+        if '*' in files:
+            l = []
+            for file in files.split(";"):
+                l += [f for f in glob.glob(file, recursive=True)]
+            if len(l) > 0:
+                trule[k] = ";".join(l)
+    return trule
+
     
 def add_rules(row, *trules):
     '''
@@ -280,10 +291,13 @@ def add_rules(row, *trules):
     data_params = list(row.index.values)
     for i in range(len(r)):
         trule = r[i]
-        for p in data_params:            
+        for p in data_params:
             # add data parameters in the infiles/outfiles
             # add data_parameters into the parameters section for each rule
             add_datparams(p, trule, row.loc[p])
+        # add the correct files if '*' asterisk is in the path
+        # at the moment, only for 'infiles'
+        trule['infiles'] = _add_corrected_files(trule['infiles'])
     return r
 
 def add_rules_createID(df, trules, val):

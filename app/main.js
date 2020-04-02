@@ -125,10 +125,13 @@ function addInputsFileDirectoy(inputs, errsms) {
 
 // Load project folder
 function openLoadProject() {
-  console.log("openDIR");
-  dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
+  // Select a folder: Asynchronous - using callback
+  // Use the main window to be modal
+  let opts = { properties: ["openDirectory"] };
+  dialog.showOpenDialog(mainWindow, opts).then((dirs) => {
+    isOpenLoadProjectDialog = false;
     addInputsFileDirectoy(dirs, `No project folder selected`);
-  });  
+  });
 };
 
 /*

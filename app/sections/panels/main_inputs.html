@@ -83,6 +83,7 @@
 function addValuesMainInputsPanel() {
   // Imported variables
   let remote = require('electron').remote;
+  let mainWindow = remote.getCurrentWindow();
   let dialog = remote.dialog;
   let exceptor = require(`${__dirname}/renderer-process/exceptor`);
   let importer = require(`${__dirname}/renderer-process/imports`);
@@ -97,12 +98,16 @@ function addValuesMainInputsPanel() {
         $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #species`).val(`${wf_exec['main_inputs']['species']}`);
+        
         $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).val(`personal`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['main_inputs']['dbfile']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
+        $(`#${wk_id} #page-tasktable-${cmd_id} .select-dbfile`).prop('disabled', false);
+        
         $(`#${wk_id} #page-tasktable-${cmd_id} .def-catfile`).val(`personal`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['main_inputs']['catfile']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
+        $(`#${wk_id} #page-tasktable-${cmd_id} .select-catfile`).prop('disabled', false);
       }
     }
   }
@@ -136,24 +141,38 @@ function addValuesMainInputsPanel() {
   };
   // events for the INPUT directory and OUTPUT directory
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-indir`).click(function() {
-    dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
+    dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #indir`, dirs, `No input directory selected`);
     });
   });
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-outdir`).click(function() {
-    dialog.showOpenDialog({ properties: ['openDirectory'] }).then((dirs) => {
+    dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #outdir`, dirs, `No output directory selected`);
     });
   });
 
   // events for the DB file and CATegory file BUTTON
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-dbfile`).click(function() {
-    dialog.showOpenDialog({ properties: ['openFile'] }).then((files) => {
+    let opts = {
+      properties: ['openFile'],
+      filters :[
+        {name: 'Database', extensions: ['fa', 'faa', 'txt']},
+        {name: 'All Files', extensions: ['*']}
+      ]
+    };
+    dialog.showOpenDialog(mainWindow, opts).then((files) => {
       addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`, files, `No database file selected`);
     });
   });
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-catfile`).click(function() {
-    dialog.showOpenDialog({ properties: ['openFile'] }).then((files) => {
+    let opts = {
+      properties: ['openFile'],
+      filters :[
+        {name: 'Category', extensions: ['tsv', 'csv', 'txt']},
+        {name: 'All Files', extensions: ['*']}
+      ]
+    };
+    dialog.showOpenDialog(mainWindow, opts).then((files) => {
       addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #catfile`, files, `No category file seleted`);
     });
   });

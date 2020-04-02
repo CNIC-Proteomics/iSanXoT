@@ -333,7 +333,8 @@ commands:
   rules:
   - name: create_exp_tags
     infiles:
-      -ii: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/__WF_LEVEL___lowerNormV.tsv
+      # -ii: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/__WF_LEVEL___lowerNormV.tsv
+      -ii: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/**/__WF_LEVEL__.tsv
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_tags.tsv
     parameters:
@@ -411,6 +412,7 @@ commands:
 ###################
 
 
+
 ###################
 # COMMAND TEMPLATE 
 # Description: 
@@ -449,5 +451,29 @@ commands:
         -s: 5
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotgauss.py" -a sigmoids -g '
+###################
+
+
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
+- name: REPORT
+  description: Retrieve the reports
+  rules:
+  - name: report
+    infiles:
+      -ii: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/**/__WF_INF_LEVEL__.tsv
+      -ss: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/**/__WF_SUP_LEVEL__.tsv
+    outfiles:
+      -o: __MAIN_INPUTS_RSTDIR__/__WF_OUTPUT__.tsv
+    parameters:
+      # outdir:
+      #   -o: __MAIN_INPUTS_RSTDIR__
+      levels:
+        -i: __WF_INF_LEVEL__
+        -s: __WF_SUP_LEVEL__
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/reporter.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
 
