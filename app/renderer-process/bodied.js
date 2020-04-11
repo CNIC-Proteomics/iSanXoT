@@ -128,7 +128,7 @@ for (var i = 0; i < wf['works'].length; i++) {
       }
       else {
         console.log(tbl_cmds);
-        exceptor.showMessageBox('Error Message', `Extracting the tables of commands`, end=true);
+        exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
       }
     }
     else { // default table
@@ -137,13 +137,13 @@ for (var i = 0; i < wf['works'].length; i++) {
     }
   } catch (ex) {
     console.log(wk_file);
-    exceptor.showMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
+    exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
   }
   try {
     cmds = extract_list_cmds(tbl_cmds);
   } catch (ex) {
     console.log(wk_file);
-    exceptor.showMessageBox('Error Message', `Extracting the tables of commands individually`, end=true);
+    exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands individually`, end=true);
   }
   
   // add the tabs and content
@@ -169,7 +169,7 @@ for (var i = 0; i < wf['works'].length; i++) {
     let cmd_attr = importer.getObjectFromID(wk['cmds'], cmd_id);
     if ( cmd_attr === undefined ) {
       console.log(cmd_id);
-      exceptor.showMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
+      exceptor.showErrorMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
     }
     let cmd_label = cmd_attr['label'];
 
@@ -214,7 +214,7 @@ for (var i = 0; i < wf['works'].length; i++) {
     }
     else {
       console.log(cmd_is);
-      exceptor.showMessageBox('Error Message', `Inconsistency of tasktable header`, end=true);
+      exceptor.showErrorMessageBox('Error Message', `Inconsistency of tasktable header`, end=true);
     }
   } // end loop of commands
 

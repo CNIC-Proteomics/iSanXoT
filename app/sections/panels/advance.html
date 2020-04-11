@@ -15,20 +15,20 @@
     let wk = importer.getObjectFromID(wf['works'], wk_id);
     if ( wf === undefined ) {
       console.log(wk_id);
-      exceptor.showMessageBox('Error Message', `Getting the 'works' attributes from the id`, end=true);
+      exceptor.showErrorMessageBox('Error Message', `Getting the 'works' attributes from the id`, end=true);
     }
 
     // Get cmd attributes from the id
     let cmd = importer.getObjectFromID(wk['cmds'], cmd_id);
     if ( cmd === undefined ) {
       console.log(cmd_id);
-      exceptor.showMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
+      exceptor.showErrorMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
     }
 
     // Get the list of optionals parameters
     let opt = importer.getIndexParamsFromType(cmd['params'], 'optional');
     if ( opt === undefined ) {
-      exceptor.showMessageBox('Error Message', `Getting the 'optional parameters'`, end=true);
+      exceptor.showErrorMessageBox('Error Message', `Getting the 'optional parameters'`, end=true);
     }
 
     // Show/Hide 'hiddenColumns'

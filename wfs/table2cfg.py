@@ -99,7 +99,9 @@ def check_command_parameters(indata):
     if outdirs:
         if len(outdirs) != len(set(outdirs)):
             uniq_list, dup_list = get_set_unique_list(outdirs)
-            sys.exit("ERROR!! There are dupplicated outdirs: {}".format(dup_list))
+            sms = "ERROR!! There are dupplicated outdirs: {}".format(dup_list)
+            print(sms) # message to stdout with logging output
+            sys.exit(sms)
     
 def replace_val_rec(data, repl):
     '''
@@ -405,7 +407,9 @@ def main(args):
         try:
             tpl = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
-            sys.exit("ERROR!! Reading the attributes file of workflow: {}".format(exc))
+            sms = "ERROR!! Reading the attributes file of workflow: {}".format(exc)
+            print(sms) # message to stdout with logging output
+            sys.exit(sms)
     # remove the date_id folder from the data files
     tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
 
@@ -417,7 +421,9 @@ def main(args):
         try:
             tpl_cmds = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
-            sys.exit("ERROR!! Reading the template of commands: {}".format(exc))
+            sms = "ERROR!! Reading the template of commands: {}".format(exc)
+            print(sms) # message to stdout with logging output
+            sys.exit(sms)
 
     
     # get the unique commands from the input table
@@ -530,10 +536,12 @@ if __name__ == "__main__":
     # logging debug level. By default, info level
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG,
+                            stream=sys.stdout,
                             format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p')
     else:
         logging.basicConfig(level=logging.INFO,
+                            stream=sys.stdout,
                             format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S %p')
 

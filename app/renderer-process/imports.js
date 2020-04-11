@@ -135,7 +135,7 @@ function extractWorkflowAttributes() {
     // Apply depending the type of workflow
     if ( !wf_id ) { // mandatory the value
         console.log(url_params);
-        exceptor.showMessageBox('Error Message', `Type of workflow is not defined`, end=true);
+        exceptor.showErrorMessageBox('Error Message', `Type of workflow is not defined`, end=true);
     }
     else if ( wf_id == "load" ) { // load the workflow
 
@@ -148,14 +148,14 @@ function extractWorkflowAttributes() {
         // Mandatory the project directory if 
         if ( !fs.existsSync(pdir) ) {
             console.log(url_params);
-            exceptor.showMessageBox('Error Message', `Project directory is not defined`, end=false, page=`${__dirname}/../index.html`);
+            exceptor.showErrorMessageBox('Error Message', `Project directory is not defined`, end=false, page=`${__dirname}/../index.html`);
         }
 
         // Add the most recent execution
         let d = getMostRecentDir(pdir);
         if ( !d ) {
             console.log(pdir);
-            exceptor.showMessageBox('Error Message', `Extracting the most recent execution`, end=true);
+            exceptor.showErrorMessageBox('Error Message', `Extracting the most recent execution`, end=true);
         }  
         pdir += `/${d}`;
 
@@ -163,7 +163,7 @@ function extractWorkflowAttributes() {
         let cfgfile = `${pdir}/config.yaml`;
         if ( !fs.existsSync(cfgfile) ) {
             console.log(cfgfile);
-            exceptor.showMessageBox('Error Message', `Openning the config file`, end=true, page=`${__dirname}/../index.html`);
+            exceptor.showErrorMessageBox('Error Message', `Openning the config file`, end=true, page=`${__dirname}/../index.html`);
         }
         else {
             // open config file

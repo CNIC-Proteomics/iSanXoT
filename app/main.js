@@ -101,19 +101,19 @@ function createWindow () {
 function addInputsFileDirectoy(inputs, errsms) {
   if(inputs === undefined) {
     console.log(`${errsms}: input is undefined`);
-    exceptor.showMessageBox('Error Message', `${errsms}`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
   }
   else if (inputs.canceled) {
     console.log(`${errsms}: canceled operation`);
   }
   else if (!('filePaths' in inputs )) {
     console.log(`${errsms}: filePaths does not defined`);
-    exceptor.showMessageBox('Error Message', `${errsms}`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
   }
   else {
     if ( inputs['filePaths'].length == 0 ) {
       console.log(`${errsms}: filePaths is empty`);
-      exceptor.showMessageBox('Error Message', `${errsms}`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
     }
     else {
       let file = inputs['filePaths'][0];
@@ -141,7 +141,7 @@ function reallyWantToClose() {
     title: 'Confirm',
     message: 'Do you really want to close the application?'
   };
-  let choice = dialog.showMessageBoxSync(mainWindow, opts);
+  let choice = dialog.showErrorMessageBoxSync(mainWindow, opts);
   return choice;
 };
 

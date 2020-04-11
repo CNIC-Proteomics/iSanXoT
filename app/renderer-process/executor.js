@@ -30,7 +30,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
             }
         } catch (err) {    
             console.log(prj_dir);
-            exceptor.showMessageBox('Error Message', `Creating directory ${prj_dir}: ${err}`, end=true);    
+            exceptor.showErrorMessageBox('Error Message', `Creating directory ${prj_dir}: ${err}`, end=true);    
         }    
     }
     // create configuration directory (hidden) for the current execution    
@@ -40,7 +40,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
         }
     } catch (err) {    
         console.log(dte_dir);
-        exceptor.showMessageBox('Error Message', `Creating config directory ${dte_dir}: ${err}`, end=true);    
+        exceptor.showErrorMessageBox('Error Message', `Creating config directory ${dte_dir}: ${err}`, end=true);    
     }
     // create log directory for the current execution
     try {
@@ -49,7 +49,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
         }
     } catch (err) {    
         console.log(log_dir);
-        exceptor.showMessageBox('Error Message', `Creating logging directory ${log_dir}: ${err}`, end=true);    
+        exceptor.showErrorMessageBox('Error Message', `Creating logging directory ${log_dir}: ${err}`, end=true);    
     }
     return [cfg_dir, dte_dir, log_dir];
 }
@@ -105,13 +105,13 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
                 cont += `\n#${cmd_id}\n`;
                 cont += exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`);
             } catch (err) {
-                exceptor.showMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
+                exceptor.showErrorMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
             }
             // write file sync
             try {
                 fs.writeFileSync(dte_file, cont, 'utf-8');
             } catch (err) {    
-                exceptor.showMessageBox('Error Message', `Writing the tasktable file ${dte_file}: ${err}`, end=true);    
+                exceptor.showErrorMessageBox('Error Message', `Writing the tasktable file ${dte_file}: ${err}`, end=true);    
             }
         }
     }
@@ -121,7 +121,7 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
     try {
         fs.writeFileSync(cfgfile, cfgcont, 'utf-8');
     } catch (err) {    
-        exceptor.showMessageBox('Error Message', `Writing the config file ${cfgfile}: ${err}`, end=true);    
+        exceptor.showErrorMessageBox('Error Message', `Writing the config file ${cfgfile}: ${err}`, end=true);    
     }
     return cfgfile;
 }
@@ -184,19 +184,18 @@ function copyDiffFiles(srcDir, tgtDir) {
 // }
 
 // Exec process
-function execSyncProcess(cmd) {
+function execSyncProcess(script, cmd) {
     try {
         console.log(cmd);
-        // proc = cProcess.execSync(cmd);
-        proc = cProcess.execSync(cmd, {stdio: 'inherit'});
+        proc = cProcess.execSync(cmd);
     } catch (ex) {
-        console.log(`stderr: ${ex.message}`);
+        console.log(`stderr: ${script}: ${ex.stderr.toString()} \n ${ex.message}`);
         exceptor.stopLoadingWorkflow();
-        exceptor.showMessageBox('Error Message', `${ex.message}`, end=true);
+        exceptor.showErrorMessageBox(`${script}`, `${ex.stderr.toString()}`, end=true);
     }
 };
 
-function execProcess(cmd, log, wfname) {
+function execProcess(script, cmd, log, wfname) {
     // eexecute command line
     console.log(cmd);
     proc = cProcess.exec(cmd);
@@ -208,7 +207,7 @@ function execProcess(cmd, log, wfname) {
     proc.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`);
         exceptor.stopLoadingWorkflow();
-        exceptor.showMessageBox('Error Message', `${data}`, end=true);
+        exceptor.showErrorMessageBox(`${script}`, `${data}`, end=true);
     });
   
     // Handle on exit event
@@ -224,8 +223,8 @@ function execTable2Cfg(params) {
     --attfile "${params.attfile}" \
     --indir "${params.indir}" \
     --intpl "${intpl}" \
-    --outfile "${params.outfile}" 1> "${params.logdir}/table2cfg.log" 2>&1`;
-    execSyncProcess(cmd);    
+    --outfile "${params.outfile}" 1> "${params.logdir}/table2cfg.log" `;
+    execSyncProcess('creating config files', cmd);    
 };
 function execSnakeMake(params) {
     let smkfile = `${process.env.ISANXOT_SRC_HOME}/wfs/wf_sanxot.smk`;
@@ -240,10 +239,10 @@ function execSnakeMake(params) {
     // Sync process that Unlock the output directory
     // First we unlock the ouput directory
     let cmd1 = `${cmd_unlock} && ${cmd_clean}`
-    execSyncProcess(cmd1);
+    execSyncProcess('preparing the workspace', cmd1);
     // Then, we execute the workflow
-    let cmd2 = `${cmd_smk} > "${params.logfile}" 2>&1`;
-    execProcess(cmd2, params.logfile, params.directory);
+    let cmd2 = `${cmd_smk} 1> "${params.logfile}" 2>&1`;
+    execProcess('executing the workflow', cmd2, params.logfile, params.directory);
 }
 /*
  * Events
