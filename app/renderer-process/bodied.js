@@ -174,7 +174,12 @@ for (var i = 0; i < wf['works'].length; i++) {
     let cmd_label = cmd_attr['label'];
 
     // get the index of optional parameters
-    let cmd_params_opt = importer.getIndexParamsFromType(cmd_attr['params'], 'optional');
+    // let cmd_params_opt = importer.getIndexParamsFromType(cmd_attr['params'], 'optional');
+    let cmd_params_opt = importer.getIndexParamsFromValues(cmd_attr['params'], 'type', 'optional');
+
+    // get the index of optional parameters
+    let cmd_params_readonly = importer.getIndexParamsFromValues(cmd_attr['params'], 'readOnly', true);
+    
     
     // Mandatory header is full
     if (  cmd_header && cmd_header.length > 0 ) {
@@ -188,7 +193,6 @@ for (var i = 0; i < wf['works'].length; i++) {
       // add create tasktable panel
       if ( cmd_attr['panel'] ) {
         importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
-        // $(`#${wk_id} #page-tasktable-${cmd_id}`).append(`<input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Enable advanced options" data-off="Disable advanced options" data-size="xs" data-onstyle="light" data-offstyle="dark">`);
       }
       // create html tasktable
       $(`#${wk_id} #page-tasktable-${cmd_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
@@ -209,6 +213,13 @@ for (var i = 0; i < wf['works'].length; i++) {
             'columns': cmd_params_opt,
             'indicators': false
           },
+          cells: function (row, col) {
+            var cellProperties = {};
+            if (cmd_params_readonly && cmd_params_readonly.length > 0 && cmd_params_readonly.includes(col)) {
+              cellProperties.readOnly = true;
+            }
+            return cellProperties;
+          },  
           licenseKey: 'non-commercial-and-evaluation'    
       });
     }

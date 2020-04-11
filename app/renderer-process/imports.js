@@ -107,17 +107,35 @@ function getObjectFromID(data, id) {
     return rst;
 }
 // Get the list of optionals parameters from workflows.json file
-function getIndexParamsFromType(data, t) {
-    function findWithAttr(array, attr, value) {
+// // Get the list of index with the Type value
+// function getIndexParamsFromType(data, t) {
+//     function findWithAttr(array, attr, value) {
+//         let rst = [];
+//         for(var i = 0; i < array.length; i += 1) {
+//             if(array[i][attr] === value) {
+//                 rst.push(i);
+//             }
+//         }
+//         return rst;
+//     }
+//     let rst = findWithAttr(data, 'type', t);
+//     if ( !rst || rst.length == 0 ) {
+//         return undefined;
+//     }
+//     return rst;
+// }
+// Get the list of index given the attribute and the value
+function getIndexParamsFromValues(data, attr, t) {
+    function findWithAttr(array, at, va) {
         let rst = [];
         for(var i = 0; i < array.length; i += 1) {
-            if(array[i][attr] === value) {
+            if(array[i][at] === va) {
                 rst.push(i);
             }
         }
         return rst;
     }
-    let rst = findWithAttr(data, 'type', t);
+    let rst = findWithAttr(data, attr, t);
     if ( !rst || rst.length == 0 ) {
         return undefined;
     }
@@ -190,7 +208,9 @@ module.exports.getWorkflowIDFromElements = getWorkflowIDFromElements;
 module.exports.getWorkIDFromElements = getWorkIDFromElements;
 module.exports.getCmdIDFromElements = getCmdIDFromElements;
 module.exports.getObjectFromID = getObjectFromID;
-module.exports.getIndexParamsFromType = getIndexParamsFromType;
+// module.exports.getIndexParamsFromType = getIndexParamsFromType;
+module.exports.getIndexParamsFromValues = getIndexParamsFromValues;
+
 
 /*
  * Main

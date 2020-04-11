@@ -49,7 +49,7 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "experiment" },
+        { "type": "required", "name": "experiment", "readOnly": true },
         { "type": "required", "name": "pretxt" },
         { "type": "required", "name": "lab_decoy" },
         { "type": "optional", "name": "more_params" }
@@ -60,11 +60,11 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "input" },
+        { "type": "required", "name": "input",  "readOnly": true },
+        { "type": "required", "name": "output", "readOnly": true },
         { "type": "required", "name": "inf_header" },
         { "type": "required", "name": "sup_header" },
         { "type": "required", "name": "3rd_headers" },
-        { "type": "required", "name": "output" },
         { "type": "optional", "name": "more_params" }
       ]
     }]
