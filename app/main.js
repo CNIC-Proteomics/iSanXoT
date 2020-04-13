@@ -141,7 +141,7 @@ function reallyWantToClose() {
     title: 'Confirm',
     message: 'Do you really want to close the application?'
   };
-  let choice = dialog.showErrorMessageBoxSync(mainWindow, opts);
+  let choice = dialog.showMessageBoxSync(mainWindow, opts);
   return choice;
 };
 
