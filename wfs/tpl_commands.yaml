@@ -348,7 +348,7 @@ commands:
       -t: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-tags.tsv
     outfiles:
       -d: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-dat.tsv
-      -L: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-log.tsv
+      -L: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-log.txt
       -r: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__.tsv
     parameters:
       outdir:
