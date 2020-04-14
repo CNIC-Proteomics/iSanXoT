@@ -192,17 +192,18 @@ def _replace_datparams_params(dat, trule, label):
         if label in tr:
             trule[k] = tr.replace(label, dat)
 
-def add_datparams(p, trule, ival):
+def add_datparams(p, trule, val):
+# def add_datparams(p, trule, ival):
     # Substitute '*' by the global experiments (coming from the CREATE_ID command)
-    if '*' in ival:
-        val = ''
-        for exp in EXPERIMENTS.split(','):
-            if val == '':
-                val += ival.replace('*', exp)
-            else:
-                val += ','+ival.replace('*', exp)
-    else:
-        val = ival
+    # if '*' in ival:
+    #     val = ''
+    #     for exp in EXPERIMENTS.split(','):
+    #         if val == '':
+    #             val += ival.replace('*', exp)
+    #         else:
+    #             val += ','+ival.replace('*', exp)
+    # else:
+    #     val = ival
         
     # Replace the label for the value for each section: infiles, outfiles, and parameters
     if p == 'experiment':        
@@ -464,10 +465,11 @@ def main(args):
             '__NCPU__':                     str(tpl['ncpu']),
             '__WF_VERBOSE__':               str(tpl['verbose']),
             '__MAIN_INPUTS_EXPDIR__':       tpl['prj_workspace']['expdir'],
-            '__MAIN_INPUTS_TMPDIR__':       tpl['prj_workspace']['tmpdir'],
+            '__MAIN_INPUTS_NAMDIR__':       tpl['prj_workspace']['namdir'],
             '__MAIN_INPUTS_RELDIR__':       tpl['prj_workspace']['reldir'],
             '__MAIN_INPUTS_RSTDIR__':       tpl['prj_workspace']['rstdir'],
             '__MAIN_INPUTS_LOGDIR__':       tpl['prj_workspace']['logdir'],
+            '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
             '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
             '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
@@ -509,9 +511,6 @@ def main(args):
                 tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
-                # add the whole parametes (infiles, outfiles, params) to command line
-                # add_params_cline( tpl['commands'][i]['rules'] )
-                
         else: # the rest of commands            
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
@@ -521,8 +520,6 @@ def main(args):
                 # duplicate rules for each row data
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = list(df.apply( add_rules, args=(tpl['commands'][i]['rules']), axis=1))
-                # add the whole parametes (infiles, outfiles, params) to command line
-                # add_params_cline( tpl['commands'][i]['rules'] )
 
 
     logging.info("fill the parameters with intrinsic files in the commands")

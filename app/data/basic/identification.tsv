@@ -5,7 +5,7 @@ experiment	threshold	jump_areas	lab_decoy	fdr	type_xcorr	more_params
 experiment	pretxt	lab_decoy	more_params			
 *						
 						
-#RELS_TABLE						
+#RELS_TABLE_SPEC						
 input	output	inf_header	sup_header	3rd_headers		
 */ID-fdr	rels_scan2peptide	SequenceMod	Spectrum_File-Scan-Charge			
 ID-mq	rels_peptide2protein	Protein	SequenceMod			
