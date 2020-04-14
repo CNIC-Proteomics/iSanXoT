@@ -6,6 +6,7 @@
   "prj_workspace": {
     "expdir": "exps",
     "tmpdir": "names",
+    "reldir": "rels",
     "rstdir": "reports",
     "logdir": "logs"    
   },

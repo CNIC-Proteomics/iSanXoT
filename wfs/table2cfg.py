@@ -284,6 +284,24 @@ def _add_corrected_files(trule):
                 trule[k] = ";".join(l)
     return trule
 
+def add_corrected_files_intrinsic(trule, outfiles):
+    '''
+    add the correct files if '*' asterisk is in the path from the given list of outputs
+    '''
+    for k,files in trule.items():
+        if '*' in files:
+            l = []
+            for file in files.split(";"):
+                sf = re.split(r'/\*+/', file)
+                if len(sf) > 1:
+                    b = sf[0]
+                    e = sf[1]
+                    for outfile in outfiles:
+                        if outfile.startswith(b) and outfile.endswith(e):
+                            l += [outfile]
+            if len(l) > 0:
+                trule[k] = ";".join(l)
+    return trule
     
 def add_rules(row, *trules):
     '''
@@ -447,6 +465,7 @@ def main(args):
             '__WF_VERBOSE__':               str(tpl['verbose']),
             '__MAIN_INPUTS_EXPDIR__':       tpl['prj_workspace']['expdir'],
             '__MAIN_INPUTS_TMPDIR__':       tpl['prj_workspace']['tmpdir'],
+            '__MAIN_INPUTS_RELDIR__':       tpl['prj_workspace']['reldir'],
             '__MAIN_INPUTS_RSTDIR__':       tpl['prj_workspace']['rstdir'],
             '__MAIN_INPUTS_LOGDIR__':       tpl['prj_workspace']['logdir'],
             '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
@@ -459,6 +478,7 @@ def main(args):
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
     
+
     # mandatory: work with the CREATE_ID command
     cmd = 'CREATE_ID'
     if cmd in indata:
@@ -478,6 +498,7 @@ def main(args):
             add_params_cline( tpl['commands'][i]['rules'] )
         del indata[cmd]
     
+
     logging.info("fill the parameters and rules for each command")
     for cmd,df in indata.items():
         if cmd == 'RATIOS':
@@ -489,7 +510,7 @@ def main(args):
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
                 # add the whole parametes (infiles, outfiles, params) to command line
-                add_params_cline( tpl['commands'][i]['rules'] )
+                # add_params_cline( tpl['commands'][i]['rules'] )
                 
         else: # the rest of commands            
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
@@ -501,7 +522,30 @@ def main(args):
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = list(df.apply( add_rules, args=(tpl['commands'][i]['rules']), axis=1))
                 # add the whole parametes (infiles, outfiles, params) to command line
-                add_params_cline( tpl['commands'][i]['rules'] )
+                # add_params_cline( tpl['commands'][i]['rules'] )
+
+
+    logging.info("fill the parameters with intrinsic files in the commands")
+    # get the list of output files
+    outfiles = []
+    for i in range(len(tpl['commands'])):
+        for j in range(len(tpl['commands'][i]['rules'])):
+            for k in range(len(tpl['commands'][i]['rules'][j])):
+                trule = tpl['commands'][i]['rules'][j][k]
+                outfiles += trule['outfiles'].values()
+    # replace the input files that contains the "recursive value" (**)
+    for i in range(len(tpl['commands'])):
+        for j in range(len(tpl['commands'][i]['rules'])):
+            for k in range(len(tpl['commands'][i]['rules'][j])):
+                trule = tpl['commands'][i]['rules'][j][k]
+                trule['infiles'] = add_corrected_files_intrinsic(trule['infiles'], outfiles)
+
+    
+
+    logging.info("fill the clines")
+    # add the whole parametes (infiles, outfiles, params) to command line
+    for i in range(len(tpl['commands'])):
+        add_params_cline( tpl['commands'][i]['rules'] )
 
 
     

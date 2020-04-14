@@ -83,7 +83,7 @@ commands:
     infiles:
       -ii: __MAIN_INPUTS_EXPDIR__/__WF_INPUT__.tsv
     outfiles:
-      -o: __MAIN_INPUTS_EXPDIR__/__WF_OUTPUT__.tsv
+      -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__.tsv
     parameters:
       inf_header:
         -i: ''
@@ -142,7 +142,7 @@ commands:
   - name: wspp_klibrate
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/u_scans.tsv
-      -r: __MAIN_INPUTS_EXPDIR__/rels_scan2peptide.tsv
+      -r: __MAIN_INPUTS_RELDIR__/rels_scan2peptide.tsv
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans.tsv
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans_variance.txt
@@ -154,7 +154,7 @@ commands:
   - name: wspp_s2p_sanxot1
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans.tsv
-      -r: __MAIN_INPUTS_EXPDIR__/rels_scan2peptide.tsv
+      -r: __MAIN_INPUTS_RELDIR__/rels_scan2peptide.tsv
     outfiles:
       -z: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/s2p_outStats.tsv
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/s2p_variance.txt
@@ -166,7 +166,7 @@ commands:
   - name: wspp_s2p_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/scans.tsv
-      -r: __MAIN_INPUTS_EXPDIR__/rels_scan2peptide.tsv
+      -r: __MAIN_INPUTS_RELDIR__/rels_scan2peptide.tsv
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/s2p_variance.txt
     outfiles:
       -n: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/s2p_tagged.tsv
@@ -196,7 +196,7 @@ commands:
   - name: wspp_p2q_sanxot1
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides.tsv
-      -r: __MAIN_INPUTS_EXPDIR__/rels_peptide2protein.tsv
+      -r: __MAIN_INPUTS_RELDIR__/rels_peptide2protein.tsv
     outfiles:
       -z: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_outStats.tsv
       -L: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_variance.txt
@@ -208,7 +208,7 @@ commands:
   - name: wspp_p2q_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/peptides.tsv
-      -r: __MAIN_INPUTS_EXPDIR__/rels_peptide2protein.tsv
+      -r: __MAIN_INPUTS_RELDIR__/rels_peptide2protein.tsv
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_variance.txt
     outfiles:
       -n: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_tagged.tsv
@@ -226,6 +226,8 @@ commands:
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/proteins.tsv
+      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_lowerNormW.tsv
+      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/p2q_lowerNormV.tsv
     parameters:
       p>q_Var(x):
         -v: ''
@@ -268,6 +270,8 @@ commands:
       -V: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2c_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/categories.tsv
+      -u: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2c_lowerNormW.tsv
+      -U: __MAIN_INPUTS_TMPDIR__/__WF_NAME__/q2c_lowerNormV.tsv
     parameters:
       q>c_Var(x):
         -v: ''
@@ -333,22 +337,22 @@ commands:
   rules:
   - name: create_exp_tags
     infiles:
-      # -ii: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/__WF_LEVEL___lowerNormV.tsv
       -ii: __MAIN_INPUTS_TMPDIR__/__WF_INPUT__/**/__WF_LEVEL__.tsv
     outfiles:
-      -o: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_tags.tsv
+      -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-tags.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createCardenioTags.py" '
   - name: cardenio
     infiles:
-      -t: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_tags.tsv
+      -t: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-tags.tsv
     outfiles:
-      -d: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_dat.tsv
-      -r: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__/comb_rel.tsv
+      -d: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-dat.tsv
+      -L: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-log.tsv
+      -r: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__.tsv
     parameters:
       outdir:
-        -p: __MAIN_INPUTS_TMPDIR__/__WF_OUTPUT__
+        -p: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/cardenio.py" -a comb '
 ###################
