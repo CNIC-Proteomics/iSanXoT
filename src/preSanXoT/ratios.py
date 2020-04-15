@@ -75,7 +75,6 @@ def _calc_ratio(df, ControlTag, label):
     '''
     Calculate ratios: Xs, Vs
     '''
-    df = df[1]
     # calculate the mean for the control tags (denominator)
     ct = "-".join(ControlTag)+"_Mean"
     df[ct] = df[ControlTag].mean(axis=1)
@@ -98,6 +97,8 @@ def calculate_ratio(df, ratios):
     '''
     Calculate the ratios
     '''
+    # the input is a tuple
+    df = df[1]
     # get the type of ratios we have to do
     for rat in ratios:
         ControlTag = rat[0]
