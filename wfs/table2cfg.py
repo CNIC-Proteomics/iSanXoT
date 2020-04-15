@@ -193,18 +193,6 @@ def _replace_datparams_params(dat, trule, label):
             trule[k] = tr.replace(label, dat)
 
 def add_datparams(p, trule, val):
-# def add_datparams(p, trule, ival):
-    # Substitute '*' by the global experiments (coming from the CREATE_ID command)
-    # if '*' in ival:
-    #     val = ''
-    #     for exp in EXPERIMENTS.split(','):
-    #         if val == '':
-    #             val += ival.replace('*', exp)
-    #         else:
-    #             val += ','+ival.replace('*', exp)
-    # else:
-    #     val = ival
-        
     # Replace the label for the value for each section: infiles, outfiles, and parameters
     if p == 'experiment':        
         l = '__WF_'+p.upper()+'__'
@@ -432,6 +420,12 @@ def main(args):
     # remove the date_id folder from the data files
     tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
 
+
+    # TODO!!
+    # REPLACE THE CELL VALUES OF DATAFRAME FOR THE REPLACEMENTS VALUES THAT 
+    # COMES FROM workflow.json => .cfg.yaml 
+    # BE CAREFUL IN THE CASES WE HAVE THE SAME WORD BUT WE DON'T WANT TO REPLACE (when the user write replacement word)
+
     
 
     # read the templates of commands
@@ -473,6 +467,8 @@ def main(args):
             '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
             '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
+            '__SPECIES__':                  tpl['main_inputs']['species'],
+            # '__LABEL_DECOY__':              tpl['main_inputs']['label_decoy'],
     }
     # add the replacements for the data files of tasktable commands
     for datfile in tpl['datfiles']:
@@ -492,10 +488,12 @@ def main(args):
             # get the list of unique experiments (in string)
             global EXPERIMENTS
             EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
-            # replace constants
-            tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+            # # replace constants
+            # tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
             # add the parameters into each rule
             tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
+            # replace constants
+            tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
             # add the whole parametes (infiles, outfiles, params) to command line
             add_params_cline( tpl['commands'][i]['rules'] )
         del indata[cmd]
@@ -507,19 +505,23 @@ def main(args):
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
-                # replace constants
-                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+                # # replace constants
+                # tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
+                # replace constants
+                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
         else: # the rest of commands            
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
-                # replace constants
-                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+                # # replace constants
+                # tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
                 # duplicate rules for each row data
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = list(df.apply( add_rules, args=(tpl['commands'][i]['rules']), axis=1))
+                # replace constants
+                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
 
 
     logging.info("fill the parameters with intrinsic files in the commands")
