@@ -311,8 +311,8 @@ commands:
     outfiles:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/p2a_outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/p2a_variance.txt
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/peptides_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/peptides_lowerNormV.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/p2a_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/p2a_lowerNormV.tsv
     parameters:
       p>a_Tag:
         --tags: ''
@@ -325,8 +325,8 @@ commands:
     outfiles:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/q2a_outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/q2a_variance.txt
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/proteins_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/proteins_lowerNormV.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/q2a_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/q2a_lowerNormV.tsv
     parameters:
       q>a_Var(x):
         -v: ''
@@ -340,8 +340,8 @@ commands:
     outfiles:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/c2a_outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/c2a_variance.txt
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/categories_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/categories_lowerNormV.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/c2a_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/c2a_lowerNormV.tsv
     parameters:
       c>a_Var(x):
         -v: 0
@@ -502,6 +502,6 @@ commands:
         -i: __WF_INF_LEVEL__
         -s: __WF_SUP_LEVEL__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/reporter.py" -w __NCPU__ __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/reporter.py" __WF_VERBOSE__ '
 ###################
 

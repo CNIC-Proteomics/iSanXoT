@@ -106,40 +106,40 @@ function getObjectFromID(data, id) {
     rst = rst[0]; // get the firt(unique) element
     return rst;
 }
-// Get the list of optionals parameters from workflows.json file
-// // Get the list of index with the Type value
-// function getIndexParamsFromType(data, t) {
-//     function findWithAttr(array, attr, value) {
-//         let rst = [];
-//         for(var i = 0; i < array.length; i += 1) {
-//             if(array[i][attr] === value) {
-//                 rst.push(i);
-//             }
-//         }
-//         return rst;
-//     }
-//     let rst = findWithAttr(data, 'type', t);
-//     if ( !rst || rst.length == 0 ) {
-//         return undefined;
-//     }
-//     return rst;
-// }
-// Get the list of index given the attribute and the value
-function getIndexParamsFromValues(data, attr, t) {
-    function findWithAttr(array, at, va) {
+// Get the list of index with the given attribute value
+function getIndexParamsWithAttr(data, key, attr) {
+    function findWithAttr(array, ke, at) {
         let rst = [];
         for(var i = 0; i < array.length; i += 1) {
-            if(array[i][at] === va) {
+            if(array[i][ke] === at) {
                 rst.push(i);
             }
         }
         return rst;
     }
-    let rst = findWithAttr(data, attr, t);
+    let rst = findWithAttr(data, key, attr);
     if ( !rst || rst.length == 0 ) {
         return undefined;
     }
     return rst;
+}
+// Get the list of index with the given attribute value
+function getIndexParamsWithKey(data, key) {
+    function findWithAttr(array, ke, at) {
+        let [rst,cnt] = [ [],[] ];
+        for(var i = 0; i < array.length; i += 1) {
+            if(ke in array[i]) {
+                rst.push(i);
+                cnt[i] = array[i][ke];
+            }
+        }
+        return [rst,cnt];
+    }
+    let [rst,cnt] = findWithAttr(data, key);
+    if ( !rst || rst.length == 0 || !cnt || cnt.length == 0 ) {
+        return [undefined,undefined];
+    }
+    return [rst,cnt];
 }
 // Extract the main information from Workflow
 function extractWorkflowAttributes() {
@@ -156,9 +156,6 @@ function extractWorkflowAttributes() {
         exceptor.showErrorMessageBox('Error Message', `Type of workflow is not defined`, end=true);
     }
     else if ( wf_id == "load" ) { // load the workflow
-
-        // pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\tests\\PESA omicas\\3a_Cohorte_120_V2_results'
-        // pdir = 'S:\\LAB_JVC\\RESULTADOS\\JM RC\\iSanXoT\\test_2'
 
         // Add the hidden folder where config files are saving
         pdir += '/.isanxot'
@@ -202,14 +199,16 @@ function extractWorkflowAttributes() {
 
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
-module.exports.importHTMLtemplate = importHTMLtemplate;
-module.exports.getWFDate = getWFDate;
-module.exports.getWorkflowIDFromElements = getWorkflowIDFromElements;
-module.exports.getWorkIDFromElements = getWorkIDFromElements;
-module.exports.getCmdIDFromElements = getCmdIDFromElements;
-module.exports.getObjectFromID = getObjectFromID;
-// module.exports.getIndexParamsFromType = getIndexParamsFromType;
-module.exports.getIndexParamsFromValues = getIndexParamsFromValues;
+module.exports = {
+    importHTMLtemplate:         importHTMLtemplate,
+    getWFDate:                  getWFDate,
+    getWorkflowIDFromElements:  getWorkflowIDFromElements,
+    getWorkIDFromElements:      getWorkIDFromElements,
+    getCmdIDFromElements:       getCmdIDFromElements,
+    getObjectFromID:            getObjectFromID,
+    getIndexParamsWithAttr:     getIndexParamsWithAttr,
+    getIndexParamsWithKey:      getIndexParamsWithKey
+};
 
 
 /*

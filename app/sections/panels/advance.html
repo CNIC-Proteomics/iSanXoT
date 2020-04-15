@@ -26,8 +26,7 @@
     }
 
     // Get the list of optionals parameters
-    // let opt = importer.getIndexParamsFromType(cmd['params'], 'optional');
-    let opt = importer.getIndexParamsFromValues(cmd['params'], 'type', 'optional');
+    let opt = importer.getIndexParamsWithAttr(cmd['params'], 'type', 'optional');
     if ( opt === undefined ) {
       exceptor.showErrorMessageBox('Error Message', `Getting the 'optional parameters'`, end=true);
     }

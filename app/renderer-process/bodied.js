@@ -174,13 +174,43 @@ for (var i = 0; i < wf['works'].length; i++) {
     let cmd_label = cmd_attr['label'];
 
     // get the index of optional parameters
-    // let cmd_params_opt = importer.getIndexParamsFromType(cmd_attr['params'], 'optional');
-    let cmd_params_opt = importer.getIndexParamsFromValues(cmd_attr['params'], 'type', 'optional');
+    let cmd_params_opt_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'type', 'optional');
 
-    // get the index of optional parameters
-    let cmd_params_readonly = importer.getIndexParamsFromValues(cmd_attr['params'], 'readOnly', true);
+    // get the index of readOnly parameters
+    let cmd_params_readonly_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'readOnly', true);
     
+    // get the index of DropDown parameters
+    // Example:
+    // "cmds": [{
+    //   "id": "COMBINE",
+    //   "label": "Combine",
+    //   "visible": true,
+    //   "panel": "panels/advance.html",
+    //   "params": [
+    //     { "type": "required", "name": "input" },
+    //     { "type": "required", "name": "output" },
+    //     { "type": "required", "name": "level", "hottable": {
+    //       "header": [ "type", "file name"],
+    //       "data": {
+    //         "peptidesQ": "p2q_outStats.tsv",
+    //         "peptides": "p2a_outStats.tsv",
+    //         "proteinsC": "q2c_outStats.tsv",
+    //         "proteins": "q2a_outStats.tsv",
+    //         "categories": "c2a_outStats.tsv"  
+    //         }
+    //       }
+    //     },
+    //     { "type": "optional", "name": "more_params" }
+    //   ]
+    // }
+    let [cmd_params_hottable_index, cmd_params_hottable] = importer.getIndexParamsWithKey(cmd_attr['params'], 'hottable');
+
+    // get the index of select parameters
+    let [cmd_params_select_index, cmd_params_select] = importer.getIndexParamsWithKey(cmd_attr['params'], 'select');
     
+
+
+
     // Mandatory header is full
     if (  cmd_header && cmd_header.length > 0 ) {
       // create html sidebar
@@ -209,17 +239,42 @@ for (var i = 0; i < wf['works'].length; i++) {
           minSpareRows: 1,
           contextMenu: true,
           manualColumnResize: true,
+          autoColumnSize: true,
           hiddenColumns: {
-            'columns': cmd_params_opt,
+            'columns': cmd_params_opt_index,
             'indicators': false
           },
           cells: function (row, col) {
             var cellProperties = {};
-            if (cmd_params_readonly && cmd_params_readonly.length > 0 && cmd_params_readonly.includes(col)) {
+            // readOnly column (coming from the wortkflow.json config file)
+            if (cmd_params_readonly_index && cmd_params_readonly_index.length > 0 && cmd_params_readonly_index.includes(col)) {
               cellProperties.readOnly = true;
             }
+            // column with handsontables inside (coming from the wortkflow.json config file)
+            if (cmd_params_hottable_index && cmd_params_hottable_index.length > 0 && cmd_params_hottable_index.includes(col)) {
+              let hottable_header = cmd_params_hottable[col].header;
+              let hottable_data = [];
+              for ( k in cmd_params_hottable[col].data) {
+                hottable_data.push( [ k, cmd_params_hottable[col].data[k] ] );
+              }
+              this.type = 'handsontable';
+              this.handsontable = {
+                colHeaders: hottable_header,
+                autoColumnSize: true,
+                data: hottable_data,
+                getValue: function() {
+                  var selection = this.getSelectedLast();
+                  return this.getSourceDataAtRow(selection[0])[0]; // return the first column
+                },
+              };
+            }
+            // column with handsontables inside (coming from the wortkflow.json config file)
+            if (cmd_params_select_index && cmd_params_select_index.length > 0 && cmd_params_select_index.includes(col)) {
+              this.editor = 'select';
+              this.selectOptions = cmd_params_select[col];
+            }
             return cellProperties;
-          },  
+          },
           licenseKey: 'non-commercial-and-evaluation'    
       });
     }

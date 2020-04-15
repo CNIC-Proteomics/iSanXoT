@@ -10,6 +10,13 @@
     "rstdir": "reports",
     "logdir": "logs"    
   },
+  "replacements": {
+    "peptidesQ":  "p2q_outStats.tsv",
+    "peptides":   "p2a_outStats.tsv",
+    "proteinsC":  "q2c_outStats.tsv",
+    "proteins":   "q2a_outStats.tsv",
+    "categories": "c2a_outStats.tsv"
+  },
   "works": [{
     "id": "main_inputs",
     "label": "Inputs",
@@ -109,7 +116,7 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
-        { "type": "required", "name": "level" },
+        { "type": "required", "name": "level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
         { "type": "optional", "name": "more_params" }
       ]
     },{

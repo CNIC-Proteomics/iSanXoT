@@ -100,6 +100,32 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
         for (var j = 0; j < wk['cmds'].length; j++) {
             let cmd = wk['cmds'][j];
             let cmd_id = cmd['id'];
+            // replace if we have information from the wortkflow.json config file. DropDown objects with the command
+            try {
+                // get the attributes of command from the local file (JSON)
+                let cmd_attr = importer.getObjectFromID(wk['cmds'], cmd_id);
+                // get the index of DropDown parameters
+                let [cmd_params_hottable_index, cmd_params_hottable] = importer.getIndexParamsWithKey(cmd_attr['params'], 'hottable');
+                // replace if we have information from the wortkflow.json config file. DropDown objects with the command
+                if (cmd_params_hottable && cmd_params_hottable.length > 0) {                   
+                    // get the number of row from given table of command
+                    let nrows = $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('countRows');
+                    // replace the key by the values for all the rows from the given column
+                    // look throught the different hottable replacements by column
+                    // look throught all the rows of the command table
+                    for (var ncol in cmd_params_hottable) {
+                        let rep = cmd_params_hottable[ncol].data;
+                        for (var nrow = 0; nrow < nrows; nrow++) {
+                            let k = $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('getDataAtCell', parseInt(nrow), parseInt(ncol));
+                            let new_v = rep[k];
+                            $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('setDataAtCell', parseInt(nrow), parseInt(ncol), new_v);
+                        }
+                    }
+
+                }
+            } catch (err) {
+                exceptor.showErrorMessageBox('Error Message', `Replacing the values of labels in the command table ${cmd_id}: ${err}`, end=true);    
+            }
             // export tasktable to CSV
             try {
                 cont += `\n#${cmd_id}\n`;
