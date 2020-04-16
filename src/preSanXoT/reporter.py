@@ -166,7 +166,6 @@ if __name__ == "__main__":
     parser.add_argument('-ii',  '--inffiles',  required=True, help='Multiple input files separated by comma')
     parser.add_argument('-ss',  '--supfiles',  required=True, help='Multiple input files separated by comma')
     parser.add_argument('-o',   '--outfile',   required=True, help='Output file with the reports')
-    # parser.add_argument('-o',   '--outdir',    required=True, help='Output folder where reports will be saved')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

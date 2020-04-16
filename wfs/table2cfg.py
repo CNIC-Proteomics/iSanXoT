@@ -87,8 +87,8 @@ def check_command_parameters(indata):
     outdirs = []
     # iterate over all commands
     for cmd,df in indata.items():
-        # discard RATIOS command because the tasktable is duplicated with WSPP_SBT
-        if cmd != 'RATIOS':
+        # discard RATIOS_WSPP command because the tasktable is duplicated with WSPP_SBT
+        if cmd != 'RATIOS_WSPP':
             # create a list with all output directories for each command
             if 'name' in df.columns:
                 outdirs.extend(df['name'].values)
@@ -410,8 +410,8 @@ def main(args):
     # 1. check whether there are duplicates in the output directories
     # 2. check whether the values of '* Var(x)' are False or a float
 
-    # 3. TODO!!!!! Checheck the MAIN_INPUTS table is full. All the files have one experiment name
-    
+# 3. TODO!!!!! Checheck the MAIN_INPUTS table is full. All the files have one experiment name
+
     logging.info("check the tasktable parameters for each command")
     check_command_parameters(indata)
     
@@ -433,7 +433,23 @@ def main(args):
     # REPLACE THE CELL VALUES OF DATAFRAME FOR THE REPLACEMENTS VALUES THAT 
     # COMES FROM workflow.json => .cfg.yaml 
     # BE CAREFUL IN THE CASES WE HAVE THE SAME WORD BUT WE DON'T WANT TO REPLACE (when the user write replacement word)
+#   "replacements": {
+#     "peptidesQ":          "p2q_outStats",
+#     "peptides":           "p2a_outStats",
+#     "proteinsC":          "q2c_outStats",
+#     "proteins":           "q2a_outStats",
+#     "categories":         "c2a_outStats",
 
+#     "peptidesQ_lnV":          "p2q_lowerNormV",
+#     "peptides_lnV":           "p2a_lowerNormV",
+#     "proteinsC_lnV":          "q2c_lowerNormV",
+#     "proteins_lnV":           "q2a_lowerNormV",
+#     "categories_lnV":         "c2a_lowerNormV",
+
+#     "Vq = 1/(1/V1+1/V2)": "form",
+#     "Vq = Max(V1,V2)":    "max",
+#     "Vq = Avg(V1,V2)":    "avg"
+#   },
     
 
     # read the templates of commands
@@ -509,7 +525,7 @@ def main(args):
 
     logging.info("fill the parameters and rules for each command")
     for cmd,df in indata.items():
-        if cmd == 'RATIOS':
+        if cmd == 'RATIOS_WSPP':
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]

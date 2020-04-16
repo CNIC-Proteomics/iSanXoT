@@ -11,14 +11,21 @@
     "logdir": "logs"    
   },
   "replacements": {
-    "peptidesQ":          "p2q_outStats.tsv",
-    "peptides":           "p2a_outStats.tsv",
-    "proteinsC":          "q2c_outStats.tsv",
-    "proteins":           "q2a_outStats.tsv",
-    "categories":         "c2a_outStats.tsv",
+    "peptidesQ":          "p2q_outStats",
+    "peptides":           "p2a_outStats",
+    "proteinsC":          "q2c_outStats",
+    "proteins":           "q2a_outStats",
+    "categories":         "c2a_outStats",
+
+    "peptidesQ_lnV":          "p2q_lowerNormV",
+    "peptides_lnV":           "p2a_lowerNormV",
+    "proteinsC_lnV":          "q2c_lowerNormV",
+    "proteins_lnV":           "q2a_lowerNormV",
+    "categories_lnV":         "c2a_lowerNormV",
+
     "Vq = 1/(1/V1+1/V2)": "form",
     "Vq = Max(V1,V2)":    "max",
-    "Vq = Avg(V1,V2)":    "avg"        
+    "Vq = Avg(V1,V2)":    "avg"
   },
   "works": [{
     "id": "main_inputs",
@@ -119,7 +126,7 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
-        { "type": "required", "name": "level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
+        { "type": "required", "name": "level", "select": ["p2q_lowerNormV", "p2a_lowerNormV", "q2c_lowerNormV", "q2a_lowerNormV", "c2a_lowerNormV"] },
         { "type": "optional", "name": "more_params" }
       ]
     },{
@@ -136,7 +143,7 @@
         { "type": "optional", "name": "more_params" }
       ]
     },{
-      "id": "RATIO",
+      "id": "RATIOS_INT",
       "label": "Calculate ratios and integrate",
       "visible": true,
       "panel": "panels/advance.html",
@@ -144,8 +151,8 @@
         { "type": "required", "name": "name" },
         { "type": "required", "name": "ratio_numerator" },
         { "type": "required", "name": "ratio_denominator" },
-        { "type": "required", "name": "level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
-        { "type": "required", "name": "type", "select": ["Vq = 1/(1/V1+1/V2)", "Vq = Max(V1,V2)", "Vq = Avg(V1,V2)"] },
+        { "type": "required", "name": "level", "select": ["p2q_lowerNormV", "p2a_lowerNormV", "q2c_lowerNormV", "q2a_lowerNormV", "c2a_lowerNormV"] },
+        { "type": "required", "name": "type", "select": ["form", "max", "avg"] },
         { "type": "required", "name": "rel_table" },
         { "type": "optional", "name": "Tag" },
         { "type": "optional", "name": "FDR" },
@@ -180,8 +187,8 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
-        { "type": "required", "name": "inf_level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
-        { "type": "required", "name": "sup_level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
+        { "type": "required", "name": "inf_level", "select": ["p2q_outStats", "p2a_outStats", "q2c_outStats", "q2a_outStats", "c2a_outStats"] },
+        { "type": "required", "name": "sup_level", "select": ["p2q_outStats", "p2a_outStats", "q2c_outStats", "q2a_outStats", "c2a_outStats"] },
         { "type": "optional", "name": "more_params" }
       ]
     }]
