@@ -243,11 +243,17 @@ def add_datparams(p, trule, val):
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
         
     elif p == 'ratio_numerator':
+        l = '__WF_RATIO_NUM__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
             r = val.replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
             
     elif p == 'ratio_denominator':
+        l = '__WF_RATIO_DEN__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
             r = val.replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
@@ -400,10 +406,12 @@ def main(args):
     indata = read_command_table(infiles)
     
     
-    # TODO CHECK THE INPUT TABLE!!!!!
-    # COMPRUEBA QUE:
-    # 1. La columna de 'names' es unica
-    # 2. Que para las columnas de '* Var(x)' los valores o es False o un float
+    # check the tasktable parameters for each command:
+    # 1. check whether there are duplicates in the output directories
+    # 2. check whether the values of '* Var(x)' are False or a float
+
+    # 3. TODO!!!!! Checheck the MAIN_INPUTS table is full. All the files have one experiment name
+    
     logging.info("check the tasktable parameters for each command")
     check_command_parameters(indata)
     

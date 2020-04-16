@@ -11,11 +11,14 @@
     "logdir": "logs"    
   },
   "replacements": {
-    "peptidesQ":  "p2q_outStats.tsv",
-    "peptides":   "p2a_outStats.tsv",
-    "proteinsC":  "q2c_outStats.tsv",
-    "proteins":   "q2a_outStats.tsv",
-    "categories": "c2a_outStats.tsv"
+    "peptidesQ":          "p2q_outStats.tsv",
+    "peptides":           "p2a_outStats.tsv",
+    "proteinsC":          "q2c_outStats.tsv",
+    "proteins":           "q2a_outStats.tsv",
+    "categories":         "c2a_outStats.tsv",
+    "Vq = 1/(1/V1+1/V2)": "form",
+    "Vq = Max(V1,V2)":    "max",
+    "Vq = Avg(V1,V2)":    "avg"        
   },
   "works": [{
     "id": "main_inputs",
@@ -82,7 +85,7 @@
     "description": "Short description for the current work (tab)",
     "file": "stats_quantification.tsv",
     "cmds": [{
-      "id": "RATIOS-WSPP_SBT",
+      "id": "RATIOS_WSPP-WSPP_SBT",
       "label": "WSPP - SBT",
       "visible": true,
       "panel": "panels/advance.html",
@@ -131,7 +134,24 @@
         { "type": "required", "name": "3rd_headers" },
         { "type": "required", "name": "output" },
         { "type": "optional", "name": "more_params" }
-      ]  
+      ]
+    },{
+      "id": "RATIO",
+      "label": "Calculate ratios and integrate",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "name" },
+        { "type": "required", "name": "ratio_numerator" },
+        { "type": "required", "name": "ratio_denominator" },
+        { "type": "required", "name": "level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
+        { "type": "required", "name": "type", "select": ["Vq = 1/(1/V1+1/V2)", "Vq = Max(V1,V2)", "Vq = Avg(V1,V2)"] },
+        { "type": "required", "name": "rel_table" },
+        { "type": "optional", "name": "Tag" },
+        { "type": "optional", "name": "FDR" },
+        { "type": "optional", "name": "Var(x)" },
+        { "type": "optional", "name": "more_params" }
+      ]
     },{
       "id": "INTEGRATE",
       "label": "Integrate",
@@ -139,10 +159,8 @@
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "name": "input" },
-        { "type": "required", "name": "inf_level" },
-        { "type": "required", "name": "sup_level" },
-        { "type": "required", "name": "rel_table" },
         { "type": "required", "name": "output" },
+        { "type": "required", "name": "rel_table" },
         { "type": "optional", "name": "Tag" },
         { "type": "optional", "name": "FDR" },
         { "type": "optional", "name": "Var(x)" },
@@ -161,9 +179,9 @@
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "name": "input" },
-        { "type": "required", "name": "inf_level" },
-        { "type": "required", "name": "sup_level" },
         { "type": "required", "name": "output" },
+        { "type": "required", "name": "inf_level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
+        { "type": "required", "name": "sup_level", "select": ["p2q_outStats.tsv", "p2a_outStats.tsv", "q2c_outStats.tsv", "q2a_outStats.tsv", "c2a_outStats.tsv"] },
         { "type": "optional", "name": "more_params" }
       ]
     }]
