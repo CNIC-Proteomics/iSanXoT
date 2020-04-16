@@ -17,7 +17,6 @@ import logging
 import glob
 from collections import defaultdict
 import pandas as pd
-import concurrent.futures
 import re
 from functools import reduce
 
@@ -93,9 +92,10 @@ def main(args):
         (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', prefix)[0]
         
         logging.info(f"  {prefix}: read and concat files")
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            df = executor.map(read_infiles,ifiles)
-        df = pd.concat(df)
+        l = []
+        for ifile in ifiles:
+            l.append( read_infiles(ifile) )
+        df = pd.concat(l)
 
         logging.info(f"  {prefix}: remove columns excepts: ["+','.join(COL_VALUES)+"]")
         df.drop(df.columns.difference(COL_VALUES), 1, inplace=True)
@@ -160,7 +160,6 @@ if __name__ == "__main__":
         Example:
             python reporter.py
         ''')
-    parser.add_argument('-w',   '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',   '--inf_level', required=True, help='File name of inferior level')
     parser.add_argument('-s',   '--sup_level', required=True, help='File name of superior level')
     parser.add_argument('-ii',  '--inffiles',  required=True, help='Multiple input files separated by comma')
