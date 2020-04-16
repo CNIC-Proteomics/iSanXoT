@@ -1,2 +1,2 @@
 #REPORT				
-input	inf_level	sup_level	output	more_params
+input	output	inf_level	sup_level	more_params

@@ -94,8 +94,6 @@ let wf       = importer.wf;
 let wf_id    = importer.wf_id;
 let pdir     = importer.pdir;
 let pdir_def = importer.pdir_def;
-
-console.log(wf_id);
 console.log(pdir);
 
 
