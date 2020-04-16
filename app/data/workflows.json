@@ -17,11 +17,11 @@
     "proteins":           "q2a_outStats",
     "categories":         "c2a_outStats",
 
-    "peptidesQ_lnV":          "p2q_lowerNormV",
-    "peptides_lnV":           "p2a_lowerNormV",
-    "proteinsC_lnV":          "q2c_lowerNormV",
-    "proteins_lnV":           "q2a_lowerNormV",
-    "categories_lnV":         "c2a_lowerNormV",
+    "peptidesQ_lnV":          "p2q",
+    "peptides_lnV":           "p2a",
+    "proteinsC_lnV":          "q2c",
+    "proteins_lnV":           "q2a",
+    "categories_lnV":         "c2a",
 
     "Vq = 1/(1/V1+1/V2)": "form",
     "Vq = Max(V1,V2)":    "max",
@@ -126,7 +126,7 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
-        { "type": "required", "name": "level", "select": ["p2q_lowerNormV", "p2a_lowerNormV", "q2c_lowerNormV", "q2a_lowerNormV", "c2a_lowerNormV"] },
+        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
         { "type": "optional", "name": "more_params" }
       ]
     },{
@@ -151,8 +151,8 @@
         { "type": "required", "name": "name" },
         { "type": "required", "name": "ratio_numerator" },
         { "type": "required", "name": "ratio_denominator" },
-        { "type": "required", "name": "level", "select": ["p2q_lowerNormV", "p2a_lowerNormV", "q2c_lowerNormV", "q2a_lowerNormV", "c2a_lowerNormV"] },
         { "type": "required", "name": "type", "select": ["form", "max", "avg"] },
+        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
         { "type": "required", "name": "rel_table" },
         { "type": "optional", "name": "Tag" },
         { "type": "optional", "name": "FDR" },
@@ -167,6 +167,7 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
+        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
         { "type": "required", "name": "rel_table" },
         { "type": "optional", "name": "Tag" },
         { "type": "optional", "name": "FDR" },

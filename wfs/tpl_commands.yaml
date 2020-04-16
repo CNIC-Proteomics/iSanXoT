@@ -361,24 +361,26 @@ commands:
   rules:
   - name: create_exp_tags
     infiles:
-      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LEVEL__.tsv
+      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LEVEL___lowerNormV.tsv
     outfiles:
-      -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL__-tags.tsv
+      -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL___tags.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createCardenioTags.py" '
   - name: cardenio
     infiles:
-      -t: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL__-tags.tsv
+      -t: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL___tags.tsv
     outfiles:
-      -d: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-__WF_LEVEL__-dat.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__-__WF_LEVEL__-rel.tsv
-      -L: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL__-log.txt
+      -d: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL___lowerNormV.tsv
+      -r: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL___outConfluRels.tsv
+      -L: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__/__WF_LEVEL___log.txt
     parameters:
+      level:
+        -a: 'comb'
       outdir:
         -p: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/cardenio.py" -a comb '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/cardenio.py" '
 ###################
 
 
@@ -392,10 +394,10 @@ commands:
   rules:
   - name: calculate_ratios
     infiles:
-      -i: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_NUM__/**/__WF_LEVEL__.tsv
-      -s: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_DEN__/**/__WF_LEVEL__.tsv
+      -i: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_NUM__/**/__WF_LEVEL___lowerNormV.tsv
+      -s: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_DEN__/**/__WF_LEVEL___lowerNormV.tsv
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL__-ratios.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___applyRatios.tsv
     parameters:
       type:
         -t: 'max'
@@ -405,46 +407,52 @@ commands:
     # Rule: sanxot integration ---
   - name: wspp_sanxot1
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL__-ratios.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___applyRatios.tsv
       -r: __MAIN_INPUTS_RELDIR__/__WF_REL_TABLE__
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___variance.txt
     parameters:
+      level:
+        -a: 'wspp'
       Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_sanxotsieve
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL__-ratios.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___applyRatios.tsv
       -r: __MAIN_INPUTS_RELDIR__/__WF_REL_TABLE__
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_variance.txt
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___tagged.tsv
     parameters:
+      level:
+        -a: 'wspp'
       FDR:
         -f: 0.01
       Var(x):
         -v: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a wspp '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_sanxot2
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL__-ratios.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___applyRatios.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___tagged.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___variance.txt
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_lowerNormV.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL__.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___lowerNormV.tsv
     parameters:
+      level:
+        -a: 'wspp'
       Var(x):
         -v: ''
       Tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 ###################
 
 
@@ -461,43 +469,49 @@ commands:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_INPUT__
       -r: __MAIN_INPUTS_RELDIR__/__WF_REL_TABLE__
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___variance.txt
     parameters:
+      level:
+        -a: 'wspp'
       Tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_INPUT__
       -r: __MAIN_INPUTS_RELDIR__/__WF_REL_TABLE__
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_variance.txt
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___tagged.tsv
     parameters:
+      level:
+        -a: 'wspp'
       FDR:
         -f: 0.01
       Var(x):
         -v: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" -a wspp '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_sanxot2
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_INPUT__
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_variance.txt
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___tagged.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___variance.txt
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/wspp_lowerNormV.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL__.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_NAME__/__WF_LEVEL___lowerNormV.tsv
     parameters:
+      level:
+        -a: 'wspp'
       Var(x):
         -v: ''
       Tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -a wspp -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 ###################
 
 
