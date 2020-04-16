@@ -32,14 +32,30 @@ LEVELS = {
     'q': 'protein',
     'c': 'category'
 }
+COL_VALUES  = ['idinf', 'idsup', 'name']
+COL_VALUES += ['n', 'Z', 'FDR']
+# COL_VALUES += ['tags', 'Xsup', 'Vsup', 'Xinf', 'Vinf']
+ROOT_FOLDER = '/names/'
+
 
 
 ###################
 # Local functions #
 ###################
 def read_infiles(file):
+    # read file
     df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
-    df['name'] = os.path.basename(os.path.dirname(file)) # get the last directory name
+    # get the name of 'experiment' until the root folder
+    # By default, we get the last folder name of path
+    fpath = os.path.dirname(file)
+    name = os.path.basename(fpath)
+    # split until the root folder
+    if ROOT_FOLDER in fpath:
+        s = fpath.split(ROOT_FOLDER)
+        if len(s) > 1:
+            s = s[1]
+            name = re.sub(r'[/|\\]+', '_', s) # replace
+    df['name'] = name
     return df
     
 #################
@@ -49,6 +65,7 @@ def main(args):
     '''
     Main function
     '''
+
     logging.info("increase the list of input files from the given list of files (inferior level and superior level)")
     listfiles = []
     for files in args.inffiles.split(";"):
@@ -57,6 +74,7 @@ def main(args):
         listfiles += [f for f in glob.glob(files, recursive=True)]
     logging.debug(listfiles)
     
+
     logging.info("create a dictionary with the filename as key both inferior level and superior level")
     dictfiles = defaultdict(list)
     for file in listfiles:
@@ -64,7 +82,8 @@ def main(args):
         (fname, ext) = os.path.splitext(os.path.basename(file))
         dictfiles[fname].append(file)
     logging.debug(dictfiles)
-    
+
+
     logging.info("compile the level files...")
     listdf = []
     for level,ifiles in dictfiles.items():
@@ -73,10 +92,13 @@ def main(args):
         # get the characters of inferior and superior level
         (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', prefix)[0]
         
-        logging.info(f"  {prefix}: concat files")
+        logging.info(f"  {prefix}: read and concat files")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
             df = executor.map(read_infiles,ifiles)
         df = pd.concat(df)
+
+        logging.info(f"  {prefix}: remove columns excepts: ["+','.join(COL_VALUES)+"]")
+        df.drop(df.columns.difference(COL_VALUES), 1, inplace=True)
         
         logging.info(f"  {prefix}: print dataframe")
         outdir = os.path.dirname(args.outfile)
@@ -91,17 +113,21 @@ def main(args):
         df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
                 
         listdf.append(df)
-        
+    
+
     logging.info("merge levels")
     df = reduce(lambda x, y: pd.merge(x, y), listdf)
     
+
     logging.info("rename columns")
     df.rename(columns=LEVELS, inplace=True)
     
+
     logging.info("revome 'all' column")
     if 'a' in df.columns:
         df.drop(columns=['a'], axis=1, inplace=True)
     
+
     logging.info("reorder columns")
     # get a list of columns
     cols = list(df)    
@@ -110,6 +136,14 @@ def main(args):
         if l in cols:
             cols.insert(0, cols.pop(cols.index(l)))
     df = df.reindex(columns=cols)
+    
+
+    logging.info("pivot table")
+    # get the current columns that from the LEVELS
+    cols_idx = list( set( list(LEVELS.values()) )    &   set( list(df) ) )
+    df = pd.pivot_table(df, index=cols_idx, columns=['name'], aggfunc='first', fill_value='NaN')
+    df.reset_index(inplace=True)
+
     
     logging.info(f"print output file")
     df.to_csv(args.outfile, sep="\t", index=False)
