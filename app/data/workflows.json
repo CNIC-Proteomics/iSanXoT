@@ -11,11 +11,11 @@
     "logdir": "logs"    
   },
   "replacements": {
-    "peptidesQ":          "p2q_outStats",
-    "peptides":           "p2a_outStats",
-    "proteinsC":          "q2c_outStats",
-    "proteins":           "q2a_outStats",
-    "categories":         "c2a_outStats",
+    "peptidesQ":          "p2q",
+    "peptides":           "p2a",
+    "proteinsC":          "q2c",
+    "proteins":           "q2a",
+    "categories":         "c2a",
 
     "peptidesQ_lnV":          "p2q",
     "peptides_lnV":           "p2a",
@@ -152,7 +152,8 @@
         { "type": "required", "name": "ratio_numerator" },
         { "type": "required", "name": "ratio_denominator" },
         { "type": "required", "name": "type", "select": ["form", "max", "avg"] },
-        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
+        { "type": "required", "name": "inf_level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
+        { "type": "required", "name": "sup_level", "select": ["p2q", "q2c"] },
         { "type": "required", "name": "rel_table" },
         { "type": "optional", "name": "Tag" },
         { "type": "optional", "name": "FDR" },
@@ -188,8 +189,8 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
-        { "type": "required", "name": "inf_level", "select": ["p2q_outStats", "p2a_outStats", "q2c_outStats", "q2a_outStats", "c2a_outStats"] },
-        { "type": "required", "name": "sup_level", "select": ["p2q_outStats", "p2a_outStats", "q2c_outStats", "q2a_outStats", "c2a_outStats"] },
+        { "type": "required", "name": "inf_level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
+        { "type": "required", "name": "sup_level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
         { "type": "optional", "name": "more_params" }
       ]
     }]
