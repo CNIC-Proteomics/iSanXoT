@@ -74,8 +74,7 @@ def processing_infiles_PD(file, Expt):
     col[:] = [s.replace('Abundance: ', '') for s in col]
     df.columns = col
     # add Experiment column
-    Expt1=[".*[\W|\_]*("+i+")[\W|\_]*.*" for i in Expt]
-    df["Experiment"] = df["Spectrum_File"].replace(dict(itertools.zip_longest(Expt1,[],fillvalue="\\1")), regex=True)
+    df["Experiment"] = Expt
     return df
 
 def print_by_experiment(df, outdir):
@@ -105,16 +104,16 @@ def main(args):
 
     if 'CREATE_ID' in indata:
         logging.info("extract the list of files from the given experiments")
-        infiles = indata['CREATE_ID']['infile'].unique()
+        infiles = list(indata['CREATE_ID']['infile'])
         logging.debug(infiles)
         
         logging.info("extract the list of experiments")
-        Expt    = indata['CREATE_ID']['experiment'].unique()
+        Expt    = list(indata['CREATE_ID']['experiment'])
         logging.debug(Expt)
         
         logging.info("processing the input file from the PD")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            ddf = executor.map( processing_infiles_PD, infiles, itertools.repeat(Expt) )
+            ddf = executor.map( processing_infiles_PD, infiles, Expt )
         ddf = pd.concat(ddf)
             
         logging.info("print the ID files by experiments")
