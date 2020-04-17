@@ -412,6 +412,8 @@ def main(args):
 
 # 3. TODO!!!!! Checheck the MAIN_INPUTS table is full. All the files have one experiment name
 
+# 4. TODO!!! Check the columns: level, inf_level and sup_level are not empty
+
     logging.info("check the tasktable parameters for each command")
     check_command_parameters(indata)
     
