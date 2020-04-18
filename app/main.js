@@ -146,10 +146,22 @@ function reallyWantToClose() {
 };
 
 // Kill processes
+// start first with the child processes (at the end of array)
 function KillProcceses(all_pids) {
-  console.log( all_pids );
-  all_pids['c_pids'].forEach(function(pids) {
-    pids.forEach(function(pid) {
+  console.log(`kill child processes: ${all_pids['c_pids']}`);
+  all_pids['c_pids'].reverse().forEach(function(pid) {
+    try {
+      console.log(`${pid} has been killed!`);
+      process.kill(pid);
+    }
+    catch (e) {
+      console.log(`error killing ${pid}: ${e}`);
+    }
+  });
+  console.log(`kill processes: ${all_pids['pids']}`);
+  all_pids['pids'].forEach(function(pids) {
+    let log = pids[0];
+    pids.slice(1).reverse().forEach(function(pid) {
       try {
         console.log(`${pid} has been killed!`);
         process.kill(pid);
@@ -158,15 +170,6 @@ function KillProcceses(all_pids) {
         console.log(`error killing ${pid}: ${e}`);
       }
     });  
-  });
-  all_pids['pids'].forEach(function(pid) {
-    try {
-      console.log(`${pid} main-process has been killed!`);
-      process.kill(pid);
-    }
-    catch (e) {
-      console.log(`error killing ${pid}: ${e}`);
-    }
   });
 };
 
@@ -232,5 +235,15 @@ ipcMain.on('load-page', function(event, arg) {
 ipcMain.on('send-pids', function(event, arg) {
   console.log('receive pids');
   console.log(arg);
-  all_pids = arg;
+  all_pids['pids'] = arg['pids'];
+});  
+
+// Get the Child PID
+ipcMain.on('send-cpid', function(event, arg) {
+  console.log('receive child pid');
+  console.log(arg);
+  // add unique ids
+  if (all_pids['c_pids'].indexOf(arg['cpid']) === -1) {
+    all_pids['c_pids'].push(arg['cpid']);
+  }
 });  

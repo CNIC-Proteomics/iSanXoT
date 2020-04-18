@@ -4,51 +4,51 @@
 const { ipcRenderer } = require('electron');
 let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`);
 
-// Add info to session
-function addProcToSession(pid, log, wf) {
+// Add the list of processes into the list session
+function addProcToSession(a_pids, wf) {
     // extract the session info
     let pids = JSON.parse( window.sessionStorage.getItem("pids") );
-    let logs = JSON.parse( window.sessionStorage.getItem("logs") );
-    let wfs  = JSON.parse( window.sessionStorage.getItem("wfs") );
     // create list of data
     if ( pids === null ) { // init        
-        pids = [pid];
-        logs = [log];
-        wfs  = [wf];
+        pids = [a_pids];
     }
     else {
-        ipcRenderer.send('send-pid', pid);
-        pids.push(pid);
-        logs.push(log);
-        wfs.push(wf);
+        // concatenate. create a list of list with the all processes
+        pids.push(a_pids);
     }
     // save session info
     window.sessionStorage.setItem("pids", JSON.stringify(pids));
-    window.sessionStorage.setItem("logs", JSON.stringify(logs));
-    window.sessionStorage.setItem("wfs",  JSON.stringify(wfs));
+    // send the list of pids
+    ipcRenderer.send('send-pids', {
+        'pids': pids
+    });
 };
 
 // Save the process id in the session storage
 function addProcessesToSession(pid, log, wfname, page=false) {
-    // the actual pid is for the CMD (shell). Then...
-    // get the pid for the first child process => the script pid
-    psTree(pid, function (err, children) {
-        for (var i = 0; i < children.length; i++) {
-            let p = children[i];
-            console.log(`${i} => ${p.PID}`);
-            if ( i == 0) {
-                console.log(p.PID);
-                // save the process id in the session storage
-                addProcToSession(p.PID, log, wfname)
-                // go to procceses section
-                if ( page ) {
-                    // ipcRenderer.send('load-page', `${__dirname}/../processes.html`);
-                    ipcRenderer.send('load-page', page);
-                }
-                break;
-            }
+    // when all the processes have been saved, then, we jump to another page
+    var jumpToPage = function (page) {
+        // go to procceses section
+        if ( page ) {
+            ipcRenderer.send('load-page', page);
         }
-    });
+    }
+    // save the whole list of process of ids at the moment
+    var addProcesses = function (pid, log, page, callback) {
+        // get the children processes from the given main PID
+        psTree(pid, function (err, children) {
+            let pids = [log];
+            for (var i = 0; i < children.length; i++) {
+                let p = children[i];
+                pids.push(p.PID);
+            }
+            // save the list of process ids at the moment
+            addProcToSession(pids, wfname);
+            callback(page);
+        });
+    };
+    // call the function using the callback
+    addProcesses(pid, log, page, jumpToPage);
 };
 
 // We exports the modules

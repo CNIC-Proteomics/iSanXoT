@@ -11,36 +11,6 @@ let path = require('path');
 window.onload = function(e) {
     // stop loading workflow
     exceptor.stopLoadingWorkflow();
-    // extract the session info    
-    let pids = JSON.parse( window.sessionStorage.getItem("pids") );
-    let logs = JSON.parse( window.sessionStorage.getItem("logs") );
-    let wfs = JSON.parse( window.sessionStorage.getItem("wfs") );
-    // refresh the ids of child process from the pids
-    if ( pids !== null && logs !== null && pids.length == logs.length ) {
-        let c_pids = [];
-        for (var i = 0; i < pids.length; i++) { 
-            let pid = parseInt(pids[i]);
-            let log = logs[i];
-            console.log("pstree: "+pid);
-            psTree(pid, function (err, children) {
-                let c_pid = [];
-                children.forEach(function (p) {
-                    c_pid.push(p.PID);
-                });
-                c_pids.push(c_pid);
-                // save session info
-                window.sessionStorage.setItem("c_pids", JSON.stringify(c_pids));
-                // send the processes structure to to main js
-                if ( pids !== null && pids !== undefined ) {
-                    ipcRenderer.send('send-pids', {
-                        'pids': pids,
-                        'c_pids': c_pids,
-                        'logs': logs
-                    });    
-                }
-            });            
-        }
-    }
     // refresh log panel
     refreshLogger();
 };
@@ -71,6 +41,7 @@ class logger {
         // accepts the init structure
         //     [{
         //     'pid': 'integer',
+        //     'c_pids': 'list of intergers',
         //     'name': 'string',
         //     'status': 'integer',
         //     'file': 'file',
@@ -80,7 +51,7 @@ class logger {
         this.data = logs;
         this.files = this.data.map(a => a.file);
         this.pids = this.data.map(a => a.pid);
-
+        // this.c_pids = this.data.map(a => a.c_pids);
     }
     // utility function, return Promise
     _getFile(filename) {
@@ -158,10 +129,6 @@ class logger {
                     data: 'pid',
                     readOnly: true,
                     className: "htCenter",
-                // },{
-                //     data: 'name',
-                //     readOnly: true,
-                //     className: "htCenter",
                 },{
                     data: 'status',
                     readOnly: true,
@@ -192,25 +159,55 @@ class logger {
     }    
 };
 
+function sendChildProcesses() {
+    // send the new Child Process to IPC Render and save into Session calling callback function
+    function sendCPIDs(list_pids) {
+        // look throught the list of list of PIDs coming from the session varaible
+        list_pids.forEach( function(pids, i) {
+            let log = pids[0];
+            let pid = pids[1];
+            console.log(`get child_processes from ${pid}`);
+            pids.slice(2).forEach( function(c_pid) {
+                // update the list of PIDs with the new child pids
+                psTree(parseInt(c_pid), function (err, children) {
+                    for (var i = 0; i < children.length; i++) {
+                        let p = children[i];
+                        console.log(`send c_pid: ${i} > ${p.PID}`);
+                        ipcRenderer.send('send-cpid', {
+                            'cpid': p.PID
+                        });            
+                    }
+                });
+            });    
+        });
+    };
+    // update the list of processes with the new childs
+    // extract the session info    
+    let list_pids = JSON.parse( window.sessionStorage.getItem("pids") );
+    if ( list_pids !== null ) {
+        // send the new Child Process to IPC Render and save into Session calling callback function
+        sendCPIDs(list_pids);
+    }
+};
 
 function refreshLogger() {
+    // send the new Child Process to IPC Render and save into Session calling callback function
+    sendChildProcesses();
     // extract the session info
     let pids = JSON.parse( window.sessionStorage.getItem("pids") );
-    let logs = JSON.parse( window.sessionStorage.getItem("logs") );
-    let wfs  = JSON.parse( window.sessionStorage.getItem("wfs") );
     let status = 1; // init the status
     // refresh the ids of child process from the pids
     let logpanel = [];
-    if ( pids !== null && logs !== null && pids.length == logs.length ) {
+    if ( pids !== null ) {
         for (var i = 0; i < pids.length; i++) {
-            let pid = parseInt(pids[i]);
-            let file = logs[i];
-            let name  = wfs[i];
+            let log = pids[i][0];
+            let pid = parseInt(pids[i][1]);
+            let c_pids = pids[i].slice(2);
             logpanel.push({
                 'pid': pid,
-                // 'name': name,
+                'c_pids': c_pids.join(","),
                 'status': status,
-                'file': file,
+                'file': log,
             });
         }
     }
@@ -232,30 +229,41 @@ if ( document.querySelector('#processor #stop') !== null ) {
     document.querySelector('#processor #stop').addEventListener('click', function() {
 
         let logtable = $("#hot_processes").data('handsontable');
-        let logdata  = logtable.getData();
-        for (var i = 0; i < logdata.length; i += 1) {
-          let ldata = logdata[i];
-          if ( ldata[0] ) {
-                let pid = ldata[1];
-                console.log(`Look for child processes from sms ${pid}`);
-                psTree(pid, function (err, children, callback) {  // check if it works always
-                    children.forEach(function (p) {
+        logtable.getData().forEach(function (logdata, l) {
+            if ( logdata[0] ) { // check the first cell
+                let pid = logdata[1];
+                // get the list of all pids from the given pid (session variable)
+                let session_pids = JSON.parse( window.sessionStorage.getItem("pids") );
+                let pids = [];
+                for (let i = 0; i < session_pids.length; i++) {
+                    if ( pid == session_pids[i][1]) {
+                        pids = session_pids[i].slice(1);
+                    }
+                }                
+                // we start from the end (reverse)
+                // we get the child processes from the list of pids (session variable)
+                // kill the all processes
+                pids.reverse().forEach(function (pid) {
+                    console.log(`Look for child processes from sms ${pid}`);
+                    psTree(pid, function (err, children, callback) {  // check if it works always
+                        children.forEach(function (p) {
+                            try {
+                                console.log(`${p.PID} sub-process from ${pid} has been killed!`);
+                                process.kill(p.PID);
+                            } catch (e) {
+                                console.log(`error killing ${p.PID}: ${e}`);
+                            }
+                        });
+                        // kill the main process
                         try {
-                            console.log(`${p.PID} sub-process from ${pid} has been killed!`);
-                            process.kill(p.PID);
+                            console.log(`${pid} has been killed!`);
+                            process.kill(pid);
                         } catch (e) {
-                            console.log(`error killing ${p.PID}: ${e}`);
-                        }                    
-                    });
-                    // kill the main process
-                    try {
-                        console.log(`${pid} has been killed!`);
-                        process.kill(pid);
-                    } catch (e) {
-                        console.log(`error killing ${pid}: ${e}`);
-                    }                
-                });
+                            console.log(`error killing ${pid}: ${e}`);
+                        }
+                    });    
+                });  
             }
-        }
+        });
     });
 }
