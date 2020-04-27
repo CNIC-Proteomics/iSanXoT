@@ -15,6 +15,17 @@ window.onload = function(e) {
     refreshLogger();
 };
 
+// Before close the windows, send the processes ids
+$(window).on('beforeunload',function() {
+
+    // TODO!!!
+    // THIS NOT WORKING BECAUSE THE ASYNC FUNCTION DOES NOT FINISH.
+    // We have to convert this function to SYNC
+    // send the new Child Process to IPC Render and save into Session
+    // sendChildProcesses();
+});
+
+
 /* LOGGER SECTION */
 const STATUS = {
     1: 'starting',
@@ -160,7 +171,7 @@ class logger {
 };
 
 function sendChildProcesses() {
-    // send the new Child Process to IPC Render and save into Session calling callback function
+    // send the new Child Process to IPC Render and save into Session
     function sendCPIDs(list_pids) {
         // look throught the list of list of PIDs coming from the session varaible
         list_pids.forEach( function(pids, i) {
