@@ -287,7 +287,7 @@ def add_corrected_files_intrinsic(trule, outfiles):
         if '*' in files:
             l = []
             for file in files.split(";"):
-                sf = re.split(r'/\*+/', file)
+                sf = re.split(r'\*+', file)
                 if len(sf) > 1:
                     b = sf[0]
                     e = sf[1]
@@ -429,6 +429,7 @@ def main(args):
             sys.exit(sms)
     # remove the date_id folder from the data files
     tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
+    # tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'/'): ''}) # don't escape slash for Python3
 
 
     # TODO!!
@@ -559,11 +560,13 @@ def main(args):
                 trule = tpl['commands'][i]['rules'][j][k]
                 outfiles += trule['outfiles'].values()
     # replace the input files that contains the "recursive value" (**)
+    # except its own outfiles
     for i in range(len(tpl['commands'])):
         for j in range(len(tpl['commands'][i]['rules'])):
             for k in range(len(tpl['commands'][i]['rules'][j])):
                 trule = tpl['commands'][i]['rules'][j][k]
-                trule['infiles'] = add_corrected_files_intrinsic(trule['infiles'], outfiles)
+                ofiles =  [i for i in outfiles if i not in trule['outfiles'].values()]
+                trule['infiles'] = add_corrected_files_intrinsic(trule['infiles'], ofiles)
 
     
 
