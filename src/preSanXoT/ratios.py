@@ -15,47 +15,17 @@ import sys
 import argparse
 from argparse import RawTextHelpFormatter
 import logging
-import re
-import io
 import pandas as pd
 import numpy as np
 import concurrent.futures
 from itertools import repeat
 
+import common
+
 
 ###################
 # Local functions #
 ###################
-def read_command_table(ifiles):
-    '''
-    read the multiple input files to string and split by command
-    create a list of tuples (command, dataframe with parameters)
-    dropping empty rows and empty columns
-    create a dictionary with the concatenation of dataframes for each command
-    {command} = concat.dataframes
-    '''
-    indata = dict()
-    idta = ''
-    # read the multiple input files to string and split by command
-    for f in ifiles.split(";"):
-        with open(f, "r") as file:
-            idta += file.read()
-    # create a list of tuples (command, dataframe with parameters)
-    match = re.findall(r'\s*#([^\s]*)\s*([^#]*)', idta, re.I | re.M)
-    idta = [(c,pd.read_csv(io.StringIO(l), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')) for c,l in match]
-    # create a dictionary with the concatenation of dataframes for each command
-    for c, d in idta:
-        # discard the rows when the first empty columns
-        if not d.empty:
-            l = list(d[d.iloc[:,0] == 'nan'].index)
-            d = d.drop(l)
-        if c in indata:
-            indata[c] = pd.concat( [indata[c], d], sort=False)
-        else:
-            for c2 in c.split('-'):
-                indata[c2] = d
-    return indata
-
 def filter_by_exp_from_ratios(idf, iratios):
     '''
     Filter the input dataframe from the given experiments.
@@ -104,12 +74,16 @@ def calculate_ratio(df, ratios):
         ControlTag = rat[0]
         label = rat[1]
         ControlTag = ControlTag.split(",")
+        # remove spaces from left and right in the list of elements
+        ControlTag = [x.strip() for x in ControlTag]
         # create the numerator tags
         labels = []
         for lbl in label:
             # if apply, calculate the mean for the numerator tags (list)
             if ',' in lbl:
                 lbl = lbl.split(",")
+                # remove spaces from left and right in the list of elements
+                lbl = [x.strip() for x in lbl]
                 lb = "-".join(lbl)+"_Mean"
                 df[lb] = df[lbl].mean(axis=1)
                 labels.append( lb )
@@ -129,13 +103,15 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
-    indata = read_command_table(args.intbl)
+    indata = common.read_command_table(args.intbl)
 
     logging.info("read input file")
     ddf = pd.read_csv(args.infile, sep="\t")
 
     logging.info("get the ratios and experiments from the data file")
-    ddf, ratios = filter_by_exp_from_ratios(ddf, indata['RATIOS'])
+    # get the first value from the dictionary. In theory, has to be the dataframe of RATIOS_WSPP
+    d = next(iter(indata.values()))
+    ddf, ratios = filter_by_exp_from_ratios(ddf, d)
     logging.debug(ratios)
 
     logging.info("calculate the ratios (in parallel by experiment)")
