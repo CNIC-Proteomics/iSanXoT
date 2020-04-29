@@ -132,7 +132,7 @@
     },{
       "id": "RELS_TABLE",
       "label": "Create Rels.",
-      "visible": true,
+      "visible": false,
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "name": "input" },
@@ -163,7 +163,7 @@
     },{
       "id": "INTEGRATE",
       "label": "Integrate",
-      "visible": true,
+      "visible": false,
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "name": "input" },
