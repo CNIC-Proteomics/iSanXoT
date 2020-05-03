@@ -1,5 +1,5 @@
 #COMBINE										
-input	output	level	more_params							
+input	output	inf_level	sup_level	rel_table	Tag	FDR	Var(x)	more_params		
 										
 #RELS_TABLE										
 input	inf_header	sup_header	3rd_headers	output	more_params					

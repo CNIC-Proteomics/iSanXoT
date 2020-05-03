@@ -126,7 +126,30 @@
       "params": [
         { "type": "required", "name": "input" },
         { "type": "required", "name": "output" },
-        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
+        { "type": "required", "name": "inf_level", "select": ["p2a", "q2a", "c2a"] },
+        { "type": "required", "name": "sup_level", "select": ["p2q", "q2c"] },
+        { "type": "required", "name": "rel_table" },
+        { "type": "optional", "name": "Tag" },
+        { "type": "optional", "name": "FDR" },
+        { "type": "optional", "name": "Var(x)" },
+        { "type": "optional", "name": "more_params" }
+      ]
+    },{
+      "id": "RATIOS_INT",
+      "label": "Calculate ratios",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "name" },
+        { "type": "required", "name": "ratio_numerator" },
+        { "type": "required", "name": "ratio_denominator" },
+        { "type": "required", "name": "type", "select": ["form", "max", "avg"] },
+        { "type": "required", "name": "inf_level", "select": ["p2a", "q2a", "c2a"] },
+        { "type": "required", "name": "sup_level", "select": ["p2q", "q2c"] },
+        { "type": "required", "name": "rel_table" },
+        { "type": "optional", "name": "Tag" },
+        { "type": "optional", "name": "FDR" },
+        { "type": "optional", "name": "Var(x)" },
         { "type": "optional", "name": "more_params" }
       ]
     },{
@@ -141,25 +164,7 @@
         { "type": "required", "name": "3rd_headers" },
         { "type": "required", "name": "output" },
         { "type": "optional", "name": "more_params" }
-      ]
-    },{
-      "id": "RATIOS_INT",
-      "label": "Calculate ratios and integrate",
-      "visible": true,
-      "panel": "panels/advance.html",
-      "params": [
-        { "type": "required", "name": "name" },
-        { "type": "required", "name": "ratio_numerator" },
-        { "type": "required", "name": "ratio_denominator" },
-        { "type": "required", "name": "type", "select": ["form", "max", "avg"] },
-        { "type": "required", "name": "inf_level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
-        { "type": "required", "name": "sup_level", "select": ["p2q", "q2c"] },
-        { "type": "required", "name": "rel_table" },
-        { "type": "optional", "name": "Tag" },
-        { "type": "optional", "name": "FDR" },
-        { "type": "optional", "name": "Var(x)" },
-        { "type": "optional", "name": "more_params" }
-      ]
+      ]  
     },{
       "id": "INTEGRATE",
       "label": "Integrate",

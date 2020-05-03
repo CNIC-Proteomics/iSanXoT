@@ -26,9 +26,14 @@ import pandas as pd
 ####################
 # Global variables #
 ####################
-EXPERIMENTS = None # obtained from the CREATE_ID command
-ISANXOT_SRC_HOME = f"{os.path.dirname(__file__)}/.."
+ISANXOT_SRC_HOME    = f"{os.path.dirname(__file__)}/.."
 ISANXOT_PYTHON_EXEC = sys.executable
+EXPERIMENTS         = None # obtained from the CREATE_ID command
+OUTPUTS_FOR_CMD     = None
+MAIN_INPUTS_NAMDIR  = None
+MAIN_INPUTS_RELDIR  = None
+MAIN_INPUTS_RSTDIR  = None
+
 
 
 ###################
@@ -83,17 +88,23 @@ def check_command_parameters(indata):
                 dup_list.append(item)
         return [uniq_list, dup_list]
 
-    # init variables
+    # create a list with all output directories for each command
+    # create a dictionary with the output for each command
     outdirs = []
+    outputs_cmd = {}
     # iterate over all commands
     for cmd,df in indata.items():
         # discard RATIOS_WSPP command because the tasktable is duplicated with WSPP_SBT
         if cmd != 'RATIOS_WSPP':
-            # create a list with all output directories for each command
+            outs = []
             if 'name' in df.columns:
-                outdirs.extend(df['name'].values)
+                outs = list(df['name'].values)
             elif 'output' in df.columns:
-                outdirs.extend(df['output'].values)
+                outs = list(df['output'].values)
+            if outs:
+                outdirs.extend(outs)
+                for o in outs:
+                    outputs_cmd[o] = cmd
 
     # check if there are duplicates in the output directories
     if outdirs:
@@ -102,6 +113,9 @@ def check_command_parameters(indata):
             sms = "ERROR!! There are dupplicated outdirs: {}".format(dup_list)
             print(sms) # message to stdout with logging output
             sys.exit(sms)
+    
+    # return the output for each command
+    return outputs_cmd
     
 def replace_val_rec(data, repl):
     '''
@@ -178,7 +192,6 @@ def _add_datparams_moreparams(p, trule, dat):
     trule['more_params'] = _add_more_params(trule['name'], str(dat))
 
 def _replace_datparams(dat, trule, label):
-    dat = dat.replace(" ", "")
     for k,tr in trule.items():
         if label in tr:
             l = []
@@ -187,63 +200,121 @@ def _replace_datparams(dat, trule, label):
             trule[k] = ";".join(l)
 
 def _replace_datparams_params(dat, trule, label):
-    dat = dat.replace(" ", "")
     for k,tr in trule.items():
         if label in tr:
             trule[k] = tr.replace(label, dat)
 
+# Transform the "input file" (relationship file)
+def _transform_relative_path(val):
+    # check if it is an absolute path to relationship file
+    if os.path.isfile(val):
+        return val
+    
+    # check if it is a relative path to relationship file (located in the Relation WORKSPACE)
+    elif os.path.isfile( os.path.join(MAIN_INPUTS_RELDIR,val) ):
+        return os.path.join(MAIN_INPUTS_RELDIR,val)
+    
+    # check if the value of path comes from an output declared in the commands
+    # TODO!!! 
+    elif val in OUTPUTS_FOR_CMD:
+        return f"**/{val}/*_outConfluRels.tsv"
+        # v = os.path.join(MAIN_INPUTS_NAMDIR,val,"q2a_outConfluRels.tsv")
+        # return v
+    
+    # otherwise, error
+    else:
+        sms = "ERROR!! Extracting the relationship table: {}".format(val)
+        print(sms) # message to stdout with logging output
+        sys.exit(sms)
+    
+    
 def add_datparams(p, trule, val):
     # Replace the label for the value for each section: infiles, outfiles, and parameters
     if p == 'experiment':        
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
         
     elif p == 'name':
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
         
     elif p == 'input':
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'output':
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'level':
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'inf_level':
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
         
     elif p == 'sup_level':
         l = '__WF_'+p.upper()+'__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        # replace the level names
+        if trule['parameters'] is not None and 'anal' in trule['parameters']:
+            (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', val)[0]
+            r = f"{prefix_i}2a"
+            _replace_datparams(r, trule['infiles'],  '__WF_ALL1_LEVEL__')
+            _replace_datparams(r, trule['outfiles'], '__WF_ALL1_LEVEL__')
+            _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL1_LEVEL__')
+            r = f"{prefix_s}2a"
+            _replace_datparams(r, trule['infiles'],  '__WF_ALL2_LEVEL__')
+            _replace_datparams(r, trule['outfiles'], '__WF_ALL2_LEVEL__')
+            _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL2_LEVEL__')
+
+
+        # (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', val)[0]
+        # r = f"{prefix_i}2a"
+        # _replace_datparams(r, trule['infiles'], '__WF_ALL1_LEVEL__')
+        # _replace_datparams(r, trule['outfiles'], '__WF_ALL1_LEVEL__')
+        # _replace_datparams('__WF_ALL1_LEVEL__', trule['outfiles'], r)
+        # if trule['parameters'] is not None and 'anal' in trule['parameters']:
+        #     _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL1_LEVEL__')
+        # r = f"{prefix_s}2a"
+        # _replace_datparams('__WF_ALL2_LEVEL__', trule['infiles'],  r)
+        # _replace_datparams('__WF_ALL2_LEVEL__', trule['outfiles'], r)
+        # if trule['parameters'] is not None and 'anal' in trule['parameters']:
+        #     _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL2_LEVEL__')
         
     elif p == 'rel_table':
         l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        # transform the input file
+        v = _transform_relative_path(val)
+        _replace_datparams(v, trule['infiles'],  l)
+        _replace_datparams(v, trule['outfiles'], l)
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: v})
         
     elif p == 'ratio_numerator':
         l = '__WF_RATIO_NUM__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
@@ -252,6 +323,7 @@ def add_datparams(p, trule, val):
             
     elif p == 'ratio_denominator':
         l = '__WF_RATIO_DEN__'
+        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
@@ -289,10 +361,10 @@ def add_corrected_files_intrinsic(trule, outfiles):
             for file in files.split(";"):
                 sf = re.split(r'\*+', file)
                 if len(sf) > 1:
-                    b = sf[0]
-                    e = sf[1]
+                    b = sf[0] if sf[0] != '' else sf[1]
+                    e = sf[len(sf)-1]
                     for outfile in outfiles:
-                        if outfile.startswith(b) and outfile.endswith(e):
+                        if b in outfile and outfile.endswith(e):
                             l += [outfile]
             if len(l) > 0:
                 trule[k] = ";".join(l)
@@ -402,7 +474,7 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
-    infiles = glob.glob( os.path.join(args.indir,"*.tsv"), recursive=True )    
+    infiles = glob.glob( os.path.join(args.indir,"*.tsv"), recursive=True )
     indata = read_command_table(infiles)
     
     
@@ -413,9 +485,11 @@ def main(args):
 # 3. TODO!!!!! Checheck the MAIN_INPUTS table is full. All the files have one experiment name
 
 # 4. TODO!!! Check the columns: level, inf_level and sup_level are not empty
-
+    
+    # return a variable with the outputs for each command    
     logging.info("check the tasktable parameters for each command")
-    check_command_parameters(indata)
+    global OUTPUTS_FOR_CMD
+    OUTPUTS_FOR_CMD = check_command_parameters(indata)
     
     
     # init the output file with the given attributes of workflow
@@ -477,7 +551,19 @@ def main(args):
     # merge the workflow attributes with the templates of commands
     tpl.update(tpl_cmds)
 
-               
+    # assign the global variables
+    # global MAIN_INPUTS_EXPDIR
+    global MAIN_INPUTS_NAMDIR
+    global MAIN_INPUTS_RELDIR
+    global MAIN_INPUTS_RSTDIR
+    # global MAIN_INPUTS_LOGDIR
+    MAIN_INPUTS_EXPDIR = tpl['prj_workspace']['expdir']
+    MAIN_INPUTS_NAMDIR = tpl['prj_workspace']['namdir']
+    MAIN_INPUTS_RELDIR = tpl['prj_workspace']['reldir']
+    MAIN_INPUTS_RSTDIR = tpl['prj_workspace']['rstdir']
+    MAIN_INPUTS_LOGDIR = tpl['prj_workspace']['logdir']
+    
+    
     # replace the constants for the command templates
     logging.info("replace the constants for the command templates")
     repl = {        
@@ -485,11 +571,11 @@ def main(args):
             '__ISANXOT_PYTHON_EXEC__':      ISANXOT_PYTHON_EXEC,
             '__NCPU__':                     str(tpl['ncpu']),
             '__WF_VERBOSE__':               str(tpl['verbose']),
-            '__MAIN_INPUTS_EXPDIR__':       tpl['prj_workspace']['expdir'],
-            '__MAIN_INPUTS_NAMDIR__':       tpl['prj_workspace']['namdir'],
-            '__MAIN_INPUTS_RELDIR__':       tpl['prj_workspace']['reldir'],
-            '__MAIN_INPUTS_RSTDIR__':       tpl['prj_workspace']['rstdir'],
-            '__MAIN_INPUTS_LOGDIR__':       tpl['prj_workspace']['logdir'],
+            '__MAIN_INPUTS_EXPDIR__':       MAIN_INPUTS_EXPDIR,
+            '__MAIN_INPUTS_NAMDIR__':       MAIN_INPUTS_NAMDIR,
+            '__MAIN_INPUTS_RELDIR__':       MAIN_INPUTS_RELDIR,
+            '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
+            '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
             '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
             '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
             '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
@@ -515,8 +601,6 @@ def main(args):
             # get the list of unique experiments (in string)
             global EXPERIMENTS
             EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
-            # # replace constants
-            # tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
             # add the parameters into each rule
             tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
             # replace constants
@@ -532,8 +616,6 @@ def main(args):
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
-                # # replace constants
-                # tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
                 # replace constants
@@ -542,9 +624,6 @@ def main(args):
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
-                # # replace constants
-                # tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
-                # duplicate rules for each row data
                 # add the parameters into each rule
                 tpl['commands'][i]['rules'] = list(df.apply( add_rules, args=(tpl['commands'][i]['rules']), axis=1))
                 # replace constants
