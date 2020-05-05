@@ -224,9 +224,9 @@ importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/basic.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/ptm.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/lblfree.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_basic.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_ptm.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_lblfree.html`);
 
 // Get input parameters (from URL)
 let filename = path.basename(window.location.pathname,'.html');

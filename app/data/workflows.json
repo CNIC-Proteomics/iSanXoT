@@ -1,7 +1,7 @@
 [{
   "id": "basic",
   "label": "Basic Workflow",
-  "sdesc": "Short description for Basic Workflow",
+  "sdesc": "<p><i>Basic Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
   "description": "Long description for Basic Workflow. You can include HTML",
   "prj_workspace": {
     "expdir": "exps",
@@ -202,7 +202,7 @@
 },{
   "id": "ptm",
   "label": "PTM Workflow",
-  "sdesc": "Short description for PTM Workflow",
+  "sdesc": "<p><i>The PTM Workflow</i> is intended for the statistical analysis of multiplexed, high-throughput proteomics experiments where one or more post-translational modifications (PTMs) are to be considered. As is the case for the Basic Workflow, the PTM workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
   "description": "Long description for PTM Workflow. You can include HTML",
   "prj_dir": "data/ptm",
   "cfg_file": "config.yaml",
