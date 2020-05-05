@@ -15,17 +15,16 @@ import sys
 import argparse
 import logging
 import glob
-from collections import defaultdict
 import pandas as pd
+import numpy as np
 import re
-from functools import reduce
 
 
 
 ####################
 # Global variables #
 ####################
-LEVELS_ORDER = ['s2p','p2a','p2q','q2a','q2c','c2a']
+# LEVELS_ORDER = ['s2p','p2a','p2q','q2a','q2c','c2a']
 LEVELS_NAMES = {
     's': 'scan',
     'p': 'peptide',
@@ -34,9 +33,17 @@ LEVELS_NAMES = {
 }
 INFILE_SUFFIX = 'outStats.tsv'
 
-COL_VALUES  = ['idinf', 'idsup', 'name']
-COL_VALUES += ['n', 'Z', 'FDR']
-# COL_VALUES += ['tags', 'Xsup', 'Vsup', 'Xinf', 'Vinf']
+COL_IDS  = ['idinf', 'idsup', 'name', 'tags', 'n']
+COL_VARS = {
+    'n':    'n',
+    'tags': 'tags',
+    'z':    'Z',
+    'fdr':  'FDR',
+    'xs':   'Xsup',
+    'vs':   'Vsup',
+    'xi':   'Xinf',
+    'vi':   'Vinf'
+}
 
 ROOT_FOLDER = '/names/'
 
@@ -73,96 +80,127 @@ def main(args):
     # We are going to take the folders and then, obtain the files from the calculated prefixes
     logging.info("get the list of folder from the given files")
     folders = []
-    for files in args.inffiles.split(";"):
+    for files in re.split(r'\s*;\s*', args.infiles.strip()):
         folders += [os.path.dirname(f) for f in glob.glob(files, recursive=True)]
-    for files in args.supfiles.split(";"):
-        folders += [os.path.dirname(f) for f in glob.glob(files, recursive=True)]
-    folders = list(set(folders))
     logging.debug(folders)
 
 
-    logging.info("get the elements between the given inferior level and superior level")
-    i = LEVELS_ORDER.index(args.inf_level)
-    s = LEVELS_ORDER.index(args.sup_level)
-    prefixes = LEVELS_ORDER[i:s+1]
-    if not prefixes:
-        sys.exit(f"ERROR!! The given levels are not consecutives. InfLevel:{args.inf_level} SupLevel:{args.sup_level}")
-    logging.debug(prefixes)
+    logging.info("extract the list of given variables")
+    col_vars = [COL_VARS[v.lower()] for v in re.split(r'\s*,\s*', args.vars.strip()) if v.lower() in COL_VARS]
+    col_values = COL_IDS + col_vars
 
 
     logging.info("create a dictionary using the calculated prefixes and the all given folders")
-    dictfiles = defaultdict(list)
-    for prefix in prefixes:
-        listfiles = []
-        for folder in folders:
-            file = os.path.join(folder, f"{prefix}_{INFILE_SUFFIX}")
-            listfiles += [f for f in glob.glob(file, recursive=True)]
-        if not listfiles:
-            sys.exit(f"ERROR!! There are not files for the level:{prefix}")
-        dictfiles[prefix] = listfiles
-    logging.debug(dictfiles)
+    prefix = args.level
+    listfiles = []
+    for folder in folders:
+        file = os.path.join(folder, f"{prefix}_{INFILE_SUFFIX}")
+        listfiles += [f for f in glob.glob(file, recursive=True)]
+    if not listfiles:
+        sys.exit(f"ERROR!! There are not files for the level:{prefix}")    
 
-
+    
     logging.info("compile the level files...")
-    listdf = []
-    for prefix,ifiles in dictfiles.items():
-        # get the characters of inferior and superior level
-        (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', prefix)[0]
-        
-        logging.info(f"  {prefix}: read and concat files")
-        l = []
-        for ifile in ifiles:
-            l.append( read_infiles(ifile) )
-        df = pd.concat(l)
-
-        logging.info(f"  {prefix}: remove columns excepts: ["+','.join(COL_VALUES)+"]")
-        df.drop(df.columns.difference(COL_VALUES), 1, inplace=True)
-        
-        logging.info(f"  {prefix}: print dataframe")
-        outdir = os.path.dirname(args.outfile)
-        outfile = os.path.join(outdir, f"{prefix}_{INFILE_SUFFIX}")
-        df.to_csv(outfile, sep="\t", index=False)
-        
-        logging.info(f"  {prefix}: add prefix to some columns")  
-        keep_same = ['idinf', 'idsup', 'name']
-        df.columns = ['{}{}'.format(c, '' if c in keep_same else f"_{prefix}") for c in df.columns]
-        
-        logging.info(f"  {prefix}: rename inf,sup columns")
-        df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
-                
-        listdf.append(df)
-
-
-    logging.info("merge levels")
-    df = reduce(lambda x, y: pd.merge(x, y), listdf)
+    # get the characters of inferior and superior level
+    (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', prefix)[0]
     
+    logging.info(f"{prefix}: read and concat files")
+    l = []
+    for ifile in listfiles:
+        l.append( read_infiles(ifile) )
+    df = pd.concat(l)
 
-    logging.info("rename columns")
-    df.rename(columns=LEVELS_NAMES, inplace=True)
+    logging.info(f"{prefix}: remove columns excepts: ["+','.join(col_values)+"]")
+    df.drop(df.columns.difference(col_values), 1, inplace=True)
     
+    logging.info("mark the variables with the outliers")
+    for c in col_vars:
+        df[c] = np.where((df['tags'].notna() & df['tags'].str.contains('out')), '*'+df[c], df[c])
+    df.drop(columns=['tags'], axis=1, inplace=True)
+    
+    logging.info(f"{prefix}: add prefix to all columns except some")  
+    keep_same = ['idinf', 'idsup', 'name']
+    df.columns = ['{}{}'.format(c, '' if c in keep_same else f"_{prefix}") for c in df.columns]
+    
+    logging.info(f"{prefix}: rename inf,sup columns")
+    df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
 
     logging.info("revome 'all' column")
     if 'a' in df.columns:
         df.drop(columns=['a'], axis=1, inplace=True)
     
-
-    logging.info("reorder columns")
-    # get a list of columns
-    cols = list(df)
-    # move the column to head of list using index, pop and insert
-    for l in reversed( ['name']+list(LEVELS_NAMES.values()) ):
-        if l in cols:
-            cols.insert(0, cols.pop(cols.index(l)))
-    df = df.reindex(columns=cols)
+    logging.info("rename columns")
+    df.rename(columns=LEVELS_NAMES, inplace=True)
     
 
     logging.info("pivot table")
     # get the current columns that from the LEVELS
-    cols_idx = list( set( list(LEVELS_NAMES.values()) )    &   set( list(df) ) )
-    df = pd.pivot_table(df, index=cols_idx, columns=['name'], aggfunc='first', fill_value='NaN')
-    df.reset_index(inplace=True)
+    cols = list(df.columns.get_level_values(0))
+    cols_idx = list( set(list(LEVELS_NAMES.values())) & set(cols) )
+    df = pd.pivot_table(df, index=cols_idx, columns=['name'], aggfunc='first')
+    df = df.reset_index()
 
+
+    # check if given additional file exits
+    # otherwise, check if additional file is located in the folder of output file 
+    rep_file = None
+    if args.rep_file and os.path.isfile(args.rep_file):
+        rep_file = args.rep_file
+    elif args.rep_file and os.path.isfile( os.path.join(os.path.dirname(args.outfile), args.rep_file) ):
+        rep_file = os.path.join(os.path.dirname(args.outfile), args.rep_file)
+
+
+    # if apply and there is a relationship, we add an intermediate report
+    if rep_file:
+        logging.info("add an intermediate report")
+        df2 = pd.read_csv(rep_file, sep="\t", dtype=str, header=[0,1], na_values=['NA'], low_memory=False) # two header rows
+        
+        # rename multi-level header allowing the merge among dataframes
+        df2.rename(columns=lambda x: re.sub('^Unnamed:.*','',x), inplace=True)
+        
+        # get the current columns that from the LEVELS
+        cols_2_l0 = list(df2.columns.get_level_values(0))
+        cols_2_idx = list( set(list(LEVELS_NAMES.values())) & set(cols_2_l0) )
+
+        # merge with given intermediate report
+        # Only if there is intersection between the relationship columns (peptide/protein/category)
+        cols_12_idx = list(set(cols_idx) & set(cols_2_idx))
+        if cols_12_idx:
+            # merge with given intermediate report based on the intersection relationship from peptide/protein/category
+            df3 = pd.merge(df2,df, on=cols_12_idx)
+            
+            # set row index with the columns (peptides,protein, or category) - level 0-
+            cols_3_l0 = list(df3.columns.get_level_values(0))
+            cols_idx_3 = list( set(list(LEVELS_NAMES.values())) & set(cols_3_l0) )
+            df3.set_index(cols_idx_3, inplace=True)
+            
+            # for each column from the first dataframe (input file)
+            # we add NaN values in the cell where there is not relationship
+            # we take the prefix where the current level is selected.
+            #   protein  -> n_yy2q   
+            #   category -> n_yy2c
+            prefix_templ = list(set([c for c in cols_3_l0 if c.startswith('n_') and c.endswith(f"2{prefix_i}")]))
+            if prefix_templ:
+                # get the columns from the first df. without the relationship columns (peptide/protein/category)
+                cols = list(df.columns.get_level_values(0))
+                cols_diff = list( set(cols) - set(list(LEVELS_NAMES.values())) )
+                for c in cols_diff:
+                    df3[c] = np.where(pd.isna(df3[prefix_templ]), np.NaN, df3[c])
+            
+            # assign to final variable
+            df = df3.reset_index()
+            
+
+ 
+    logging.info("reorder columns")
+    # sort list of tuples by specific ordering
+    cols = list(df.columns)
+    cols_order = list(LEVELS_NAMES.values()) + list(COL_VARS.values())
+    cols = [i for j in cols_order for i in filter(lambda k: k[0].startswith(j), cols)]
+    # reindex columns with the new ordered list of tuples
+    df = df.reindex(columns=cols)
     
+
     logging.info(f"print output file")
     df.to_csv(args.outfile, sep="\t", index=False)
 
@@ -178,11 +216,11 @@ if __name__ == "__main__":
         Example:
             python reporter.py
         ''')
-    parser.add_argument('-i',   '--inf_level', required=True, choices=['s2p','p2a','p2q','q2a','q2c','c2a'], help='Prefix of inferior level')
-    parser.add_argument('-s',   '--sup_level', required=True, choices=['s2p','p2a','p2q','q2a','q2c','c2a'], help='Prefix of superior level')
-    parser.add_argument('-ii',  '--inffiles',  required=True, help='Multiple input files separated by comma')
-    parser.add_argument('-ss',  '--supfiles',  required=True, help='Multiple input files separated by comma')
+    parser.add_argument('-ii',  '--infiles',   required=True, help='Multiple input files separated by semicolon')
     parser.add_argument('-o',   '--outfile',   required=True, help='Output file with the reports')
+    parser.add_argument('-l',   '--level',     required=True, choices=['s2p','p2a','p2q','q2a','q2c','c2a'], help='Prefix of level')
+    parser.add_argument('-v',   '--vars',      required=True, default='Z,FDR,N', help='List of reported variables separated by comma')
+    parser.add_argument('-r',   '--rep_file',  help='Add intermediate report file')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

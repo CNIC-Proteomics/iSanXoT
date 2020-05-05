@@ -61,8 +61,8 @@ for cr, crule in enumerate(CRULES):
         params:
             index=cr,
         input:
-            "{file}".format(file=file) for i,files in crule["infiles"].items() for file in files.split(";")
+            "{file}".format(file=file) for i,files in crule["infiles"].items() for file in files.split(";") if file != ''
         output:
-            "{file}".format(file=file) for i,files in crule["outfiles"].items() for file in files.split(";")
+            "{file}".format(file=file) for i,files in crule["outfiles"].items() for file in files.split(";") if file != ''
         run:
             run_rule(input, output, log, params, wildcards)

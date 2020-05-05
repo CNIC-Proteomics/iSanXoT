@@ -167,26 +167,35 @@ def _add_more_params(name, params):
         return out
 
 def _add_datparams_params(p, trule, dat):
-    d = trule['parameters'][p]
-    fk = list(d.keys())
-    if fk:
-        k = str(fk[0])
-        # Exceptions in the 'Variance' parameters:
-        # If the value is not false, apply the new variance
-        # Otherwise, by default
-        if p.endswith('Var(x)'):
-            if dat.upper() != 'FALSE':
-                del trule['infiles']['-V'] # delete the infile with the variance (by default)
-                trule['parameters'][p][k] = dat
+    # add parameters into 'parameters' coming from the task-table
+    if trule['parameters'] is not None and p in trule['parameters']:
+        fk = list(trule['parameters'][p].keys())
+        if fk:
+            k = str(fk[0])
+            # Exceptions in the 'Variance' parameters:
+            # If the value is not false, apply the new variance
+            # Otherwise, by default
+            if p.endswith('Var(x)'):
+                if dat.upper() != 'FALSE':
+                    del trule['infiles']['-V'] # delete the infile with the variance (by default)
+                    trule['parameters'][p][k] = dat
+                else:
+                    del trule['parameters'][p] # delete the optional parameter of variance
+            # Exceptions in the 'Tag' parameters:
+            # Update the template values (not overwrite from the given data)
+            elif p.endswith('Tag'):
+                trule['parameters'][p][k] += ' & '+ dat
+            # The rest of kind of parameters
             else:
-                del trule['parameters'][p] # delete the optional parameter of variance
-        # Exceptions in the 'Tag' parameters:
-        # Update the template values (not overwrite from the given data)
-        elif p.endswith('Tag'):
-            trule['parameters'][p][k] += ' & '+ dat
-        # The rest of kind of parameters
-        else:
-            trule['parameters'][p][k] = dat
+                if dat and dat != 'nan':
+                    trule['parameters'][p][k] = dat
+
+    # add optional parameters into 'infiles' coming from the task-table
+    # the tag parameter to the program, it is the same name than the header table
+    elif trule['infiles'] is not None and '--'+p in trule['infiles']:
+        if dat and dat != 'nan':
+            trule['infiles']['--'+p] = dat
+        
 
 def _add_datparams_moreparams(p, trule, dat):
     trule['more_params'] = _add_more_params(trule['name'], str(dat))
@@ -205,7 +214,7 @@ def _replace_datparams_params(dat, trule, label):
             trule[k] = tr.replace(label, dat)
 
 # Transform the "input file" (relationship file)
-def _transform_relative_path(val):
+def _transform_relation_path(val):
     # check if it is an absolute path to relationship file
     if os.path.isfile(val):
         return val
@@ -227,7 +236,15 @@ def _transform_relative_path(val):
         print(sms) # message to stdout with logging output
         sys.exit(sms)
     
-    
+# Transform the "input file" (report file)
+def _transform_report_path(val):
+    # the intermediate report file is with in Result WORKSPACE
+    if val != 'nan' and val != '':
+        # here it is important to use the "/" slash with format because if you use os.path.join snakemae does not recognize the path
+        return "{}/{}".format(MAIN_INPUTS_RSTDIR, f"{val}.tsv")
+    else:
+        return ''
+
 def add_datparams(p, trule, val):
     # Replace the label for the value for each section: infiles, outfiles, and parameters
     if p == 'experiment':        
@@ -258,12 +275,23 @@ def add_datparams(p, trule, val):
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
-    elif p == 'level':
-        l = '__WF_'+p.upper()+'__'
+    elif p == 'ratio_numerator':
+        l = '__WF_RATIO_NUM__'
         val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        if trule['parameters'] is not None and 'tags' in trule['parameters']:
+            r = val.replace(",","-")
+            _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
+            
+    elif p == 'ratio_denominator':
+        l = '__WF_RATIO_DEN__'
+        val = val.replace(" ", "") # remove spaces
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        if trule['parameters'] is not None and 'tags' in trule['parameters']:
+            r = val.replace(",","-")
+            _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
 
     elif p == 'inf_level':
         l = '__WF_'+p.upper()+'__'
@@ -290,49 +318,36 @@ def add_datparams(p, trule, val):
             _replace_datparams(r, trule['outfiles'], '__WF_ALL2_LEVEL__')
             _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL2_LEVEL__')
 
-
-        # (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', val)[0]
-        # r = f"{prefix_i}2a"
-        # _replace_datparams(r, trule['infiles'], '__WF_ALL1_LEVEL__')
-        # _replace_datparams(r, trule['outfiles'], '__WF_ALL1_LEVEL__')
-        # _replace_datparams('__WF_ALL1_LEVEL__', trule['outfiles'], r)
-        # if trule['parameters'] is not None and 'anal' in trule['parameters']:
-        #     _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL1_LEVEL__')
-        # r = f"{prefix_s}2a"
-        # _replace_datparams('__WF_ALL2_LEVEL__', trule['infiles'],  r)
-        # _replace_datparams('__WF_ALL2_LEVEL__', trule['outfiles'], r)
-        # if trule['parameters'] is not None and 'anal' in trule['parameters']:
-        #     _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL2_LEVEL__')
-        
     elif p == 'rel_table':
         l = '__WF_'+p.upper()+'__'
         # transform the input file
-        v = _transform_relative_path(val)
+        v = _transform_relation_path(val)
         _replace_datparams(v, trule['infiles'],  l)
         _replace_datparams(v, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: v})
-        
-    elif p == 'ratio_numerator':
-        l = '__WF_RATIO_NUM__'
+    
+    elif p == 'level':
+        l = '__WF_'+p.upper()+'__'
         val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = val.replace(",","-")
-            _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
-            
-    elif p == 'ratio_denominator':
-        l = '__WF_RATIO_DEN__'
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    elif p == 'reported_vars':
+        l = '__WF_'+p.upper()+'__'
         val = val.replace(" ", "") # remove spaces
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = val.replace(",","-")
-            _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
-            
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    elif p == 'rep_file':
+        l = '__WF_'+p.upper()+'__'
+        # transform the input file
+        v = _transform_report_path(val)
+        _add_datparams_params(p, trule, v)
+
     elif p == 'more_params':
         _add_datparams_moreparams(p, trule, val)
 
+    # handle the parameters not required
     if trule['parameters'] is not None and p in trule['parameters']:
         _add_datparams_params(p, trule, val)
 
