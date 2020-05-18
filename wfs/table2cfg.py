@@ -97,10 +97,10 @@ def check_command_parameters(indata):
         # discard RATIOS_WSPP command because the tasktable is duplicated with WSPP_SBT
         if cmd != 'RATIOS_WSPP':
             outs = []
-            if 'name' in df.columns:
-                outs = list(df['name'].values)
-            elif 'output' in df.columns:
-                outs = list(df['output'].values)
+            if 'output' in df.columns and 'level' in df.columns:
+                outs = list((df['output']+'/'+df['level']).values)
+            if 'output' in df.columns and 'sup_level' in df.columns:
+                outs = list((df['output']+'/'+df['sup_level']).values)
             if outs:
                 outdirs.extend(outs)
                 for o in outs:
@@ -213,28 +213,28 @@ def _replace_datparams_params(dat, trule, label):
         if label in tr:
             trule[k] = tr.replace(label, dat)
 
-# Transform the "input file" (relationship file)
-def _transform_relation_path(val):
-    # check if it is an absolute path to relationship file
-    if os.path.isfile(val):
-        return val
+# # Transform the "input file" (relationship file)
+# def _transform_relation_path(val):
+#     # check if it is an absolute path to relationship file
+#     if os.path.isfile(val):
+#         return val
     
-    # check if it is a relative path to relationship file (located in the Relation WORKSPACE)
-    elif os.path.isfile( os.path.join(MAIN_INPUTS_RELDIR,val) ):
-        return os.path.join(MAIN_INPUTS_RELDIR,val)
+#     # check if it is a relative path to relationship file (located in the Relation WORKSPACE)
+#     elif os.path.isfile( os.path.join(MAIN_INPUTS_RELDIR,val) ):
+#         return os.path.join(MAIN_INPUTS_RELDIR,val)
     
-    # check if the value of path comes from an output declared in the commands
-    # TODO!!! 
-    elif val in OUTPUTS_FOR_CMD:
-        return f"**/{val}/*_outConfluRels.tsv"
-        # v = os.path.join(MAIN_INPUTS_NAMDIR,val,"q2a_outConfluRels.tsv")
-        # return v
+#     # check if the value of path comes from an output declared in the commands
+#     # TODO!!! 
+#     elif val in OUTPUTS_FOR_CMD:
+#         return f"**/{val}/*_outConfluRels.tsv"
+#         # v = os.path.join(MAIN_INPUTS_NAMDIR,val,"q2a_outConfluRels.tsv")
+#         # return v
     
-    # otherwise, error
-    else:
-        sms = "ERROR!! Extracting the relationship table: {}".format(val)
-        print(sms) # message to stdout with logging output
-        sys.exit(sms)
+#     # otherwise, error
+#     else:
+#         sms = "ERROR!! Extracting the relationship table: {}".format(val)
+#         print(sms) # message to stdout with logging output
+#         sys.exit(sms)
     
 # Transform the "input file" (report file)
 def _transform_report_path(val):
@@ -246,96 +246,83 @@ def _transform_report_path(val):
         return ''
 
 def add_datparams(p, trule, val):
+    # remove spaces
+    val = val.replace(" ", "")
     # Replace the label for the value for each section: infiles, outfiles, and parameters
     if p == 'experiment':        
         l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-        
-    elif p == 'name':
-        l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
         
     elif p == 'input':
         l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        # _replace_datparams(val, trule['outfiles'], l)
+        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'output':
         l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'ratio_numerator':
         l = '__WF_RATIO_NUM__'
-        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
+        # _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
             r = val.replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
             
     elif p == 'ratio_denominator':
         l = '__WF_RATIO_DEN__'
-        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
+        # _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
             r = val.replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
 
-    elif p == 'inf_level':
-        l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-        
-    elif p == 'sup_level':
-        l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-        # replace the level names
-        if trule['parameters'] is not None and 'anal' in trule['parameters']:
-            (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', val)[0]
-            r = f"{prefix_i}2a"
-            _replace_datparams(r, trule['infiles'],  '__WF_ALL1_LEVEL__')
-            _replace_datparams(r, trule['outfiles'], '__WF_ALL1_LEVEL__')
-            _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL1_LEVEL__')
-            r = f"{prefix_s}2a"
-            _replace_datparams(r, trule['infiles'],  '__WF_ALL2_LEVEL__')
-            _replace_datparams(r, trule['outfiles'], '__WF_ALL2_LEVEL__')
-            _replace_datparams_params(r, trule['parameters']['anal'], '__WF_ALL2_LEVEL__')
-
-    elif p == 'rel_table':
-        l = '__WF_'+p.upper()+'__'
-        # transform the input file
-        v = _transform_relation_path(val)
-        _replace_datparams(v, trule['infiles'],  l)
-        _replace_datparams(v, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: v})
-    
     elif p == 'level':
         l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
+    elif p == 'norm':
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    elif p == 'low_level':
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        
+    elif p == 'int_level':
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    elif p == 'hig_level':
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    # elif p == 'rel_table':
+    #     l = '__WF_'+p.upper()+'__'
+    #     # transform the input file
+    #     v = _transform_relation_path(val)
+    #     _replace_datparams(v, trule['infiles'],  l)
+    #     _replace_datparams(v, trule['outfiles'], l)
+    #     trule['parameters'] = replace_val_rec(trule['parameters'], {l: v})
+    
     elif p == 'reported_vars':
         l = '__WF_'+p.upper()+'__'
-        val = val.replace(" ", "") # remove spaces
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'rep_file':
@@ -389,7 +376,11 @@ def add_rules(row, *trules):
     '''
     Create rule list for each command
     '''
+    # if 'output' folder does not exits, then we copy the value of 'input' folder
+    row['output'] = row['output'] if row['output'] != 'nan' else row['input']
+    # copy the given rule
     r = list(copy.deepcopy(trules))
+    # extract the list of columns
     data_params = list(row.index.values)
     for i in range(len(r)):
         trule = r[i]
@@ -482,31 +473,7 @@ def main(args):
     '''
     Main function
     '''
-    # read the multiple input files (TSV) from the input dir to string
-    # split by command
-    # create a list of tuples (command, dataframe with parameters)
-    # dropping empty rows and empty columns
-    # create a dictionary with the concatenation of dataframes for each command
-    # {command} = concat.dataframes
-    logging.info("read the multiple input files with the commands")
-    infiles = glob.glob( os.path.join(args.indir,"*.tsv"), recursive=True )
-    indata = read_command_table(infiles)
-    
-    
-    # check the tasktable parameters for each command:
-    # 1. check whether there are duplicates in the output directories
-    # 2. check whether the values of '* Var(x)' are False or a float
 
-# 3. TODO!!!!! Checheck the MAIN_INPUTS table is full. All the files have one experiment name
-
-# 4. TODO!!! Check the columns: level, inf_level and sup_level are not empty
-    
-    # return a variable with the outputs for each command    
-    logging.info("check the tasktable parameters for each command")
-    global OUTPUTS_FOR_CMD
-    OUTPUTS_FOR_CMD = check_command_parameters(indata)
-    
-    
     # init the output file with the given attributes of workflow
     logging.info("init the output file with the attributes of given workflow")
     with open(args.attfile, 'r') as stream:
@@ -519,29 +486,32 @@ def main(args):
     # remove the date_id folder from the data files
     tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
     # tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'/'): ''}) # don't escape slash for Python3
+    
 
+    # extract the list of task-tables (datafiles)
+    # split by command
+    # create a list of tuples (command, dataframe with parameters)
+    # dropping empty rows and empty columns
+    # create a dictionary with the concatenation of dataframes for each command
+    # {command} = concat.dataframes
+    logging.info("read the multiple input files with the commands")
+    infiles = [d['file'] for d in tpl['datfiles']]
+    indata = read_command_table(infiles)
+    
+    
+    # check the tasktable parameters for each command:
+    # 1. check whether there are duplicates in the output directories
+    # 2. check whether the values of '* Var(x)' are False or a float
 
-    # TODO!!
-    # REPLACE THE CELL VALUES OF DATAFRAME FOR THE REPLACEMENTS VALUES THAT 
-    # COMES FROM workflow.json => .cfg.yaml 
-    # BE CAREFUL IN THE CASES WE HAVE THE SAME WORD BUT WE DON'T WANT TO REPLACE (when the user write replacement word)
-#   "replacements": {
-#     "peptidesQ":          "p2q_outStats",
-#     "peptides":           "p2a_outStats",
-#     "proteinsC":          "q2c_outStats",
-#     "proteins":           "q2a_outStats",
-#     "categories":         "c2a_outStats",
+# TODO!!!!! 3. Check the MAIN_INPUTS table is full. All the files have one experiment name
 
-#     "peptidesQ_lnV":          "p2q_lowerNormV",
-#     "peptides_lnV":           "p2a_lowerNormV",
-#     "proteinsC_lnV":          "q2c_lowerNormV",
-#     "proteins_lnV":           "q2a_lowerNormV",
-#     "categories_lnV":         "c2a_lowerNormV",
-
-#     "Vq = 1/(1/V1+1/V2)": "form",
-#     "Vq = Max(V1,V2)":    "max",
-#     "Vq = Avg(V1,V2)":    "avg"
-#   },
+# TODO!!! 4. Check the columns: level, inf_level and sup_level are not empty
+    
+    # return a variable with the outputs for each command    
+    logging.info("check the tasktable parameters for each command")
+    global OUTPUTS_FOR_CMD
+    OUTPUTS_FOR_CMD = check_command_parameters(indata)
+    
     
 
     # read the templates of commands
@@ -603,12 +573,13 @@ def main(args):
         l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
-    
 
-    # mandatory: work with the CREATE_ID command
+
+    # Mandatory!!
+    # work with the CREATE_ID command
     cmd = 'CREATE_ID'
     if cmd in indata:
-        df = indata['CREATE_ID']
+        df = indata[cmd]
         icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
         if icmd:
             i = icmd[0]

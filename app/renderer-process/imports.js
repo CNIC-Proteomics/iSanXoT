@@ -13,8 +13,75 @@ process.env.ISANXOT_SRC_HOME = process.cwd();
 let fs = require('fs');
 let path = require('path');
 let exceptor = require('./exceptor');
+const { ipcRenderer } = require('electron');
+const { BrowserWindow, dialog } = require('electron').remote
+let mainWindow = BrowserWindow.getFocusedWindow()
 
 
+/*
+ * Renderer functions
+ */
+
+ipcRenderer.on('openProject',  function(event, arg) {
+    openProject();
+});
+ipcRenderer.on('saveProject', function(event, arg) {
+    saveProject();
+});
+// local function: add the project folder
+function addInputsFileDirectoy(inputs, errsms) {
+    if(inputs === undefined) {
+      console.log(`${errsms}: input is undefined`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+    }
+    else if (inputs.canceled) {
+      console.log(`${errsms}: canceled operation`);
+    }
+    else if (!('filePaths' in inputs )) {
+      console.log(`${errsms}: filePaths does not defined`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+    }
+    else {
+      if ( inputs['filePaths'].length == 0 ) {
+        console.log(`${errsms}: filePaths is empty`);
+        exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+      }
+      else {
+        let file = inputs['filePaths'][0];
+        mainWindow.loadURL(`file://${__dirname}/../wf.html?wfid=load&pdir=${file}`);
+      }
+    }
+  };  
+// Load project folder
+function openProject() {
+    // Select a folder: Asynchronous - using callback
+    // Use the main window to be modal
+    let opts = { properties: ["openDirectory"] };
+    dialog.showOpenDialog(opts).then((dirs) => {
+        isOpenLoadProjectDialog = false;
+        addInputsFileDirectoy(dirs, `No project folder selected`);
+    });
+};
+
+// save project
+function saveProject() {
+    let wf_date_id = getWFDate();
+    [pdir_def, pdir, wf_id, wf, wf_exec ] = extractWorkflowAttributes();
+    alert(`saveProject: ${wf_date_id}` );
+    console.log(wf);
+
+    // imported variables
+    // let wf = importer.wf;
+    // let wf_date_id = getWFDate();
+    // // get the output directory
+    // let outdir = $(`#main_inputs #outdir`).val();
+    // // prepare the workspace of project
+    // let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
+    // // create datafiles
+    // let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
+};
+
+  
 /*
  * Local functions
  */
@@ -238,7 +305,7 @@ if ( filename == "wf" ) {
         module.exports.wf_id,
         module.exports.wf,
         module.exports.wf_exec
-    ] = extractWorkflowAttributes();    
+    ] = extractWorkflowAttributes();
     // add full-body 
     require(`./bodied`);
     // add the module to execute the jobs

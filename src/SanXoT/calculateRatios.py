@@ -60,14 +60,14 @@ def main(args):
     df["X'inf"] = df["X'inf_1"] - df["X'inf_2"]
 
 
-    logging.info(f"calculate the new Vq using {args.type_oper} form")
-    if args.type_oper == 'max': # Vq = Max(V1,V2)
+    logging.info(f"calculate the new Vq using {args.v_method} form")
+    if args.v_method == 'max': # Vq = Max(V1,V2)
         df["Vinf"] = df[["Vinf_1", "Vinf_2"]].max(axis=1)
         
-    elif args.type_oper == 'form': # Vq = 1/(1/V1+1/V2)
+    elif args.v_method == 'form': # Vq = 1/(1/V1+1/V2)
         df["Vinf"] = 1/ (1/df["Vinf_1"] + 1/df["Vinf_2"])
 
-    elif args.type_oper == 'avg': # Vq = Avg(V1,V2)
+    elif args.v_method == 'avg': # Vq = Avg(V1,V2)
         df["Vinf"] = df[["Vinf_1", "Vinf_2"]].mean(axis=1)
 
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         ''')
     parser.add_argument('-i',  '--numfile',  required=True, help='Input file for the numerator ratio')
     parser.add_argument('-s',  '--denfile',  required=True, help='Input file for the denominator ratio')
-    parser.add_argument('-t',  '--type_oper',  required=True, choices=['form','max','avg'], default='max', help='Type of operation ["form" (Vq = 1/(1/V1+1/V2)), "max ("Vq = Max(V1,V2)), "avg" (Vq = Avg(V1,V2))] (default: %(default)s)')
+    parser.add_argument('-m',  '--v_method', required=True, choices=['form','max','avg'], default='max', help='Type of operation ["form" (Vq = 1/(1/V1+1/V2)), "max ("Vq = Max(V1,V2)), "avg" (Vq = Avg(V1,V2))] (default: %(default)s)')
     parser.add_argument('-o',  '--outfile',  required=True, help='Output file with the reports')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()

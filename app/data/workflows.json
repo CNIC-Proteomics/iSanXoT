@@ -10,21 +10,6 @@
     "rstdir": "reports",
     "logdir": "logs"    
   },
-  "replacements": {
-    "peptidesQ":          "p2q",
-    "peptides":           "p2a",
-    "proteinsC":          "q2c",
-    "proteins":           "q2a",
-    "categories":         "c2a",
-    "peptidesQ_lnV":          "p2q",
-    "peptides_lnV":           "p2a",
-    "proteinsC_lnV":          "q2c",
-    "proteins_lnV":           "q2a",
-    "categories_lnV":         "c2a",
-    "Vq = 1/(1/V1+1/V2)": "form",
-    "Vq = Max(V1,V2)":    "max",
-    "Vq = Avg(V1,V2)":    "avg"
-  },
   "works": [{
     "id": "main_inputs",
     "label": "Inputs",
@@ -36,8 +21,8 @@
       "visible": true,
       "panel": "panels/main_inputs.html",
       "params": [
-        { "type": "required", "name": "infile" },
-        { "type": "required", "name": "experiment" }
+        { "type": "required", "name": "Infile",     "id": "infile"},
+        { "type": "required", "name": "Experiment", "id": "experiment" }
       ]
     }]
   },{
@@ -51,13 +36,13 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "experiment" },
-        { "type": "required", "name": "threshold" },
-        { "type": "required", "name": "jump_areas" },
-        { "type": "required", "name": "lab_decoy" },
-        { "type": "required", "name": "fdr" },
-        { "type": "required", "name": "type_xcorr" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "threshold", "name": "Threshold" },
+        { "type": "required", "id": "jump_areas", "name": "Jump areas" },
+        { "type": "required", "id": "lab_decoy", "name": "Label decoy" },
+        { "type": "required", "id": "fdr", "name": "FDR" },
+        { "type": "required", "id": "type_xcorr", "name": "Type xCorr" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     },{
       "id": "MASTERQ",
@@ -65,10 +50,10 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "experiment", "readOnly": true },
-        { "type": "required", "name": "pretxt" },
-        { "type": "required", "name": "lab_decoy" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "experiment", "name": "Experiment", "readOnly": true },
+        { "type": "required", "id": "pretxt", "name": "Regex" },
+        { "type": "required", "id": "lab_decoy", "name": "Label decoy" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     },{
       "id": "RELS_TABLE_SPEC",
@@ -76,12 +61,12 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "input",  "readOnly": true },
-        { "type": "required", "name": "output", "readOnly": true },
-        { "type": "required", "name": "inf_header" },
-        { "type": "required", "name": "sup_header" },
-        { "type": "required", "name": "3rd_headers" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "input", "name": "Input", "readOnly": true },
+        { "type": "required", "id": "output", "name": "Output", "readOnly": true },
+        { "type": "required", "id": "inf_header", "name": "Lower header" },
+        { "type": "required", "id": "sup_header", "name": "Higher header" },
+        { "type": "required", "id": "3rd_headers", "name": "3rd header" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     }]
   },{
@@ -95,20 +80,20 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "experiment" },
-        { "type": "required", "name": "name" },
-        { "type": "required", "name": "ratio_numerator" },
-        { "type": "required", "name": "ratio_denominator" },
-        { "type": "optional", "name": "p>q_Tag" },
-        { "type": "optional", "name": "p>a_Tag" },
-        { "type": "optional", "name": "c>a_Tag" },
-        { "type": "optional", "name": "s>p_FDR" },
-        { "type": "optional", "name": "p>q_FDR" },
-        { "type": "optional", "name": "q>c_FDR" },
-        { "type": "optional", "name": "s>p_Var(x)" },
-        { "type": "optional", "name": "p>q_Var(x)" },
-        { "type": "optional", "name": "q>c_Var(x)" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "name", "name": "Name" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "optional", "id": "p>q_Tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_Tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_Tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_FDR", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_FDR", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_FDR", "name": "q>c FDR" },
+        { "type": "optional", "id": "s>p_Var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_Var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_Var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     }]
   },{
@@ -122,15 +107,14 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "input" },
-        { "type": "required", "name": "output" },
-        { "type": "required", "name": "inf_level", "select": ["p2a", "q2a", "c2a"] },
-        { "type": "required", "name": "sup_level", "select": ["p2q", "q2c"] },
-        { "type": "required", "name": "rel_table" },
-        { "type": "optional", "name": "Tag" },
-        { "type": "optional", "name": "FDR" },
-        { "type": "optional", "name": "Var(x)" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "level", "name": "Level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "norm", "name": "Norm", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     },{
       "id": "RATIOS_INT",
@@ -138,12 +122,40 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "name" },
-        { "type": "required", "name": "ratio_numerator" },
-        { "type": "required", "name": "ratio_denominator" },
-        { "type": "required", "name": "type", "select": ["form", "max", "avg"] },
-        { "type": "required", "name": "inf_level", "select": ["p2a", "q2a", "c2a"] },
-        { "type": "required", "name": "sup_level", "select": ["p2q", "q2c"] },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "level", "name": "Level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "v_method", "name": "V method", "select": ["form", "max", "avg"] },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    },{
+      "id": "INTEGRATE",
+      "label": "Integrate",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    },{
+      "id": "SBT",
+      "label": "System Biology Triangle",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "name": "input" },
+        { "type": "required", "name": "output" },
+        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
         { "type": "required", "name": "rel_table" },
         { "type": "optional", "name": "Tag" },
         { "type": "optional", "name": "FDR" },
@@ -156,28 +168,13 @@
       "visible": false,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "input" },
-        { "type": "required", "name": "inf_header" },
-        { "type": "required", "name": "sup_header" },
-        { "type": "required", "name": "3rd_headers" },
-        { "type": "required", "name": "output" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "inf_header", "name": "Lower header" },
+        { "type": "required", "id": "sup_header", "name": "Higher header" },
+        { "type": "required", "id": "3rd_headers", "name": "3rd header" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]  
-    },{
-      "id": "INTEGRATE",
-      "label": "Integrate",
-      "visible": false,
-      "panel": "panels/advance.html",
-      "params": [
-        { "type": "required", "name": "input" },
-        { "type": "required", "name": "output" },
-        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
-        { "type": "required", "name": "rel_table" },
-        { "type": "optional", "name": "Tag" },
-        { "type": "optional", "name": "FDR" },
-        { "type": "optional", "name": "Var(x)" },
-        { "type": "optional", "name": "more_params" }
-      ]
     }]
   },{
     "id": "reports",
@@ -190,12 +187,13 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "input" },
-        { "type": "required", "name": "output" },
-        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
-        { "type": "required", "name": "reported_vars" },
-        { "type": "required", "name": "repfile" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "reported_vars", "name": "Reported vars" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "required", "id": "rep_file", "name": "Join with" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     }]
   }]

@@ -4,11 +4,34 @@
 let exceptor = require('./exceptor');
 let importer = require('./imports');
 let sessioner = require('./sessioner');
+// const { ipcRenderer } = require('electron');
 let fs = require('fs');
 let crypto = require('crypto');
 let path = require('path');
 let cProcess = require('child_process');
 var proc = null;
+
+// /*
+//  * Renderer functions
+//  */
+
+// ipcRenderer.on('saveProject', saveProject());
+
+// // save project
+// function saveProject() {
+//     // imported variables
+//     let wf = importer.wf;
+//     let wf_date_id = importer.getWFDate();
+//     alert(`saveProject: ${wf_date_id}` );
+//     // // get the output directory
+//     // let outdir = $(`#main_inputs #outdir`).val();
+//     // // prepare the workspace of project
+//     // let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
+//     // // create datafiles
+//     // let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
+// };
+
+
 
 /*
  * Local functions
@@ -54,7 +77,9 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
     return [cfg_dir, dte_dir, log_dir];
 }
 // Export tasktable to TSV
-function exportTasktable(tsk_id) {
+function exportTasktable(tsk_id, header) {
+    // rename header
+    $(`${tsk_id}`).handsontable('updateSettings', {'colHeaders': header });
     let exportPlugin = $(`${tsk_id}`).handsontable('getPlugin', 'exportFile');
     let cont = exportPlugin.exportAsString('csv', {
         mimeType: 'text/csv',
@@ -91,6 +116,7 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
         let wk_id = wk['id'];
         let dte_file = `${dte_dir}/${wk['file']}`;
         let cont = '';
+        let header = null;
         cfg['datfiles'].push({
             'type': wk_id,
             'file': dte_file
@@ -126,10 +152,19 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
             } catch (err) {
                 exceptor.showErrorMessageBox('Error Message', `Replacing the values of labels in the command table ${cmd_id}: ${err}`, end=true);    
             }
+            // get the id header based on 'workflow.json'
+            try {
+                header = cmd['params'].map(a => a.id);
+                if (header.includes(undefined)) {
+                    throw "the list of id headers contains undefined value";
+                }
+            } catch (err) {
+                exceptor.showErrorMessageBox('Error Message', `Extracting the id headers of ${cmd_id}: ${err}`, end=true);    
+            }
             // export tasktable to CSV
             try {
                 cont += `\n#${cmd_id}\n`;
-                cont += exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`);
+                cont += exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`, header);
             } catch (err) {
                 exceptor.showErrorMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
             }

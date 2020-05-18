@@ -12,13 +12,14 @@ let all_pids = { 'pids':[], 'c_pids':[] };
 let template = [
   { label: "Menu", submenu: [    
     { label: 'Init', click() { mainWindow.loadFile('index.html') } },
-    { label: 'Load project...', click() { openLoadProject() } },
+    { label: 'Open project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
+    { label: 'Save project', accelerator: 'Ctrl+S', click() { mainWindow.webContents.send('saveProject') } },
     { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { label: "Workflows", submenu: [
     { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
     { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
-    { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
+    // { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
     { type: 'separator' },
     { label: 'Processes', click() { mainWindow.loadFile('processes.html') } }
   // ]},
@@ -30,7 +31,7 @@ let template = [
     { label: 'General', click() { mainWindow.loadFile('help.html') } },
     { label: 'Basic workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
     { label: 'PTM workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
-    { label: 'Label-Free workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } }
+    // { label: 'Label-Free workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } }
   ]},  
 ]
 // Add 'debugging' menu
@@ -97,41 +98,41 @@ function createWindow () {
 
 }; // end createWindow
 
-// local function: add the project folder
-function addInputsFileDirectoy(inputs, errsms) {
-  if(inputs === undefined) {
-    console.log(`${errsms}: input is undefined`);
-    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-  }
-  else if (inputs.canceled) {
-    console.log(`${errsms}: canceled operation`);
-  }
-  else if (!('filePaths' in inputs )) {
-    console.log(`${errsms}: filePaths does not defined`);
-    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-  }
-  else {
-    if ( inputs['filePaths'].length == 0 ) {
-      console.log(`${errsms}: filePaths is empty`);
-      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-    }
-    else {
-      let file = inputs['filePaths'][0];
-      mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${file}`);
-    }
-  }
-};
+// // local function: add the project folder
+// function addInputsFileDirectoy(inputs, errsms) {
+//   if(inputs === undefined) {
+//     console.log(`${errsms}: input is undefined`);
+//     exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+//   }
+//   else if (inputs.canceled) {
+//     console.log(`${errsms}: canceled operation`);
+//   }
+//   else if (!('filePaths' in inputs )) {
+//     console.log(`${errsms}: filePaths does not defined`);
+//     exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+//   }
+//   else {
+//     if ( inputs['filePaths'].length == 0 ) {
+//       console.log(`${errsms}: filePaths is empty`);
+//       exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+//     }
+//     else {
+//       let file = inputs['filePaths'][0];
+//       mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${file}`);
+//     }
+//   }
+// };
 
-// Load project folder
-function openLoadProject() {
-  // Select a folder: Asynchronous - using callback
-  // Use the main window to be modal
-  let opts = { properties: ["openDirectory"] };
-  dialog.showOpenDialog(mainWindow, opts).then((dirs) => {
-    isOpenLoadProjectDialog = false;
-    addInputsFileDirectoy(dirs, `No project folder selected`);
-  });
-};
+// // Load project folder
+// function openProject() {
+//   // Select a folder: Asynchronous - using callback
+//   // Use the main window to be modal
+//   let opts = { properties: ["openDirectory"] };
+//   dialog.showOpenDialog(mainWindow, opts).then((dirs) => {
+//     isOpenLoadProjectDialog = false;
+//     addInputsFileDirectoy(dirs, `No project folder selected`);
+//   });
+// };
 
 // Prevent the close of app
 function reallyWantToClose() {

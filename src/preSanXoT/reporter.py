@@ -115,7 +115,7 @@ def main(args):
     
     logging.info("mark the variables with the outliers")
     for c in col_vars:
-        df[c] = np.where((df['tags'].notna() & df['tags'].str.contains('out')), '*'+df[c], df[c])
+        df[c] = np.where((df['tags'].notna() & df['tags'].str.contains('out')), 'out_'+df[c], df[c])
     df.drop(columns=['tags'], axis=1, inplace=True)
     
     logging.info(f"{prefix}: add prefix to all columns except some")  
@@ -162,11 +162,11 @@ def main(args):
         cols_2_l0 = list(df2.columns.get_level_values(0))
         cols_2_idx = list( set(list(LEVELS_NAMES.values())) & set(cols_2_l0) )
 
-        # merge with given intermediate report
+        # merge with given intermediate report based on the intersection relationship from peptide/protein/category
         # Only if there is intersection between the relationship columns (peptide/protein/category)
         cols_12_idx = list(set(cols_idx) & set(cols_2_idx))
         if cols_12_idx:
-            # merge with given intermediate report based on the intersection relationship from peptide/protein/category
+            # merge with given intermediate report
             df3 = pd.merge(df2,df, on=cols_12_idx)
             
             # set row index with the columns (peptides,protein, or category) - level 0-
