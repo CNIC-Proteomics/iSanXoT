@@ -21,8 +21,8 @@
       "visible": true,
       "panel": "panels/main_inputs.html",
       "params": [
-        { "type": "required", "name": "Infile",     "id": "infile"},
-        { "type": "required", "name": "Experiment", "id": "experiment" }
+        { "type": "required", "id": "infile", "name": "Infile" },
+        { "type": "required", "id": "experiment", "name": "Experiment" }
       ]
     }]
   },{
@@ -81,18 +81,18 @@
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "name", "name": "Name" },
+        { "type": "required", "id": "output", "name": "Name" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "optional", "id": "p>q_Tag", "name": "p>q Tag" },
-        { "type": "optional", "id": "p>a_Tag", "name": "p>a Tag" },
-        { "type": "optional", "id": "c>a_Tag", "name": "c>a Tag" },
-        { "type": "optional", "id": "s>p_FDR", "name": "s>p FDR" },
-        { "type": "optional", "id": "p>q_FDR", "name": "p>q FDR" },
-        { "type": "optional", "id": "q>c_FDR", "name": "q>c FDR" },
-        { "type": "optional", "id": "s>p_Var(x)", "name": "s>p Var(x)" },
-        { "type": "optional", "id": "p>q_Var(x)", "name": "p>q Var(x)" },
-        { "type": "optional", "id": "q>c_Var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
+        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
         { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     }]
@@ -141,7 +141,7 @@
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
-        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "output", "name": "Output" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
         { "type": "optional", "id": "var(x)", "name": "Var(x)" },
@@ -153,14 +153,20 @@
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "name": "input" },
-        { "type": "required", "name": "output" },
-        { "type": "required", "name": "level", "select": ["p2q", "p2a", "q2c", "q2a", "c2a"] },
-        { "type": "required", "name": "rel_table" },
-        { "type": "optional", "name": "Tag" },
-        { "type": "optional", "name": "FDR" },
-        { "type": "optional", "name": "Var(x)" },
-        { "type": "optional", "name": "more_params" }
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "int_level", "name": "Intermediate level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "l>i_tag", "name": "low>int Tag" },
+        { "type": "optional", "id": "l>h_tag", "name": "low>hig Tag" },
+        { "type": "optional", "id": "i>h_tag", "name": "int>hig Tag" },
+        { "type": "optional", "id": "l>i_fdr", "name": "low>int FDR" },
+        { "type": "optional", "id": "l>h_fdr", "name": "low>hig FDR" },
+        { "type": "optional", "id": "i>h_fdr", "name": "int>hig FDR" },
+        { "type": "optional", "id": "l>i_var(x)", "name": "low>int Var(x)" },
+        { "type": "optional", "id": "i>h_var(x)", "name": "int>hig Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     },{
       "id": "RELS_TABLE",
@@ -193,7 +199,8 @@
         { "type": "required", "id": "reported_vars", "name": "Reported vars" },
         { "type": "required", "id": "output", "name": "Output" },
         { "type": "required", "id": "rep_file", "name": "Join with" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
+        { "type": "optional", "id": "filter", "name": "Filter" },
+        { "type": "optional", "id": "ext_rep_file", "name": "Join with ext. file" }
       ]
     }]
   }]

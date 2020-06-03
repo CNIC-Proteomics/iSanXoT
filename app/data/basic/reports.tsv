@@ -1,2 +1,2 @@
-#REPORT					
-input	output	level	reported_vars	rep_file	more_params
+#REPORT							
+input	low_level	hig_level	reported_vars	output	rep_file	filter	ext_rep_file

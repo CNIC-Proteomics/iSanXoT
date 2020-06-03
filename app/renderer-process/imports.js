@@ -13,21 +13,19 @@ process.env.ISANXOT_SRC_HOME = process.cwd();
 let fs = require('fs');
 let path = require('path');
 let exceptor = require('./exceptor');
+let executor = undefined;
+let wf_date_id = undefined;
+
 const { ipcRenderer } = require('electron');
 const { BrowserWindow, dialog } = require('electron').remote
-let mainWindow = BrowserWindow.getFocusedWindow()
+let mainWindow = BrowserWindow.getFocusedWindow();
+
 
 
 /*
  * Renderer functions
  */
 
-ipcRenderer.on('openProject',  function(event, arg) {
-    openProject();
-});
-ipcRenderer.on('saveProject', function(event, arg) {
-    saveProject();
-});
 // local function: add the project folder
 function addInputsFileDirectoy(inputs, errsms) {
     if(inputs === undefined) {
@@ -62,24 +60,52 @@ function openProject() {
         addInputsFileDirectoy(dirs, `No project folder selected`);
     });
 };
-
-// save project
+// Save project
 function saveProject() {
-    let wf_date_id = getWFDate();
-    [pdir_def, pdir, wf_id, wf, wf_exec ] = extractWorkflowAttributes();
-    alert(`saveProject: ${wf_date_id}` );
-    console.log(wf);
-
-    // imported variables
-    // let wf = importer.wf;
-    // let wf_date_id = getWFDate();
-    // // get the output directory
-    // let outdir = $(`#main_inputs #outdir`).val();
-    // // prepare the workspace of project
-    // let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
-    // // create datafiles
-    // let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
+    if ( wf_date_id && wf ) {
+        // loading...
+        exceptor.loadingWorkflow();
+        setTimeout(function() {
+            // save project
+            let [,,,] = executor.saveProject(wf_date_id, wf);
+            // everything was alright
+            exceptor.stopLoadingWorkflow();
+            exceptor.showMessageBox('info', "Your project has been saved successfully", title='Save project');
+        }, 1000); // due the execSync block everything, we have to wait until loading event is finished
+    }
+    else {
+        exceptor.showMessageBox('warning', "You are in the wrong page and you have not created any workflow", title='No project to save');
+    }
 };
+// Validate project
+function validateProject() {
+    if ( wf_date_id && wf ) {
+        // loading...
+        exceptor.loadingWorkflow();
+        setTimeout(function() {
+            // save project
+            let [outdir, cfg_dir, dte_dir, log_dir, attfile] = executor.saveProject(wf_date_id, wf);
+            // validate project
+            executor.validateProject(dte_dir, attfile, log_dir, cfg_dir, outdir);
+            // everything was alright
+            exceptor.stopLoadingWorkflow();
+            exceptor.showMessageBox('info', "Your project is valid", title='Validate project');
+        }, 1000); // due the execSync block everything, we have to wait until loading event is finished
+    }
+    else {
+        exceptor.showMessageBox('warning', "You are in the wrong page and you have not created any workflow", title='No project to save');
+    }
+};
+
+ipcRenderer.on('openProject',  function() {
+    openProject();
+});
+ipcRenderer.on('saveProject', function() {
+    saveProject();
+});
+ipcRenderer.on('validateProject', function() {
+    validateProject();
+});
 
   
 /*
@@ -101,8 +127,6 @@ function importHTMLtemplate(wfhref, tid) {
 // Resize table from the window size
 var resizeId = null;
 function doneResizing() {
-    // resize table from the window size
-    let winwidth = $(window).width();
     let winheight = $(window).height();    
     if ( $('.tab-content').length ) {
         let newheight = winheight - 165;
@@ -192,7 +216,7 @@ function getIndexParamsWithAttr(data, key, attr) {
 }
 // Get the list of index with the given attribute value
 function getIndexParamsWithKey(data, key) {
-    function findWithAttr(array, ke, at) {
+    function findWithAttr(array, ke) {
         let [rst,cnt] = [ [],[] ];
         for(var i = 0; i < array.length; i += 1) {
             if(ke in array[i]) {
@@ -242,7 +266,7 @@ function extractWorkflowAttributes() {
         pdir += `/${d}`;
 
         // Check if config file exits
-        let cfgfile = `${pdir}/config.yaml`;
+        let cfgfile = `${pdir}/.cfg.yaml`;
         if ( !fs.existsSync(cfgfile) ) {
             console.log(cfgfile);
             exceptor.showErrorMessageBox('Error Message', `Openning the config file`, end=true, page=`${__dirname}/../index.html`);
@@ -268,7 +292,6 @@ function extractWorkflowAttributes() {
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {
     importHTMLtemplate:         importHTMLtemplate,
-    getWFDate:                  getWFDate,
     getWorkflowIDFromElements:  getWorkflowIDFromElements,
     getWorkIDFromElements:      getWorkIDFromElements,
     getCmdIDFromElements:       getCmdIDFromElements,
@@ -298,18 +321,26 @@ importHTMLtemplate(`${__dirname}/../sections/helps/help_lblfree.html`);
 // Get input parameters (from URL)
 let filename = path.basename(window.location.pathname,'.html');
 if ( filename == "wf" ) {
-    // Export workflow attributes
+    // Create and export the workflow attributes
     [
-        module.exports.pdir_def,
-        module.exports.pdir,
-        module.exports.wf_id,
-        module.exports.wf,
-        module.exports.wf_exec
+        pdir_def,
+        pdir,
+        wf_id,
+        wf,
+        wf_exec
     ] = extractWorkflowAttributes();
+    wf_date_id = getWFDate();
+    module.exports.pdir_def = pdir_def;
+    module.exports.pdir = pdir;
+    module.exports.wf_date_id = wf_date_id;
+    module.exports.wf_id = wf_id;
+    module.exports.wf = wf;
+    module.exports.wf_exec = wf_exec;
+
     // add full-body 
     require(`./bodied`);
     // add the module to execute the jobs
-    require('./executor');
+    executor = require('./executor');
 }
 else if ( filename == "processes" ) {
     // add the module to process the jobs

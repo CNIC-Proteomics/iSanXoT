@@ -213,29 +213,6 @@ def _replace_datparams_params(dat, trule, label):
         if label in tr:
             trule[k] = tr.replace(label, dat)
 
-# # Transform the "input file" (relationship file)
-# def _transform_relation_path(val):
-#     # check if it is an absolute path to relationship file
-#     if os.path.isfile(val):
-#         return val
-    
-#     # check if it is a relative path to relationship file (located in the Relation WORKSPACE)
-#     elif os.path.isfile( os.path.join(MAIN_INPUTS_RELDIR,val) ):
-#         return os.path.join(MAIN_INPUTS_RELDIR,val)
-    
-#     # check if the value of path comes from an output declared in the commands
-#     # TODO!!! 
-#     elif val in OUTPUTS_FOR_CMD:
-#         return f"**/{val}/*_outConfluRels.tsv"
-#         # v = os.path.join(MAIN_INPUTS_NAMDIR,val,"q2a_outConfluRels.tsv")
-#         # return v
-    
-#     # otherwise, error
-#     else:
-#         sms = "ERROR!! Extracting the relationship table: {}".format(val)
-#         print(sms) # message to stdout with logging output
-#         sys.exit(sms)
-    
 # Transform the "input file" (report file)
 def _transform_report_path(val):
     # the intermediate report file is with in Result WORKSPACE
@@ -258,8 +235,8 @@ def add_datparams(p, trule, val):
     elif p == 'input':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
-        # _replace_datparams(val, trule['outfiles'], l)
-        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        _replace_datparams(val, trule['outfiles'], l)
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'output':
         l = '__WF_'+p.upper()+'__'
@@ -287,40 +264,32 @@ def add_datparams(p, trule, val):
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'norm':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'low_level':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-        
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
     elif p == 'int_level':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'hig_level':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
-        # trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
-    # elif p == 'rel_table':
-    #     l = '__WF_'+p.upper()+'__'
-    #     # transform the input file
-    #     v = _transform_relation_path(val)
-    #     _replace_datparams(v, trule['infiles'],  l)
-    #     _replace_datparams(v, trule['outfiles'], l)
-    #     trule['parameters'] = replace_val_rec(trule['parameters'], {l: v})
-    
     elif p == 'reported_vars':
         l = '__WF_'+p.upper()+'__'
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
@@ -377,7 +346,13 @@ def add_rules(row, *trules):
     Create rule list for each command
     '''
     # if 'output' folder does not exits, then we copy the value of 'input' folder
-    row['output'] = row['output'] if row['output'] != 'nan' else row['input']
+    if 'output' in row:
+        if 'input' in row:
+            row['output'] = row['output'] if row['output'] != 'nan' and row['output'] != '' else row['input']
+    else:
+        if 'input' in row:
+            row['output'] = row['input']
+
     # copy the given rule
     r = list(copy.deepcopy(trules))
     # extract the list of columns
@@ -483,10 +458,7 @@ def main(args):
             sms = "ERROR!! Reading the attributes file of workflow: {}".format(exc)
             print(sms) # message to stdout with logging output
             sys.exit(sms)
-    # remove the date_id folder from the data files
-    tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
-    # tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'/'): ''}) # don't escape slash for Python3
-    
+
 
     # extract the list of task-tables (datafiles)
     # split by command
@@ -499,6 +471,12 @@ def main(args):
     indata = read_command_table(infiles)
     
     
+    # remove the date_id folder from the data files
+    # because the input config file contains the date_id in the output folders, and we don't want in the result config file
+    tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
+    # tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'/'): ''}) # don't escape slash for Python3
+
+
     # check the tasktable parameters for each command:
     # 1. check whether there are duplicates in the output directories
     # 2. check whether the values of '* Var(x)' are False or a float
@@ -606,7 +584,7 @@ def main(args):
                 tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
                 # replace constants
                 tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
-        else: # the rest of commands            
+        else: # the rest of commands
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]

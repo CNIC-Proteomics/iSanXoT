@@ -4,33 +4,11 @@
 let exceptor = require('./exceptor');
 let importer = require('./imports');
 let sessioner = require('./sessioner');
-// const { ipcRenderer } = require('electron');
 let fs = require('fs');
 let crypto = require('crypto');
 let path = require('path');
 let cProcess = require('child_process');
 var proc = null;
-
-// /*
-//  * Renderer functions
-//  */
-
-// ipcRenderer.on('saveProject', saveProject());
-
-// // save project
-// function saveProject() {
-//     // imported variables
-//     let wf = importer.wf;
-//     let wf_date_id = importer.getWFDate();
-//     alert(`saveProject: ${wf_date_id}` );
-//     // // get the output directory
-//     // let outdir = $(`#main_inputs #outdir`).val();
-//     // // prepare the workspace of project
-//     // let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
-//     // // create datafiles
-//     // let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
-// };
-
 
 
 /*
@@ -43,6 +21,10 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
     let cfg_dir = `${outdir}/.isanxot`;
     let dte_dir = `${cfg_dir}/${date_id}`;
     let log_dir = `${outdir}/${prj_dirs['logdir']}/${date_id}`;
+    // check the output directory
+    if ( outdir == "" ) {
+        exceptor.showMessageBox('error',`The output directory is empty`, title='Extract output directory', end=true);
+    }
     // create the directories for the project
     for ( let k in prj_dirs ) {
         let ws = prj_dirs[k];
@@ -53,7 +35,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
             }
         } catch (err) {    
             console.log(prj_dir);
-            exceptor.showErrorMessageBox('Error Message', `Creating directory ${prj_dir}: ${err}`, end=true);    
+            exceptor.showMessageBox('error',`${prj_dir}: ${err}`, title='Creating directory', end=true);
         }    
     }
     // create configuration directory (hidden) for the current execution    
@@ -63,7 +45,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
         }
     } catch (err) {    
         console.log(dte_dir);
-        exceptor.showErrorMessageBox('Error Message', `Creating config directory ${dte_dir}: ${err}`, end=true);    
+        exceptor.showMessageBox('error',`${dte_dir}: ${err}`, title='Creating config directory', end=true);
     }
     // create log directory for the current execution
     try {
@@ -72,7 +54,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
         }
     } catch (err) {    
         console.log(log_dir);
-        exceptor.showErrorMessageBox('Error Message', `Creating logging directory ${log_dir}: ${err}`, end=true);    
+        exceptor.showMessageBox('error',`${log_dir}: ${err}`, title='Creating logging directory', end=true);
     }
     return [cfg_dir, dte_dir, log_dir];
 }
@@ -287,7 +269,7 @@ function execTable2Cfg(params) {
     --outfile "${params.outfile}" 1> "${params.logdir}/table2cfg.log" `;
     execSyncProcess('creating config files', cmd);    
 };
-function execSnakeMake(params) {
+function validSnakeMake(params) {
     let smkfile = `${process.env.ISANXOT_SRC_HOME}/wfs/wf_sanxot.smk`;
     let cmd_smk = `"${process.env.ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe" \
     --configfile "${params.configfile}" \
@@ -301,6 +283,17 @@ function execSnakeMake(params) {
     // First we unlock the ouput directory
     let cmd1 = `${cmd_unlock} && ${cmd_clean}`
     execSyncProcess('preparing the workspace', cmd1);
+}
+function execSnakeMake(params) {
+    let smkfile = `${process.env.ISANXOT_SRC_HOME}/wfs/wf_sanxot.smk`;
+    let cmd_smk = `"${process.env.ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe" \
+    --configfile "${params.configfile}" \
+    --snakefile "${smkfile}" \
+    --cores ${params.nthreads} \
+    --directory "${params.directory}" \
+    --rerun-incomplete --keep-going`;
+    let cmd_unlock = `${cmd_smk} --unlock `;
+    let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;
     // Then, we execute the workflow
     let cmd2 = `${cmd_smk} 1> "${params.logfile}" 2>&1`;
     execProcess('executing the workflow', cmd2, params.logfile, params.directory);
@@ -314,32 +307,94 @@ if ( document.querySelector('#executor #start') !== null ) {
         // loading...
         exceptor.loadingWorkflow();
         // Execute the workflow
-        setTimeout(function() {
-            // imported variables
-            let wf = importer.wf;
-            let wf_date_id = importer.getWFDate();
-            // get the output directory
-            let outdir = $(`#main_inputs #outdir`).val();
-            // prepare the workspace of project
-            let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
-            // create datafiles
-            let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
-            // Exec: create config file for the execution of workflow
-            execTable2Cfg({
-                'indir': dte_dir,
-                'attfile': attfile,
-                'outfile': `${dte_dir}/config.yaml`,
-                'logdir': log_dir
-            });
-            // Copy only the files that are different
-            copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
-            // Exec: execute snakemake
+        executeProject();
+    });
+}
+
+/*
+ * Export functions
+ */
+
+
+// save project
+function saveProject(wf_date_id, wf) {
+    // get the output directory
+    let outdir = $(`#main_inputs #outdir`).val();
+    // prepare the workspace of project
+    let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
+    // create datafiles
+    let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
+    return [outdir, cfg_dir, dte_dir, log_dir, attfile];
+};
+// validate project
+function validateProject(dte_dir, attfile, log_dir, cfg_dir, outdir) {
+    // Exec: create config file for the execution of workflow
+    execTable2Cfg({
+        'indir': dte_dir,
+        'attfile': attfile,
+        'outfile': `${dte_dir}/config.yaml`,
+        'logdir': log_dir
+    });
+    // Copy only the files that are different
+    copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
+    // Validate snakemake
+    validSnakeMake({
+        'configfile': `${outdir}/.isanxot/config.yaml`,
+        'nthreads':   `${document.querySelector('#nthreads').value}`,
+        'directory':  `${outdir}`,
+        'logfile':    `${log_dir}/isanxot.log`
+    });
+};
+// execute project
+function executeProject() {
+    setTimeout(function() {
+        // imported variables
+        let wf = importer.wf;
+        let wf_date_id = importer.wf_date_id;
+        if ( wf_date_id && wf ) {
+            // save project
+            let [outdir, cfg_dir, dte_dir, log_dir, attfile] = saveProject(wf_date_id, wf);
+            // validate project
+            validateProject(dte_dir, attfile, log_dir, cfg_dir, outdir);
+            // Execute snakemake
             execSnakeMake({
                 'configfile': `${outdir}/.isanxot/config.yaml`,
                 'nthreads':   `${document.querySelector('#nthreads').value}`,
                 'directory':  `${outdir}`,
                 'logfile':    `${log_dir}/isanxot.log`
             });
-        }, 1000); // due the execSync block everything, we have to wait until loading event is finished
-    });
-}
+        }
+        else {
+            exceptor.showMessageBox('error', "The workflow identifier is not defined", title='No project to execute', end=true);
+        }
+        // // imported variables
+        // let wf = importer.wf;
+        // let wf_date_id = importer.wf_date_id;
+        // // get the output directory
+        // let outdir = $(`#main_inputs #outdir`).val();
+        // // prepare the workspace of project
+        // let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
+        // // create datafiles
+        // let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
+        // // Exec: create config file for the execution of workflow
+        // execTable2Cfg({
+        //     'indir': dte_dir,
+        //     'attfile': attfile,
+        //     'outfile': `${dte_dir}/config.yaml`,
+        //     'logdir': log_dir
+        // });
+        // // Copy only the files that are different
+        // copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
+        // // Exec: execute snakemake
+        // execSnakeMake({
+        //     'configfile': `${outdir}/.isanxot/config.yaml`,
+        //     'nthreads':   `${document.querySelector('#nthreads').value}`,
+        //     'directory':  `${outdir}`,
+        //     'logfile':    `${log_dir}/isanxot.log`
+        // });
+    }, 1000); // due the execSync block everything, we have to wait until loading event is finished
+};
+module.exports = {
+    saveProject: saveProject,
+    validateProject: validateProject
+};

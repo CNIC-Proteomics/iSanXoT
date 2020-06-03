@@ -26,9 +26,22 @@ function showErrorMessageBox(head, message, end=false, page=undefined) {
   if (end) throw new Error(message);
 };
 
+function showMessageBox(type, message, title=undefined, end=false, page=undefined) {
+  stopLoadingWorkflow();
+  let opts = {
+    'type': type,
+    'message': message
+  };
+  if (title) opts.title = title;
+  dialog.showMessageBoxSync(opts);
+  if (end) throw new Error(message);
+  if (page) ipcRenderer.send('load-page', page);
+};
+
 // Exporting modules
 module.exports = {
   loadingWorkflow:     loadingWorkflow,
   stopLoadingWorkflow: stopLoadingWorkflow,
   showErrorMessageBox: showErrorMessageBox,
+  showMessageBox:      showMessageBox,
 };

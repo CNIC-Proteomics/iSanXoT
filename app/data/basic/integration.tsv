@@ -1,11 +1,14 @@
-#COMBINE										
-input	output	inf_level	sup_level	rel_table	Tag	FDR	Var(x)	more_params		
-										
-#RELS_TABLE										
-input	inf_header	sup_header	3rd_headers	output	more_params					
-										
-#RATIOS_INT										
-name	ratio_numerator	ratio_denominator	type	inf_level	sup_level	rel_table	Tag	FDR	Var(x)	more_params
-										
-#INTEGRATE										
-input	output	level	rel_table	Tag	FDR	Var(x)	more_params			
+#COMBINE											
+input	level	norm	output	Tag	FDR	Var(x)	more_params				
+											
+#RATIOS_INT											
+ratio_numerator	ratio_denominator	level	V_method	output	more_params						
+											
+#INTEGRATE											
+input	low_level	hig_level	output	Tag	FDR	Var(x)	more_params				
+											
+#SBT											
+input	low_level	int_level	hig_level	output	l>i_Tag	i>h_Tag	l>h_Tag	l>i_Var(x)	i>h_Var(x)	l>h_Var(x)	more_params
+											
+#RELS_TABLE											
+input	inf_header	sup_header	3rd_headers	output	more_params						

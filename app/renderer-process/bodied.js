@@ -93,9 +93,6 @@ function extract_list_cmds(wk, tbl) {
         id = l[0];
         id = id.replace('#','');
         let header = tbl[i+1];
-        // get the header list based on 'workflow.json'
-        // let cmd_attr = importer.getObjectFromID(wk, cmd_id);
-        // let header = cmd_attr['params'].map(a => a.name);
         let attr = (l.length > 1)? l[1] : null;
         cmds[id] = {
           'order': order,

@@ -11,9 +11,11 @@ let all_pids = { 'pids':[], 'c_pids':[] };
 // Menu
 let template = [
   { label: "Menu", submenu: [    
-    { label: 'Init', click() { mainWindow.loadFile('index.html') } },
-    { label: 'Open project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
-    { label: 'Save project', accelerator: 'Ctrl+S', click() { mainWindow.webContents.send('saveProject') } },
+    { label: 'Main Page', click() { mainWindow.loadFile('index.html') } },
+    { label: 'Open Project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
+    { label: 'Save Project', accelerator: 'Ctrl+S', click() { mainWindow.webContents.send('saveProject') } },
+    { label: 'Validate Project', accelerator: 'Ctrl+V', click() { mainWindow.webContents.send('validateProject') } },
+    { type: 'separator' },
     { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { label: "Workflows", submenu: [
@@ -22,10 +24,13 @@ let template = [
     // { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
     { type: 'separator' },
     { label: 'Processes', click() { mainWindow.loadFile('processes.html') } }
-  // ]},
-  // { label: "Preferences", submenu: [
-  //   { label: 'Download Databases', click() { mainWindow.loadFile('downdb.html') } },
-  //   { label: 'Check for Updates', click() { mainWindow.loadFile('checkupdates.html') } },
+  ]},
+  { label: "Processes", submenu: [
+    { label: 'Main page', click() { mainWindow.loadFile('processes.html') } }
+  ]},
+  { label: "Preferences", submenu: [
+    { label: 'Download Databases', click() { mainWindow.loadFile('downdb.html') } },
+    { label: 'Check for Updates', click() { mainWindow.loadFile('checkupdates.html') } },
   ]},  
   { label: "Help", submenu: [
     { label: 'General', click() { mainWindow.loadFile('help.html') } },
