@@ -212,11 +212,45 @@ def filter_report(df, filter):
     Filtered dataframe.
 
     '''
-    # df.columns.names = ['params','names']
-    # m = [ s for s in df.columns.get_level_values('params').to_list() if 'FDR' in s ]
-    # df = df.query(filter)
+    # variable with the boolean operators
+    comparisons = ['>=', '<=', '!=', '<>', '==', '>', '<']
+    logicals = ['\|', '&', '~']
+    rc = r'|'.join(comparisons)
+    rl = r'|'.join(logicals)
     
-    return df
+    # create the new filter replacing variables
+    # split the string filter by all logical operators
+    # go throught the comparisons
+    # extract the variable and value
+    # replace the variable by the df comparison
+    # replace the value with commas
+    comps = re.split(rl,filter)
+    for cmp_str in comps:
+        cmp_str = cmp_str.strip().replace('(','').replace(')','')
+        cmp = re.split(rc,cmp_str)
+        var = cmp[0].strip()
+        val = cmp[1].strip().replace('"','').replace("'",'')
+        var_new = "df.filter(regex='{}', axis=1)".format(var)
+        val_new = "'{}'".format(val)
+        # the order of replacements is important!
+        cmp_str_new = cmp_str
+        cmp_str_new = re.sub(rf'{val}\b',val_new,cmp_str_new) # replace exact match
+        cmp_str_new = re.sub(rf'{var}\b',var_new,cmp_str_new) # replace exact match
+        cmp_str_new = "({}).all(axis=1)".format(cmp_str_new)
+        filter = filter.replace(cmp_str,cmp_str_new)
+    
+    # evaluate filter
+    # examples        
+    # ix = pd.eval("(df.filter(regex='n_', axis=1) >= '2').all(axis=1) | (df.filter(regex='Z_', axis=1) >= '11').all(axis=1)", engine='python')
+    # ix = pd.eval("(df.filter(regex='n_peptide2protein', axis=1) >= '2').all(axis=1) & (df.filter(regex='Z_', axis=1) >= '11').all(axis=1)", engine='python')
+    try:
+        ix = pd.eval(filter, engine='python')
+        df_new = df[ix]
+    except:
+        # not filter
+        df_new = df
+    
+    return df_new
 
     
 #################
