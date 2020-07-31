@@ -340,9 +340,12 @@ def add_descriptions(df, indb, tagDecoy):
     d = list(map(get_fasta_desc, a))
     l = list(map(get_protein_len, a))
     da = [ list(itertools.chain(list(itertools.zip_longest(i,j,k,fillvalue='')))) for i,j,k in list(zip(d,a,l)) ]    
-    # sort and discard the DECOY proteins and the proteins without description
+    # sort and discard the DECOY proteins
     # for the correct sorting of accession id of isoform, we have to extract the first part of FASTA description (por ejemplo, sp|P16112-2)
     da = [ [i for i in sorted(s, key=lambda x: _get_desc_id(x[0])) if not (tagDecoy in i[0]) and all(i)] for s in da ]
+    # the proteins without length of protein (without description), go to the end of the list
+    for s in da:
+        s.sort(key=lambda x: '-1'.__eq__(x[2]))    
     # get a list with the tuple 1 (ProteinDescription)
     p = [ [i[0] for i in s] for s in da ]
     try:
@@ -359,8 +362,9 @@ def add_descriptions(df, indb, tagDecoy):
         # unique and without empty
         gr = [ list(filter(None, list(set(i)) )) for i in gr]
         gr = [ ";".join(set(i)) for i in gr ]
-        # get the list of unique species
+        # get the list of unique species and without empty values
         s = [ [_pattern_species(i) for i in j] for j in p ]
+        s = [ list(filter(None, list(set(i)) )) for i in s]
         s = [ ";".join(set(i)) for i in s ]
     except Exception as ex:
         sys.exit("ERROR!! The FASTA file does not contain all protein hits: "+str(ex) )
