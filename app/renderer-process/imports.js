@@ -21,6 +21,47 @@ const { BrowserWindow, dialog } = require('electron').remote
 let mainWindow = BrowserWindow.getFocusedWindow();
 
 
+/*
+ * Events
+ */
+
+// Resize table from the window size
+var resizeId = null;
+function doneResizing() {
+    let winheight = $(window).height();    
+    if ( $('.tab-content').length ) {
+        let newheight = winheight - 156;
+        $(`.tab-content`).height(newheight);
+    }
+    if ( $('.tasktable').length ) {
+        let newheight = winheight - 260;
+        $(`.tasktable`).height(newheight);
+        $(`.wtHolder`).height(newheight);        
+        $(`#page-tasktable-CREATE_ID .tasktable`).height('auto');
+        $(`#page-tasktable-CREATE_ID .wtHolder`).height('auto');
+    }
+    if ( $('#hot_processes_panel').length ) {
+        let newheight = winheight - 175;
+        $(`#hot_processes_panel`).height(newheight);
+    }
+}
+
+// Function when the windows is resize
+$(window).resize(function() {
+    clearTimeout(resizeId);
+    resizeId = setTimeout(doneResizing, 250);
+});
+// Operations when the html document is ready
+$(document).ready(function() {
+    // operations in task-tables
+    if ( $('.tasktable').length ) {
+        // render all task-table
+        $(`.tasktable`).handsontable('render');
+    }
+    // resize panels
+    doneResizing();
+});
+
 
 /*
  * Renderer functions
@@ -46,6 +87,7 @@ function addInputsFileDirectoy(inputs, errsms) {
       }
       else {
         let file = inputs['filePaths'][0];
+        if(!mainWindow) { mainWindow = this.BrowserWindow }; // needed to load the project when comers from processes frontpage
         mainWindow.loadURL(`file://${__dirname}/../wf.html?wfid=load&pdir=${file}`);
       }
     }
@@ -123,30 +165,6 @@ function importHTMLtemplate(wfhref, tid) {
         document.querySelector(`${tid}`).appendChild(clone);
     }
 };
-
-// Resize table from the window size
-var resizeId = null;
-function doneResizing() {
-    let winheight = $(window).height();    
-    if ( $('.tab-content').length ) {
-        let newheight = winheight - 165;
-        $(`.tab-content`).height(newheight);
-    }
-    if ( $('#hot_processes_panel').length ) {
-        let newheight = winheight - 175;
-        $(`#hot_processes_panel`).height(newheight);
-    }
-}
-
-// Function when the windows is resize
-$(window).resize(function() {
-    clearTimeout(resizeId);
-    resizeId = setTimeout(doneResizing, 250);
-});
-// Operations when the html document is ready
-$(document).ready(function() {
-    doneResizing();
-});
 
 // Get the most recent execution directory
 // the files has to be sorted by name
@@ -239,7 +257,7 @@ function extractWorkflowAttributes() {
     let pdir = url_params.get('pdir');
     let wf_id = url_params.get('wfid');
     let cfg = undefined;
-    let pdir_def = `${__dirname}/../data`;
+    let pdir_def = `${__dirname}/../wfs`;
 
     // Apply depending the type of workflow
     if ( !wf_id ) { // mandatory the value
@@ -283,7 +301,7 @@ function extractWorkflowAttributes() {
     }
 
     // Get workflow attributes from the wf_id
-    let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`) );
+    let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../wfs/workflows.json`) );
     let wf = getObjectFromID(wfs, wf_id);
     return [pdir_def, pdir, wf_id, wf, cfg];
 }

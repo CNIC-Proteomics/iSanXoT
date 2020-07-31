@@ -1,44 +1,5 @@
 <template class="task-template" id="panel-advance">
-  <div id="panel-advance">
-    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Enable advanced options" data-off="Disable advanced options" data-onstyle="light" data-offstyle="dark" data-width="250px" data-height="30px" data-size="sm" onchange="toggleAdvParameters(this)" checked>
-  </div>
+  <div id="panel-advance"></div>
 <script>
-  function toggleAdvParameters(t) {
-    // Imported variables
-    let importer = require(`${__dirname}/renderer-process/imports`);
-    let wf_id = importer.wf_id;
-    let wf = importer.wf;
-    let wk_id = importer.getWorkIDFromElements(); // get current work id
-    let cmd_id = importer.getCmdIDFromElements(); // get the current cmd id
-
-    // Get work attributes from the id
-    let wk = importer.getObjectFromID(wf['works'], wk_id);
-    if ( wf === undefined ) {
-      console.log(wk_id);
-      exceptor.showErrorMessageBox('Error Message', `Getting the 'works' attributes from the id`, end=true);
-    }
-
-    // Get cmd attributes from the id
-    let cmd = importer.getObjectFromID(wk['cmds'], cmd_id);
-    if ( cmd === undefined ) {
-      console.log(cmd_id);
-      exceptor.showErrorMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
-    }
-
-    // Get the list of optionals parameters
-    let opt = importer.getIndexParamsWithAttr(cmd['params'], 'type', 'optional');
-    if ( opt === undefined ) {
-      exceptor.showErrorMessageBox('Error Message', `Getting the 'optional parameters'`, end=true);
-    }
-
-    // Show/Hide 'hiddenColumns'
-    if ( $(t).prop('checked') ) {
-      $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': opt, 'indicators': false } });
-    }
-    else {
-      $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': [], 'indicators': false } });
-    }
-  }
-
 </script>
 </template>

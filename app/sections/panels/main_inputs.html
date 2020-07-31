@@ -33,7 +33,7 @@
   </div>
 
   <div class="form-group">
-    <h6 for="select-dbfile">Select protein database</h6>
+    <h6 for="select-dbfile">Select protein database and decoy label</h6>
     <div class="form-group row">
       <div class="form-group row col-sm">
         <select class="custom-select def-dbfile">
@@ -52,6 +52,16 @@
         </div>
       </div>
     </div>
+    <div class="form-group row col-sm-6">
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text labeldecoy">Decoy label</span>
+        </div>
+        <input type="text" class="form-control" placeholder="Write Decoy label of your protein database" aria-describedby="labeldecoy" id="labeldecoy">
+      </div>  
+    </div>
+
+
   </div>
 
   <div class="form-group">
@@ -98,6 +108,7 @@ function addValuesMainInputsPanel() {
         $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #species`).val(`${wf_exec['main_inputs']['species']}`);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #labeldecoy`).val(`${wf_exec['main_inputs']['labeldecoy']}`);
         
         $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).val(`personal`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['main_inputs']['dbfile']}`);
@@ -116,7 +127,8 @@ function addValuesMainInputsPanel() {
    * Events
    */
   // local function for events
-  function addInputsFileDirectoy(id, inputs, errsms) {
+  function extractInputDirectoryFile(inputs, errsms) {
+    let out = undefined;
     if(inputs === undefined) {
       console.log(`${errsms}: input is undefined`);
       exceptor.showErrorMessageBox('Error Message', `${errsms}`);
@@ -134,20 +146,41 @@ function addValuesMainInputsPanel() {
         exceptor.showErrorMessageBox('Error Message', `${errsms}`);
       }
       else {
-        let file = inputs['filePaths'][0];
-        $(`${id}`).val(`${file}`);
+        out = inputs['filePaths'][0];
+      }
+    }
+    return out;
+  };
+  // fill the table with the input files from the given directory
+  function fillInputFilesTable(dir) {
+    // Imported variables
+    let fs = require('fs');
+
+    let files = fs.readdirSync(dir);
+    if ( files !== undefined ) {
+      for (var i = 0; i < files.length; i++) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('setDataAtCell', i, 0, `${dir}/${files[i]}`);
       }
     }
   };
+
+
   // events for the INPUT directory and OUTPUT directory
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-indir`).click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
-      addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #indir`, dirs, `No input directory selected`);
+      let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
+      if ( inpt !== undefined ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${inpt}`);
+        fillInputFilesTable(inpt);
+      }      
     });
   });
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-outdir`).click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
-      addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #outdir`, dirs, `No output directory selected`);
+      let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
+      if ( inpt !== undefined ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${inpt}`);
+      }
     });
   });
 
@@ -161,7 +194,10 @@ function addValuesMainInputsPanel() {
       ]
     };
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
-      addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`, files, `No database file selected`);
+      let inpt = extractInputDirectoryFile(files, `No database file selected`);
+      if ( inpt !== undefined ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${inpt}`);
+      }
     });
   });
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-catfile`).click(function() {
@@ -173,7 +209,10 @@ function addValuesMainInputsPanel() {
       ]
     };
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
-      addInputsFileDirectoy(`#${wk_id} #page-tasktable-${cmd_id} #catfile`, files, `No category file seleted`);
+      let inpt = extractInputDirectoryFile(files, `No category file seleted`);
+      if ( inpt !== undefined ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${inpt}`);
+      }
     });
   });
 

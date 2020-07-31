@@ -1,11 +1,21 @@
-@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+/* @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"; */
+/* @import "https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,600,700"; */
+/* @import "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,500,600,700"; */
+@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700";
+
+* {
+    /* font-family: 'Roboto Mono';
+    font-size: .87rem; */
+    /* font-family: 'Roboto Condensed';
+    font-size: .97rem; */
+    font-family: 'Roboto';
+    font-size: .87rem;
+}
 body {
-    font-family: 'Poppins', sans-serif;
     background: #fafafa;
-    font-size: .77em;
+    font-size: .97rem;
 }
 p {
-    font-family: 'Poppins', sans-serif;
     font-size: 1.1em;
     font-weight: 300;
     line-height: 1.7em;
@@ -71,8 +81,7 @@ input:disabled, button:disabled {
 /* Tab settings */
 .tab-content {
     padding: .1em 0 0 0;
-    /* height: 51.5em; */
-    height: 626px;
+    height: 635px;
 }
 .tabs-main .tab-pane {
     overflow-y: auto;
@@ -91,11 +100,15 @@ input:disabled, button:disabled {
     margin: 0;
     padding: 0;
 }
-div[class^="col-"] {
+/* div[class^="col-"] {
     padding: 0 .5em 0 0;
+} */
+.col-1 {
+    padding: 0 .1em 0 0;
 }
 .col-11 {
-    margin-bottom: 30px;
+    padding: 0 .5em 0 0;
+    margin-bottom: .1em;
 }
 
 #page .page-header {
@@ -106,6 +119,12 @@ div[class^="col-"] {
     padding: .3em;
     text-align: center;
 }
+
+#page-content {
+    padding-left: 0.5em;
+    padding-bottom: 1em;
+}
+
 
 /* sidebar */
 #sidebar .sidebar-header {
@@ -252,8 +271,8 @@ div[class^="col-"] {
 .form-control {
     font-size: inherit;
 }
-#species, #indir, #outdir, #modfile, #dbfile, #catfile, #def-dbfile, #def-catfile,
-.select-indir, .select-outdir, .select-dbfile, .select-catfile {
+#species, #indir, #outdir, #modfile, #dbfile, #catfile, #def-dbfile, #def-catfile, #decoylabel,
+.select-indir, .select-outdir, .select-dbfile, .select-catfile, .custom-select {
     height: 30px;
 }
 section.tab-content > .form-inline {
@@ -269,9 +288,11 @@ section.tab-content > .form-inline {
 #panel-advance {
     margin-top: .6em;
     margin-bottom: .6em;
-    float: right;
+    height: 30px;
+    clear: both;
 }
 .toggle.btn {
+    float: right;
     min-height: 1.875rem;
 }
   

@@ -30,7 +30,7 @@ ISANXOT_SRC_HOME    = f"{os.path.dirname(__file__)}/.."
 ISANXOT_PYTHON_EXEC = sys.executable
 EXPERIMENTS         = None # obtained from the CREATE_ID command
 OUTPUTS_FOR_CMD     = None
-MAIN_INPUTS_NAMDIR  = None
+MAIN_INPUTS_JOBDIR  = None
 MAIN_INPUTS_RELDIR  = None
 MAIN_INPUTS_RSTDIR  = None
 
@@ -205,6 +205,7 @@ def _replace_datparams(dat, trule, label):
         if label in tr:
             l = []
             for d in dat.split(','):
+                d = d.strip() # remove all the leading and trailing whitespace characters
                 l.append( tr.replace(label, d) )
             trule[k] = ";".join(l)
 
@@ -223,8 +224,8 @@ def _transform_report_path(val):
         return ''
 
 def add_datparams(p, trule, val):
-    # remove spaces
-    val = val.replace(" ", "")
+    # remove all the leading and trailing whitespace characters
+    val = val.strip()
     # Replace the label for the value for each section: infiles, outfiles, and parameters
     if p == 'experiment':        
         l = '__WF_'+p.upper()+'__'
@@ -260,6 +261,12 @@ def add_datparams(p, trule, val):
             r = val.replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
 
+    elif p == 'to_gene':
+        l = '__WF_INT_TO__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
     elif p == 'level':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
@@ -285,6 +292,18 @@ def add_datparams(p, trule, val):
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'hig_level':
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    elif p == 'lowhig_level':
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
+
+    elif p == 'inthig_level':
         l = '__WF_'+p.upper()+'__'
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
@@ -352,6 +371,21 @@ def add_rules(row, *trules):
     else:
         if 'input' in row:
             row['output'] = row['input']
+            
+    # Exception in WSPP_SBT command!!
+    # if "to_gene" is "yes", Then, we include the level 'gene'
+    # otherwise, the level has to be 'protein'
+    if 'to_gene' in row and row['to_gene'] == 'yes':
+        row['to_gene'] = 'gene'
+    else:
+        row['to_gene'] = 'protein'  
+
+    # Exception in SBT command!!
+    # if "lowhig_level" and "inthig_level" don't exit, Then, we include the "low_level"ALL and "int_level"ALL, respectivelly.
+    if not 'lowhig_level' in row and 'low_level' in row:
+        row['lowhig_level'] = row['low_level']+'all'
+    if not 'inthig_level' in row and 'int_level' in row:
+        row['inthig_level'] = row['int_level']+'all'        
 
     # copy the given rule
     r = list(copy.deepcopy(trules))
@@ -516,12 +550,12 @@ def main(args):
 
     # assign the global variables
     # global MAIN_INPUTS_EXPDIR
-    global MAIN_INPUTS_NAMDIR
+    global MAIN_INPUTS_JOBDIR
     global MAIN_INPUTS_RELDIR
     global MAIN_INPUTS_RSTDIR
     # global MAIN_INPUTS_LOGDIR
     MAIN_INPUTS_EXPDIR = tpl['prj_workspace']['expdir']
-    MAIN_INPUTS_NAMDIR = tpl['prj_workspace']['namdir']
+    MAIN_INPUTS_JOBDIR = tpl['prj_workspace']['jobdir']
     MAIN_INPUTS_RELDIR = tpl['prj_workspace']['reldir']
     MAIN_INPUTS_RSTDIR = tpl['prj_workspace']['rstdir']
     MAIN_INPUTS_LOGDIR = tpl['prj_workspace']['logdir']
@@ -535,7 +569,7 @@ def main(args):
             '__NCPU__':                     str(tpl['ncpu']),
             '__WF_VERBOSE__':               str(tpl['verbose']),
             '__MAIN_INPUTS_EXPDIR__':       MAIN_INPUTS_EXPDIR,
-            '__MAIN_INPUTS_NAMDIR__':       MAIN_INPUTS_NAMDIR,
+            '__MAIN_INPUTS_NAMDIR__':       MAIN_INPUTS_JOBDIR,
             '__MAIN_INPUTS_RELDIR__':       MAIN_INPUTS_RELDIR,
             '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
             '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
@@ -544,7 +578,7 @@ def main(args):
             '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
             '__SPECIES__':                  tpl['main_inputs']['species'],
-            # '__LABEL_DECOY__':              tpl['main_inputs']['label_decoy'],
+            '__LABEL_DECOY__':              tpl['main_inputs']['labeldecoy'],
     }
     # add the replacements for the data files of tasktable commands
     for datfile in tpl['datfiles']:

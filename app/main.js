@@ -14,16 +14,22 @@ let template = [
     { label: 'Main Page', click() { mainWindow.loadFile('index.html') } },
     { label: 'Open Project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
     { label: 'Save Project', accelerator: 'Ctrl+S', click() { mainWindow.webContents.send('saveProject') } },
-    { label: 'Validate Project', accelerator: 'Ctrl+V', click() { mainWindow.webContents.send('validateProject') } },
+    { label: 'Validate Project', accelerator: 'Ctrl+Shift+V', click() { mainWindow.webContents.send('validateProject') } },
     { type: 'separator' },
     { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { label: "Workflows", submenu: [
-    { label: 'Basic Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
-    { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
+    { label: 'Basic', submenu: [
+      // { label: 'Basic - Init', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
+      { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/init`) } },
+      { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/sample`) } },
+    ]},
+    { label: 'PTM', submenu: [
+      // { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
+      { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/init`) } },
+      { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/sample`) } },
+    ]},
     // { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
-    { type: 'separator' },
-    { label: 'Processes', click() { mainWindow.loadFile('processes.html') } }
   ]},
   { label: "Processes", submenu: [
     { label: 'Main page', click() { mainWindow.loadFile('processes.html') } }

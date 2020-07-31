@@ -141,7 +141,7 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
                     throw "the list of id headers contains undefined value";
                 }
             } catch (err) {
-                exceptor.showErrorMessageBox('Error Message', `Extracting the id headers of ${cmd_id}: ${err}`, end=true);    
+                exceptor.showErrorMessageBox('Error Message', `Extracting the id headers of ${cmd_id}: ${err}`, end=true);
             }
             // export tasktable to CSV
             try {
@@ -155,6 +155,18 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
                 fs.writeFileSync(dte_file, cont, 'utf-8');
             } catch (err) {    
                 exceptor.showErrorMessageBox('Error Message', `Writing the tasktable file ${dte_file}: ${err}`, end=true);    
+            }
+            // come back the names in the columns
+            // get the id header based on 'workflow.json'
+            try {
+                let header_names = cmd['params'].map(a => a.name);
+                if (header_names.includes(undefined)) {
+                    throw "the list of id headers contains undefined value";
+                }
+                // rename column headers   
+                $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'colHeaders': header_names });
+            } catch (err) {
+                exceptor.showErrorMessageBox('Error Message', `Extracting the names headers of ${cmd_id}: ${err}`, end=true);
             }
         }
     }
@@ -275,14 +287,14 @@ function validSnakeMake(params) {
     --configfile "${params.configfile}" \
     --snakefile "${smkfile}" \
     --cores ${params.nthreads} \
-    --directory "${params.directory}" \
-    --rerun-incomplete --keep-going`;
+    --directory "${params.directory}"`;
     let cmd_unlock = `${cmd_smk} --unlock `;
     let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;
     // Sync process that Unlock the output directory
     // First we unlock the ouput directory
-    let cmd1 = `${cmd_unlock} && ${cmd_clean}`
-    execSyncProcess('preparing the workspace', cmd1);
+    // let cmd = `${cmd_unlock} && ${cmd_clean}`
+    let cmd = `${cmd_unlock}`
+    execSyncProcess('preparing the workspace', cmd);
 }
 function execSnakeMake(params) {
     let smkfile = `${process.env.ISANXOT_SRC_HOME}/wfs/wf_sanxot.smk`;
@@ -292,11 +304,8 @@ function execSnakeMake(params) {
     --cores ${params.nthreads} \
     --directory "${params.directory}" \
     --rerun-incomplete --keep-going`;
-    let cmd_unlock = `${cmd_smk} --unlock `;
-    let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;
-    // Then, we execute the workflow
-    let cmd2 = `${cmd_smk} 1> "${params.logfile}" 2>&1`;
-    execProcess('executing the workflow', cmd2, params.logfile, params.directory);
+    let cmd = `${cmd_smk} 1> "${params.logfile}" 2>&1`;
+    execProcess('executing the workflow', cmd, params.logfile, params.directory);
 }
 /*
  * Events

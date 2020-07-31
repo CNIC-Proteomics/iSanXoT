@@ -4,7 +4,7 @@
 let fs = require('fs');
 
 // Extract the workflow attributes
-let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../data/workflows.json`));
+let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../wfs/workflows.json`));
 
 // Create the html accordion for each workflow
 // Go through the works of the workflow
@@ -21,7 +21,8 @@ for (var i = 0; i < wfs.length; i++) {
     <div class="card-body">
         <p>${wf_sdesc}</p>
         <div class="text-right">
-          <a href="wf.html?wfid=${wf_id}&pdir=${__dirname}/../data" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
+          <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/init" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
+          <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/sample" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow with a sample data</a>
         </div>
     </div>
   </div>

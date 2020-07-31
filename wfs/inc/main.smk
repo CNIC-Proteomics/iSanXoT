@@ -35,7 +35,8 @@ def run_rule(input, output, log, params, wildcards):
     '''
     cr = params['index']
     crule = CRULES[cr]
-    cmd = "{}".format(crule['cline'])
+    cmd = crule['cline']
+    cmd = cmd.replace('{','{{').replace('}','}}') # scape brackets for the acception in the command line
     # cmd = "touch "
     # for out in output:
     #     cmd += " \"{}\" ".format(out)

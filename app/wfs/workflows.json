@@ -5,7 +5,7 @@
   "description": "Long description for Basic Workflow. You can include HTML",
   "prj_workspace": {
     "expdir": "exps",
-    "namdir": "names",
+    "jobdir": "jobs",
     "reldir": "rels",
     "rstdir": "reports",
     "logdir": "logs"    
@@ -39,34 +39,43 @@
         { "type": "required", "id": "experiment", "name": "Experiment" },
         { "type": "required", "id": "threshold", "name": "Threshold" },
         { "type": "required", "id": "jump_areas", "name": "Jump areas" },
-        { "type": "required", "id": "lab_decoy", "name": "Label decoy" },
         { "type": "required", "id": "fdr", "name": "FDR" },
-        { "type": "required", "id": "type_xcorr", "name": "Type xCorr" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
+        { "type": "required", "id": "type_xcorr", "name": "Type xCorr" }
       ]
     },{
       "id": "MASTERQ",
-      "label": "Rels. p2q",
+      "label": "MasterQ",
       "visible": true,
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment", "readOnly": true },
-        { "type": "required", "id": "pretxt", "name": "Regex" },
-        { "type": "required", "id": "lab_decoy", "name": "Label decoy" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
+        { "type": "required", "id": "pretxt", "name": "Regex", "readOnly": true },
+        { "type": "required", "id": "lab_decoy", "name": "Label decoy", "readOnly": true }
       ]
     },{
-      "id": "RELS_TABLE_SPEC",
-      "label": "Rels. s2p",
-      "visible": true,
+      "id": "RELS_TABLE_REQUIRED",
+      "label": "Rels. table",
+      "visible": false,
       "panel": "panels/advance.html",
       "params": [
-        { "type": "required", "id": "input", "name": "Input", "readOnly": true },
-        { "type": "required", "id": "output", "name": "Output", "readOnly": true },
+        { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "inf_header", "name": "Lower header" },
         { "type": "required", "id": "sup_header", "name": "Higher header" },
         { "type": "required", "id": "3rd_headers", "name": "3rd header" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
+        { "type": "required", "id": "output", "name": "Output" }
+      ],
+      "readonly_rows": [0,1,2,3,4,5]
+    },{
+      "id": "RELS_TABLE",
+      "label": "Rels. table",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "inf_header", "name": "Lower header" },
+        { "type": "required", "id": "sup_header", "name": "Higher header" },
+        { "type": "required", "id": "3rd_headers", "name": "3rd header" },
+        { "type": "required", "id": "output", "name": "Output" }
       ]
     }]
   },{
@@ -78,12 +87,13 @@
       "id": "RATIOS_WSPP-WSPP_SBT",
       "label": "WSPP - SBT",
       "visible": true,
-      "panel": "panels/advance.html",
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "output", "name": "Name" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Name" },
+        { "type": "optional", "id": "to_gene", "name": "To Gene", "select": ["yes", "no"]},
         { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
         { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
         { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
@@ -102,14 +112,14 @@
     "description": "Short description for the current work (tab)",
     "file": "integration.tsv",
     "cmds": [{
-      "id": "COMBINE",
-      "label": "Combine",
+      "id": "NORCOMBINE",
+      "label": "NorCombine",
       "visible": true,
-      "panel": "panels/advance.html",
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "level", "name": "Level", "select": ["peptide", "protein", "category", "all"] },
-        { "type": "required", "id": "norm", "name": "Norm", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "all"] },
         { "type": "required", "id": "output", "name": "Output" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
@@ -120,11 +130,11 @@
       "id": "RATIOS_INT",
       "label": "Calculate ratios",
       "visible": true,
-      "panel": "panels/advance.html",
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "level", "name": "Level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "v_method", "name": "V method", "select": ["form", "max", "avg"] },
         { "type": "required", "id": "output", "name": "Output" },
         { "type": "optional", "id": "tag", "name": "Tag" },
@@ -136,11 +146,11 @@
       "id": "INTEGRATE",
       "label": "Integrate",
       "visible": true,
-      "panel": "panels/advance.html",
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "categoryall"] },
         { "type": "optional", "id": "output", "name": "Output" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
@@ -151,13 +161,14 @@
       "id": "SBT",
       "label": "System Biology Triangle",
       "visible": true,
-      "panel": "panels/advance.html",
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
-        { "type": "required", "id": "int_level", "name": "Intermediate level", "select": ["peptide", "protein", "category", "all"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "lowhig_level", "name": "Lower-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "categoryall"] },
+        { "type": "optional", "id": "inthig_level", "name": "Int-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "categoryall"] },
         { "type": "optional", "id": "l>i_tag", "name": "low>int Tag" },
         { "type": "optional", "id": "l>h_tag", "name": "low>hig Tag" },
         { "type": "optional", "id": "i>h_tag", "name": "int>hig Tag" },
@@ -168,19 +179,27 @@
         { "type": "optional", "id": "i>h_var(x)", "name": "int>hig Var(x)" },
         { "type": "optional", "id": "more_params", "name": "More params" }
       ]
-    },{
-      "id": "RELS_TABLE",
-      "label": "Create Rels.",
-      "visible": false,
-      "panel": "panels/advance.html",
+    }]
+  },{
+    "id": "system",
+    "label": "System Biology",
+    "description": "Short description for the current work (tab)",
+    "file": "system.tsv",
+    "cmds": [{
+      "id": "SANSON",
+      "label": "Similar categories",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "inf_header", "name": "Lower header" },
-        { "type": "required", "id": "sup_header", "name": "Higher header" },
-        { "type": "required", "id": "3rd_headers", "name": "3rd header" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "reported_vars", "name": "Reported vars" },
         { "type": "required", "id": "output", "name": "Output" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
-      ]  
+        { "type": "required", "id": "rep_file", "name": "Join with" },
+        { "type": "optional", "id": "filter", "name": "Filter" },
+        { "type": "optional", "id": "ext_rep_file", "name": "Join with ext. file" }
+      ]
     }]
   },{
     "id": "reports",
@@ -191,11 +210,11 @@
       "id": "REPORT",
       "label": "Report",
       "visible": true,
-      "panel": "panels/advance.html",
+      "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "low_level", "name": "Lower level", "select": ["peptide", "protein", "category", "all"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "select": ["peptide", "protein", "category", "all"] },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "reported_vars", "name": "Reported vars" },
         { "type": "required", "id": "output", "name": "Output" },
         { "type": "required", "id": "rep_file", "name": "Join with" },

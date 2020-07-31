@@ -89,7 +89,7 @@ function extract_list_cmds(wk, tbl) {
   for (var i = 0; i < tbl.length; i++) {
     let l = tbl[i];
     if ( l && l.length > 0 ) {
-      if ( l[0].startsWith('#') ) {
+      if ( l[0] !== undefined && l[0].startsWith('#') ) {
         id = l[0];
         id = id.replace('#','');
         let header = tbl[i+1];
@@ -233,8 +233,11 @@ for (var i = 0; i < wf['works'].length; i++) {
     // get the index of optional parameters
     let cmd_params_opt_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'type', 'optional');
 
-    // get the index of readOnly parameters
-    let cmd_params_readonly_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'readOnly', true);
+    // get the index of Columns with readOnly parameter
+    let cmd_params_readonlycol_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'readOnly', true);
+
+    // get the index of Rows with readOnly parameter
+    let cmd_params_readonlyrow_index = cmd_attr['readonly_rows'];
     
     // get the index of DropDown parameters
     // Example:
@@ -265,6 +268,8 @@ for (var i = 0; i < wf['works'].length; i++) {
     // get the index of select parameters
     let [cmd_params_select_index, cmd_params_select] = importer.getIndexParamsWithKey(cmd_attr['params'], 'select');
     
+    // get the index of dropdown parameters
+    let [cmd_params_dropdown_index, cmd_params_dropdown] = importer.getIndexParamsWithKey(cmd_attr['params'], 'dropdown');
 
 
 
@@ -303,8 +308,12 @@ for (var i = 0; i < wf['works'].length; i++) {
           },
           cells: function (row, col) {
             var cellProperties = {};
+            // readOnly row (coming from the wortkflow.json config file)
+            if (cmd_params_readonlyrow_index && cmd_params_readonlyrow_index.length > 0 && cmd_params_readonlyrow_index.includes(row)) {
+              cellProperties.readOnly = true;
+            }
             // readOnly column (coming from the wortkflow.json config file)
-            if (cmd_params_readonly_index && cmd_params_readonly_index.length > 0 && cmd_params_readonly_index.includes(col)) {
+            if (cmd_params_readonlycol_index && cmd_params_readonlycol_index.length > 0 && cmd_params_readonlycol_index.includes(col)) {
               cellProperties.readOnly = true;
             }
             // column with handsontables inside (coming from the wortkflow.json config file)
@@ -329,6 +338,16 @@ for (var i = 0; i < wf['works'].length; i++) {
             if (cmd_params_select_index && cmd_params_select_index.length > 0 && cmd_params_select_index.includes(col)) {
               this.editor = 'select';
               this.selectOptions = cmd_params_select[col];
+            }
+            // column with handsontables inside (coming from the wortkflow.json config file)
+            if (cmd_params_dropdown_index && cmd_params_dropdown_index.length > 0 && cmd_params_dropdown_index.includes(col)) {
+              // this.editor = 'dropdown';
+              this.source = cmd_params_dropdown[col];
+              this.type = "autocomplete";
+              this.strict = false;
+              // this.filter = true;
+              this.visibleRows = 10;
+              this.trimDropdown = false;
             }
             return cellProperties;
           },
