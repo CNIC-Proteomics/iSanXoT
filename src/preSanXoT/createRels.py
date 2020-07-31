@@ -5,6 +5,7 @@ import os
 import sys
 import argparse
 import logging
+import re
 import pandas as pd
 import concurrent.futures
 
@@ -26,11 +27,28 @@ def read_infiles(file):
     return indat
 
 def extract_column(idf, df, level):
-    for s in level.split("-"):
-        if df[level].isnull().all():
-            df[level] = idf[s]
-        else:
-            df[level] = df[level] + "-" + idf[s]
+    # check if the level is a constant value: [1]
+    # check if the level is a the order of column: {1}
+    # otherwise, the level is the list of column names
+    if '[' in level and ']' and level:
+        c = re.findall(r'\[([^\]]*)\]', level)[0]
+        # create a column with the given constant
+        # extract the column with the constant
+        idf[level] = c
+        df[level] = idf[level]
+    elif '{' in level and '}' and level:
+        c = int(re.findall(r'\{([^\}]*)\}', level)[0])
+        # rename the output header
+        df.rename(columns={level: idf.columns[c]}, inplace=True)
+        # extract the column by position
+        df[idf.columns[c]] = idf[idf.columns[c]]
+    else:
+        # extract the list of columns by name separated by the delimeter '-'
+        for s in level.split("-"):
+            if df[level].isnull().all():
+                df[level] = idf[s]
+            else:
+                df[level] = df[level] + "-" + idf[s]
     return df
 
 def main(args):
@@ -52,6 +70,11 @@ def main(args):
 
     logging.info("extract the sup level")
     outdat = extract_column(indat, outdat, args.sup_header)
+
+    logging.info("change the order of columns")
+    cols = outdat.columns.to_list()
+    cols = [cols[i] for i in [1,0]]
+    outdat = outdat[cols]
 
     if args.thr_header:
         logging.info("extract the third level")
