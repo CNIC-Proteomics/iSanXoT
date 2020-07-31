@@ -342,39 +342,41 @@ Warning: no information included for Pareto front calculation.
 	
 	stats.saveTextFile(outputGVFile, GVFileText)
 	
-	if "win" in sys.platform:
-		DOTCommandLine = """"%s" -Gdpi=%f -Gratio=%f -T%s "%s" -o"%s\"""" % (DOTProgram, graphDPI, graphRatio, graphFileFormat, outputGVFile, simGraphFile)
-	else:
-		DOTCommandLine = "%s -Gdpi=%f -Gratio=%f -T%s %s -o%s" % (DOTProgram, graphDPI, graphRatio, graphFileFormat, outputGVFile, simGraphFile)
-	print(DOTCommandLine)
-	
-	try:
-		if "win" in sys.platform:
-			subprocess.call(DOTCommandLine)
-		else:
-			subprocess.call(DOTCommandLine, shell=True)
-	except:
-		if "win" in sys.platform:
-			print("""
-	*** ERROR ***
-	The graph could not be generated, because the dot.exe program could not be
-	found. Please, check:
+    # begin: jmrc
+# 	if "win" in sys.platform:
+# 		DOTCommandLine = """"%s" -Gdpi=%f -Gratio=%f -T%s "%s" -o"%s\"""" % (DOTProgram, graphDPI, graphRatio, graphFileFormat, outputGVFile, simGraphFile)
+# 	else:
+# 		DOTCommandLine = "%s -Gdpi=%f -Gratio=%f -T%s %s -o%s" % (DOTProgram, graphDPI, graphRatio, graphFileFormat, outputGVFile, simGraphFile)
+# 	print(DOTCommandLine)
+# 	
+# 	try:
+# 		if "win" in sys.platform:
+# 			subprocess.call(DOTCommandLine)
+# 		else:
+# 			subprocess.call(DOTCommandLine, shell=True)
+# 	except:
+# 		if "win" in sys.platform:
+# 			print("""
+# 	*** ERROR ***
+# 	The graph could not be generated, because the dot.exe program could not be
+# 	found. Please, check:
 
-	   1) that you have installed Graphviz,
-		  which is freely available at http://www.graphviz.org/
-	   2) that you have included the path of the program folder in the dot.ini
-		  file (which should be in the same folder as this program)
-	""")
-		else:
-			print("""
-	*** ERROR ***
-	The graph could not be generated, because the dot program could not be
-	found. Please, check:
+# 	   1) that you have installed Graphviz,
+# 		  which is freely available at http://www.graphviz.org/
+# 	   2) that you have included the path of the program folder in the dot.ini
+# 		  file (which should be in the same folder as this program)
+# 	""")
+# 		else:
+# 			print("""
+# 	*** ERROR ***
+# 	The graph could not be generated, because the dot program could not be
+# 	found. Please, check:
 
-	   1) that you have installed Graphviz,
-		  which is freely available at http://www.graphviz.org/
-	   2) that the dot program is available from the shell.
-	""")
+# 	   1) that you have installed Graphviz,
+# 		  which is freely available at http://www.graphviz.org/
+# 	   2) that the dot program is available from the shell.
+# 	""")
+    # end: jmrc
 	
 	return
 	
@@ -404,8 +406,9 @@ def SMatrix(data = None):
 			NMatrix.append(currentRowN)
 		
 		else:
-			
-			print("analysing element #%i: %s" % ((j - 1), str(data[j - 1][0])))
+			# begin: jmrc
+			# print("analysing element #%i: %s" % ((j - 1), str(data[j - 1][0])))
+            # end: jmrc
 			currentRow = []
 			currentRowN = []
 			for i in range(N + 1):
@@ -702,7 +705,11 @@ def getBestFNumber(similarityMatrix,
 
 		FNumberArray.sort()
 	
-	medianFNumber = FNumberArray[(len(FNumberArray) - 1) / 2]
+	# begin: jmrc
+    # Fix the error: TypeError: list indices must be integers or slices, not float
+	idx = int( (len(FNumberArray) - 1) / 2)
+	medianFNumber = FNumberArray[idx]
+	# end: jmrc
 	booleanSimMatrix = stats.booleaniseMatrix(similarityMatrix, threshold = medianFNumber)
 	bestClusterVector, message = getClusters(booleanSimMatrix)
 	
@@ -971,7 +978,9 @@ def main(argv):
 		elif opt in ("-e", "--similarity"):
 			similarityLimit = float(arg)
 		elif opt in ("-d", "--dotfile"):
-			dotFile = float(arg)
+            # begin: jmrc
+			dotFile = arg
+            # end: jmrc
 		elif opt in ("-s", "--outcluster"):
 			outCluster = float(arg)
 		elif opt in ("-b", "--nosubstats"):
@@ -1149,7 +1158,7 @@ def main(argv):
 			# this includes the default value = -1
 			FNumber, bestBooleanSimMatrix, bestClusterVector, CNumber = \
 				getBestFNumber(similarityMatrix,
-					verbose = True,
+					verbose = False,
 					stepFNumber = 0.01,
 					initialFNumber = 0.0,
 					finalFNumber = 1.0)
@@ -1160,7 +1169,7 @@ def main(argv):
 		else:
 			FNumber, bestBooleanSimMatrix, bestClusterVector, CNumber = \
 				getBestFNumber(similarityMatrix,
-					verbose = True,
+					verbose = False,
 					stepFNumber = 0.0,
 					initialFNumber = similarityLimit,
 					finalFNumber = similarityLimit)
@@ -1168,7 +1177,9 @@ def main(argv):
 			logList.append([""])
 			logList.append(["Creating DOT graph for the given FNumber = %f." % FNumber])
 			
-		print("Best FNumber: %f" % FNumber)
+		# begin: jmrc
+		# print("Best FNumber: %f" % FNumber)
+        # end: jmrc
 		
 		paretoInfo, extraDataWithClusters = getParetoInfo(clusterVector = bestClusterVector,
 						extraData = extraData)
@@ -1204,4 +1215,19 @@ def main(argv):
 #######################################################
 
 if __name__ == "__main__":
+    # begin: jmrc
+    # get the name of script with the type of step (if apply)
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    if '-a' in sys.argv:
+        i = sys.argv.index('-a')
+        s = sys.argv[i+1]
+        s = s.upper()+'_' if not s.startswith('-') else ''
+        script_name = s + script_name
+    print( "{} - {} - {} - start script : {}".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p"), " ".join([x for x in sys.argv])) )
+    # end: jmrc
+
     main(sys.argv[1:])
+    
+    # begin: jmrc
+    print( "{} - {} - {} - end script".format(script_name, os.getpid(), strftime("%m/%d/%Y %H:%M:%S %p")) )
+    # end: jmrc
