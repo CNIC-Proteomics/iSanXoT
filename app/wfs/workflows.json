@@ -45,7 +45,7 @@
     },{
       "id": "MASTERQ",
       "label": "MasterQ",
-      "visible": true,
+      "visible": false,
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment", "readOnly": true },
@@ -93,7 +93,6 @@
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
         { "type": "required", "id": "output", "name": "Name" },
-        { "type": "optional", "id": "to_gene", "name": "To Gene", "select": ["yes", "no"]},
         { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
         { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
         { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
@@ -150,7 +149,7 @@
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "categoryall"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "optional", "id": "output", "name": "Output" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
@@ -167,8 +166,8 @@
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "optional", "id": "output", "name": "Output" },
-        { "type": "optional", "id": "lowhig_level", "name": "Lower-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "categoryall"] },
-        { "type": "optional", "id": "inthig_level", "name": "Int-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "categoryall"] },
+        { "type": "optional", "id": "lowhig_level", "name": "Lower-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "inthig_level", "name": "Int-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "optional", "id": "l>i_tag", "name": "low>int Tag" },
         { "type": "optional", "id": "l>h_tag", "name": "low>hig Tag" },
         { "type": "optional", "id": "i>h_tag", "name": "int>hig Tag" },
@@ -212,7 +211,7 @@
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "required", "id": "reported_vars", "name": "Reported vars" },
         { "type": "required", "id": "output", "name": "Output" },
         { "type": "required", "id": "rep_file", "name": "Join with" },

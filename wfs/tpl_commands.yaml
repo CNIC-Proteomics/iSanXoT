@@ -16,7 +16,7 @@ commands:
       outdir:
         -o: __MAIN_INPUTS_EXPDIR__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createID.py" -w __NCPU__ __WF_VERBOSE__'
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createID.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
 
 
@@ -232,25 +232,25 @@ commands:
   - name: wspp_p2q_sanxot1
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __MAIN_INPUTS_RELDIR__/peptide2__WF_INT_TO__.tsv
+      -r: __MAIN_INPUTS_RELDIR__/peptide2protein.tsv
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     parameters:
       anal:
-        -a: peptide2__WF_INT_TO__
+        -a: peptide2protein
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_p2q_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __MAIN_INPUTS_RELDIR__/peptide2__WF_INT_TO__.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___variance.txt
+      -r: __MAIN_INPUTS_RELDIR__/peptide2protein.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
     parameters:
       anal:
-        -a: peptide2__WF_INT_TO__
+        -a: peptide2protein
       p>q_fdr:
         -f: 0.01
       p>q_var(x):
@@ -260,15 +260,15 @@ commands:
   - name: wspp_p2q_sanxot2
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___variance.txt
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___lowerNormV.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
     parameters:
       anal:
-        -a: peptide2__WF_INT_TO__
+        -a: peptide2protein
       p>q_var(x):
         -v: ''
       p>q_tag:
@@ -279,26 +279,26 @@ commands:
   # Rule: protein2category or gene2category ---
   - name: wspp_q2c_sanxot1
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -r: __MAIN_INPUTS_CATFILE__
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -r: __MAIN_INPUTS_RELDIR__/protein2category.tsv
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
     parameters:
       anal:
-        -a: __WF_INT_TO__2category
+        -a: protein2category
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_q2c_sanxotsieve
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -r: __MAIN_INPUTS_CATFILE__
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -r: __MAIN_INPUTS_RELDIR__/protein2category.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
     parameters:
       anal:
-        -a: __WF_INT_TO__2category
+        -a: protein2category
       q>c_fdr:
         -f: 0.01
       q>c_var(x):
@@ -307,16 +307,16 @@ commands:
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_q2c_sanxot2
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/category.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_lowerNormV.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormV.tsv
     parameters:
       anal:
-        -a: __WF_INT_TO__2category
+        -a: protein2category
       q>c_var(x):
         -v: ''
       q>c_tag:
@@ -336,19 +336,19 @@ commands:
       -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     parameters:
       anal:
-        -a: 'sbt_p2a'
+        -a: peptide2peptideall
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_p2a_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __MAIN_INPUTS_RELDIR__/peptide2peptideall.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___variance.txt
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
       -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
     parameters:
       anal:
-        -a: 'sbt_p2a'
+        -a: peptide2peptideall
       l>h_fdr:
         -f: 0
     more_params: ''
@@ -357,60 +357,60 @@ commands:
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2__WF_INT_TO___variance.txt
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptideall.tsv
       -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormV.tsv
     parameters:
       anal:
-        -a: 'sbt_p2a'
+        -a: peptide2peptideall
       l>h_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: __WF_INT_TO__2all (lower to high) ---
+    # Rule: protein2all (lower to high) ---
     # In SBT, Var_low>high is always the same than Var_low>int
     # In WSPP-SBT, FDR_low>high = 0
   - name: wspp_q2a_sanxot1
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_INT_TO__2__WF_INT_TO__all.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -r: __MAIN_INPUTS_RELDIR__/protein2proteinall.tsv
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2__WF_INT_TO__all_outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2__WF_INT_TO__all_variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     parameters:
       anal:
-        -a: 'sbt_q2a'
+        -a: protein2proteinall
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_q2a_sanxotsieve
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_INT_TO__2__WF_INT_TO__all.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -r: __MAIN_INPUTS_RELDIR__/protein2proteinall.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2__WF_INT_TO__all_tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
     parameters:
       anal:
-        -a: 'sbt_q2a'
+        -a: protein2proteinall
       l>h_fdr:
         -f: 0
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_q2a_sanxot2
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2__WF_INT_TO__all_tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2category_variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__all.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2__WF_INT_TO__all_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_TO__2__WF_INT_TO__all_lowerNormV.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/proteinall.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
     parameters:
       anal:
-        -a: 'sbt_q2a'
+        -a: protein2proteinall
       l>h_tag:
         --tags: '!out'
     more_params: ''
@@ -428,7 +428,7 @@ commands:
       -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
     parameters:
       anal:
-        -a: 'sbt_c2a'
+        -a: category2categoryall
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_c2a_sanxotsieve
@@ -439,7 +439,7 @@ commands:
       -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
     parameters:
       anal:
-        -a: 'sbt_c2a'
+        -a: category2categoryall
       i>h_fdr:
         -f: 0
       i>h_var(x):
@@ -456,7 +456,7 @@ commands:
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
     parameters:
       anal:
-        -a: 'sbt_c2a'
+        -a: category2categoryall
       i>h_var(x):
         -v: 0
       i>h_tag:
@@ -564,15 +564,15 @@ commands:
     # Rule: calcultate ratios ---
   - name: calculate_ratios
     infiles:
-      -i: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_NUM__/**/__WF_LEVEL__.tsv
-      -s: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_DEN__/**/__WF_LEVEL__.tsv
+      -ii: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_NUM__/**/__WF_LEVEL__.tsv
+      -dd: __MAIN_INPUTS_NAMDIR__/__WF_RATIO_DEN__/**/__WF_LEVEL__.tsv
     outfiles:
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
     parameters:
       v_method:
         -v: 'max'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/calculateRatios.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/calculateRatios.py" -w __NCPU__ __WF_VERBOSE__'
 
 ###################
 
@@ -595,8 +595,8 @@ commands:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
     parameters:
-      hig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: int_sanxotsieve
@@ -607,8 +607,8 @@ commands:
     outfiles:
       -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
     parameters:
-      hig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       fdr:
         -f: 0.01
       var(x):
@@ -625,8 +625,8 @@ commands:
       -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormW.tsv
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormV.tsv
     parameters:
-      hig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       var(x):
         -v: ''
       tag:
@@ -654,8 +654,8 @@ commands:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___variance.txt
     parameters:
-      int_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: sbt_l2i_sanxotsieve
@@ -666,8 +666,8 @@ commands:
     outfiles:
       -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___tagged.tsv
     parameters:
-      int_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
       l>i_fdr:
         -f: 0.01
       l>i_var(x):
@@ -684,8 +684,8 @@ commands:
       -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___lowerNormW.tsv
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___lowerNormV.tsv
     parameters:
-      int_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
       l>i_var(x):
         -v: ''
       l>i_tag:
@@ -702,8 +702,8 @@ commands:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___variance.txt
     parameters:
-      lowhig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: sbt_l2h_sanxotsieve
@@ -714,8 +714,8 @@ commands:
     outfiles:
       -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___tagged.tsv
     parameters:
-      lowhig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
       l>h_fdr:
         -f: 0
     more_params: ''
@@ -730,8 +730,8 @@ commands:
       -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___lowerNormW.tsv
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___lowerNormV.tsv
     parameters:
-      lowhig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
       l>h_tag:
         --tags: '!out'
     more_params: ''
@@ -746,8 +746,8 @@ commands:
       -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outStats.tsv
       -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___variance.txt
     parameters:
-      inthig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: sbt_i2h_sanxotsieve
@@ -757,8 +757,8 @@ commands:
     outfiles:
       -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___tagged.tsv
     parameters:
-      inthig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
       i>h_fdr:
         -f: 0
       i>h_var(x):
@@ -774,8 +774,8 @@ commands:
       -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormW.tsv
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormV.tsv
     parameters:
-      inthig_level:
-        -a: 'wspp'
+      anal:
+        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
       i>h_var(x):
         -v: 0
       i>h_tag:
@@ -816,7 +816,7 @@ commands:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___graphviz.dot
     parameters:
       anal:
-        -a: 'sanson'
+        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanson.py" '
 

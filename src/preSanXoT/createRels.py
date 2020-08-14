@@ -51,6 +51,9 @@ def extract_column(idf, df, level):
                 df[level] = df[level] + "-" + idf[s]
     return df
 
+#################
+# Main function #
+#################
 def main(args):
     '''
     Main function
