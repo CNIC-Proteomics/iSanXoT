@@ -56,7 +56,7 @@ CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/get-pip.py"  --no-warn-s
 ECHO **
 ECHO **
 ECHO ** install required packages
-CMD /C " "%PYTHON3x_HOME%/tools/Scripts/pip3.exe" install numpy fsspec matplotlib scipy snakemake pandas pprint multiprocess times more-itertools concurrent-utils dask toolz cloudpickle distributed biopython --no-warn-script-location "
+CMD /C " "%PYTHON3x_HOME%/tools/Scripts/pip3.exe" install numpy fsspec matplotlib scipy snakemake pandas multiprocess times more-itertools concurrent-utils dask toolz cloudpickle distributed biopython --no-warn-script-location "
 
 
 :: download and install npm ----------------------
