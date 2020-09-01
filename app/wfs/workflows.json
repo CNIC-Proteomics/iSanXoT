@@ -194,7 +194,10 @@
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "all"] },
-        { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
         { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     }]

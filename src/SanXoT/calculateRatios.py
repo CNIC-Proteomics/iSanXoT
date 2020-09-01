@@ -40,19 +40,21 @@ def main(args):
     Main function
     '''
     logging.info("read 'numaretor' files")
+    # df_num = indat = pd.read_csv(args.numfiles, sep="\t", na_values=['NA'], low_memory=False)
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
         df_num = executor.map(read_infiles,args.numfiles.split(";"))
     df_num = pd.concat(df_num)
     
     
     logging.info("read 'denominator' files")
+    # df_den = indat = pd.read_csv(args.denfiles, sep="\t", na_values=['NA'], low_memory=False)
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
         df_den = executor.map(read_infiles,args.denfiles.split(";"))
     df_den = pd.concat(df_den)
     
     
-    logging.info("group by the id and calculate the mean for all denominators")
-    df_den = df_den.groupby('idsup').mean()
+    # logging.info("group by the id and calculate the mean for all denominators") 
+    # df_den = df_den.groupby('idsup').mean()
     
     
     # add suffix, except some columns

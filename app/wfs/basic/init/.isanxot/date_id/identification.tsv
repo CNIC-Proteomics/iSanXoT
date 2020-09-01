@@ -11,7 +11,7 @@ __MAIN_INPUTS_EXPDIR__/*/ID-fdr.tsv	Spectrum_File-Scan-Charge	SequenceMod		scan2
 __MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein
 __MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall
 __MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall
-__MAIN_INPUTS_CATFILE__	{0}	{1}		protein2category
+__MAIN_INPUTS_CATFILE__	{1}	{0}		protein2category
 __MAIN_INPUTS_CATFILE__	{0}	[1]		category2categoryall
 				
 				
