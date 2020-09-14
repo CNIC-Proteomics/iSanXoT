@@ -6,7 +6,7 @@ import sys
 import argparse
 import logging
 import pandas as pd
-import concurrent.futures
+# import concurrent.futures
 
 
 # Module metadata variables
@@ -56,7 +56,7 @@ def main(args):
     indat = indat['idinf']
     indat.drop_duplicates(inplace=True)
 
-    logging.info(f"print output file without header")
+    logging.info("print output file without header")
     indat.to_csv(args.outfile, sep="\t", index=False, header=False)
 
 
