@@ -478,9 +478,9 @@ commands:
   # Rule: create a file with the list of experiments/tags ---
   - name: create_exp_tags
     infiles:
-      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LEVEL__2__WF_LEVEL____WF_NORM___lowerNormV.tsv
+      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LEVEL__2__WF_NORM___lowerNormV.tsv
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___tags.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tags.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createCardenioTags.py" '
@@ -488,14 +488,14 @@ commands:
   # Rule: cardenio ---
   - name: cardenio
     infiles:
-      -t: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___tags.tsv
+      -t: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tags.tsv
     outfiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combData.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combRels.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combLog.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combRels.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combLog.txt
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_LEVEL____WF_NORM__
+        -a: __WF_LEVEL__2__WF_NORM__
       outdir:
         -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
     more_params: ''
@@ -504,26 +504,26 @@ commands:
     # Rule: sanxot integration: obtaining integrated X and V values ---
   - name: comb_sanxot1
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combData.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combRels.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combRels.tsv
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___variance.txt
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_LEVEL____WF_NORM__
+        -a: __WF_LEVEL__2__WF_NORM__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: comb_sanxotsieve
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combData.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combRels.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combRels.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tagged.tsv
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_LEVEL____WF_NORM__
+        -a: __WF_LEVEL__2__WF_NORM__
       fdr:
         -f: 0.01
       var(x):
@@ -532,16 +532,16 @@ commands:
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: comb_sanxot2
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___combData.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___tagged.tsv
-      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___variance.txt
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tagged.tsv
+      -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___variance.txt
     outfiles:
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_LEVEL____WF_NORM___lowerNormV.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___lowerNormV.tsv
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_LEVEL____WF_NORM__
+        -a: __WF_LEVEL__2__WF_NORM__
       var(x):
         -v: ''
       tag:
@@ -693,6 +693,52 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
+    # Rule: sanxot integration: intermediate to high ---
+  - name: sbt_i2h_sanxot1
+    infiles:
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
+      -r: __MAIN_INPUTS_RELDIR__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL__.tsv
+    outfiles:
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___variance.txt
+    parameters:
+      anal:
+        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
+  - name: sbt_i2h_sanxotsieve
+    infiles:
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
+      -r: __MAIN_INPUTS_RELDIR__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL__.tsv
+    outfiles:
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___tagged.tsv
+    parameters:
+      anal:
+        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
+      i>h_fdr:
+        -f: 0
+      i>h_var(x):
+        -v: 0
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
+  - name: sbt_i2h_sanxot2
+    infiles:
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___tagged.tsv
+    outfiles:
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INTHIG_LEVEL__.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormV.tsv
+    parameters:
+      anal:
+        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
+      i>h_var(x):
+        -v: 0
+      i>h_tag:
+        --tags: '!out'
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
+
     # Rule: sanxot integration: lower to high ---
   - name: sbt_l2h_sanxot1
     infiles:
@@ -737,52 +783,6 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: sanxot integration: intermediate to high ---
-  - name: sbt_i2h_sanxot1
-    infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_INT_LEVEL__.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL__.tsv
-    outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___variance.txt
-    parameters:
-      anal:
-        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
-  - name: sbt_i2h_sanxotsieve
-    infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_INT_LEVEL__.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL__.tsv
-    outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___tagged.tsv
-    parameters:
-      anal:
-        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
-      i>h_fdr:
-        -f: 0
-      i>h_var(x):
-        -v: 0
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
-  - name: sbt_i2h_sanxot2
-    infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_INT_LEVEL__.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___tagged.tsv
-    outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INTHIG_LEVEL__.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormV.tsv
-    parameters:
-      anal:
-        -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
-      i>h_var(x):
-        -v: 0
-      i>h_tag:
-        --tags: '!out'
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
-
 ###################
 
 
@@ -796,21 +796,55 @@ commands:
   description: detector of cateogories containing similar sets of proteins, showing changing proteins within each category
   rules:
 
+# NOTE!!
+# sanson.exe -z"%baseFolder%\Q2A_noOuts_outStats.tsv" -r"%baseFolder%\Q2COuts_tagged.tsv" -c"%baseFolder%\C2A_outStats_clean.tsv"
+#
+#
+
   # Rule: create a file with the list of higher levels ---
-  - name: create_higher_levels
+  - name: sanson_higher_levels
     infiles:
-      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_HIG_LEVEL__2__WF_HIG_LEVEL____WF_NORM___outStats.tsv
+      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_HIG_LEVEL__2__WF_NORM___outStats.tsv
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_HIG_LEVEL____WF_NORM___levels.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___levels.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createSansonHighLevel.py" '
 
-  # Rule: sanson ---
+  # Rule: filter by FDR ---
+  - name: sanson_sanxotsieve
+    infiles:
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
+      -r: __MAIN_INPUTS_RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+    outfiles:
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
+    parameters:
+      anal:
+        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+      i>h_fdr:
+        -f: 0.05
+      i>h_var(x):
+        -v: 0
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
+
+  # Rule: filter by the number of proteins ---
+  - name: sanson_filter
+    infiles:
+      -i: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
+    outfiles:
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___filtTagged.tsv
+    parameters:
+      filter:
+        -f: ''
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/filterTaggedSanson.py" '
+  
+  # Rule: create graph file in txt format ---
   - name: sanson
     infiles:
-      -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_HIG_LEVEL____WF_NORM___levels.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+      -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___levels.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___filtTagged.tsv
       -z: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
     outfiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___graphviz.dot
