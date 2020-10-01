@@ -31,6 +31,8 @@ python_exec = sys.executable
 node_url = 'https://nodejs.org/dist/v10.14.2/node-v10.14.2-win-x64.zip'
 node_home = f"{lib_home}/node"
 tmpdir = f"{lib_home}/tmp"
+nextcloud_url = 'https://www.cnic.es/nextcloud/s/tbwyEbYwzaz2bET/download?path=%2F'
+dbsdir = f"{lib_home}/dbs"
 
 
 
@@ -41,11 +43,11 @@ tmpdir = f"{lib_home}/tmp"
 def exec_command(cmd):
     try:
         print(f'-- exec: {cmd}')
-        crun = subprocess.call(cmd, shell=True)
-        if crun == 0:
-            return True
-        else:
-            sys.exit(f"ERROR!! executing the command line:: {cmd}")
+        # crun = subprocess.call(cmd, shell=True)
+        # if crun == 0:
+        #     return True
+        # else:
+        #     sys.exit(f"ERROR!! executing the command line:: {cmd}")
     except Exception as exc:
         sys.exit(f"ERROR!! executing the command line: {cmd}\n{exc}")
 
@@ -104,11 +106,31 @@ def install_package(manager, iparams, pkg):
     except Exception as exc:
         sys.exit(f"ERROR!! installing the package: {cmd}\n{exc}")
 
+def download_databases(manager):
+    try:
+        # local library
+        import core
+        # handle manager file
+        version = manager.replace('$DATABASES=','')
+        print("-- create builder")
+        c = core.builder(dbsdir)
+        print("-- create db url")
+        db_url = nextcloud_url + version
+        print("-- download files: "+db_url+" > "+dbsdir)
+        file = c.download_url(db_url, outdir=dbsdir)
+        print("-- unzip files: "+file+" > "+dbsdir)
+        c.unzip_file(file,  dbsdir)
+        # if everything was fine
+        return True
+    except Exception as exc:
+        sys.exit(f"ERROR!! downloading databases: {manager}\n{exc}")
+
+
 def create_report_requirements(file):
     '''
     Create dictionary with the manager and its required packages
     '''
-    report = {}
+    report,database = {},{}
     if os.path.isfile(file):
         f = open(file)
         lines = f.read().splitlines()
@@ -117,13 +139,16 @@ def create_report_requirements(file):
             if line.startswith('$MANAGER='): # package manager line
                 manager = line
                 report[manager] = {}
+            elif line.startswith('$DATABASES='): # database manager line
+                db = line
+                database[db] = {}
             elif not line.startswith('#'): # package line
                 s = re.split(r'\t+', line)
                 iparams = s[0]
                 pkg = s[1] if len(s) > 1 else ''
                 report[manager][pkg] = iparams
         f.close()
-    return report
+    return report,database
 
 def create_str_requirements(req):
     '''
@@ -148,13 +173,13 @@ def main():
     '''    
     # create a dictionary with the package manager and its required packages
     # for the source (new) packages and for destinity (local) packages
-    req_new = create_report_requirements(requirement_new_file)
-    req_loc = create_report_requirements(requirement_loc_file)
+    req_new,db_new = create_report_requirements(requirement_new_file)
+    req_loc,db_loc = create_report_requirements(requirement_loc_file)
 
     # new installation of libraries
     if not req_loc:
 
-        # look through the new requirements
+        # look through the new requirements ---
         for manager,packages in req_new.items():
             # install package manager
             iok = install_pkg_manager(manager)
@@ -165,8 +190,14 @@ def main():
                 # save the new required package
                 if write_ok:
                     req_loc[manager][pkg] = iparams
+        
+        # look through the new requirements for the databases ---
+        for manager,packages in db_new.items():
+            # download databases
+            iok = download_databases(manager)
+            req_loc[manager] = {}
 
-        # write string with the new requiremens into local file
+        # write string with the new requiremens into local file ---
         if req_loc:
             cont = create_str_requirements(req_loc)
             if cont != '':
@@ -177,7 +208,7 @@ def main():
     # upgrade the library
     else:
         
-        # look through the new requirements
+        # look through the new requirements ---
         for manager,packages in req_new.items():
             # check if the new package manager is already installed
             if not manager in req_loc:
@@ -193,22 +224,20 @@ def main():
                     if write_ok:
                         req_loc[manager][pkg] = iparams
 
-        # write string with the new requiremens into local file
+        # look through the new requirements for the databases ---
+        for manager,packages in db_new.items():
+            # check if the new database version is already downloaded
+            if not manager in db_loc:
+                # download databases
+                iok = download_databases(manager)
+                req_loc[manager] = {}
+
+        # write string with the new requiremens into local file ---
         if req_loc:
             cont = create_str_requirements(req_loc)
             if cont != '':
                 with open(requirement_loc_file, "w") as file:
                     file.write(cont)
-
-
-
-# TODO!!! ADD THE EXECUTION OF THIS PYTHON SCRIPT!!
-# REM :: download databases ----------------------
-# REM ECHO **
-# REM ECHO **
-# REM ECHO ** download databases
-# REM SET  DB_URL=https://www.cnic.es/nextcloud/index.php/s/Pm6AJ65XQjeBM5G/download
-# REM CMD /C " "%PYTHON3x_HOME%/tools/python" "%SRC_HOME%/src/download_dbs.py" "%DB_URL%" "%SRC_HOME%/../dbs" "
 
      
     

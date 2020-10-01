@@ -15,3 +15,4 @@ install --global	ps-tree
 install --global	xlsx
 install --global	js-yaml
 install --global	fs-extra
+$DATABASES=202009
