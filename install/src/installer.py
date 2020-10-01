@@ -43,11 +43,11 @@ dbsdir = f"{lib_home}/dbs"
 def exec_command(cmd):
     try:
         print(f'-- exec: {cmd}')
-        # crun = subprocess.call(cmd, shell=True)
-        # if crun == 0:
-        #     return True
-        # else:
-        #     sys.exit(f"ERROR!! executing the command line:: {cmd}")
+        crun = subprocess.call(cmd, shell=True)
+        if crun == 0:
+            return True
+        else:
+            sys.exit(f"ERROR!! executing the command line:: {cmd}")
     except Exception as exc:
         sys.exit(f"ERROR!! executing the command line: {cmd}\n{exc}")
 
@@ -195,6 +195,7 @@ def main():
         for manager,packages in db_new.items():
             # download databases
             iok = download_databases(manager)
+            # save the database in the local requirements 
             req_loc[manager] = {}
 
         # write string with the new requiremens into local file ---
@@ -230,8 +231,9 @@ def main():
             if not manager in db_loc:
                 # download databases
                 iok = download_databases(manager)
-                req_loc[manager] = {}
-
+           # save the database in the local requirements 
+            req_loc[manager] = {}
+        
         # write string with the new requiremens into local file ---
         if req_loc:
             cont = create_str_requirements(req_loc)
