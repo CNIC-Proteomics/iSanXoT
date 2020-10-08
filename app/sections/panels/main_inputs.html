@@ -24,34 +24,12 @@
   <div class="form-group">
     <h6 for="select-species">Select Species</h6>
     <div class="input-group col-sm">
-      <select class="custom-select" id="species">
-        <option value="Homo sapiens">Human</option>
-        <option value="Mus musculus">Mouse</option>
-        <option value="Sus scrofa">Pig</option>
-      </select>
+      <select class="custom-select" id="species"></select>
     </div>
   </div>
 
   <div class="form-group">
-    <h6 for="select-dbfile">Select protein database and decoy label</h6>
-    <div class="form-group row">
-      <div class="form-group row col-sm">
-        <select class="custom-select def-dbfile">
-          <option value="human">Human protein database</option>
-          <option value="mouse">Mouse protein database</option>
-          <option value="pig">Pig protein database</option>
-          <option value="personal">User-provided protein database...</option>
-        </select>
-      </div>
-      <div class="form-group row col-sm">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Select your protein database file" id="dbfile" value="" disabled="">
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm select-dbfile" type="button" disabled="">Select file</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <h6 for="select-dbfile">Select the prefix label of decoy proteins</h6>
     <div class="form-group row col-sm-6">
       <div class="input-group input-group-sm mb-3">
         <div class="input-group-prepend">
@@ -60,35 +38,20 @@
         <input type="text" class="form-control" placeholder="Write Decoy label of your protein database" aria-describedby="labeldecoy" id="labeldecoy">
       </div>  
     </div>
-
-
   </div>
 
   <div class="form-group">
-    <h6 for="select-catfile">Select protein-category relation file</h6>
-    <div class="form-group row">
-      <div class="form-group row col-sm">
-        <select class="custom-select def-catfile">
-          <option value="human">Human protein-category relation file</option>
-          <option value="mouse">Mouse protein-category relation file</option>
-          <option value="pig">Pig protein-category relation file</option>
-          <option value="personal">User-provided protein-category relation file...</option>
-        </select>
-      </div>
-      <div class="form-group row col-sm">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Select your protein-category relation file" id="catfile" value="" disabled="">
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm select-catfile" type="button" disabled="">Select file</button>
-          </div>
-        </div>
-      </div>
+    <h6 for="select-catdb">Select the version of category database</h6>
+    <div class="input-group col-sm">
+      <select class="custom-select" id="catdb"></select>
     </div>
-  </div>  
+  </div>
+
   <h6>Select input files</h6>
 
 </div>
 <script>
+
 // Add values to Main_Inputs panel, if apply
 function addValuesMainInputsPanel() {
   // Imported variables
@@ -100,7 +63,22 @@ function addValuesMainInputsPanel() {
   let wf_exec  = importer.wf_exec;
   let wk_id = importer.getWorkIDFromElements(); // get current work id
   let cmd_id = importer.getCmdIDFromElements(); // get the current cmd id
+  
+  // Init html objects
+  // with species
+  for (var i = 0; i < wf['species'].length; i++) {
+    let wf_species = wf['species'][i];
+    $(`#${wk_id} #page-tasktable-${cmd_id} #species`).append(`<option value="${wf_species['scientific']}">${wf_species['name']}</option>`);
+  }
+  // with database version of categories
+  for (var i = 0; i < wf['catdb'].length; i++) {
+    let wf_catdbs = wf['catdb'][i];
+    $(`#${wk_id} #page-tasktable-${cmd_id} #catdb`).append(`<option value="${wf_catdbs['id']}" >${wf_catdbs['name']}</option>`);
+  }
 
+  
+  
+  // Add values from the loaded project
   if ( 'main_inputs' === wk_id ) {
     // Add main inputs
     if ( wf_exec !== undefined ) {
@@ -108,17 +86,8 @@ function addValuesMainInputsPanel() {
         $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
         $(`#${wk_id} #page-tasktable-${cmd_id} #species`).val(`${wf_exec['main_inputs']['species']}`);
-        $(`#${wk_id} #page-tasktable-${cmd_id} #labeldecoy`).val(`${wf_exec['main_inputs']['labeldecoy']}`);
-        
-        $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).val(`personal`);
-        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['main_inputs']['dbfile']}`);
-        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
-        $(`#${wk_id} #page-tasktable-${cmd_id} .select-dbfile`).prop('disabled', false);
-        
-        $(`#${wk_id} #page-tasktable-${cmd_id} .def-catfile`).val(`personal`);
-        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['main_inputs']['catfile']}`);
-        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
-        $(`#${wk_id} #page-tasktable-${cmd_id} .select-catfile`).prop('disabled', false);
+        $(`#${wk_id} #page-tasktable-${cmd_id} #labeldecoy`).val(`${wf_exec['main_inputs']['labeldecoy']}`);        
+        $(`#${wk_id} #page-tasktable-${cmd_id} #catdb`).val(`${wf_exec['main_inputs']['catid']}`);
       }
     }
   }
@@ -164,7 +133,6 @@ function addValuesMainInputsPanel() {
     }
   };
 
-
   // events for the INPUT directory and OUTPUT directory
   $(`#${wk_id} #page-tasktable-${cmd_id} button.select-indir`).click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
@@ -184,73 +152,26 @@ function addValuesMainInputsPanel() {
     });
   });
 
-  // events for the DB file and CATegory file BUTTON
-  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-dbfile`).click(function() {
-    let opts = {
-      properties: ['openFile'],
-      filters :[
-        {name: 'Database', extensions: ['fasta', 'fa', 'faa', 'txt']},
-        {name: 'All Files', extensions: ['*']}
-      ]
-    };
-    dialog.showOpenDialog(mainWindow, opts).then((files) => {
-      let inpt = extractInputDirectoryFile(files, `No database file selected`);
-      if ( inpt !== undefined ) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${inpt}`);
-      }
-    });
-  });
-  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-catfile`).click(function() {
-    let opts = {
-      properties: ['openFile'],
-      filters :[
-        {name: 'Category', extensions: ['tsv', 'csv', 'txt']},
-        {name: 'All Files', extensions: ['*']}
-      ]
-    };
-    dialog.showOpenDialog(mainWindow, opts).then((files) => {
-      let inpt = extractInputDirectoryFile(files, `No category file seleted`);
-      if ( inpt !== undefined ) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${inpt}`);
-      }
-    });
-  });
+} // end addValuesMainInputsPanel
 
-  // events for the DB file and CATegory file SELECT DOWNLIST
-  $(`#${wk_id} #page-tasktable-${cmd_id} .def-dbfile`).change(function() {
-    if ( this.value === "personal" ) {
-      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', false);
-      $(`#${wk_id} #page-tasktable-${cmd_id} .select-dbfile`).prop('disabled', false);
-    }
-    else {
-      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).prop('disabled', true);
-      $(`#${wk_id} #page-tasktable-${cmd_id} .select-dbfile`).prop('disabled', true);
-    }
-  });
-  $(`#${wk_id} #page-tasktable-${cmd_id} .def-catfile`).change(function() {
-    if ( this.value === "personal" ) {
-      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', false);
-      $(`#${wk_id} #page-tasktable-${cmd_id} .select-catfile`).prop('disabled', false);
-    }
-    else {
-      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).prop('disabled', true);
-      $(`#${wk_id} #page-tasktable-${cmd_id} .select-catfile`).prop('disabled', true);
-    }
-  });
 
-}
 // Create object with the Main_Inputs data extracting from the HTML Elements
 function createObjFromMainInputsPanel() {
   let rst = {};
   let main_inputs = $(`#panel-main_inputs [id]`);
+  let species = $(`#panel-main_inputs [id=species] option:selected`).text().toLowerCase();
   for (var i = 0; i < main_inputs.length; i++) {
     let inp = main_inputs[i];
     let id = $(inp).attr('id');
     let val = $(inp).val();
+    // update category file
+    if (id == 'catdb') {
+      val = `${process.env.ISANXOT_LIB_HOME}/dbs/${val}/${species}_${val}_sw-tr.categories.tsv`;
+    }
     rst[id] = val;
   }
   return rst;
-}
+} // end createObjFromMainInputsPanel
 
 </script>
 </template>

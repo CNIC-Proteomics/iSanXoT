@@ -61,10 +61,6 @@ commands:
     outfiles:
       -o: __MAIN_INPUTS_EXPDIR__/ID-mq.tsv
     parameters:
-      dbfile:
-        -d: __MAIN_INPUTS_DBFILE__
-      pretxt:
-        -p: sp
       lab_decoy:
         -l: __LABEL_DECOY__
     more_params: ''
@@ -81,15 +77,18 @@ commands:
   rules:
   - name: rels_table
     infiles:
-      -ii: __WF_INPUT__
+      -ii: __WF_INF_INFILES__
+      # optional input files
+      --sup_infiles: ''
+      --thr_infiles: ''
     outfiles:
       -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__.tsv
     parameters:
-      inf_header:
+      inf_headers:
         -i: ''
-      sup_header:
+      sup_headers:
         -j: ''
-      3rd_header:
+      thr_headers:
         -k: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createRels.py" __WF_VERBOSE__ '
@@ -104,25 +103,26 @@ commands:
 # COMMAND TEMPLATE 
 # Description:
 - name: RELS_TABLE
-  description: Command that creates a table of relationship
+  description: Command that creates table of relationship
   rules:
   - name: rels_table
     infiles:
-      -ii: __WF_INPUT__
+      -ii: __WF_INF_INFILES__
+      # optional input files
+      --sup_infiles: ''
+      --thr_infiles: ''
     outfiles:
       -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__.tsv
     parameters:
-      inf_header:
+      inf_headers:
         -i: ''
-      sup_header:
+      sup_headers:
         -j: ''
-      3rd_header:
+      thr_headers:
         -k: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createRels.py" __WF_VERBOSE__ '
 ###################
-
-
 
 
 
@@ -796,55 +796,27 @@ commands:
   description: detector of cateogories containing similar sets of proteins, showing changing proteins within each category
   rules:
 
-# NOTE!!
-# sanson.exe -z"%baseFolder%\Q2A_noOuts_outStats.tsv" -r"%baseFolder%\Q2COuts_tagged.tsv" -c"%baseFolder%\C2A_outStats_clean.tsv"
-#
-#
-
   # Rule: create a file with the list of higher levels ---
+  # Rule: filter by the number of proteins and FDR ---
   - name: sanson_higher_levels
     infiles:
       -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_HIG_LEVEL__2__WF_NORM___outStats.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___levels.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___clean.tsv
     parameters:
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createSansonHighLevel.py" '
-
-  # Rule: filter by FDR ---
-  - name: sanson_sanxotsieve
-    infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
-      -r: __MAIN_INPUTS_RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
-    outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
-    parameters:
-      anal:
-        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
-      i>h_fdr:
-        -f: 0.05
-      i>h_var(x):
-        -v: 0
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
-
-  # Rule: filter by the number of proteins ---
-  - name: sanson_filter
-    infiles:
-      -i: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
-    outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___filtTagged.tsv
-    parameters:
+      tag:
+        --tags: '!out'
       filter:
         -f: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/filterTaggedSanson.py" '
-  
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createSansonHighLevel.py" '
+
   # Rule: create graph file in txt format ---
   - name: sanson
     infiles:
-      -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___levels.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___filtTagged.tsv
+      -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___clean.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
       -z: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
     outfiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___graphviz.dot
@@ -859,48 +831,6 @@ commands:
 
 
 
-# ###################
-# # COMMAND TEMPLATE 
-# # Description: 
-# - name: SBT_GAUSS
-#   description: generator of gaussian graphs associated to each category
-#   rules:
-#   - name: sanxot_squeezer
-#     infiles:
-#       -l: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL___outStats.tsv
-#       -u: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_HIG_LEVEL___outStats.tsv
-#     outfiles:
-#       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/cat_list.tsv
-#     parameters:
-#       outdir:
-#         -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
-#       fdr:
-#         -f: 0.05
-#       minelements:
-#         -n: 2
-#     more_params: ''
-#     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsqueezer.py" -a squeezed '
-#   - name: sanxot_gauss
-#     infiles:
-#       -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2all_outStats.tsv
-#       -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/wspp_tagged.tsv
-#       -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/cat_list.tsv
-#     outfiles:
-#       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/comb_dat.tsv
-#       -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/comb_rel.tsv
-#     parameters:
-#       outdir:
-#         -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
-#       graphdpi:
-#         -d: 1000
-#       graphfontsize:
-#         -s: 5
-#     more_params: ''
-#     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotgauss.py" -a sigmoids -g '
-# ###################
-
-
-
 ###################
 # COMMAND TEMPLATE 
 # Description: 
@@ -910,6 +840,7 @@ commands:
   - name: report
     infiles:
       -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
+      --rel_file: __MAIN_INPUTS_RELDIR__/protein2description.tsv
       # optional input file
       --rep_file: '' 
     outfiles:

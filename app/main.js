@@ -34,10 +34,10 @@ let template = [
   { label: "Processes", submenu: [
     { label: 'Main page', click() { mainWindow.loadFile('processes.html') } }
   ]},
-  { label: "Preferences", submenu: [
-    { label: 'Download Databases', click() { mainWindow.loadFile('downdb.html') } },
-    { label: 'Check for Updates', click() { mainWindow.loadFile('checkupdates.html') } },
-  ]},  
+  // { label: "Preferences", submenu: [
+  //   { label: 'Download Databases', click() { mainWindow.loadFile('downdb.html') } },
+  //   { label: 'Check for Updates', click() { mainWindow.loadFile('checkupdates.html') } },
+  // ]},  
   { label: "Help", submenu: [
     { label: 'General', click() { mainWindow.loadFile('help.html') } },
     { label: 'Basic workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },

@@ -22,7 +22,7 @@ for (var i = 0; i < wfs.length; i++) {
         <p>${wf_sdesc}</p>
         <div class="text-right">
           <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/init" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
-          <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/sample" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow with a sample data</a>
+          <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/sample" class="btn btn-light active" role="button" aria-pressed="true">Go to workflow with a sample data</a>
         </div>
     </div>
   </div>

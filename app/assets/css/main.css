@@ -61,7 +61,7 @@ input:disabled, button:disabled {
     text-decoration: none;
     color: goldenrod;
 }
-#accordion a.btn {
+#accordion a.btn-primary {
     color: #fff;
     background-color: slategray;
     border-color: black;

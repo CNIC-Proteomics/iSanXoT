@@ -3,6 +3,17 @@
   "label": "Basic Workflow",
   "sdesc": "<p><i>Basic Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
   "description": "Long description for Basic Workflow. You can include HTML",
+  "species": [
+    { "name": "Human",     "scientific": "Homo sapiens" },
+    { "name": "Mouse",     "scientific": "Mus musculus" },
+    { "name": "Pig",       "scientific": "Sus scrofa" },
+    { "name": "Rat",       "scientific": "Rattus norvegicus" },
+    { "name": "Rabbit",    "scientific": "Oryctolagus cuniculus" },
+    { "name": "Zebrafish", "scientific": "Danio rerio" }
+  ],
+  "catdb": [
+    { "id": "202009", "name": "Sep. 2020" }
+  ],
   "prj_workspace": {
     "expdir": "exps",
     "jobdir": "jobs",
@@ -23,6 +34,43 @@
       "params": [
         { "type": "required", "id": "infile", "name": "Infile" },
         { "type": "required", "id": "experiment", "name": "Experiment" }
+      ]
+    }]
+  },{
+    "id": "relationships",
+    "label": "Relationships",
+    "description": "Short description for the current work (tab)",
+    "file": "relationships.tsv",
+    "cmds": [{
+      "id": "RELS_TABLE_REQUIRED",
+      "label": "Rels. table",
+      "visible": false,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
+        { "type": "required", "id": "inf_headers", "name": "Lower headers" },
+        { "type": "required", "id": "sup_headers", "name": "Higher headers" },
+        { "type": "required", "id": "thr_headers", "name": "3rd headers" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "sup_infiles", "name": "Higher infiles" },
+        { "type": "optional", "id": "thr_infiles", "name": "3rd infiles" },
+        { "type": "optional", "id": "filters", "name": "Filters" }
+      ],
+      "readonly_rows": [0,1,2,3,4,5,6,7,8]
+    },{
+      "id": "RELS_TABLE",
+      "label": "Rels. table",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
+        { "type": "required", "id": "inf_headers", "name": "Lower headers" },
+        { "type": "required", "id": "sup_headers", "name": "Higher headers" },
+        { "type": "required", "id": "thr_headers", "name": "3rd headers" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "sup_infiles", "name": "Higher infiles" },
+        { "type": "optional", "id": "thr_infiles", "name": "3rd infiles" },
+        { "type": "optional", "id": "filters", "name": "Filters" }
       ]
     }]
   },{
@@ -49,33 +97,7 @@
       "panel": "panels/advance.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment", "readOnly": true },
-        { "type": "required", "id": "pretxt", "name": "Regex", "readOnly": true },
         { "type": "required", "id": "lab_decoy", "name": "Label decoy", "readOnly": true }
-      ]
-    },{
-      "id": "RELS_TABLE_REQUIRED",
-      "label": "Rels. table",
-      "visible": false,
-      "panel": "panels/advance.html",
-      "params": [
-        { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "inf_header", "name": "Lower header" },
-        { "type": "required", "id": "sup_header", "name": "Higher header" },
-        { "type": "required", "id": "3rd_headers", "name": "3rd header" },
-        { "type": "required", "id": "output", "name": "Output" }
-      ],
-      "readonly_rows": [0,1,2,3,4,5]
-    },{
-      "id": "RELS_TABLE",
-      "label": "Rels. table",
-      "visible": true,
-      "panel": "panels/advance.html",
-      "params": [
-        { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "inf_header", "name": "Lower header" },
-        { "type": "required", "id": "sup_header", "name": "Higher header" },
-        { "type": "required", "id": "3rd_headers", "name": "3rd header" },
-        { "type": "required", "id": "output", "name": "Output" }
       ]
     }]
   },{
@@ -118,7 +140,7 @@
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "all"] },
+        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category",  "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "required", "id": "output", "name": "Output" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
@@ -194,11 +216,8 @@
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "all"] },
-        { "type": "required", "id": "output", "name": "Output" },
-        { "type": "optional", "id": "tag", "name": "Tag" },
-        { "type": "optional", "id": "fdr", "name": "FDR" },
-        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
+        { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "filter", "name": "Filter" }
       ]
     }]
   },{

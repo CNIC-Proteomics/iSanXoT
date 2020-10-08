@@ -227,25 +227,7 @@ def add_datparams(p, trule, val):
     # remove all the leading and trailing whitespace characters
     val = val.strip()
     # Replace the label for the value for each section: infiles, outfiles, and parameters
-    if p == 'experiment':        
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-        
-    elif p == 'input':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'output':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'ratio_numerator':
+    if p == 'ratio_numerator':
         l = '__WF_RATIO_NUM__'
         _replace_datparams(val, trule['infiles'],  l)
         # _replace_datparams(val, trule['outfiles'], l)
@@ -267,48 +249,6 @@ def add_datparams(p, trule, val):
         _replace_datparams(val, trule['outfiles'], l)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
-    elif p == 'level':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'norm':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'low_level':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'int_level':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'hig_level':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'lowhig_level':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    elif p == 'inthig_level':
-        l = '__WF_'+p.upper()+'__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
     elif p == 'reported_vars':
         l = '__WF_'+p.upper()+'__'
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
@@ -321,6 +261,15 @@ def add_datparams(p, trule, val):
 
     elif p == 'more_params':
         _add_datparams_moreparams(p, trule, val)
+    
+    # general case
+    # p == 'experiment','input','output','level','norm','low_level', 'int_level','hig_level','lowhig_level','inthig_level','inf_infiles'
+    else:
+        l = '__WF_'+p.upper()+'__'
+        _replace_datparams(val, trule['infiles'],  l)
+        _replace_datparams(val, trule['outfiles'], l)
+        _add_datparams_params(p, trule, val)
+        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     # handle the parameters not required
     if trule['parameters'] is not None and p in trule['parameters']:
@@ -574,8 +523,7 @@ def main(args):
             '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
             '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
             '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
-            '__MAIN_INPUTS_DBFILE__':       tpl['main_inputs']['dbfile'],
-            '__MAIN_INPUTS_CATFILE__':      tpl['main_inputs']['catfile'],
+            '__MAIN_INPUTS_CATDB__':        tpl['main_inputs']['catdb'],
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
             '__SPECIES__':                  tpl['main_inputs']['species'],
             '__LABEL_DECOY__':              tpl['main_inputs']['labeldecoy'],
@@ -585,7 +533,6 @@ def main(args):
         l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
-
 
     # Mandatory!!
     # work with the CREATE_ID command
@@ -627,7 +574,7 @@ def main(args):
                 # replace constants
                 tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
 
-
+    
     logging.info("fill the parameters with intrinsic files in the commands")
     # get the list of output files
     outfiles = []
