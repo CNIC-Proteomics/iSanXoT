@@ -2,18 +2,5 @@
 experiment	threshold	jump_areas	fdr	type_xcorr
 				
 #MASTERQ				
-experiment	pretxt	lab_decoy		
-*	"sp,__SPECIES__"	__LABEL_DECOY__		
-				
-#RELS_TABLE_REQUIRED				
-input	inf_header	sup_header	3rd_headers	output
-__MAIN_INPUTS_EXPDIR__/*/ID-fdr.tsv	Spectrum_File-Scan-Charge	SequenceMod		scan2peptide
-__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein
-__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall
-__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall
-__MAIN_INPUTS_CATFILE__	{1}	{0}		protein2category
-__MAIN_INPUTS_CATFILE__	{0}	[1]		category2categoryall
-				
-				
-#RELS_TABLE				
-input	inf_header	sup_header	3rd_headers	output
+experiment	lab_decoy			
+*	__LABEL_DECOY__			

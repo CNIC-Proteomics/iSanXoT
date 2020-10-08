@@ -12,7 +12,7 @@
     { "name": "Zebrafish", "scientific": "Danio rerio" }
   ],
   "catdb": [
-    { "id": "202009", "name": "Sep. 2020" }
+    { "id": "202010", "name": "Oct. 2020" }
   ],
   "prj_workspace": {
     "expdir": "exps",
@@ -215,7 +215,7 @@
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "all"] },
+        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "optional", "id": "output", "name": "Output" },
         { "type": "optional", "id": "filter", "name": "Filter" }
       ]

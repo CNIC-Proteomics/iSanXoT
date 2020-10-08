@@ -4,26 +4,26 @@ date: 'date_id'
 ncpu: '4'
 verbose: '-vv'
 prj_workspace:
-  expdir:
-  jobdir:
-  reldir:
-  rstdir:
-  logdir:
+  expdir: 
+  jobdir: 
+  reldir: 
+  rstdir: 
+  logdir: 
 main_inputs:
   indir: ''
   outdir: ''
-  species: ''
-  dbfile: ''
+  species: 
   labeldecoy: ''
-  catfile: ''
+  catid: 
+  catdb: 
 datfiles:
   - type: main_inputs
-    file:
+    file: 
   - type: identification
-    file:
+    file: 
   - type: stats_quantification
-    file:
+    file: 
   - type: integration
-    file:
+    file: 
   - type: reports
-    file:
+    file: 

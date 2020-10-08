@@ -1,0 +1,14 @@
+#RELS_TABLE_REQUIRED							
+inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles	filters
+__MAIN_INPUTS_EXPDIR__/*/ID-fdr.tsv	Spectrum_File-Scan-Charge	SequenceMod		scan2peptide			
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein			
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall			
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall			
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Description		protein2description	__MAIN_INPUTS_CATDB__		
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Gene		protein2gene	__MAIN_INPUTS_CATDB__		
+__MAIN_INPUTS_CATDB__	Isoform	Gene		isoform2gene	__MAIN_INPUTS_CATDB__		
+__MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall			
+							
+#RELS_TABLE							
+inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles	filters
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	cat_*		protein2category	__MAIN_INPUTS_CATDB__		
