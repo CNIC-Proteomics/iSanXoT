@@ -75,6 +75,8 @@ def main(args):
     if 'CREATE_ID' in indata:
         logging.info("extract the list of files from the given experiments")
         infiles = list(indata['CREATE_ID']['infile'])
+        # Append input directory to file list
+        infiles = [f"{args.indir}/{i}" for i in infiles] 
         logging.debug(infiles)
         
         logging.info("extract the list of experiments")
@@ -104,7 +106,8 @@ if __name__ == '__main__':
 
         ''')
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    parser.add_argument('-t',  '--intbl', required=True, help='File with the input data: file, experiments')
+    parser.add_argument('-i',  '--indir', required=True, help='Input Directory')
+    parser.add_argument('-t',  '--intbl', required=True, help='File with the input data: filename, experiments')
     parser.add_argument('-o',  '--outdir',  required=True, help='Output directory')
     parser.add_argument('-x',  '--phantom_files',  help='Phantom files needed for the iSanXoT workflow (snakemake)')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
