@@ -294,8 +294,8 @@ function validSnakeMake(params) {
     let cmd_clean  = `${cmd_smk}  --cleanup-metadata "${smkfile}"`;
     // Sync process that Unlock the output directory
     // First we unlock the ouput directory
-    // let cmd = `${cmd_unlock} && ${cmd_clean}`
-    let cmd = `${cmd_unlock}`
+    let cmd = `${cmd_unlock} && ${cmd_clean}`
+    // let cmd = `${cmd_unlock}`
     execSyncProcess('preparing the workspace', cmd);
 }
 function execSnakeMake(params) {

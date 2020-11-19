@@ -94,7 +94,7 @@ function createObjFromDatabasesPanel() {
   };
   // extract db name and save
   let db = $(`#panel-databases [id='catids'] option:selected`).val();
-  rst['catid'] = db;
+  if (db !== undefined) { rst['catid'] = db } else { rst['catid'] = '' }
   // look throught species list
   let species = $(`#panel-databases [id='species'] option:selected`);
   for (var i = 0; i < species.length; i++) {
