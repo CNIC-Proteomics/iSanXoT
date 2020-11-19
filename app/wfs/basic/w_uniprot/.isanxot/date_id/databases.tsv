@@ -8,7 +8,4 @@ __MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Description		protein2description	__MAIN
 __MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Gene		protein2gene	__MAIN_INPUTS_CATDB__		
 __MAIN_INPUTS_CATDB__	Isoform	Gene		isoform2gene	__MAIN_INPUTS_CATDB__		
 __MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall			
-							
-#RELS_TABLE							
-inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles	filters
 __MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	cat_*		protein2category	__MAIN_INPUTS_CATDB__		

@@ -28,11 +28,12 @@ import pandas as pd
 ####################
 ISANXOT_SRC_HOME    = f"{os.path.dirname(__file__)}/.."
 ISANXOT_PYTHON_EXEC = sys.executable
-EXPERIMENTS         = None # obtained from the CREATE_ID command
+# EXPERIMENTS         = None # obtained from the CREATE_ID command
 OUTPUTS_FOR_CMD     = None
 MAIN_INPUTS_JOBDIR  = None
 MAIN_INPUTS_RELDIR  = None
 MAIN_INPUTS_RSTDIR  = None
+RULE_SUFFIX         = None
 
 
 
@@ -232,7 +233,7 @@ def add_datparams(p, trule, val):
         _replace_datparams(val, trule['infiles'],  l)
         # _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = val.replace(",","-")
+            r = val.replace(" ", "").replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
             
     elif p == 'ratio_denominator':
@@ -240,14 +241,8 @@ def add_datparams(p, trule, val):
         _replace_datparams(val, trule['infiles'],  l)
         # _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = val.replace(",","-")
+            r = val.replace(" ", "").replace(",","-")
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
-
-    elif p == 'to_gene':
-        l = '__WF_INT_TO__'
-        _replace_datparams(val, trule['infiles'],  l)
-        _replace_datparams(val, trule['outfiles'], l)
-        trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
     elif p == 'reported_vars':
         l = '__WF_'+p.upper()+'__'
@@ -321,14 +316,6 @@ def add_rules(row, *trules):
         if 'input' in row:
             row['output'] = row['input']
             
-    # Exception in WSPP_SBT command!!
-    # if "to_gene" is "yes", Then, we include the level 'gene'
-    # otherwise, the level has to be 'protein'
-    if 'to_gene' in row and row['to_gene'] == 'yes':
-        row['to_gene'] = 'gene'
-    else:
-        row['to_gene'] = 'protein'  
-
     # Exception in SBT command!!
     # if "lowhig_level" and "inthig_level" don't exit, Then, we include the "low_level"ALL and "int_level"ALL, respectivelly.
     if not 'lowhig_level' in row and 'low_level' in row:
@@ -340,6 +327,8 @@ def add_rules(row, *trules):
     r = list(copy.deepcopy(trules))
     # extract the list of columns
     data_params = list(row.index.values)
+    # print(row)
+    # print(data_params)
     for i in range(len(r)):
         trule = r[i]
         for p in data_params:
@@ -351,17 +340,22 @@ def add_rules(row, *trules):
         trule['infiles'] = _add_corrected_files(trule['infiles'])
     return r
 
-def add_rules_createID(df, trules, val):
+def add_rules_createID_ratiosWSPP(df, trules):
     '''
     Create rule list for each command
     '''
-    r = list(copy.deepcopy(trules))
-    for i in range(len(r)):
-        trule = r[i]
-        # add data parameters in the infiles/outfiles
-        # add data_parameters into the parameters section for each rule
-        add_datparams('experiment', trule, val)
-    return [r]
+    r = []
+    if not df.empty:
+        # get the list of unique experiments (in string)
+        exps = ",".join(df['experiment'].unique()).replace(" ", "")
+        r = list(copy.deepcopy(trules))
+        for i in range(len(r)):
+            trule = r[i]
+            # add data parameters in the infiles/outfiles
+            # add data_parameters into the parameters section for each rule
+            add_datparams('experiment', trule, exps)
+        r = [r]
+    return r
     
 def _param_str_to_dict(s):
     cprs = shlex.split(s)
@@ -390,12 +384,19 @@ def add_params_cline(rules):
     '''
     Add the whole parametes (infiles, outfiles, params) to command line    
     '''
-    # For each rules, create string for the command line with the infiles, outfiles and parameters
+    # work with the global suffix
+    global RULE_SUFFIX
+    # For each rule...
+    # create string for the command line with the infiles, outfiles and parameters
     for r in rules:
         r = [r] if isinstance(r,dict) else r
         for i in range(len(r)):
             trule = r[i]
             cparams = ''
+            # If apply, add suffix in the name and increase the value
+            if RULE_SUFFIX is not None:
+                trule['name'] += f'_{RULE_SUFFIX}'
+                RULE_SUFFIX += 1
             # Create command line with the input, output files and the parameters
             for p in ['infiles','outfiles','parameters']:
                 if trule[p] is not None:
@@ -522,47 +523,56 @@ def main(args):
             '__MAIN_INPUTS_RELDIR__':       MAIN_INPUTS_RELDIR,
             '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
             '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
-            '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
-            '__MAIN_INPUTS_CATDB__':        tpl['main_inputs']['catdb'],
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
-            '__SPECIES__':                  tpl['main_inputs']['species'],
-            '__LABEL_DECOY__':              tpl['main_inputs']['labeldecoy'],
+            '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
+            '__SPECIES__':                  tpl['databases']['species'],
+            '__LABEL_DECOY__':              tpl['databases']['labeldecoy'],
+            '__MAIN_INPUTS_DBFILE__':       '',
+            '__MAIN_INPUTS_CATFILE__':      '',
+            '__MAIN_INPUTS_CATDB__':        '',
     }
+    if 'catdbs' in tpl['databases']:
+        repl['__MAIN_INPUTS_CATDB__'] = tpl['databases']['catdbs']
+    elif 'catfile' in tpl['databases']:
+        repl['__MAIN_INPUTS_CATFILE__'] = tpl['databases']['catfile']
+    if 'dbfile' in tpl['databases']:
+        repl['__MAIN_INPUTS_DBFILE__'] = tpl['databases']['dbfile']
     # add the replacements for the data files of tasktable commands
     for datfile in tpl['datfiles']:
         l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
 
-    # Mandatory!!
-    # work with the CREATE_ID command
-    cmd = 'CREATE_ID'
-    if cmd in indata:
-        df = indata[cmd]
-        icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
-        if icmd:
-            i = icmd[0]
-            # assign the global variable
-            # get the list of unique experiments (in string)
-            global EXPERIMENTS
-            EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
-            # add the parameters into each rule
-            tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
-            # replace constants
-            tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
-            # add the whole parametes (infiles, outfiles, params) to command line
-            add_params_cline( tpl['commands'][i]['rules'] )
-        del indata[cmd]
+    # # Mandatory!!
+    # # work with the CREATE_ID command
+    # cmd = 'CREATE_ID'
+    # if cmd in indata:
+    #     df = indata[cmd]
+    #     icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
+    #     if icmd:
+    #         i = icmd[0]
+    #         # assign the global variable
+    #         # get the list of unique experiments (in string)
+    #         global EXPERIMENTS
+    #         EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
+    #         # add the parameters into each rule
+    #         tpl['commands'][i]['rules'] = add_rules_createID_ratiosWSPP(df, tpl['commands'][i]['rules'], EXPERIMENTS)
+    #         # replace constants
+    #         tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+    #         # add the whole parametes (infiles, outfiles, params) to command line
+    #         add_params_cline( tpl['commands'][i]['rules'] )
+    #     del indata[cmd]
     
 
     logging.info("fill the parameters and rules for each command")
     for cmd,df in indata.items():
-        if cmd == 'RATIOS_WSPP':
+        # if cmd == 'RATIOS_WSPP':
+        if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP':
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
                 # add the parameters into each rule
-                tpl['commands'][i]['rules'] = add_rules_createID(df, tpl['commands'][i]['rules'], EXPERIMENTS)
+                tpl['commands'][i]['rules'] = add_rules_createID_ratiosWSPP(df, tpl['commands'][i]['rules'])
                 # replace constants
                 tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
         else: # the rest of commands
@@ -596,8 +606,11 @@ def main(args):
 
     logging.info("fill the clines")
     # add the whole parametes (infiles, outfiles, params) to command line
+    # add number suffix that increase with the rule
+    global RULE_SUFFIX
+    RULE_SUFFIX = 1
     for i in range(len(tpl['commands'])):
-        add_params_cline( tpl['commands'][i]['rules'] )
+        add_params_cline( tpl['commands'][i]['rules'])
 
 
     

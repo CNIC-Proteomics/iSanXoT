@@ -125,7 +125,11 @@ class logger {
                     let data = this.getDataAtRow(r);
                     let logfile = `${data[6]}/isanxot.log`;
                     let s = fs.readFileSync(logfile);
-                    $('#hot_processes_panel').html(s.toString());
+                    // remove the line with the fail due the proyect is saved in tierra
+                    s = s.toString().replace(/^Failed to set marker file for job started.*/mg, '');
+                    s = s.toString().replace(/^Error recording metadata for finished job.*/mg, '');
+                    // add the log in the panel
+                    $('#hot_processes_panel').html(s);
                     // scroll to down
                     var psconsole = $('#hot_processes_panel');
                     if (psconsole.length) {

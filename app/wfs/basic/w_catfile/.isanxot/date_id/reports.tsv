@@ -1,0 +1,5 @@
+#REPORT							
+input	low_level	hig_level	reported_vars	output	rep_file	filter	ext_rep_file
+KO_vs_WT	protein	category	"Z,FDR"	KO_vs_WT_1			
+KO_vs_WT	protein	proteinall	"Z,FDR"	KO_vs_WT_2	KO_vs_WT_1		
+KO_vs_WT	category	categoryall	"Z,FDR"	KO_vs_WT_3	KO_vs_WT_2		

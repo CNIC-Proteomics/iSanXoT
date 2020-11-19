@@ -89,6 +89,8 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
     }
     // add the main_inputs
     cfg['main_inputs'] = createObjFromMainInputsPanel(); // function in the panel section
+    // add the databases
+    cfg['databases'] = createObjFromDatabasesPanel(); // function in the panel section
     // Create a tasktable for every work
     // Add the files into config file
     // Iterate over all the works of the workflow

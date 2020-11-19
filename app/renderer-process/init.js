@@ -21,8 +21,8 @@ for (var i = 0; i < wfs.length; i++) {
     <div class="card-body">
         <p>${wf_sdesc}</p>
         <div class="text-right">
-          <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/init" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
-          <a href="wf.html?wfid=load&pdir=${__dirname}/../wfs/${wf_id}/sample" class="btn btn-light active" role="button" aria-pressed="true">Go to workflow with a sample data</a>
+          <a href="wf.html?ptype=load&pdir=${__dirname}/../wfs/${wf_id}" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
+          <a href="wf.html?ptype=samples&pdir=${wf_id}" class="btn btn-light active" role="button" aria-pressed="true">Go to workflow with a sample data</a>
         </div>
     </div>
   </div>
@@ -31,3 +31,6 @@ for (var i = 0; i < wfs.length; i++) {
 }
 // Add the accordion
 $(`#init #accordion`).html(`${tpl}`);
+// Expand the first element
+$(`#init #accordion #heading0`).attr('aria-expanded',true);
+$(`#init #accordion #collapse0`).attr('class','show');

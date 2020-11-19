@@ -88,7 +88,7 @@ def cXCorr(df):
     Calculate cXCorr
     '''
     rc=np.where(df['Charge']>=3, '1.22', '1').astype(float)
-    cXCorr1= np.log(df.XCorr/rc)/np.log(2*df.Sequence.str.len())
+    cXCorr1= np.log(df['XCorr']/rc)/np.log(2*df['Sequence'].str.len())
     return cXCorr1
 
 def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
@@ -112,7 +112,7 @@ def SequenceMod(df, mods):
     Extract modifications and replace for final values
     '''
     # extract modifications and replace for final values
-    s = df.Modifications.fillna('').replace(mods, regex=True)
+    s = df['Modifications'].fillna('').replace(mods, regex=True)
     # create indexes list
     sn = list( s.replace({
         '(\S*N-Term\S*)': '',

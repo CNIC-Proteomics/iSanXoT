@@ -1,5 +1,6 @@
 #FDR				
 experiment	threshold	jump_areas	fdr	type_xcorr
+TMT	15	5	0.01	cXCorr
 				
 #MASTERQ				
 experiment	lab_decoy			

@@ -20,15 +20,15 @@ let template = [
   ]},
   { label: "Workflows", submenu: [
     { label: 'Basic', submenu: [
-      // { label: 'Basic - Init', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=basic`) } },
-      { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/init`) } },
-      { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/sample`) } },
+      // { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/init`) } },
+      // { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/sample`) } },
+      { label: 'with UniProt db', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_uniprot`) } },
+      { label: 'with Category file', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_catfile`) } },
     ]},
-    { label: 'PTM', submenu: [
-      // { label: 'PTM Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=ptm`) } },
-      { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/init`) } },
-      { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/sample`) } },
-    ]},
+    // { label: 'PTM', submenu: [
+    //   { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/init`) } },
+    //   { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/sample`) } },
+    // ]},
     // { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
   ]},
   { label: "Processes", submenu: [
@@ -41,7 +41,7 @@ let template = [
   { label: "Help", submenu: [
     { label: 'General', click() { mainWindow.loadFile('help.html') } },
     { label: 'Basic workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
-    { label: 'PTM workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
+    // { label: 'PTM workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
     // { label: 'Label-Free workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } }
   ]},  
 ]

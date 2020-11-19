@@ -247,9 +247,15 @@ input:disabled, button:disabled {
  *   PANEL-SECTION: MAIN_INPUTS
  * -----------------------------------------------------
  */
-#panel-main_inputs {
-    margin-top: .6em;
-}
+    div[id^="panel-"] {
+        margin-top: .6em;
+    }
+    
+/*
+ * ---------------------------------------------------
+ *   PANEL-SECTION: MAIN_INPUTS
+ * -----------------------------------------------------
+ */
 .form-inline.row {
     margin-right: 0;
     margin-left: 0;
@@ -279,6 +285,65 @@ section.tab-content > .form-inline {
     margin-bottom: 5px;
     width: 100%;
 }
+.selectpicker .btn {
+    color: #212529;
+    background-color: white;
+    border: 1px solid #ced4da;
+}
+.btn-selectpicker {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+  }
+  .btn-selectpicker:focus,
+  .btn-selectpicker.focus {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #8c8c8c;
+  }
+  .btn-selectpicker:hover {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+  }
+  .btn-selectpicker:active,
+  .btn-selectpicker.active,
+  .open > .dropdown-toggle.btn-selectpicker {
+    color: #333;
+    background-color: #e6e6e6;
+    background-image: none;
+    border-color: #adadad;
+  }
+  .btn-selectpicker:active:hover,
+  .btn-selectpicker.active:hover,
+  .open > .dropdown-toggle.btn-selectpicker:hover,
+  .btn-selectpicker:active:focus,
+  .btn-selectpicker.active:focus,
+  .open > .dropdown-toggle.btn-selectpicker:focus,
+  .btn-selectpicker:active.focus,
+  .btn-selectpicker.active.focus,
+  .open > .dropdown-toggle.btn-selectpicker.focus {
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c;
+  }
+  .btn-selectpicker.disabled:hover,
+  .btn-selectpicker[disabled]:hover,
+  fieldset[disabled] .btn-selectpicker:hover,
+  .btn-selectpicker.disabled:focus,
+  .btn-selectpicker[disabled]:focus,
+  fieldset[disabled] .btn-selectpicker:focus,
+  .btn-selectpicker.disabled.focus,
+  .btn-selectpicker[disabled].focus,
+  fieldset[disabled] .btn-selectpicker.focus {
+    background-color: #fff;
+    border-color: #ccc;
+  }
+  .btn-selectpicker .badge {
+    color: #fff;
+    background-color: #333;
+  }
+  
 
 /*
  * ---------------------------------------------------
@@ -292,7 +357,6 @@ section.tab-content > .form-inline {
     clear: both;
 }
 .toggle.btn {
-    float: right;
+    /* float: right; */
     min-height: 1.875rem;
 }
-  

@@ -1,0 +1,8 @@
+#CREATE_ID	
+infile	experiment
+Jurkat_1-20-(01)_PSMs.txt	TMT
+Jurkat_Fr1-(01)_PSMs.txt	TMT
+Jurkat_Fr2-(01)_PSMs.txt	TMT
+Jurkat_Fr3-(01)_PSMs.txt	TMT
+Jurkat_Fr4-(01)_PSMs.txt	TMT
+Jurkat_Fr5-(01)_PSMs.txt	TMT

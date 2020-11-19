@@ -88,7 +88,7 @@ function addInputsFileDirectoy(inputs, errsms) {
       else {
         let file = inputs['filePaths'][0];
         if(!mainWindow) { mainWindow = this.BrowserWindow }; // needed to load the project when comers from processes frontpage
-        mainWindow.loadURL(`file://${__dirname}/../wf.html?wfid=load&pdir=${file}`);
+        mainWindow.loadURL(`file://${__dirname}/../wf.html?ptype=load&pdir=${file}`);
       }
     }
   };  
@@ -254,56 +254,58 @@ function getIndexParamsWithKey(data, key) {
 function extractWorkflowAttributes() {
     // Get input parameters (from URL)
     let url_params = new URLSearchParams(window.location.search);
+    let ptype = url_params.get('ptype');
     let pdir = url_params.get('pdir');
-    let wf_id = url_params.get('wfid');
+    let cdir = undefined;
+    let wf_id = undefined;
     let cfg = undefined;
-    let pdir_def = `${__dirname}/../wfs`;
+    let pdir_def = `${process.env.ISANXOT_LIB_HOME}`;
+    
 
-    // Apply depending the type of workflow
-    if ( !wf_id ) { // mandatory the value
+    // Check Project directory and Config directory of project
+    if ( !ptype ) { // mandatory the value
         console.log(url_params);
         exceptor.showErrorMessageBox('Error Message', `Type of workflow is not defined`, end=true);
     }
-    else if ( wf_id == "load" ) { // load the workflow
-
-        // Add the hidden folder where config files are saving
-        pdir += '/.isanxot'
-
-        // Mandatory the project directory if 
-        if ( !fs.existsSync(pdir) ) {
-            console.log(url_params);
-            exceptor.showErrorMessageBox('Error Message', `Project directory is not defined`, end=false, page=`${__dirname}/../index.html`);
-        }
-
-        // Add the most recent execution
-        let d = getMostRecentDir(pdir);
-        if ( !d ) {
-            console.log(pdir);
-            exceptor.showErrorMessageBox('Error Message', `Extracting the most recent execution`, end=true);
-        }  
-        pdir += `/${d}`;
-
-        // Check if config file exits
-        let cfgfile = `${pdir}/.cfg.yaml`;
-        if ( !fs.existsSync(cfgfile) ) {
-            console.log(cfgfile);
-            exceptor.showErrorMessageBox('Error Message', `Openning the config file`, end=true, page=`${__dirname}/../index.html`);
-        }
-        else {
-            // open config file
-            cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
-            // get the wofkflow name
-            if ( cfg.hasOwnProperty('name') ) wf_id = cfg['name'];
-        }
+    else if ( ptype == "load" ) { // load project
+        cdir = `${pdir}/.isanxot`; // add the hidden folder where config files are saving
     }
-    else { // default workflow. Add the local directory with the data files of workflow        
-        pdir = `${pdir_def}/${wf_id}`;
+    else if ( ptype == "samples" ) { // load local samples
+        pdir = `${pdir_def}/${ptype}/${pdir}`; // add path
+        cdir = `${pdir}/.isanxot`; // add the hidden folder where config files are saving
+    }
+
+    // Mandatory the project directory if 
+    if ( !fs.existsSync(cdir) ) {
+        console.log(url_params);
+        exceptor.showErrorMessageBox('Error Message', `Config directory of project is not defined`, end=false, page=`${__dirname}/../index.html`);
+    }
+
+    // Add the most recent execution
+    let d = getMostRecentDir(cdir);
+    if ( !d ) {
+        console.log(cdir);
+        exceptor.showErrorMessageBox('Error Message', `Extracting the most recent execution`, end=true);
+    }  
+    cdir += `/${d}`;
+
+    // Check if config file exits
+    let cfgfile = `${cdir}/.cfg.yaml`;
+    if ( !fs.existsSync(cfgfile) ) {
+        console.log(cfgfile);
+        exceptor.showErrorMessageBox('Error Message', `Openning the config file`, end=true, page=`${__dirname}/../index.html`);
+    }
+    else {
+        // open config file
+        cfg = jsyaml.safeLoad( fs.readFileSync(`${cfgfile}`, 'utf-8'));
+        // get the wofkflow name
+        if ( cfg.hasOwnProperty('name') ) wf_id = cfg['name'];
     }
 
     // Get workflow attributes from the wf_id
     let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../wfs/workflows.json`) );
     let wf = getObjectFromID(wfs, wf_id);
-    return [pdir_def, pdir, wf_id, wf, cfg];
+    return [pdir_def, ptype, pdir, wf_id, wf, cdir, cfg];
 }
 
 
@@ -342,17 +344,21 @@ if ( filename == "wf" ) {
     // Create and export the workflow attributes
     [
         pdir_def,
+        ptype,
         pdir,
         wf_id,
         wf,
+        cdir,
         wf_exec
     ] = extractWorkflowAttributes();
     wf_date_id = getWFDate();
     module.exports.pdir_def = pdir_def;
+    module.exports.ptype = ptype;
     module.exports.pdir = pdir;
     module.exports.wf_date_id = wf_date_id;
     module.exports.wf_id = wf_id;
     module.exports.wf = wf;
+    module.exports.cdir = cdir;
     module.exports.wf_exec = wf_exec;
 
     // add full-body 

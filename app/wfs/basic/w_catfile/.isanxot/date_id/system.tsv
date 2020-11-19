@@ -1,0 +1,3 @@
+#SANSON						
+input	low_level	hig_level	norm	output	tag	filter
+KO_vs_WT	protein	category	categoryall	KO_vs_WT_sanson		

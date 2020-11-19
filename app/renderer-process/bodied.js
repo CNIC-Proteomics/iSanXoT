@@ -150,10 +150,10 @@ function extract_list_cmds(wk, tbl) {
  */
 
 let wf       = importer.wf;
-let wf_id    = importer.wf_id;
-let pdir     = importer.pdir;
-let pdir_def = importer.pdir_def;
-console.log(pdir);
+// let wf_id    = importer.wf_id;
+let cdir     = importer.cdir;
+// let pdir_def = importer.pdir_def;
+console.log(cdir);
 
 
 /*
@@ -171,7 +171,7 @@ for (var i = 0; i < wf['works'].length; i++) {
   let wk = wf['works'][i];
   let wk_id = wk['id'];
   let wk_label = wk['label'];
-  let wk_file = `${pdir}/${wk['file']}`;
+  let wk_file = `${cdir}/${wk['file']}`;
 
   // Extract the table of commands (JSON) from the external file
   // convert command file into a dictionary
@@ -188,10 +188,10 @@ for (var i = 0; i < wf['works'].length; i++) {
         exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
       }
     }
-    else { // default table
-      wk_file = `${pdir_def}/${wf_id}/${wk['file']}`;
-      tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) )['Sheet1'];
-    }
+    // else { // default table
+    //   wk_file = `${pdir_def}/${wf_id}/${wk['file']}`;
+    //   tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) )['Sheet1'];
+    // }
   } catch (ex) {
     console.log(wk_file);
     exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
@@ -405,6 +405,8 @@ for (var i = 0; i < wf['works'].length; i++) {
 } // end loop of works (tabs)
 
 
-// add values to Main_Inputs panel, if apply
-// function in the 'main_inputs' template
+// add values into panels, if apply
+// functions in the corresponding html template
 addValuesMainInputsPanel();
+addValuesDatabasesPanel();
+

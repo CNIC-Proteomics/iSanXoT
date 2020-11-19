@@ -1,4 +1,4 @@
-name: basic
+name: basic/w_uniprot
 version: 0.2.1
 date: 'date_id'
 ncpu: '4'
@@ -12,12 +12,15 @@ prj_workspace:
 main_inputs:
   indir: ''
   outdir: ''
-  species: 
+databases:
+  species: ''
   labeldecoy: ''
-  catid: 
-  catdb: 
+  catid: ''
+  catdbs: ''
 datfiles:
   - type: main_inputs
+    file: 
+  - type: databases
     file: 
   - type: identification
     file: 
