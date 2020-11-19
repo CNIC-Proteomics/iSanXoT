@@ -1,7 +1,7 @@
-name: basic
-version: 0.2.1
-date: 'date_id'
-ncpu: '4'
+name: basic/w_catfile
+version: ''
+date: ''
+ncpu: ''
 verbose: '-vv'
 prj_workspace:
   expdir: 
@@ -12,11 +12,11 @@ prj_workspace:
 main_inputs:
   indir: ''
   outdir: ''
-  species: Homo sapiens
 databases:
-  labeldecoy: INV_
-  catid: 202010
-  catdb: dbs\202010\human_202010_sw.categories.tsv
+  species: ''
+  labeldecoy: ''
+  catfile: ''
+  dbfile: ''
 datfiles:
   - type: main_inputs
     file: 

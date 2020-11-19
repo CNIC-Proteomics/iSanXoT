@@ -1,15 +1,11 @@
 #NORCOMBINE														
 input	level	norm	output	tag	fdr	var(x)	more_params							
-"WT_1, WT_2, WT_3, WT_4"	protein	proteinall	WT											
-"KO_1, KO_2, KO_3, KO_4"	protein	proteinall	KO											
 														
 #RATIOS_INT														
 ratio_numerator	ratio_denominator	level	v_method	output	tag	fdr	var(x)	more_params						
-KO	WT	protein	max	KO_vs_WT										
 														
 #INTEGRATE														
 input	low_level	hig_level	output	tag	fdr	var(x)	more_params							
 														
 #SBT														
 input	low_level	int_level	output	lowhig_level	inthig_level	l>i_tag	l>h_tag	i>h_tag	l>i_fdr	l>h_fdr	i>h_fdr	l>i_var(x)	i>h_var(x)	more_params
-KO_vs_WT	protein	category												
