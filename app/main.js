@@ -19,12 +19,11 @@ let template = [
     { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { label: "Workflows", submenu: [
-    { label: 'Basic', submenu: [
-      // { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/init`) } },
-      // { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/basic/sample`) } },
-      { label: 'with UniProt db', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_uniprot`) } },
-      { label: 'with Category file', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_catfile`) } },
-    ]},
+    { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic`) } }
+    // { label: 'Basic', submenu: [
+    //   { label: 'with UniProt db', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_uniprot`) } },
+    //   { label: 'with Category file', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_catfile`) } },
+    // ]},
     // { label: 'PTM', submenu: [
     //   { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/init`) } },
     //   { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/sample`) } },

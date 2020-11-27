@@ -14,6 +14,13 @@ for (var i = 0; i < wfs.length; i++) {
   let wf_id = wf['id'];
   let wf_label = wf['label'];
   let wf_sdesc = wf['sdesc'];
+  let wf_samples = wf['samples'];
+  let tpl_samples = '';
+  for (var j = 0; j < wf_samples.length; j++) {
+    let wf_s = wf_samples[j];
+    tpl_samples += `<a href="wf.html?ptype=samples&pdir=${wf_s['id']}" class="stretched-link text-info">${wf_s['name']}</a> | `;
+  }
+  tpl_samples = tpl_samples.replace(/\s+\|\s+$/g, '');
   tpl += `
   <div id="init_wf_${wf_id}" class="card">
   <div class="card-header" id="heading${i}" data-toggle="collapse" data-target="#collapse${i}" aria-expanded="false" aria-controls="collapse${i}">${wf_label}</div>    
@@ -22,7 +29,7 @@ for (var i = 0; i < wfs.length; i++) {
         <p>${wf_sdesc}</p>
         <div class="text-right">
           <a href="wf.html?ptype=load&pdir=${__dirname}/../wfs/${wf_id}" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
-          <a href="wf.html?ptype=samples&pdir=${wf_id}" class="btn btn-light active" role="button" aria-pressed="true">Go to workflow with a sample data</a>
+          ${tpl_samples}
         </div>
     </div>
   </div>

@@ -37,6 +37,30 @@ def get_cols_from_inheaders(df, headers):
                 sys.exit(1)
     return cols
 
+def exploding_columns(idf):
+    def _exploding_columns(idf, x, y):
+        # Exploding into multiple cells
+        # We start with creating a new dataframe from the series with  as the index
+        df = pd.DataFrame(idf[x].str.split(';').tolist(), index=idf[y]).stack()
+        # We now want to get rid of the secondary index
+        # To do this, we will make  as a column (it can't be an index since the values will be duplicate)
+        df = df.reset_index([0,y])
+        # rename colum
+        df.rename(columns={0:x}, inplace=True)
+        # reorder columns from the given df
+        cols = idf.columns.tolist()
+        df = df[cols]
+        return df
+        
+    cols = idf.columns.tolist()
+    it = iter(cols)
+    for x in it:
+        y = next(it)
+        # check if ';' exits in column
+        df = _exploding_columns(idf, x, y) if any(idf[x].str.contains(';')) else idf
+        df = _exploding_columns(df, y, x) if any(idf[y].str.contains(';')) else df
+    return df
+    
 def create_crossref_dataframe(inf_df, sup_df):
     # if given output dataframe is not empty and has only one column, then 
     # make the cross-reference between the given output df and the calculated df
@@ -48,7 +72,7 @@ def create_crossref_dataframe(inf_df, sup_df):
             sup_cols += [ c for c in sup_df.columns if sup_df[c].isin(inf_df[ic]).any() ]
         # if we have xref columns, then we merge both dataframes
         if sup_cols and len(inf_cols) == len(sup_cols):
-            df = pd.merge(inf_df, sup_df, left_on=inf_cols, right_on=sup_cols)
+            df = pd.merge(sup_df, inf_df, left_on=sup_cols, right_on=inf_cols)
         else:
             df = sup_df
     else:
@@ -202,31 +226,19 @@ def extract_xref_columns(inf_df, sup_df, inf_cols, sup_cols, inf_name, sup_name,
     sup_out = extract_columns(xref_df, [inf_cols,sup_cols], [inf_name,sup_name], filters)
         
     return sup_out
+
+def extract_xref_columns_before_merge(inf_df, sup_df, inf_cols, sup_cols, inf_name, sup_name, filters=None):
+    # extract interseted column
+    ic = inf_df.columns
+    sc = sup_df.columns
+    k = list(set(ic) & set(sc))
+    if k and len(k) >= 1:
+        xref_df = pd.merge(inf_df, sup_df, on=k)
+
+    # extract inferior and superior columns
+    sup_out = extract_columns(xref_df, [inf_cols,sup_cols], [inf_name,sup_name], filters)
         
-def exploding_columns(idf):
-    def _exploding_columns(idf, x, y):
-        # Exploding into multiple cells
-        # We start with creating a new dataframe from the series with  as the index
-        df = pd.DataFrame(idf[x].str.split(';').tolist(), index=idf[y]).stack()
-        # We now want to get rid of the secondary index
-        # To do this, we will make  as a column (it can't be an index since the values will be duplicate)
-        df = df.reset_index([0,y])
-        # rename colum
-        df.rename(columns={0:x}, inplace=True)
-        # reorder columns from the given df
-        cols = idf.columns.tolist()
-        df = df[cols]
-        return df
-        
-    cols = idf.columns.tolist()
-    it = iter(cols)
-    for x in it:
-        y = next(it)
-        # check if ';' exits in column
-        df = _exploding_columns(idf, x, y) if any(idf[x].str.contains(';')) else idf
-        df = _exploding_columns(df, y, x) if any(idf[y].str.contains(';')) else df
-    return df
-    
+    return sup_out
 
     
 #################
@@ -281,12 +293,16 @@ def main(args):
     if args.thr_header:
         thr_name = re.sub(r"\s+",'-', args.thr_header)
         
-        
     
-    logging.info("extract the inferior-superior level")
-    outdat = extract_xref_columns(infdat, supdat, inf_cols, sup_cols, inf_name, sup_name, args.filters)
-    
+    if args.xref_before:
+        logging.info("make cross-reference before extract the inferior-superior level")        
+        outdat = extract_xref_columns_before_merge(infdat, supdat, inf_cols, sup_cols, inf_name, sup_name, args.filters)        
         
+    else:    
+        logging.info("extract the inferior-superior level")
+        outdat = extract_xref_columns(infdat, supdat, inf_cols, sup_cols, inf_name, sup_name, args.filters)
+        
+            
     logging.info("change the order of columns")
     cols = outdat.columns.to_list()
     cols = [cols[i] for i in [1,0]]
@@ -340,6 +356,7 @@ if __name__ == "__main__":
     parser.add_argument('-ki', '--thr_infiles',  help='Input file for the third header')   
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the relationship table')
     parser.add_argument('-f',  '--filters',   help='Boolean expression for the filtering of report')
+    parser.add_argument('-b',  '--xref_before', action='store_true', help='Make a cross-reference with the input files before everything')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

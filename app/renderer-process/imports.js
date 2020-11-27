@@ -155,14 +155,14 @@ ipcRenderer.on('validateProject', function() {
  */
 
 // Import workflow template
-function importHTMLtemplate(wfhref, tid) {
+function importHTMLtemplate(wfhref, tid, before) {
     if (!tid) tid = `#${path.basename(wfhref, '.html')}`;
     if ( document.querySelector(`${tid}`) !== null ) {
         let s = fs.readFileSync(wfhref);
         let frag = document.createRange().createContextualFragment(s.toString());
         let template = frag.querySelector('.task-template');
         let clone = document.importNode(template.content, true);
-        document.querySelector(`${tid}`).appendChild(clone);
+        if ( before ) { document.querySelector(`${tid}`).prepend(clone); } else { document.querySelector(`${tid}`).appendChild(clone); }
     }
 };
 

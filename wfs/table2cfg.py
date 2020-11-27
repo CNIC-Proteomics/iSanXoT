@@ -162,7 +162,7 @@ def _add_more_params(name, params):
                 if k in name:
                     out += pr
         except:
-            out = params
+            out = ''
         return out
     else:
         return out
@@ -340,7 +340,7 @@ def add_rules(row, *trules):
         trule['infiles'] = _add_corrected_files(trule['infiles'])
     return r
 
-def add_rules_createID_ratiosWSPP(df, trules):
+def add_unique_rule_from_table(df, trules):
     '''
     Create rule list for each command
     '''
@@ -348,16 +348,21 @@ def add_rules_createID_ratiosWSPP(df, trules):
     if not df.empty:
         # get the list of unique experiments (in string)
         exps = ",".join(df['experiment'].unique()).replace(" ", "")
+        if 'lab_decoy' in df.columns:
+            ldecoy = df['lab_decoy'].values[0]
+        else:
+            ldecoy = ''
         r = list(copy.deepcopy(trules))
         for i in range(len(r)):
             trule = r[i]
-            # add data parameters in the infiles/outfiles
-            # add data_parameters into the parameters section for each rule
+            # add only the given parameters for each rule
             add_datparams('experiment', trule, exps)
+            add_datparams('lab_decoy', trule, ldecoy)
         r = [r]
     return r
     
 def _param_str_to_dict(s):
+    s = s.replace('=',' ')
     cprs = shlex.split(s)
     d = {}
     i = 0
@@ -420,7 +425,7 @@ def add_params_cline(rules):
                 # create again the cparams
                 cparams = ''
                 for kv,vv in ccprs.items():
-                    cparams += '{} "{}" '.format(kv,str(vv)) if str(vv) != '' else ''
+                    cparams += '{} "{}" '.format(kv,str(vv)) if str(vv) != '' else '{} '.format(kv)
             # add the command line
             trule['cline'] += " "+cparams
         
@@ -525,15 +530,15 @@ def main(args):
             '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
             '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
             '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
-            '__SPECIES__':                  tpl['databases']['species'],
-            '__LABEL_DECOY__':              tpl['databases']['labeldecoy'],
             '__MAIN_INPUTS_DBFILE__':       '',
             '__MAIN_INPUTS_CATFILE__':      '',
             '__MAIN_INPUTS_CATDB__':        '',
     }
+    if 'species' in tpl['databases']:
+        repl['__SPECIES__'] = tpl['databases']['species']
     if 'catdbs' in tpl['databases']:
         repl['__MAIN_INPUTS_CATDB__'] = tpl['databases']['catdbs']
-    elif 'catfile' in tpl['databases']:
+    if 'catfile' in tpl['databases']:
         repl['__MAIN_INPUTS_CATFILE__'] = tpl['databases']['catfile']
     if 'dbfile' in tpl['databases']:
         repl['__MAIN_INPUTS_DBFILE__'] = tpl['databases']['dbfile']
@@ -543,36 +548,14 @@ def main(args):
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
 
-    # # Mandatory!!
-    # # work with the CREATE_ID command
-    # cmd = 'CREATE_ID'
-    # if cmd in indata:
-    #     df = indata[cmd]
-    #     icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
-    #     if icmd:
-    #         i = icmd[0]
-    #         # assign the global variable
-    #         # get the list of unique experiments (in string)
-    #         global EXPERIMENTS
-    #         EXPERIMENTS = ",".join(df['experiment'].unique()).replace(" ", "")
-    #         # add the parameters into each rule
-    #         tpl['commands'][i]['rules'] = add_rules_createID_ratiosWSPP(df, tpl['commands'][i]['rules'], EXPERIMENTS)
-    #         # replace constants
-    #         tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
-    #         # add the whole parametes (infiles, outfiles, params) to command line
-    #         add_params_cline( tpl['commands'][i]['rules'] )
-    #     del indata[cmd]
-    
-
     logging.info("fill the parameters and rules for each command")
     for cmd,df in indata.items():
-        # if cmd == 'RATIOS_WSPP':
-        if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP':
+        if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ':
             icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
             if icmd:
                 i = icmd[0]
                 # add the parameters into each rule
-                tpl['commands'][i]['rules'] = add_rules_createID_ratiosWSPP(df, tpl['commands'][i]['rules'])
+                tpl['commands'][i]['rules'] = add_unique_rule_from_table(df, tpl['commands'][i]['rules'])
                 # replace constants
                 tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
         else: # the rest of commands

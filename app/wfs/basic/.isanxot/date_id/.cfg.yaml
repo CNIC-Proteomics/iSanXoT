@@ -1,7 +1,7 @@
-name: basic/w_uniprot
-version: ''
-date: ''
-ncpu: ''
+name: basic
+version: 0.2.1
+date: 'date_id'
+ncpu: '4'
 verbose: '-vv'
 prj_workspace:
   expdir: 
@@ -14,7 +14,6 @@ main_inputs:
   outdir: ''
 databases:
   species: ''
-  labeldecoy: ''
   catid: ''
   catdbs: ''
 datfiles:

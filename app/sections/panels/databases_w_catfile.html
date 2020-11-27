@@ -1,14 +1,6 @@
-<template class="task-template" id="panel-databases">
-<div id="panel-databases">
+<template class="task-template" id="panel-databases-catfile">
 
-  <!-- <div class="form-group">
-    <h6 for="select-species">Select Species</h6>
-    <div class="input-group col-sm-6">
-      <select id="species" class="selectpicker form-control" multiple data-style="btn-selectpicker" data-actions-box="true" title="Choose one or more of the following...">
-      </select>    
-    </div>
-  </div>   -->
-
+<div id="panel-databases-catfile" class="panel-databases">
   <div class="form-group">
     <h6 for="select-dbfile">Select protein database and decoy label</h6>
     <div class="form-group row">
@@ -21,16 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="form-group row col-sm-6">
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text labeldecoy">Decoy label</span>
-        </div>
-        <input type="text" class="form-control" placeholder="Write Decoy label of your protein database" aria-describedby="labeldecoy" id="labeldecoy">
-      </div>  
-    </div>
   </div>
-
 
   <div class="form-group">
     <h6 for="select-catfile">Select protein-category relation file</h6>
@@ -44,66 +27,40 @@
         </div>
       </div>
     </div>
-  </div>  
+  </div>
 
   <div class="form-group">
     <h6 for="select-catids">Show/Hide relationship tables</h6>
-    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show" data-off="Hide" data-onstyle="light" data-offstyle="dark" data-width="50px" data-height="30px" data-size="sm" onchange="toggleTaskTable(this)" checked>
+    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show" data-off="Hide" data-onstyle="light" data-offstyle="dark" data-width="50px" data-height="30px" data-size="sm" onchange="toggleTaskTable_CatFile(this)" checked>
   </div>
-
 </div>
-<script>
 
+<script>
 // Add values into panel, if apply
-function addValuesDatabasesPanel() {
+function addValuesPanel_CatFile(wf_exec) {
   // Imported variables
   let remote = require('electron').remote;
   let mainWindow = remote.getCurrentWindow();
   let dialog = remote.dialog;
   let exceptor = require(`${__dirname}/renderer-process/exceptor`);
-  let importer = require(`${__dirname}/renderer-process/imports`);
-  let wf_exec  = importer.wf_exec;
+  // declare variables
   let wk_id = 'databases';
-  let cmd_id = 'RELS_TABLE';
+  let cmd_id = 'RELS_TABLE_CATFILE';
   
-  // Check
-  if ( wf_exec === undefined ) {
-    let errsms = `wf_exec is undefined`;
-    console.log(`${errsms}`);
-    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-  }
-  if (!(wk_id in wf_exec)) {
-    let errsms = `'${wk_id}' key is not in wf_exec`;
-    console.log(`${errsms}`);
-    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-  }
-
-  // Init html objects
-  // with species
-  for (var i = 0; i < wf['species'].length; i++) {
-    let wf_species = wf['species'][i];
-    $(`#${wk_id} #page-tasktable-${cmd_id} #species`).append(`<option selected value="${wf_species['scientific']}">${wf_species['name']}</option>`);
-  }
-
   // Add values
-  let species = wf_exec['databases']['species'].split(',');
-  $(`#${wk_id} #page-tasktable-${cmd_id} #species`).selectpicker('val', species);
-  $(`#${wk_id} #page-tasktable-${cmd_id} #labeldecoy`).val(`${wf_exec['databases']['labeldecoy']}`);
-  if ( 'samples' == ptype ) { // library path + category/db FILE
-    $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${pdir}/${wf_exec['databases']['catfile']}`);
-    $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${pdir}/${wf_exec['databases']['dbfile']}`);
-  }
-  else {  // category/db FILE
-    $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['databases']['catfile']}`);
-    $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['databases']['dbfile']}`);
+  if ( 'catfile' in wf_exec['databases'] && 'dbfile' in wf_exec['databases']) {
+      if ( 'samples' == ptype ) { // library path + category/db FILE
+      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${pdir}/${wf_exec['databases']['catfile']}`);
+      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${pdir}/${wf_exec['databases']['dbfile']}`);
+    }
+    else {  // category/db FILE
+      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['databases']['catfile']}`);
+      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['databases']['dbfile']}`);
+    }
   }
 
   // Hide table
   $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
-
-
-  
-
 
   /*
    * Events
@@ -165,44 +122,12 @@ function addValuesDatabasesPanel() {
     });
   });
   
-} // end addValuesDatabasesPanel
-
-
-// Create object with the Databases data extracting from the HTML Elements
-function createObjFromDatabasesPanel() {
-  let rst = {
-    'species': '',
-    'labeldecoy': '',
-    'catfile': '',
-    'dbfile': ''
-  };
-  // extract db name
-  let db = $(`#panel-databases [id='catids'] option:selected`).val();
-  // look throught species list
-  let species = $(`#panel-databases [id='species'] option:selected`);
-  for (var i = 0; i < species.length; i++) {
-    let o = species[i];
-    let v1 = $(o).val();
-    let v2 = $(o).text().toLowerCase();
-    // update species data
-    if (rst['species'] != '') { rst['species'] += `,${v1}` } else { rst['species'] += v1 }
-  }
-  // update decoy label
-  let dlabel = $(`#panel-databases [id='labeldecoy']`).val();
-  rst['labeldecoy'] = dlabel;
-  // update category file
-  let cfile = $(`#panel-databases [id='catfile']`).val();
-  rst['catfile'] = cfile;
-  // update category file
-  let dfile = $(`#panel-databases [id='dbfile']`).val();
-  rst['dbfile'] = dfile;
-  return rst;
-} // end createObjFromDatabasesPanel
+} // end addValuesPanel_CatFile
 
 // Show/Hide table
-function toggleTaskTable(t) {
+function toggleTaskTable_CatFile(t) {
   let wk_id = 'databases';
-  let cmd_id = 'RELS_TABLE';
+  let cmd_id = 'RELS_TABLE_CATFILE';
 
   if ( $(t).prop('checked') ) {
     $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();

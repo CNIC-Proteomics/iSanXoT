@@ -39,7 +39,7 @@ commands:
       jump_areas:
         -j: 5
       lab_decoy:
-        -l: __LABEL_DECOY__
+        -l: ''
       fdr:
         -f: 0.01
       type_xcorr:
@@ -65,7 +65,7 @@ commands:
       dbfile:
         -d: __MAIN_INPUTS_DBFILE__
       lab_decoy:
-        -l: __LABEL_DECOY__
+        -l: __WF_LAB_DECOY__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/masterQ.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
@@ -75,8 +75,8 @@ commands:
 # ###################
 # COMMAND TEMPLATE 
 # Description:
-- name: RELS_TABLE
-  description: Command that creates table of relationship
+- name: RELS_TABLE_CATDB
+  description: Command that creates relationship tables from category DB
   rules:
   - name: rels_table
     infiles:
@@ -93,6 +93,37 @@ commands:
         -j: ''
       thr_headers:
         -k: ''
+      filters:
+        -f: ''
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createRels.py" __WF_VERBOSE__ '
+###################
+
+
+
+# ###################
+# COMMAND TEMPLATE 
+# Description:
+- name: RELS_TABLE_CATFILE
+  description: Command that creates relationship tables from category file
+  rules:
+  - name: rels_table
+    infiles:
+      -ii: __WF_INF_INFILES__
+      # optional input files
+      --sup_infiles: ''
+      --thr_infiles: ''
+    outfiles:
+      -o: __MAIN_INPUTS_RELDIR__/__WF_OUTPUT__.tsv
+    parameters:
+      inf_headers:
+        -i: ''
+      sup_headers:
+        -j: ''
+      thr_headers:
+        -k: ''
+      filters:
+        -f: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createRels.py" __WF_VERBOSE__ '
 ###################

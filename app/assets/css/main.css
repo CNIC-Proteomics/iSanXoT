@@ -73,6 +73,9 @@ input:disabled, button:disabled {
     color: goldenrod;
     cursor: pointer;
 }
+#accordion  .card-body a {
+    padding-left: 5px;
+}
 
 /* ---------------------------------------------------
     WORKFLOW PAGE
@@ -133,7 +136,6 @@ input:disabled, button:disabled {
 }
 
 #sidebar {
-    /* width: 80px; */
     background: #7386D5;
     color: #fff;
     text-align: center;
@@ -151,9 +153,13 @@ input:disabled, button:disabled {
     display: block;
 }
 
-#sidebar ul li a:hover {
+#sidebar ul li a.active {
     color: #7386D5;
-    background: #fff;
+    background: #e9ecef;
+}
+#sidebar ul li a:hover {
+    /* color: #fff;
+    background: #6d7fcc; */
 }
 
 

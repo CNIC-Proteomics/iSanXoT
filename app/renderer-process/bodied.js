@@ -188,10 +188,6 @@ for (var i = 0; i < wf['works'].length; i++) {
         exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
       }
     }
-    // else { // default table
-    //   wk_file = `${pdir_def}/${wf_id}/${wk['file']}`;
-    //   tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) )['Sheet1'];
-    // }
   } catch (ex) {
     console.log(wk_file);
     exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
@@ -229,6 +225,7 @@ for (var i = 0; i < wf['works'].length; i++) {
       exceptor.showErrorMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
     }
     let cmd_label = cmd_attr['label'];
+    let cmd_title = cmd_attr['title'];
 
     // get the index of optional parameters
     let cmd_params_opt_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'type', 'optional');
@@ -278,7 +275,7 @@ for (var i = 0; i < wf['works'].length; i++) {
       // create html sidebar
       // If the command is not visible, we don't show the sidebar menu
       if ( cmd_attr['visible'] ) {
-        $(`#${wk_id} #sidebar .cmds`).append(`<li><a id="${cmd_id}">${cmd_label}</a></li>`);
+        $(`#${wk_id} #sidebar .cmds`).append(`<li><a id="${cmd_id}" title="${cmd_title}">${cmd_label}</a></li>`);
       }
       // create main div for the tasktable frames
       $(`#${wk_id} #page-content`).append(`<div id="page-tasktable-${cmd_id}"></div>`);
@@ -364,10 +361,11 @@ for (var i = 0; i < wf['works'].length; i++) {
   /* Init the Work tab */
 
   // display the first command
+  $(`#${wk_id} #sidebar .cmds a:first`).addClass("active");
   // add the title of first command (with the identifier)
   let init_cmd_id = $(`#${wk_id} #sidebar .cmds a:first`).attr('id');
-  let init_cmd_label = $(`#${wk_id} #sidebar .cmds a:first`).text();
-  $(`#${wk_id} #page .page-header`).html(init_cmd_label);
+  let init_cmd_title = $(`#${wk_id} #sidebar .cmds a:first`).attr('title');
+  $(`#${wk_id} #page .page-header`).html(init_cmd_title);
   $(`#${wk_id} #page .page-header`).attr('name', init_cmd_id);
   // hide all tables except the first
   $(`#${wk_id} div[id^=page-tasktable-]:not(:first)`).hide();
@@ -387,12 +385,16 @@ for (var i = 0; i < wf['works'].length; i++) {
   });
 
   // events for the sidebar menu
-  $(`#${wk_id} #sidebar .cmds a`).click(function (event) {    
+  $(`#${wk_id} #sidebar .cmds a`).click(function (event) {
     event.preventDefault();
+    // highlight the sidebar menu
+    $(`#${wk_id} #sidebar .cmds a`).removeClass("active");
+    $(this).addClass("active");
+    // get the command info
     let cmd_id = $(this).attr('id');
-    let cmd_label = $(this).text();
+    let cmd_title = $(this).attr('title');
     // show title of command
-    $(`#${wk_id} #page .page-header`).html(cmd_label);
+    $(`#${wk_id} #page .page-header`).html(cmd_title);
     $(`#${wk_id} #page .page-header`).attr('name', cmd_id);
     // hide all tables
     // show the current command table
@@ -409,4 +411,3 @@ for (var i = 0; i < wf['works'].length; i++) {
 // functions in the corresponding html template
 addValuesMainInputsPanel();
 addValuesDatabasesPanel();
-
