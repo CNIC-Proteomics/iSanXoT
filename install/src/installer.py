@@ -44,11 +44,11 @@ spdir = f"{lib_home}/samples"
 def exec_command(cmd):
     try:
         print(f'-- exec: {cmd}')
-        # crun = subprocess.call(cmd, shell=True)
-        # if crun == 0:
-        #     return True
-        # else:
-        #     sys.exit(f"ERROR!! executing the command line:: {cmd}")
+        crun = subprocess.call(cmd, shell=True)
+        if crun == 0:
+            return True
+        else:
+            sys.exit(f"ERROR!! executing the command line:: {cmd}")
     except Exception as exc:
         sys.exit(f"ERROR!! executing the command line: {cmd}\n{exc}")
 
@@ -202,18 +202,18 @@ def main():
     # new installation of libraries
     if not req_loc:
 
-        # # look through the new requirements ---
-        # print("-- install packages")
-        # for manager,packages in req_new.items():
-        #     # install package manager
-        #     iok = install_pkg_manager(manager)
-        #     req_loc[manager] = {}
-        #     # install package's
-        #     for pkg,iparams in packages.items():
-        #         write_ok = install_package(manager, iparams, pkg)
-        #         # save the new required package
-        #         if write_ok:
-        #             req_loc[manager][pkg] = iparams
+        # look through the new requirements ---
+        print("-- install packages")
+        for manager,packages in req_new.items():
+            # install package manager
+            iok = install_pkg_manager(manager)
+            req_loc[manager] = {}
+            # install package's
+            for pkg,iparams in packages.items():
+                write_ok = install_package(manager, iparams, pkg)
+                # save the new required package
+                if write_ok:
+                    req_loc[manager][pkg] = iparams
         
         # look through the new requirements for the databases ---
         print("-- install databases")
@@ -242,22 +242,22 @@ def main():
     # upgrade the library
     else:
         
-        # # look through the new requirements ---
-        # print("-- upgrade packages")
-        # for manager,packages in req_new.items():
-        #     # check if the new package manager is already installed
-        #     if not manager in req_loc:
-        #         # install package manager
-        #         iok = install_pkg_manager(manager)
-        #         req_loc[manager] = {}
-        #     # install package's
-        #     for pkg,iparams in packages.items():
-        #         # check if the new package is already installed
-        #         if not manager in req_loc or not pkg in req_loc[manager]:
-        #             write_ok = install_package(manager, iparams, pkg)
-        #             # save the new required package
-        #             if write_ok:
-        #                 req_loc[manager][pkg] = iparams
+        # look through the new requirements ---
+        print("-- upgrade packages")
+        for manager,packages in req_new.items():
+            # check if the new package manager is already installed
+            if not manager in req_loc:
+                # install package manager
+                iok = install_pkg_manager(manager)
+                req_loc[manager] = {}
+            # install package's
+            for pkg,iparams in packages.items():
+                # check if the new package is already installed
+                if not manager in req_loc or not pkg in req_loc[manager]:
+                    write_ok = install_package(manager, iparams, pkg)
+                    # save the new required package
+                    if write_ok:
+                        req_loc[manager][pkg] = iparams
 
         # look through the new requirements for the databases ---
         print("-- upgrade databases")
