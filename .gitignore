@@ -1,3 +1,4 @@
+# ignore this
 # Visual Studio Code
 # R and RStudio files
 .vscode
@@ -5,6 +6,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.spyproject
 
 # DBs files
 dbs/*
@@ -37,7 +39,6 @@ src/SanXoT/SanXoT_advancedHelp.txt
 src/SanXoT/anselmo.py
 src/SanXoT/arbor.py
 src/SanXoT/camacho.py
-src/SanXoT/cardenio.py
 src/SanXoT/catapep.py
 src/SanXoT/conf
 src/SanXoT/coordinometer.py
@@ -50,8 +51,6 @@ src/SanXoT/install.txt
 src/SanXoT/locks
 src/SanXoT/logmasher.py
 src/SanXoT/maesepedro.py
-src/SanXoT/sanson.py
-src/SanXoT/sanxotgauss.py
 src/SanXoT/sanxotghost.py
 src/SanXoT/sanxotsqueezer.py
 src/SanXoT/svn.ico
