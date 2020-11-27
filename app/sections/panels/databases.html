@@ -1,0 +1,77 @@
+<template class="task-template" id="panel-databases">
+  
+<script>
+
+// Add values into panel, if apply
+function addValuesDatabasesPanel() {
+  // Imported variables
+  let exceptor = require(`${__dirname}/renderer-process/exceptor`);
+  let importer = require(`${__dirname}/renderer-process/imports`);
+  let wf_exec  = importer.wf_exec;
+  // declare variables
+  let wk_id = 'databases';
+  let cmd_id_1 = 'RELS_TABLE_CATDB';
+  let cmd_id_2 = 'RELS_TABLE_CATFILE';
+
+  // check
+  if ( wf_exec === undefined ) {
+    let errsms = `wf_exec is undefined`;
+    console.log(`${errsms}`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+  }
+  if (!(wk_id in wf_exec)) {
+    let errsms = `'${wk_id}' key is not in wf_exec`;
+    console.log(`${errsms}`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+  }
+
+  // Import specific frames
+  importer.importHTMLtemplate(`${__dirname}/sections/panels/databases_w_catdb.html`, `#${wk_id} #page-tasktable-${cmd_id_1}`, true);
+  importer.importHTMLtemplate(`${__dirname}/sections/panels/databases_w_catfile.html`, `#${wk_id} #page-tasktable-${cmd_id_2}`, true);
+
+  // Fill panels
+  addValuesPanel_CatDB(wf_exec);
+  addValuesPanel_CatFile(wf_exec);
+
+} // end addValuesDatabasesPanel
+
+
+// Create object with the Databases data extracting from the HTML Elements
+function createObjFromDatabasesPanel() {
+  // declare variables
+  let rst = { };
+  // extract variables...
+  // catdb
+  let species = $(`#databases .panel-databases [id='species'] option:selected`);
+  let db = $(`#databases .panel-databases [id='catids'] option:selected`).val();
+  // catfile
+  let cfile = $(`#databases .panel-databases [id='catfile']`).val();
+  let dfile = $(`#databases .panel-databases [id='dbfile']`).val();
+
+  // if all variables are defined and not empty, we take the values for that panel
+  // we take the category db by default
+  if ( species !== undefined && species.length > 0 && db !== undefined && db != '' ) {
+    rst['catid'] = db;
+    rst['species'] = '';
+    rst['catdbs'] = '';
+    for (var i = 0; i < species.length; i++) {
+      let o = species[i];
+      let v1 = $(o).val();
+      let v2 = $(o).text().toLowerCase();
+      // update species data
+      if (rst['species'] != '') { rst['species'] += `,${v1}` } else { rst['species'] += v1 }
+      // update category database
+      let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}_sw-tr.categories.tsv`;
+      if (rst['catdbs'] != '') { rst['catdbs'] += `;${v}` } else { rst['catdbs'] += v }
+    }
+  }
+  else if ( cfile !== undefined && cfile != '' && dfile !== undefined && dfile != '' ) {
+    rst['catfile'] = cfile;
+    rst['dbfile'] = dfile;
+  }
+  return rst;
+} // end createObjFromDatabasesPanel
+
+
+</script>
+</template>

@@ -1,0 +1,21 @@
+#RELS_TABLE_CATDB								
+inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles	filters	more_params
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Spectrum_File-Scan-Charge	SequenceMod		scan2peptide				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Description		protein2description	__MAIN_INPUTS_CATDB__			
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Gene		protein2gene	__MAIN_INPUTS_CATDB__			
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	cat_*		protein2category	__MAIN_INPUTS_CATDB__		"cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"	
+__MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall			"cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"	
+__MAIN_INPUTS_RELDIR__/peptide2protein.tsv	SequenceMod	Gene		peptide2gene	__MAIN_INPUTS_RELDIR__/protein2gene.tsv			"{""rels_table"": ""-b""}"
+								
+#RELS_TABLE_CATFILE								
+inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles	filters	more_params
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Spectrum_File-Scan-Charge	SequenceMod		scan2peptide				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall				
+__MAIN_INPUTS_EXPDIR__/ID-mq.tsv	Protein	Description		protein2description				
+__MAIN_INPUTS_CATFILE__	{1}	{0}		protein2category				
+__MAIN_INPUTS_CATFILE__	{0}	[1]		category2categoryall				

@@ -1,0 +1,260 @@
+[{
+  "id": "basic",
+  "label": "Basic Workflow",
+  "sdesc": "<p><i>Basic Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
+  "description": "Long description for Basic Workflow. You can include HTML",
+  "samples": [{
+    "id": "basic/wspp_sbt_w_catdb",
+    "name": "Sample with category db"
+  },{
+    "id": "basic/wspp_sbt_w_catfile",
+    "name": "Sample with category file"
+  }],
+  "species": [
+    { "name": "Human",     "scientific": "Homo sapiens" },
+    { "name": "Mouse",     "scientific": "Mus musculus" },
+    { "name": "Pig",       "scientific": "Sus scrofa" },
+    { "name": "Rat",       "scientific": "Rattus norvegicus" },
+    { "name": "Rabbit",    "scientific": "Oryctolagus cuniculus" },
+    { "name": "Zebrafish", "scientific": "Danio rerio" }
+  ],
+  "catids": [
+    { "id": "202010", "name": "Oct. 2020" }
+  ],
+  "prj_workspace": {
+    "expdir": "exps",
+    "jobdir": "jobs",
+    "reldir": "rels",
+    "rstdir": "reports",
+    "logdir": "logs"    
+  },
+  "works": [{
+    "id": "main_inputs",
+    "label": "Inputs",
+    "description": "Short description for the current work (tab)",
+    "file": "main_inputs.tsv",
+    "cmds": [{
+      "id": "CREATE_ID",
+      "label": "Input Files",
+      "title": "Provide Input Files",
+      "visible": true,
+      "panel": "panels/main_inputs.html",
+      "params": [
+        { "type": "required", "id": "infile", "name": "Infile" },
+        { "type": "required", "id": "experiment", "name": "Experiment" }
+      ]
+    }]
+  },{
+    "id": "fdr",
+    "label": "FDR",
+    "description": "Short description for the current work (tab)",
+    "file": "fdr.tsv",
+    "cmds": [{
+      "id": "FDR-MASTERQ",
+      "label": "FDR",
+      "title": "Calculate FDR and masterQ",
+      "visible": true,
+      "panel": "panels/advance.html",
+      "params": [
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "threshold", "name": "Threshold" },
+        { "type": "required", "id": "jump_areas", "name": "Jump areas" },
+        { "type": "required", "id": "fdr", "name": "FDR" },
+        { "type": "required", "id": "type_xcorr", "name": "Type xCorr" },
+        { "type": "required", "id": "lab_decoy", "name": "Label decoy" }
+      ]
+    }]
+  },{
+    "id": "databases",
+    "label": "Databases",
+    "description": "Short description for the current work (tab)",
+    "file": "databases.tsv",
+    "cmds": [{
+      "id": "RELS_TABLE_CATDB",
+      "label": "Rels. from Cat. DB",
+      "title": "Create relationship files from Category DB",
+      "visible": true,
+      "panel": "panels/databases.html",
+      "params": [
+        { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
+        { "type": "required", "id": "inf_headers", "name": "Lower headers" },
+        { "type": "required", "id": "sup_headers", "name": "Higher headers" },
+        { "type": "required", "id": "thr_headers", "name": "3rd headers" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "required", "id": "sup_infiles", "name": "Higher infiles" },
+        { "type": "required", "id": "thr_infiles", "name": "3rd infiles" },
+        { "type": "required", "id": "filters", "name": "Filters" },
+        { "type": "required", "id": "more_params", "name": "More params" }
+      ],
+      "readonly_rows": []
+    },{
+      "id": "RELS_TABLE_CATFILE",
+      "label": "Rels. from Cat. File",
+      "title": "Create relationship files from Category File",
+      "visible": true,
+      "panel": "panels/databases.html",
+      "params": [
+        { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
+        { "type": "required", "id": "inf_headers", "name": "Lower headers" },
+        { "type": "required", "id": "sup_headers", "name": "Higher headers" },
+        { "type": "required", "id": "thr_headers", "name": "3rd headers" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "required", "id": "sup_infiles", "name": "Higher infiles" },
+        { "type": "required", "id": "thr_infiles", "name": "3rd infiles" },
+        { "type": "required", "id": "filters", "name": "Filters" },
+        { "type": "required", "id": "more_params", "name": "More params" }
+      ],
+      "readonly_rows": []
+    }]
+  },{
+    "id": "stats_quantification",
+    "label": "Stats Quantification",
+    "description": "Short description for the current work (tab)",
+    "file": "stats_quantification.tsv",
+    "cmds": [{
+      "id": "RATIOS_WSPP-WSPP_SBT",
+      "label": "WSPP - SBT",
+      "title": "Calculate the WSPP - SBT",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Name" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
+        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    }]
+  },{
+    "id": "integration",
+    "label": "Integration",
+    "description": "Short description for the current work (tab)",
+    "file": "integration.tsv",
+    "cmds": [{
+      "id": "NORCOMBINE",
+      "label": "NorCombine",
+      "title": "NorCombine",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category",  "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    },{
+      "id": "RATIOS_INT",
+      "label": "Ratios",
+      "title": "Calculate ratios",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "v_method", "name": "V method", "select": ["form", "max", "avg"] },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    },{
+      "id": "INTEGRATE",
+      "label": "Integrate",
+      "title": "Integrate",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    },{
+      "id": "SBT",
+      "label": "SBT",
+      "title": "System Biology Triangle",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "lowhig_level", "name": "Lower-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "inthig_level", "name": "Int-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "l>i_tag", "name": "low>int Tag" },
+        { "type": "optional", "id": "l>h_tag", "name": "low>hig Tag" },
+        { "type": "optional", "id": "i>h_tag", "name": "int>hig Tag" },
+        { "type": "optional", "id": "l>i_fdr", "name": "low>int FDR" },
+        { "type": "optional", "id": "l>h_fdr", "name": "low>hig FDR" },
+        { "type": "optional", "id": "i>h_fdr", "name": "int>hig FDR" },
+        { "type": "optional", "id": "l>i_var(x)", "name": "low>int Var(x)" },
+        { "type": "optional", "id": "i>h_var(x)", "name": "int>hig Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+      ]
+    }]
+  },{
+    "id": "system",
+    "label": "System Biology",
+    "description": "Short description for the current work (tab)",
+    "file": "system.tsv",
+    "cmds": [{
+      "id": "SANSON",
+      "label": "SanSon",
+      "title": "Obtain system biology diagram",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "filter", "name": "Filter" }
+      ]
+    }]
+  },{
+    "id": "reports",
+    "label": "Reports",
+    "description": "Short description for the current work (tab)",
+    "file": "reports.tsv",
+    "cmds": [{
+      "id": "REPORT",
+      "label": "Report",
+      "title": "Extract reports",
+      "visible": true,
+      "panel": "panels/advance-toggle.html",
+      "params": [
+        { "type": "required", "id": "input", "name": "Input" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "required", "id": "reported_vars", "name": "Reported vars" },
+        { "type": "required", "id": "output", "name": "Output" },
+        { "type": "required", "id": "rep_file", "name": "Join with" },
+        { "type": "optional", "id": "filter", "name": "Filter" },
+        { "type": "optional", "id": "ext_rep_file", "name": "Join with ext. file" }
+      ]
+    }]
+  }]
+
+
+}]

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>iSanXoT!</title>
+    <!-- Imports CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/handsontable-7.4.0.full.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!-- <link rel="stylesheet" href="assets/css/sidebar.css"> -->
+    <link rel="stylesheet" href="assets/css/bootstrap4-toggle.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-select.min.css">
+
+    <!-- Imports JS -->
+    <script>
+      if (typeof module === 'object') {window.module = module; module = undefined;}
+    </script>   
+    <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/handsontable-7.4.0.full.min.js"></script>
+    <script src="assets/js/underscore-min.js"></script>
+    <script src="assets/js/xlsx.full.min.js"></script>
+    <script src="assets/js/js-yaml.min.js"></script>
+    <script src="assets/js/bootstrap4-toggle.min.js"></script> <!-- Bootstrap Switch Button -->
+    <script src="assets/js/bootstrap-select.min.js"></script> <!-- Bootstrap multiselection, searching, and much more -->
+    
+    <script>
+      if (window.module) module = window.module;
+    </script>
+</head>
+<body>
+  
+  <section class="loader" id="loader"></section>
+
+  <main class="bodied" id="bodied"></main>
+
+  <section class="executor" id="executor"></section>
+
+  <footer><div class="footer" id="footer"></div></footer>
+
+  <script>
+    // Import the templates and global processes
+    require('./renderer-process/imports');
+    // Print the version
+    document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
+  </script>
+</body>
+</html>

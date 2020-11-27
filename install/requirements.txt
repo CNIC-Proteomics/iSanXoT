@@ -1,0 +1,19 @@
+$MANAGER=python/tools/Scripts/pip
+install --no-warn-script-location	numpy==1.17.3
+install --no-warn-script-location	fsspec==0.5.2
+install --no-warn-script-location	matplotlib==3.1.1
+install --no-warn-script-location	scipy==1.3.1
+install --no-warn-script-location	snakemake==5.7.1
+install --no-warn-script-location	pandas==0.25.2
+install --no-warn-script-location	more-itertools==7.2.0
+install --no-warn-script-location	concurrent-utils==0.2.0
+install --no-warn-script-location	biopython==1.74
+$MANAGER=node/npm
+config set			scripts-prepend-node-path true
+install --save-dev --save-exact --global	electron@^7.x.x
+install --global	ps-tree
+install --global	xlsx
+install --global	js-yaml
+install --global	fs-extra
+$DATABASES=202010
+$SAMPLES=basic

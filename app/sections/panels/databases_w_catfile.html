@@ -1,0 +1,142 @@
+<template class="task-template" id="panel-databases-catfile">
+
+<div id="panel-databases-catfile" class="panel-databases">
+  <div class="form-group">
+    <h6 for="select-dbfile">Select protein database and decoy label</h6>
+    <div class="form-group row">
+      <div class="form-group row col-sm">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Select your protein database file" id="dbfile" value="">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm select-dbfile" type="button">Select file</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <h6 for="select-catfile">Select protein-category relation file</h6>
+    <div class="form-group row">
+      <div class="form-group row col-sm">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Select your protein-category relation file" id="catfile" value="">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm select-catfile" type="button">Select file</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <h6 for="select-catids">Show/Hide relationship tables</h6>
+    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show" data-off="Hide" data-onstyle="light" data-offstyle="dark" data-width="50px" data-height="30px" data-size="sm" onchange="toggleTaskTable_CatFile(this)" checked>
+  </div>
+</div>
+
+<script>
+// Add values into panel, if apply
+function addValuesPanel_CatFile(wf_exec) {
+  // Imported variables
+  let remote = require('electron').remote;
+  let mainWindow = remote.getCurrentWindow();
+  let dialog = remote.dialog;
+  let exceptor = require(`${__dirname}/renderer-process/exceptor`);
+  // declare variables
+  let wk_id = 'databases';
+  let cmd_id = 'RELS_TABLE_CATFILE';
+  
+  // Add values
+  if ( 'catfile' in wf_exec['databases'] && 'dbfile' in wf_exec['databases']) {
+      if ( 'samples' == ptype ) { // library path + category/db FILE
+      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${pdir}/${wf_exec['databases']['catfile']}`);
+      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${pdir}/${wf_exec['databases']['dbfile']}`);
+    }
+    else {  // category/db FILE
+      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['databases']['catfile']}`);
+      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['databases']['dbfile']}`);
+    }
+  }
+
+  // Hide table
+  $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
+
+  /*
+   * Events
+   */
+  // local function for events
+  function extractInputDirectoryFile(inputs, errsms) {
+    let out = undefined;
+    if(inputs === undefined) {
+      console.log(`${errsms}: input is undefined`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+    }
+    else if (inputs.canceled) {
+      console.log(`${errsms}: canceled operation`);
+    }
+    else if (!('filePaths' in inputs )) {
+      console.log(`${errsms}: filePaths does not defined`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+    }
+    else {
+      if ( inputs['filePaths'].length == 0 ) {
+        console.log(`${errsms}: filePaths is empty`);
+        exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+      }
+      else {
+        out = inputs['filePaths'][0];
+      }
+    }
+    return out;
+  };
+  // events for the DB file and CATegory file BUTTON
+  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-dbfile`).click(function() {
+    let opts = {
+      properties: ['openFile'],
+      filters :[
+        {name: 'Database', extensions: ['fasta', 'fa', 'faa', 'txt']},
+        {name: 'All Files', extensions: ['*']}
+      ]
+    };
+    dialog.showOpenDialog(mainWindow, opts).then((files) => {
+      let inpt = extractInputDirectoryFile(files, `No database file selected`);
+      if ( inpt !== undefined ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${inpt}`);
+      }
+    });
+  });
+  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-catfile`).click(function() {
+    let opts = {
+      properties: ['openFile'],
+      filters :[
+        {name: 'Category', extensions: ['tsv', 'csv', 'txt']},
+        {name: 'All Files', extensions: ['*']}
+      ]
+    };
+    dialog.showOpenDialog(mainWindow, opts).then((files) => {
+      let inpt = extractInputDirectoryFile(files, `No category file seleted`);
+      if ( inpt !== undefined ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${inpt}`);
+      }
+    });
+  });
+  
+} // end addValuesPanel_CatFile
+
+// Show/Hide table
+function toggleTaskTable_CatFile(t) {
+  let wk_id = 'databases';
+  let cmd_id = 'RELS_TABLE_CATFILE';
+
+  if ( $(t).prop('checked') ) {
+    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
+  }
+  else {
+    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).show();
+    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('render');
+  }
+}
+
+</script>
+</template>

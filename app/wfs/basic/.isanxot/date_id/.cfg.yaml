@@ -1,0 +1,31 @@
+name: basic
+version: 0.2.1
+date: 'date_id'
+ncpu: '4'
+verbose: '-vv'
+prj_workspace:
+  expdir: 
+  jobdir: 
+  reldir: 
+  rstdir: 
+  logdir: 
+main_inputs:
+  indir: ''
+  outdir: ''
+databases:
+  species: ''
+  catid: ''
+  catdbs: ''
+datfiles:
+  - type: main_inputs
+    file: 
+  - type: databases
+    file: 
+  - type: identification
+    file: 
+  - type: stats_quantification
+    file: 
+  - type: integration
+    file: 
+  - type: reports
+    file: 
