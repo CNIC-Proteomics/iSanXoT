@@ -80,68 +80,76 @@ function reorder_index(array, indexes) {
 	}
   return out;
 };
+// Check if two arrays are equal
+function isEqual(a, b) { 
+  // if length is not equal 
+  if(a.length!=b.length) {
+    return false;
+  } else { 
+    // comapring each element of array 
+    for(var i=0;i<a.length;i++) {
+      if (a[i]!=b[i]) return false;
+    }
+    return true;
+  } 
+};
 
 // create hash report of commands from a file
-function extract_list_cmds(wk, tbl) {
-  let cmds = {};
+function extract_list_cmds(wk, itbl) {
+  // Extract the info from tables
+  let tbls = {};
   let order = 1;
   let id = null;
-  for (var i = 0; i < tbl.length; i++) {
-    let l = tbl[i];
+  for (var i = 0; i < itbl.length; i++) {
+    let l = itbl[i];
     if ( l && l.length > 0 ) {
       if ( l[0] !== undefined && l[0].startsWith('#') ) {
         id = l[0];
         id = id.replace('#','');
-        let header = tbl[i+1];
-        let attr = (l.length > 1)? l[1] : null;
-        cmds[id] = {
+        let cols = itbl[i+1];
+        tbls[id] = {
           'order': order,
-          'attributes': attr,
-          'header': header,
+          'cols': cols,
           'table': []
         }
         order += 1 // increase the position of commands
         i = i+1; // increase index after header of command
       }
       else {
-        cmds[id]['table'].push(l);
+        tbls[id]['table'].push(l);
       }
     }
   }
-  // sort by the attribute 'order'
-  cmds = sortProperties(cmds, 'order', true, false);
-  // reindex the columns or delate the columns
+  // Extract the cmds from 'workflow' file
+  let cmds = [];
+  for (var i = 0; i < wk.length; i++) {
+    let l = wk[i];
+    let id = l['id'];
+    let cols = l['params'].map(a => a.id);
+    let header = l['params'].map(a => a.name);
+    cmds.push({
+      'id': id,
+      'cols': cols,
+      'header': header,
+      'table': []
+    });s
+  }
   // Iterate over all commands
   // create html sidebar and the tasktable
   for (var j = 0; j < cmds.length; j++) {
     // get variables
     // get the attributes of command from the local file (JSON)
     // get the data of table from the external files (TSV)
-    let cmd_id = cmds[j][0];
-    let cmd = cmds[j][1];
-    // let cmd_header = cmd['header'];
-    // let cmd_table = cmd['table'];
-    // get the header list based on 'workflow.json'
-    let wk_cmd_attr = importer.getObjectFromID(wk, cmd_id);
-    if ( wk_cmd_attr === undefined ) {
-      console.log(cmd_id);
-      exceptor.showErrorMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
+    let cmd = cmds[j];
+    let cmd_id = cmd['id'];
+    // get table values if the column names are equal
+    if ( cmd_id in tbls ) {
+      let tbl = tbls[cmd_id];
+      if ( isEqual(cmd['cols'], tbl['cols']) ) {
+        cmd['table'] = tbls[cmd_id]['table'];
+      }
     }
-    // get the new index of columns from the 'workflow' config
-    let new_indexes = extract_new_index(cmd['header'], wk_cmd_attr['params']);
-    // // reorder the index of the header
-    // cmd['header'] = reorder_index(cmd['header'], new_indexes);
-    // rename the headers
-    cmd['header'] = wk_cmd_attr['params'].map(a => a.name);
-    // reorder the data of table
-    let new_cmd_table = [];
-    for (var k = 0; k < cmd['table'].length; k++) {
-      let t = reorder_index(cmd['table'][k], new_indexes);
-      new_cmd_table.push(t);
-    }
-    cmd['table'] = new_cmd_table;
   }
-
   return cmds;  
 };
 
@@ -215,8 +223,8 @@ for (var i = 0; i < wf['works'].length; i++) {
     // get variables
     // get the attributes of command from the local file (JSON)
     // get the data of table from the external files (TSV)
-    let cmd_id = cmds[j][0];
-    let cmd = cmds[j][1];
+    let cmd = cmds[j];
+    let cmd_id = cmd['id'];
     let cmd_header = cmd['header'];
     let cmd_table = cmd['table'];
     let cmd_attr = importer.getObjectFromID(wk['cmds'], cmd_id);
