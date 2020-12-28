@@ -327,7 +327,7 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: peptide2all (lower to high) ---
+    # Rule: peptide2all ---
     # In SBT, Var_low>high is always the same than Var_low>int
     # In WSPP-SBT, FDR_low>high = 0
   - name: wspp_p2a_sanxot1
@@ -373,7 +373,7 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: protein2all (lower to high) ---
+    # Rule: protein2all ---
     # In SBT, Var_low>high is always the same than Var_low>int
     # In WSPP-SBT, FDR_low>high = 0
   - name: wspp_q2a_sanxot1
@@ -683,7 +683,7 @@ commands:
       -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2gene_tagged.tsv
       -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/category.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
       -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormW.tsv
       -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormV.tsv
     parameters:
@@ -744,9 +744,9 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: peptide2all (lower to high) ---
+    # Rule: peptide2all ---
     # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, FDR_low>high = 0
+    # In WSPPG-SBT, FDR_low>high = 0
   - name: wsppg_p2a_sanxot1
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/peptide.tsv
@@ -790,9 +790,9 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: protein2all (lower to high) ---
+    # Rule: protein2all ---
     # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, FDR_low>high = 0
+    # In WSPPG-SBT, FDR_low>high = 0
   - name: wsppg_q2a_sanxot1
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -836,47 +836,47 @@ commands:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: gene2all (lower to high) ---
+    # Rule: gene2all ---
     # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, FDR_low>high = 0
-  - name: wsppg_q2a_sanxot1
+    # In WSPPG-SBT, FDR_low>high = 0
+  - name: wsppg_g2a_sanxot1
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __MAIN_INPUTS_RELDIR__/protein2proteinall.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
+      -r: __MAIN_INPUTS_RELDIR__/gene2geneall.tsv
     outfiles:
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
-      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats.tsv
+      -L: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_variance.txt
     parameters:
       anal:
-        -a: protein2proteinall
+        -a: gene2geneall
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_q2a_sanxotsieve
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __MAIN_INPUTS_RELDIR__/protein2proteinall.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
+      -r: __MAIN_INPUTS_RELDIR__/gene2geneall.tsv
       -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
     outfiles:
-      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
+      -n: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_tagged.tsv
     parameters:
       anal:
-        -a: protein2proteinall
+        -a: gene2geneall
       l>h_fdr:
         -f: 0
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_q2a_sanxot2
     infiles:
-      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
+      -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_tagged.tsv
       -V: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/proteinall.tsv
-      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
-      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/geneall.tsv
+      -u: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormW.tsv
+      -U: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormV.tsv
     parameters:
       anal:
-        -a: protein2proteinall
+        -a: gene2geneall
       l>h_tag:
         --tags: '!out'
     more_params: ''
@@ -884,7 +884,7 @@ commands:
 
     # Rule: category2all (intermediate to high) ---
     # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, Var_int>high = 0 and FDR_int>high = 0
+    # In WSPPG-SBT, Var_int>high = 0 and FDR_int>high = 0
   - name: wsppg_c2a_sanxot1
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/category.tsv

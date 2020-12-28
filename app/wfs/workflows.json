@@ -5,10 +5,13 @@
   "description": "Long description for Basic Workflow. You can include HTML",
   "samples": [{
     "id": "basic/wspp_sbt_w_catdb",
-    "name": "Sample with category db"
+    "name": "Sample of WSPP-SBT using category db"
   },{
     "id": "basic/wspp_sbt_w_catfile",
-    "name": "Sample with category file"
+    "name": "Sample of WSPP-SBT using category file"
+  },{
+    "id": "basic/wsppg_sbt_w_catdb",
+    "name": "Sample of WSPPG-SBT using category db"
   }],
   "species": [
     { "name": "Human",     "scientific": "Homo sapiens" },
