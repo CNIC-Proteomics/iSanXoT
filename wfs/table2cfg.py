@@ -67,7 +67,10 @@ def read_command_table(ifiles):
             indata[c] = pd.concat( [indata[c], d], sort=False)
         else:
             for c2 in c.split('-'):
-                indata[c2] = d
+                if c2 in indata:
+                    indata[c2] = pd.concat( [indata[c2], d], sort=False)
+                else:
+                    indata[c2] = d
     return indata
 
 def check_command_parameters(indata):
