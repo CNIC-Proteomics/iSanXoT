@@ -140,7 +140,7 @@ def integrate(data = None,
 				acceptedError = 0.001,
 				minVarianceSeed = 1e-3,
 				removeDuplicateUpper = False,
-				forceEmergencyVariance = False,
+				forceEmergencyVariance = 0.0,
 				emergencySweep = False,
 				sweepDecimals = 3,
 				includeOrphans = False,
@@ -324,14 +324,14 @@ def integrate(data = None,
 				
 				success = True
 
-			if forceEmergencyVariance and not emergencySweep:
-				message = "Forcing seed variance %f as emergency variance, as requested by user" % varianceSeed
+			else:
+				message = "Forcing seed variance %f as requested the user" % forceEmergencyVariance
 				logResults.extend([[], [message], []])
 				print()
 				print(message)
 				print()
 				
-				variance = varianceSeedOriginal
+				variance = forceEmergencyVariance
 				success = True
 				
 		if success and not forceEvenNegativeVariance and variance < 0:
@@ -1000,8 +1000,10 @@ Usage: sanxot.py -d[data file] -r[relations file] [OPTIONS]""" % version)
                        algorithm if the number of tries (see -m) is reached.
                        Default number of decimals is 3, for different precision
                        use --sweepdecimals.
-   --emergencyvariance In the case the maximum iterations are reached (see -m),
-                       force the seed variance as emergency variance.
+   -E, --emergencyvariance=float
+                       In the case the maximum iterations are reached (see -m),
+                       force the seed variance provided.
+                       Default is 0.0.
    --tags=string       To define a tag to distinguish groups to perform the
                        integration. The tag can be used by inclusion, such as
                             --tags="mod"
@@ -1120,7 +1122,7 @@ def main(argv):
 	minVarianceSeed = 1e-3
 	forceParameters = False
 	forceEvenNegativeVariance = False
-	forceEmergencyVariance = False
+	forceEmergencyVariance = 0.0
 	emergencySweep = False
 	sweepDecimals = 3
 	varianceSeedProvided = False
@@ -1146,7 +1148,7 @@ def main(argv):
 	try:
         # begin: jmrc
         # opts, args = getopt.getopt(argv, "a:p:v:d:r:o:u:z:m:M:l:L:G:V:A:B:w:y:t:W:Z:bgsfFRCDTJhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "higherlevel=", "lowernormw=", "lowernormv=", "outstats=", "maxiterations=", "minseed=", "graphlimits=", "infofile=", "outgraph=", "outrandom=", "outconfluence=", "varconf=", "varconfpercent=", "graphtitle=", "graphlinewidth=", "labelfontsize=", "varfile=", "no-verbose", "no-graph", "no-steps", "forceparameters", "forcenegativevariance", "emergencyvariance", "emergencysweep", "sweepdecimals=", "randomise", "confluence", "removeduplicateupper", "help", "advanced-help", "minimalgraphticks", "includeorphans" , "randomtimer", "randomseed=", "xlabel=", "ylabel=", "tags=", "word-operators"])
-		opts, args = getopt.getopt(argv, "a:p:v:d:r:o:u:U:z:m:M:l:L:G:V:A:B:w:y:t:W:Z:bgsfFRCDTJhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "higherlevel=", "lowernormw=", "lowernormv=", "outstats=", "maxiterations=", "minseed=", "graphlimits=", "infofile=", "outgraph=", "outrandom=", "outconfluence=", "varconf=", "varconfpercent=", "graphtitle=", "graphlinewidth=", "labelfontsize=", "varfile=", "no-verbose", "no-graph", "no-steps", "forceparameters", "forcenegativevariance", "emergencyvariance", "emergencysweep", "sweepdecimals=", "randomise", "confluence", "removeduplicateupper", "help", "advanced-help", "minimalgraphticks", "includeorphans" , "randomtimer", "randomseed=", "xlabel=", "ylabel=", "tags=", "word-operators"])
+		opts, args = getopt.getopt(argv, "a:p:v:d:r:o:u:U:z:m:M:l:L:G:V:A:B:w:y:t:W:Z:E:bgsfFRCDTJhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "higherlevel=", "lowernormw=", "lowernormv=", "outstats=", "maxiterations=", "minseed=", "graphlimits=", "infofile=", "outgraph=", "outrandom=", "outconfluence=", "varconf=", "varconfpercent=", "graphtitle=", "graphlinewidth=", "labelfontsize=", "emergencyvariance=", "varfile=", "no-verbose", "no-graph", "no-steps", "forceparameters", "forcenegativevariance", "emergencysweep", "sweepdecimals=", "randomise", "confluence", "removeduplicateupper", "help", "advanced-help", "minimalgraphticks", "includeorphans" , "randomtimer", "randomseed=", "xlabel=", "ylabel=", "tags=", "word-operators"])
         # end: jmrc
 	except getopt.GetoptError:
 		logList.append(["Error while getting parameters."])
@@ -1207,8 +1209,8 @@ def main(argv):
 			minVarianceSeed = abs(float(arg))
 		elif opt in ("-f", "--forceparameters"):
 			forceParameters = True
-		elif opt in ("--emergencyvariance"):
-			forceEmergencyVariance = True
+		elif opt in ("-E", "--emergencyvariance"):
+			forceEmergencyVariance = float(arg)
 		elif opt in ("--emergencysweep"):
 			emergencySweep = True
 		elif opt in ("--sweepdecimals"):
