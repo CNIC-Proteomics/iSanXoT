@@ -6,15 +6,23 @@ DATE: 2021_01
 
 ### Highlights
 
-+ We have included a new condition for klibrate. program.
++ We have changed the workflow managment system. Now we have developed "mysnake"
 
 ### Changes in the Graphical User Interface
 
-+ 
++ The GUI executes the new workflow managment system (MySnake).
+
++ The validation menu has been deprecated.
 
 ### Changes in the Code Workflow
 
-+ klibrate: 
++ We have created "mysnake" workflow managment system but we still use "snakemake" to know the list of processes for the workflow.
+
++ We have changed the config file of workflow. Now, the rows of tables represents the commands.
+For that, there are a list of commands and each command is composed by list of rules (programs).
+
++ We have changed some internal programs of workflow. First, they save the results in temporal file and then, they rename to the final file name.
+
 
 
 ___

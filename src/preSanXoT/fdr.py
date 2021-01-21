@@ -186,7 +186,11 @@ def main(args):
 
     
     logging.info("print the output")
-    ddf.to_csv(args.outfile, sep="\t", index=False)
+    # print to tmp file
+    f = f"{args.outfile}.tmp"
+    ddf.to_csv(f, sep="\t", index=False)
+    # rename tmp file
+    os.rename(f, os.path.splitext(f)[0])
 
 
 if __name__ == '__main__':

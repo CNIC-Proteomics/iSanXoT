@@ -27,11 +27,13 @@ import shlex
 ####################
 ISANXOT_SRC_HOME    = f"{os.path.dirname(__file__)}/.."
 ISANXOT_PYTHON_EXEC = sys.executable
-# EXPERIMENTS         = None # obtained from the CREATE_ID command
+
 OUTPUTS_FOR_CMD     = None
+TPL_DATE            = None
 MAIN_INPUTS_JOBDIR  = None
 MAIN_INPUTS_RELDIR  = None
 MAIN_INPUTS_RSTDIR  = None
+MAIN_INPUTS_LOGDIR  = None
 RULE_SUFFIX         = None
 
 #########################
@@ -279,10 +281,12 @@ def add_corrected_files_intrinsic(trule, outfiles):
                 trule[k] = ";".join(l)
     return trule
     
-def add_rules(row, *trules):
+def add_cmd(row, icmd):
     '''
     Create rule list for each command
     '''
+    # deep copy the input cmd
+    cmd = copy.deepcopy(icmd)
     # if 'output' folder does not exits, then we copy the value of 'input' folder
     if 'output' in row:
         if 'input' in row:
@@ -298,14 +302,11 @@ def add_rules(row, *trules):
     if not 'inthig_level' in row and 'int_level' in row:
         row['inthig_level'] = row['int_level']+'all'        
 
-    # copy the given rule
-    r = list(copy.deepcopy(trules))
     # extract the list of columns
     data_params = list(row.index.values)
-    # print(row)
-    # print(data_params)
-    for i in range(len(r)):
-        trule = r[i]
+    # go through the rules of cmd
+    for i in range(len(cmd['rules'])):
+        trule = cmd['rules'][i]
         for p in data_params:
             # add data parameters in the infiles/outfiles
             # add data_parameters into the parameters section for each rule
@@ -313,28 +314,27 @@ def add_rules(row, *trules):
         # add the correct files if '*' asterisk is in the path
         # at the moment, only for 'infiles'
         trule['infiles'] = _add_corrected_files(trule['infiles'])
-    return r
+    return cmd
 
-def add_unique_rule_from_table(df, trules):
+def add_unique_cmd_from_table(df, icmd):
     '''
     Create rule list for each command
     '''
-    r = []
-    if not df.empty:
-        # get the list of unique experiments (in string)
-        exps = ",".join(df['experiment'].unique()).replace(" ", "")
-        if 'lab_decoy' in df.columns:
-            ldecoy = df['lab_decoy'].values[0]
-        else:
-            ldecoy = ''
-        r = list(copy.deepcopy(trules))
-        for i in range(len(r)):
-            trule = r[i]
-            # add only the given parameters for each rule
-            add_datparams('experiment', trule, exps)
-            add_datparams('lab_decoy', trule, ldecoy)
-        r = [r]
-    return r
+    # deep copy the input cmd
+    cmd = copy.deepcopy(icmd)
+    # get the list of unique experiments (in string)
+    exps = ",".join(df['experiment'].unique()).replace(" ", "")
+    if 'lab_decoy' in df.columns:
+        ldecoy = df['lab_decoy'].values[0]
+    else:
+        ldecoy = ''
+    # go through the rules of cmd
+    for i in range(len(cmd['rules'])):
+        trule = cmd['rules'][i]
+        # add only the given parameters for each rule
+        add_datparams('experiment', trule, exps)
+        add_datparams('lab_decoy', trule, ldecoy)
+    return [cmd]
     
 def _param_str_to_dict(s):
     s = s.replace('=',' ')
@@ -360,27 +360,34 @@ def _str_cline(k,v):
         c = '{} "{}" '.format(k,str(v)) if str(v) != '' else ''    
     return c
     
-def add_params_cline(rules):
+def add_params_cline(cmds):
     '''
-    Add the whole parametes (infiles, outfiles, params) to command line    
+    Add the whole parametes (infiles, outfiles, params) to command line
+    Add the command suffix and rule suffix
+    Add the log file for each rule
     '''
+    cmd_suffix = 1
     # work with the global suffix
     global RULE_SUFFIX
-    # For each rule...
-    # create string for the command line with the infiles, outfiles and parameters
-    for r in rules:
-        r = [r] if isinstance(r,dict) else r
-        for i in range(len(r)):
-            trule = r[i]
+    # go through each cmd
+    for cmd in cmds:
+        # Add suffix in the name and increase the value
+        cmd['name'] = f"{cmd['name']}_{cmd_suffix}"
+        cmd_suffix += 1
+        # For each rule...
+        # create string for the command line with the infiles, outfiles and parameters
+        for rule in cmd['rules']:
             cparams = ''
-            # If apply, add suffix in the name and increase the value
-            if RULE_SUFFIX is not None:
-                trule['name'] += f'_{RULE_SUFFIX}'
-                RULE_SUFFIX += 1
+            # Add suffix in the name and increase the value
+            rname = f"{rule['name']}_{RULE_SUFFIX}"
+            rule['name'] = rname
+            RULE_SUFFIX += 1
+            # Add the log file
+            rule['logfile'] = "{}/{}/{}".format(MAIN_INPUTS_LOGDIR, TPL_DATE, f"{rname}.log")
             # Create command line with the input, output files and the parameters
             for p in ['infiles','outfiles','parameters']:
-                if trule[p] is not None:
-                    for k,v in trule[p].items():
+                if rule[p] is not None:
+                    for k,v in rule[p].items():
                         if isinstance(v,dict):
                             for kv,vv in v.items():
                                 cparams += _str_cline(kv,vv)
@@ -391,8 +398,8 @@ def add_params_cline(rules):
             # Now in the case we have 'more_params'
             # we create dict with the actual parameters (from the command line as str) and the more_params
             # add or replace the more_params with the actual parameters
-            if trule['more_params'] is not None and trule['more_params'] != '':
-                v = str(trule['more_params'])
+            if rule['more_params'] is not None and rule['more_params'] != '':
+                v = str(rule['more_params'])
                 ccprs = _param_str_to_dict(cparams) # get dict from old params
                 ncprs = _param_str_to_dict(v) # get dict from new more_params
                 for nk,cpr in ncprs.items():
@@ -402,7 +409,7 @@ def add_params_cline(rules):
                 for kv,vv in ccprs.items():
                     cparams += '{} "{}" '.format(kv,str(vv)) if str(vv) != '' else '{} '.format(kv)
             # add the command line
-            trule['cline'] += " "+cparams
+            rule['cline'] += " "+cparams
         
     
 #################
@@ -470,29 +477,28 @@ def main(args):
     # get the unique commands from the input table
     logging.info("get the unique commands from the input table")
     cmds = list(indata.keys())
-    dels = [i for i in tpl_cmds['commands'] if not (i['name'] in cmds)]
+    dels = [i for i in tpl_cmds if not (i['name'] in cmds)]
     for c in dels:
-        del tpl_cmds['commands'][ tpl_cmds['commands'].index(c) ]
+        del tpl_cmds[ tpl_cmds.index(c) ]
 
     
-    # merge the workflow attributes with the templates of commands
-    tpl.update(tpl_cmds)
-
     # assign the global variables
-    # global MAIN_INPUTS_EXPDIR
+    global MAIN_INPUTS_EXPDIR
     global MAIN_INPUTS_JOBDIR
     global MAIN_INPUTS_RELDIR
     global MAIN_INPUTS_RSTDIR
-    # global MAIN_INPUTS_LOGDIR
+    global MAIN_INPUTS_LOGDIR
+    global TPL_DATE
     MAIN_INPUTS_EXPDIR = tpl['prj_workspace']['expdir']
     MAIN_INPUTS_JOBDIR = tpl['prj_workspace']['jobdir']
     MAIN_INPUTS_RELDIR = tpl['prj_workspace']['reldir']
     MAIN_INPUTS_RSTDIR = tpl['prj_workspace']['rstdir']
     MAIN_INPUTS_LOGDIR = tpl['prj_workspace']['logdir']
+    TPL_DATE           = tpl['date']
     
     
-    # replace the constants for the command templates
-    logging.info("replace the constants for the command templates")
+    # replace the constants for the config template and the command templates
+    logging.info("replace the constants for the config template and the command templates")
     repl = {        
             '__ISANXOT_SRC_HOME__':         ISANXOT_SRC_HOME,
             '__ISANXOT_PYTHON_EXEC__':      ISANXOT_PYTHON_EXEC,
@@ -522,53 +528,59 @@ def main(args):
         l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
+    tpl_cmds = replace_val_rec(tpl_cmds, repl)
 
-    logging.info("fill the parameters and rules for each command")
+
+    logging.info("create a command for each table row")
+    tpl['commands'] = []
     for cmd,df in indata.items():
         if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ':
-            icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
-            if icmd:
+            icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
+            if icmd and not df.empty:
                 i = icmd[0]
                 # add the parameters into each rule
-                tpl['commands'][i]['rules'] = add_unique_rule_from_table(df, tpl['commands'][i]['rules'])
+                tpl['commands'].append(add_unique_cmd_from_table(df, tpl_cmds[i]))
                 # replace constants
-                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+                tpl['commands'] = replace_val_rec(tpl['commands'], repl)
         else: # the rest of commands
-            icmd = [i for i,c in enumerate(tpl['commands']) if c['name'] == cmd]
-            if icmd:
+            icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
+            if icmd and not df.empty:
                 i = icmd[0]
-                # add the parameters into each rule
-                tpl['commands'][i]['rules'] = list(df.apply( add_rules, args=(tpl['commands'][i]['rules']), axis=1))
+                # create a command for each row
+                # add the parameters for each rule
+                tpl['commands'].append( list(df.apply( add_cmd, args=(tpl_cmds[i], ), axis=1)) )
                 # replace constants
-                tpl['commands'][i] = replace_val_rec(tpl['commands'][i], repl)
+                tpl['commands'] = replace_val_rec(tpl['commands'], repl)
 
     
     logging.info("fill the parameters with intrinsic files in the commands")
     # get the list of output files
     outfiles = []
     for i in range(len(tpl['commands'])):
-        for j in range(len(tpl['commands'][i]['rules'])):
-            for k in range(len(tpl['commands'][i]['rules'][j])):
-                trule = tpl['commands'][i]['rules'][j][k]
+        for j in range(len(tpl['commands'][i])):
+            for k in range(len(tpl['commands'][i][j]['rules'])):
+                trule = tpl['commands'][i][j]['rules'][k]
                 outfiles += trule['outfiles'].values()
     # replace the input files that contains the "recursive value" (**)
     # except its own outfiles
     for i in range(len(tpl['commands'])):
-        for j in range(len(tpl['commands'][i]['rules'])):
-            for k in range(len(tpl['commands'][i]['rules'][j])):
-                trule = tpl['commands'][i]['rules'][j][k]
+        for j in range(len(tpl['commands'][i])):
+            for k in range(len(tpl['commands'][i][j]['rules'])):
+                trule = tpl['commands'][i][j]['rules'][k]
                 ofiles =  [i for i in outfiles if i not in trule['outfiles'].values()]
                 trule['infiles'] = add_corrected_files_intrinsic(trule['infiles'], ofiles)
 
     
 
+    logging.info("add command suffix and rule suffix")
     logging.info("fill the clines")
     # add the whole parametes (infiles, outfiles, params) to command line
     # add number suffix that increase with the rule
+    # add the logfile
     global RULE_SUFFIX
     RULE_SUFFIX = 1
     for i in range(len(tpl['commands'])):
-        add_params_cline( tpl['commands'][i]['rules'])
+        add_params_cline( tpl['commands'][i] )
 
 
     

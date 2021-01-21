@@ -14,7 +14,6 @@ let template = [
     { label: 'Main Page', click() { mainWindow.loadFile('index.html') } },
     { label: 'Open Project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
     { label: 'Save Project', accelerator: 'Ctrl+S', click() { mainWindow.webContents.send('saveProject') } },
-    { label: 'Validate Project', accelerator: 'Ctrl+Shift+V', click() { mainWindow.webContents.send('validateProject') } },
     { type: 'separator' },
     { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},

@@ -8,10 +8,10 @@ def load_inputs(config):
     Load the outputs of config file
     '''
     # apply the rule executors to rule (method)
-    for cmd in config['commands']:
-        for rules in cmd['rules']:
-            for ir in range(len(rules)):
-                crule = rules[ir]
+    for cmds in config['commands']:
+        for ic in range(len(cmds)):
+            cmd = cmds[ic]
+            for crule in cmd['rules']:
                 for f,files in crule['outfiles'].items():
                     for file in files.split(";"):
                         yield expand(["{file}"], file=file)
@@ -22,10 +22,10 @@ def load_rules(config):
     '''
     o = []
     # apply the rule executors to rule (method)
-    for cmd in config['commands']:
-        for rules in cmd['rules']:
-            for ir in range(len(rules)):
-                crule = rules[ir]
+    for cmds in config['commands']:
+        for ic in range(len(cmds)):
+            cmd = cmds[ic]
+            for crule in cmd['rules']:
                 o.append( crule )
     return o
 
@@ -48,6 +48,7 @@ def run_rule(input, output, log, params, wildcards):
 
 # extract the rules
 CRULES = load_rules(config)
+
 
 # ------------------ #
 # Executors of rules #

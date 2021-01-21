@@ -119,34 +119,12 @@ function saveProject() {
         exceptor.showMessageBox('warning', "You are in the wrong page and you have not created any workflow", title='No project to save');
     }
 };
-// Validate project
-function validateProject() {
-    if ( wf_date_id && wf ) {
-        // loading...
-        exceptor.loadingWorkflow();
-        setTimeout(function() {
-            // save project
-            let [outdir, cfg_dir, dte_dir, log_dir, attfile] = executor.saveProject(wf_date_id, wf);
-            // validate project
-            executor.validateProject(dte_dir, attfile, log_dir, cfg_dir, outdir);
-            // everything was alright
-            exceptor.stopLoadingWorkflow();
-            exceptor.showMessageBox('info', "Your project is valid", title='Validate project');
-        }, 1000); // due the execSync block everything, we have to wait until loading event is finished
-    }
-    else {
-        exceptor.showMessageBox('warning', "You are in the wrong page and you have not created any workflow", title='No project to save');
-    }
-};
 
 ipcRenderer.on('openProject',  function() {
     openProject();
 });
 ipcRenderer.on('saveProject', function() {
     saveProject();
-});
-ipcRenderer.on('validateProject', function() {
-    validateProject();
 });
 
   

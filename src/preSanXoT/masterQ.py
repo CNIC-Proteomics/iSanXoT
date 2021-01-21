@@ -179,7 +179,11 @@ def main(args):
 
     
     logging.info('print output')
-    indat.to_csv(args.outfile, sep="\t", index=False)
+    # print to tmp file
+    f = f"{args.outfile}.tmp"
+    indat.to_csv(f, sep="\t", index=False)
+    # rename tmp file
+    os.rename(f, os.path.splitext(f)[0])
 
 
 

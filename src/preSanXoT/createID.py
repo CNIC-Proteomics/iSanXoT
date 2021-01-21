@@ -57,7 +57,9 @@ def print_by_experiment(df, outdir):
     if not os.path.exists(outdir_e):
         os.makedirs(outdir_e, exist_ok=False)
     # print the experiment files
-    df[1].to_csv(os.path.join(outdir_e, "ID.tsv"), sep="\t", index=False)
+    df[1].to_csv(os.path.join(outdir_e, "ID.tsv.tmp"), sep="\t", index=False)
+    # return tmp file
+    return f"{outdir_e}/ID.tsv.tmp"
 
 
 def main(args):
@@ -90,7 +92,9 @@ def main(args):
             
         logging.info("print the ID files by experiments")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-            executor.map( print_by_experiment, list(ddf.groupby("Experiment")), itertools.repeat(args.outdir) )
+            tmpfiles = executor.map( print_by_experiment, list(ddf.groupby("Experiment")), itertools.repeat(args.outdir) )        
+        # rename the temporal files deleting the last suffix
+        [os.rename(f, os.path.splitext(f)[0]) for f in list(tmpfiles)]
     else:
         logging.error("there is not 'CREATE_ID' command")
 
