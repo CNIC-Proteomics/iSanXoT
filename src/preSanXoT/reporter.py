@@ -57,7 +57,9 @@ ROOT_FOLDER = '/names/'
 ###################
 def read_infiles(file):
     # read file
-    df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
+    # df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA', 'excluded'], low_memory=False)
+    df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
+    
     # get the name of 'experiment' until the root folder
     # By default, we get the last folder name of path
     fpath = os.path.dirname(file)
@@ -149,7 +151,8 @@ def merge_intermediate(file, df):
 
     '''
     logging.info("read intermediate file")
-    df2 = pd.read_csv(file, sep="\t", dtype=str, header=[0,1], na_values=['NA'], low_memory=False) # two header rows
+    # df2 = pd.read_csv(file, sep="\t", dtype=str, header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
+    df2 = pd.read_csv(file, sep="\t", header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
     
     # rename multi-level header allowing the merge among dataframes
     logging.info("rename multi-level header allowing the merge among dataframes")
@@ -215,49 +218,67 @@ def filter_dataframe(df, flt):
     '''
     # variable with the boolean operators
     comparisons = ['>=', '<=', '!=', '<>', '==', '>', '<']
-    logicals = ['\|', '&', '~']
+    # logicals = ['\|', '&', '~']
+    logicals = ['&'] # for the moment only works with AND
     rc = r'|'.join(comparisons)
     rl = r'|'.join(logicals)
+    # variable with index
+    idx = pd.Series([])
     
-    # create the new flt replacing variables
-    # split the string flt by all logical operators
     # go throught the comparisons
-    # extract the variable and value
-    # replace the variable by the df comparison
-    # replace the value with commas
     comps = re.split(rl,flt)
     for cmp_str in comps:
-        cmp_str = cmp_str.strip().replace('(','').replace(')','')
-        cmp = re.split(rc,cmp_str)
-        var = cmp[0].strip()
-        val = cmp[1].strip().replace('"','').replace("'",'')
-        var_new = "df.filter(regex='{}', axis=1)".format(var)
-        val_new = "'{}'".format(val)
-        # the order of replacements is important!
-        cmp_str_new = cmp_str
-        cmp_str_new = re.sub(rf'{val}\b',val_new,cmp_str_new) # replace exact match
-        cmp_str_new = re.sub(rf'{var}\b',var_new,cmp_str_new) # replace exact match
-        cmp_str_new = "({}).all(axis=1)".format(cmp_str_new)
-        flt = flt.replace(cmp_str,cmp_str_new)
-    
-    # evaluate flt
-    # examples        
-    # ix = pd.eval("(df.filter(regex='n_', axis=1) >= '2').all(axis=1) | (df.filter(regex='Z_', axis=1) >= '11').all(axis=1)", engine='python')
-    # ix = pd.eval("(df.filter(regex='n_peptide2protein', axis=1) >= '2').all(axis=1) & (df.filter(regex='Z_', axis=1) >= '11').all(axis=1)", engine='python')
-    try:
-        ix = pd.eval(flt, engine='python')
-        df_new = df[ix]
-    except:
+        try:
+            # extract the variable/operator/values from the logical condition
+            x = re.match(rf"\s*\(?\s*([^\s]*)\s([{rc}])\s*([^\s]*)\s*\)?\s*", cmp_str)
+            if x:
+                var = x.group(1)
+                cmp = x.group(2)
+                val = x.group(3)
+            # filter the column names
+            # remember the columns are multiindex. For example, ('n_protein2category, '126_vs_Mean')
+            # This is the reason we have included \(' in the regex
+            d = df.filter(regex=f"^\('{var}", axis=1)
+        except Exception as exc:
+            # not filter
+            logging.error(f"It is not filtered. There was a problem getting the columns: {cmp_str}\n{exc}")
+            df_new = df
+            break
+        try:
+            # evaluate condition
+            ix = pd.eval(f"(d {cmp} {val})").any(axis=1)
+            # comparison between two index Series
+            # all -> &
+            # any -> |
+            if not idx.empty:
+                if not ix.empty:
+                    idx = pd.eval("(idx & ix)")
+            else:
+                idx = ix
+        except Exception as exc:
+            # not filter
+            logging.error(f"It is not filtered. There was a problem evaluating the condition: {cmp_str}\n{exc}")
+            df_new = df
+            break
+
+    # extract the dataframe from the index
+    try:        
+        if not idx.empty:
+            df_new = df[idx]
+    except Exception as exc:
         # not filter
+        logging.error(f"It is not filtered. There was a problem extracting the datafram from the index rows: {exc}")
         df_new = df
-    
+
     return df_new
 
 def add_relations(idf, file):
     # read relationship file
     # column name to lowercase
     # add level to the columns
-    df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
+    # df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA', 'excluded'], low_memory=False)
+    df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
+    
     df.columns = map(str.lower, df.columns)
     df.columns = pd.MultiIndex.from_product([df.columns, ['']])
     # check how many columns are available in the givn df

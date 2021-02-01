@@ -300,7 +300,14 @@ def add_cmd(row, icmd):
     if not 'lowhig_level' in row and 'low_level' in row:
         row['lowhig_level'] = row['low_level']+'all'
     if not 'inthig_level' in row and 'int_level' in row:
-        row['inthig_level'] = row['int_level']+'all'        
+        row['inthig_level'] = row['int_level']+'all'
+
+    # Exception in SANSON command!!
+    # if "low_norm" and "hig_norm" don't exit, Then, we include the "low_level"ALL and "hig_level"ALL, respectivelly.
+    if not 'low_norm' in row and 'low_level' in row:
+        row['low_norm'] = row['low_level']+'all'
+    if not 'hig_norm' in row and 'hig_level' in row:
+        row['hig_norm'] = row['hig_level']+'all'
 
     # extract the list of columns
     data_params = list(row.index.values)
@@ -442,12 +449,6 @@ def main(args):
     indata = common.read_command_table(infiles)
     
     
-    # remove the date_id folder from the data files
-    # because the input config file contains the date_id in the output folders, and we don't want in the result config file
-    tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'\/'): ''})
-    # tpl['datfiles'] = replace_val_rec(tpl['datfiles'], {(tpl['date']+'/'): ''}) # don't escape slash for Python3
-
-
     # check the tasktable parameters for each command:
     # 1. check whether there are duplicates in the output directories
     # 2. check whether the values of '* Var(x)' are False or a float

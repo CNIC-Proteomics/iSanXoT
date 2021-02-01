@@ -179,15 +179,20 @@ input:disabled, button:disabled {
 /* ---------------------------------------------------
     PROCESSORS/LOGGER
 ----------------------------------------------------- */
-#hot_processes {
+#panel-logger {
+    margin: 10px 10px 10px 20px;
+}
+#projectlogs {
     margin-bottom: 10px;
 }
-#hot_processes_panel {
-    overflow-y: auto;
-    overflow-x: auto;
-    width: 100%;
-    height: 590px;
-    resize: none;
+#projectlogs tbody {
+    cursor: pointer;
+}
+#projectlogs .currentRow, #projectlogs .highlight {
+    background: rgb(248, 224, 162);
+}
+#workflowlogs .logtable {
+    margin-bottom: 5px;
 }
 
 /* ---------------------------------------------------

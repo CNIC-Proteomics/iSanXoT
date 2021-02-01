@@ -93,6 +93,13 @@ function isEqual(a, b) {
     return true;
   } 
 };
+// Check if all elements of array is empty
+function allBlanks(arr) {
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i] != '') return false;
+  }
+  return true;
+}
 
 // create hash report of commands from a file
 function extract_list_cmds(wk, itbl) {
@@ -102,7 +109,7 @@ function extract_list_cmds(wk, itbl) {
   let id = null;
   for (var i = 0; i < itbl.length; i++) {
     let l = itbl[i];
-    if ( l && l.length > 0 ) {
+    if ( l && l.length > 0 && l != '' && !(allBlanks(l))) {
       if ( l[0] !== undefined && l[0].startsWith('#') ) {
         id = l[0];
         id = id.replace('#','');
@@ -116,6 +123,7 @@ function extract_list_cmds(wk, itbl) {
         i = i+1; // increase index after header of command
       }
       else {
+        // save 
         tbls[id]['table'].push(l);
       }
     }
@@ -181,17 +189,17 @@ for (var i = 0; i < wf['works'].length; i++) {
   let wk_label = wk['label'];
   let wk_file = `${cdir}/${wk['file']}`;
 
-  // Extract the table of commands (JSON) from the external file
+  // Extract the table of commands
+  // Split the lines and tabular lines
+  // Then, for each cell, it replaces the "{2,} and " at the begining and the end.
   // convert command file into a dictionary
-  let tbl_cmds = {};
+  let tbl_cmds = [];
   let cmds = {};
   try {
     if (fs.existsSync(`${wk_file}`)) {
-      tbl_cmds = to_json( XLSX.readFile(`${wk_file}`) );
-      if ( tbl_cmds ) {
-        tbl_cmds = tbl_cmds['Sheet1']
-      }
-      else {
+      let s = fs.readFileSync(`${wk_file}`).toString();
+      tbl_cmds = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+      if ( !tbl_cmds ) {
         console.log(tbl_cmds);
         exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
       }

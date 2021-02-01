@@ -1,3 +1,26 @@
+## 0.2.5
+```
+DATE: 2021_01
+```
+
+### Highlights
+
++ We have changed the visualization of Log panels of GUI.
+
+### Changes in the Graphical User Interface
+
++ We have fixed the filter of REPORT command.
+
++ Bug fixed: When you create a workflow from the scratch, there is a conflict with the relationship tables (CatDB and CatFile). Both tables are created. Then, two processes create the same relationship file.
+
++ Bug fixed: the table of sanson command needs another Norm column.
+
+### Changes in the Code Workflow
+
++ Bug fixed in the programa of Reports. The filter function was not working correctly. The pandas "eval" function does not filter.
+
+
+
 ___
 ## 0.2.4
 ```
@@ -22,8 +45,6 @@ DATE: 2021_01
 For that, there are a list of commands and each command is composed by list of rules (programs).
 
 + We have changed some internal programs of workflow. First, they save the results in temporal file and then, they rename to the final file name.
-
-
 
 ___
 ## 0.2.3

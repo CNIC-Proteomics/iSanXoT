@@ -1,4 +1,12 @@
 <template class="task-template" id="logger">
-  <div id="hot_processes" class="hot handsontable htRowHeaders htColumnHeaders"></div>
-  <textarea id="hot_processes_panel" name="text" readonly>Logger panel. Click on table to see the log information.</textarea>  
+  <div id="panel-logger">
+    <div id="projectlogs" class="form-group">
+      <h6 for="select-indir">Project logs table</h6>
+      <div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>
+    </div>
+    <div id="workflowlogs" class="form-group">
+      <h6 for="select-indir">Workflow log table</h6>
+      <div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>
+    </div>  
+  </div>
 </template>

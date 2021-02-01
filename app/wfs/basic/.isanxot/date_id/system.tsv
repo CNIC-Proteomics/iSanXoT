@@ -1,2 +1,2 @@
-#SANSON						
-input	low_level	hig_level	norm	output	tag	filter
+#SANSON							
+input	low_level	hig_level	output	low_norm	hig_norm	tag	filter

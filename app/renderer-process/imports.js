@@ -40,9 +40,13 @@ function doneResizing() {
         $(`#page-tasktable-CREATE_ID .tasktable`).height('auto');
         $(`#page-tasktable-CREATE_ID .wtHolder`).height('auto');
     }
-    if ( $('#hot_processes_panel').length ) {
-        let newheight = winheight - 175;
-        $(`#hot_processes_panel`).height(newheight);
+    if ( $('#panel-logger').length ) {
+        let newheight = winheight - 156;
+        $(`#panel-logger`).height(newheight);
+    }
+    if ( $('.logtable').length ) {
+        let newheight = winheight - 227;
+        $(`#workflowlogs .logtable`).height(newheight);
     }
 }
 
@@ -57,6 +61,10 @@ $(document).ready(function() {
     if ( $('.tasktable').length ) {
         // render all task-table
         $(`.tasktable`).handsontable('render');
+    }
+    if ( $('.logtable').length ) {
+        // render all task-table
+        $(`.logtable`).handsontable('render');
     }
     // resize panels
     doneResizing();
@@ -289,6 +297,7 @@ function extractWorkflowAttributes() {
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {
+    doneResizing:               doneResizing,
     importHTMLtemplate:         importHTMLtemplate,
     getWorkflowIDFromElements:  getWorkflowIDFromElements,
     getWorkIDFromElements:      getWorkIDFromElements,

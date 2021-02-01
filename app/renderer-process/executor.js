@@ -56,7 +56,7 @@ function preparePrjWorkspace(date_id, outdir, prj_dirs) {
         console.log(log_dir);
         exceptor.showMessageBox('error',`${log_dir}: ${err}`, title='Creating logging directory', end=true);
     }
-    return [cfg_dir, dte_dir, log_dir];
+    return [dte_dir, log_dir];
 }
 // Export tasktable to TSV
 function exportTasktable(tsk_id, header) {
@@ -147,8 +147,10 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
             }
             // export tasktable to CSV
             try {
-                cont += `\n#${cmd_id}\n`;
-                cont += exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`, header);
+                if ( $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).length ) {
+                    cont += `\n#${cmd_id}\n`;
+                    cont += exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`, header);    
+                }
             } catch (err) {
                 exceptor.showErrorMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
             }
@@ -183,62 +185,30 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
     return cfgfile;
 }
 
-function checksum(str, algorithm, encoding) {
-    return crypto
-        .createHash(algorithm || 'md5')
-        .update(str, 'utf8')
-        .digest(encoding || 'hex')
-}
-function copyDiffFiles(srcDir, tgtDir) {
-    let srcFiles = fs.readdirSync(srcDir);
-    srcFiles.forEach( function (srcFile) {
-        srcFile = `${srcDir}/${srcFile}`;
-        let srcCont = fs.readFileSync(srcFile, "utf-8");
-        let tgtFile = `${tgtDir}/${path.basename(srcFile)}`;
-        if ( fs.existsSync(tgtFile) ) {
-            let tgtCont = fs.readFileSync(tgtFile, "utf-8");
-            let srcCS = checksum(srcCont);
-            let tgtCS = checksum(tgtCont);
-            if (srcCS != tgtCS ) {
-                fs.writeFileSync(tgtFile, srcCont);
-            }
-        } else {
-            fs.writeFileSync(tgtFile, srcCont);
-        }
-    } );
-};
-
-// function copyFileSync( source, target ) {
-//     // if target is a directory a new file with the same name will be created
-//     let targetFile = target;
-//     if ( fs.existsSync( target ) ) {
-//         if ( fs.lstatSync( target ).isDirectory() ) {
-//             targetFile = path.join( target, path.basename( source ) );
-//         }
-//     }
-//     fs.writeFileSync(targetFile, fs.readFileSync(source));
+// function checksum(str, algorithm, encoding) {
+//     return crypto
+//         .createHash(algorithm || 'md5')
+//         .update(str, 'utf8')
+//         .digest(encoding || 'hex')
 // }
-// function copyFolderRecursiveSync( source, target ) {
-//     // check if folder needs to be created or integrated
-//     let targetFolder = target;
-//     if ( !fs.existsSync( targetFolder ) ) {
-//         fs.mkdirSync( targetFolder );
-//     }
-
-//     //copy
-//     if ( fs.lstatSync( source ).isDirectory() ) {
-//         let files = [];
-//         files = fs.readdirSync( source );
-//         files.forEach( function ( file ) {
-//             var curSource = path.join( source, file );
-//             if ( fs.lstatSync( curSource ).isDirectory() ) {
-//                 copyFolderRecursiveSync( curSource, targetFolder );
-//             } else {
-//                 copyFileSync( curSource, targetFolder );
+// function copyDiffFiles(srcDir, tgtDir) {
+//     let srcFiles = fs.readdirSync(srcDir);
+//     srcFiles.forEach( function (srcFile) {
+//         srcFile = `${srcDir}/${srcFile}`;
+//         let srcCont = fs.readFileSync(srcFile, "utf-8");
+//         let tgtFile = `${tgtDir}/${path.basename(srcFile)}`;
+//         if ( fs.existsSync(tgtFile) ) {
+//             let tgtCont = fs.readFileSync(tgtFile, "utf-8");
+//             let srcCS = checksum(srcCont);
+//             let tgtCS = checksum(tgtCont);
+//             if (srcCS != tgtCS ) {
+//                 fs.writeFileSync(tgtFile, srcCont);
 //             }
-//         } );
-//     }
-// }
+//         } else {
+//             fs.writeFileSync(tgtFile, srcCont);
+//         }
+//     } );
+// };
 
 // Exec process
 function execSyncProcess(script, cmd) {
@@ -252,13 +222,13 @@ function execSyncProcess(script, cmd) {
     }
 };
 
-function execProcess(script, cmd, log, wfname) {
+function execProcess(script, cmd, cfg, log, wfname) {
     // eexecute command line
     console.log(cmd);
     proc = cProcess.exec(cmd);
 
     // save the process id in the session storage
-    sessioner.addProcessesToSession(proc.pid, log, wfname, `${__dirname}/../processes.html`);
+    sessioner.addProcessesToSession(proc.pid, cfg, log, wfname, `${__dirname}/../processes.html`);
 
     // Handle on stderr
     proc.stderr.on('data', (data) => {
@@ -291,7 +261,7 @@ function execSnakeMake(params) {
     --cores ${params.nthreads} \
     --directory "${params.directory}" `;
     let cmd = `${cmd_smk} 1> "${params.logfile}" 2>&1`;
-    execProcess('executing the workflow', cmd, params.logfile, params.directory);
+    execProcess('executing the workflow', cmd, params.configfile, params.logfile, params.directory);
 }
 /*
  * Events
@@ -316,7 +286,7 @@ function saveProject(wf_date_id, wf) {
     // get the output directory
     let outdir = $(`#main_inputs #outdir`).val();
     // prepare the workspace of project
-    let [cfg_dir, dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
+    let [dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
     // create datafiles
     let attfile = createConfigFiles(wf_date_id, outdir, dte_dir, wf);
     // Exec: create config file for the execution of workflow
@@ -327,8 +297,8 @@ function saveProject(wf_date_id, wf) {
         'logdir': log_dir
     });
     // Copy only the files that are different
-    copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
-    return [outdir, cfg_dir, dte_dir, log_dir, attfile];
+    // copyDiffFiles(`${dte_dir}`, `${cfg_dir}`);
+    return [outdir, dte_dir, log_dir];
 };
 // execute project
 function executeProject() {
@@ -338,10 +308,10 @@ function executeProject() {
         let wf_date_id = importer.wf_date_id;
         if ( wf_date_id && wf ) {
             // save project
-            let [outdir, cfg_dir, dte_dir, log_dir, attfile] = saveProject(wf_date_id, wf);
+            let [outdir, dte_dir, log_dir] = saveProject(wf_date_id, wf);
             // Execute snakemake
             execSnakeMake({
-                'configfile': `${outdir}/.isanxot/config.yaml`,
+                'configfile': `${dte_dir}/config.yaml`,
                 'nthreads':   `${document.querySelector('#nthreads').value}`,
                 'directory':  `${outdir}`,
                 'logfile':    `${log_dir}/isanxot.log`

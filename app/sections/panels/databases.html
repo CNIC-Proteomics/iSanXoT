@@ -40,13 +40,17 @@ function addValuesDatabasesPanel() {
 function createObjFromDatabasesPanel() {
   // declare variables
   let rst = { };
+  let wk_id = 'databases';
+  let cmd_id_1 = 'RELS_TABLE_CATDB';
+  let cmd_id_2 = 'RELS_TABLE_CATFILE';
+
   // extract variables...
   // catdb
-  let species = $(`#databases .panel-databases [id='species'] option:selected`);
-  let db = $(`#databases .panel-databases [id='catids'] option:selected`).val();
+  let species = $(`#${wk_id} .panel-databases [id='species'] option:selected`);
+  let db = $(`#${wk_id} .panel-databases [id='catids'] option:selected`).val();
   // catfile
-  let cfile = $(`#databases .panel-databases [id='catfile']`).val();
-  let dfile = $(`#databases .panel-databases [id='dbfile']`).val();
+  let cfile = $(`#${wk_id} .panel-databases [id='catfile']`).val();
+  let dfile = $(`#${wk_id} .panel-databases [id='dbfile']`).val();
 
   // if all variables are defined and not empty, we take the values for that panel
   // we take the category db by default
@@ -64,10 +68,16 @@ function createObjFromDatabasesPanel() {
       let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}_sw-tr.categories.tsv`;
       if (rst['catdbs'] != '') { rst['catdbs'] += `;${v}` } else { rst['catdbs'] += v }
     }
+    // unable table of CatDB and disable table of CatFile
+    $(`#${wk_id} #page-tasktable-${cmd_id_1} .disabled_tasktable`).toggleClass('disabled_tasktable tasktable');
+    $(`#${wk_id} #page-tasktable-${cmd_id_2} .tasktable`).toggleClass('tasktable disabled_tasktable');
   }
   else if ( cfile !== undefined && cfile != '' && dfile !== undefined && dfile != '' ) {
     rst['catfile'] = cfile;
     rst['dbfile'] = dfile;
+    // unable table of CatFile and disable table of CatDB
+    $(`#${wk_id} #page-tasktable-${cmd_id_2} .disabled_tasktable`).toggleClass('disabled_tasktable tasktable');
+    $(`#${wk_id} #page-tasktable-${cmd_id_1} .tasktable`).toggleClass('tasktable disabled_tasktable');
   }
   return rst;
 } // end createObjFromDatabasesPanel

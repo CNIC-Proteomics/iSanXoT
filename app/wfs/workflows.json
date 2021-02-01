@@ -254,10 +254,12 @@
       "panel": "panels/advance-toggle.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
-        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["protein", "gene", "category"] },
         { "type": "optional", "id": "output", "name": "Output" },
+        { "type": "optional", "id": "low_norm", "name": "Lower norm", "dropdown": ["protein", "gene", "category", "peptideall", "proteinall", "geneall"] },
+        { "type": "optional", "id": "hig_norm", "name": "Higher norm", "dropdown": ["gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "filter", "name": "Filter" }
       ]
     }]
@@ -284,7 +286,4 @@
       ]
     }]
   }]
-
-
-
 }]

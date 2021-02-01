@@ -107,42 +107,6 @@ function createWindow () {
 
 }; // end createWindow
 
-// // local function: add the project folder
-// function addInputsFileDirectoy(inputs, errsms) {
-//   if(inputs === undefined) {
-//     console.log(`${errsms}: input is undefined`);
-//     exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-//   }
-//   else if (inputs.canceled) {
-//     console.log(`${errsms}: canceled operation`);
-//   }
-//   else if (!('filePaths' in inputs )) {
-//     console.log(`${errsms}: filePaths does not defined`);
-//     exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-//   }
-//   else {
-//     if ( inputs['filePaths'].length == 0 ) {
-//       console.log(`${errsms}: filePaths is empty`);
-//       exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-//     }
-//     else {
-//       let file = inputs['filePaths'][0];
-//       mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${file}`);
-//     }
-//   }
-// };
-
-// // Load project folder
-// function openProject() {
-//   // Select a folder: Asynchronous - using callback
-//   // Use the main window to be modal
-//   let opts = { properties: ["openDirectory"] };
-//   dialog.showOpenDialog(mainWindow, opts).then((dirs) => {
-//     isOpenLoadProjectDialog = false;
-//     addInputsFileDirectoy(dirs, `No project folder selected`);
-//   });
-// };
-
 // Prevent the close of app
 function reallyWantToClose() {
   let opts = {      

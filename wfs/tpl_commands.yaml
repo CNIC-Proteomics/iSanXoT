@@ -5,6 +5,7 @@
 # Description: 
 - name: CREATE_ID
   description: Create the structure of ID for iSanXoT
+  execution_label: exec
   rules:
   - name: createID
     infiles:
@@ -26,6 +27,7 @@
 # Description:
 - name: FDR
   description: Calculation of FDR
+  execution_label: exec
   rules:
   - name: fdr
     infiles:
@@ -54,6 +56,7 @@
 # Description: 
 - name: MASTERQ
   description: Calculation of Master Protein
+  execution_label: exec
   rules:
   - name: masterq
     infiles:
@@ -76,6 +79,7 @@
 # Description:
 - name: RELS_TABLE_CATDB
   description: Command that creates relationship tables from category DB
+  execution_label: exec
   rules:
   - name: rels_table
     infiles:
@@ -105,6 +109,7 @@
 # Description:
 - name: RELS_TABLE_CATFILE
   description: Command that creates relationship tables from category file
+  execution_label: exec
   rules:
   - name: rels_table
     infiles:
@@ -134,6 +139,7 @@
 # Description: 
 - name: RATIOS_WSPP
   description: Calculation of ratios
+  execution_label: exec
   rules:
   - name: ratios
     infiles:
@@ -154,6 +160,7 @@
 # Description: 
 - name: WSPP_SBT
   description: Calculation of WSPP and SBT (Systems Biology Triangle)
+  execution_label: exec
   rules:
 
   # Rule: aljamia + klibrate  ---
@@ -487,6 +494,7 @@
 # Description: 
 - name: WSPPG_SBT
   description: Calculation of WSPPG and SBT (Systems Biology Triangle)
+  execution_label: exec
   rules:
 
   # Rule: aljamia + klibrate  ---
@@ -968,6 +976,7 @@
 # Description: 
 - name: NORCOMBINE
   description: Combine experiments
+  execution_label: exec
   rules:
 
   # Rule: create a file with the list of experiments/tags ---
@@ -1056,6 +1065,7 @@
 # Description:
 - name: RATIOS_INT
   description: Calculate the ratios and integrate
+  execution_label: exec
   rules:
 
     # Rule: calcultate ratios ---
@@ -1081,6 +1091,7 @@
 # Description:
 - name: INTEGRATE
   description: Integration
+  execution_label: exec
   rules:
 
     # Rule: sanxot integration: obtain integrated Z and FDR values ---
@@ -1142,6 +1153,7 @@
 # Description:
 - name: SBT
   description: System Biology Triangle
+  execution_label: exec
   rules:
 
     # Rule: sanxot integration: lower to intermediate ---
@@ -1299,16 +1311,17 @@
 # Description:
 - name: SANSON
   description: detector of cateogories containing similar sets of proteins, showing changing proteins within each category
+  execution_label: exec
   rules:
 
   # Rule: create a file with the list of higher levels ---
   # Rule: filter by the number of proteins and FDR ---
   - name: sanson_higher_levels
     infiles:
-      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_HIG_LEVEL__2__WF_NORM___outStats.tsv
+      -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_HIG_LEVEL__2__WF_HIG_NORM___outStats.tsv
       -r: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
     outfiles:
-      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___clean.tsv
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_HIG_NORM___clean.tsv
     parameters:
       tag:
         --tags: '!out'
@@ -1320,9 +1333,9 @@
   # Rule: create graph file in txt format ---
   - name: sanson
     infiles:
-      -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_NORM___clean.tsv
+      -c: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_HIG_NORM___clean.tsv
       -r: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
-      -z: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
+      -z: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_LOW_NORM___outStats.tsv
     outfiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___graphviz.dot
     parameters:
@@ -1341,6 +1354,7 @@
 # Description: 
 - name: REPORT
   description: Retrieve the reports
+  execution_label: exec
   rules:
   - name: report
     infiles:

@@ -25,7 +25,7 @@ function addProcToSession(a_pids, wf) {
 };
 
 // Save the process id in the session storage
-function addProcessesToSession(pid, log, wfname, page=false) {
+function addProcessesToSession(pid, cfg, log, wfname, page=false) {
     // when all the processes have been saved, then, we jump to another page
     var jumpToPage = function (page) {
         // go to procceses section
@@ -34,10 +34,12 @@ function addProcessesToSession(pid, log, wfname, page=false) {
         }
     }
     // save the whole list of process of ids at the moment
-    var addProcesses = function (pid, log, page, callback) {
+    var addProcesses = function (pid, cfg, log, page, callback) {
         // get the children processes from the given main PID
         psTree(pid, function (err, children) {
-            let pids = [log];
+            let pids = [];
+            pids.push(cfg);
+            pids.push(log);
             for (var i = 0; i < children.length; i++) {
                 let p = children[i];
                 pids.push(p.PID);
@@ -48,7 +50,7 @@ function addProcessesToSession(pid, log, wfname, page=false) {
         });
     };
     // call the function using the callback
-    addProcesses(pid, log, page, jumpToPage);
+    addProcesses(pid, cfg, log, page, jumpToPage);
 };
 
 // We exports the modules
