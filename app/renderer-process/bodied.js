@@ -9,98 +9,6 @@ let importer = require('./imports');
  * Local functions
  */
 
-// Convert workbook to json
-function to_json(workbook) {
-  var result = {};
-  workbook.SheetNames.forEach(function(sheetName) {    
-    // Use raw values (true) or formatted strings (false)
-    // When header is 1, the default is to generate blank rows. blankrows must be set to false to skip blank rows.
-    // When header is not 1, the default is to skip blank rows. blankrows must be true to generate blank rows    
-    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1, raw:false} );
-    if (roa.length) result[sheetName] = roa;
-  });
-  return result;
-};
-
-/**
- * Sort object properties (only own properties will be sorted).
- * @param {object} obj object to sort properties
- * @param {string|int} sortedBy 1 - sort object properties by specific value.
- * @param {bool} isNumericSort true - sort object properties as numeric value, false - sort as string value.
- * @param {bool} reverse false - reverse sorting.
- * @returns {Array} array of items in [[key,value],[key,value],...] format.
- */
-function sortProperties(obj, sortedBy, isNumericSort, reverse) {
-  sortedBy = sortedBy || 1; // by default first key
-  isNumericSort = isNumericSort || false; // by default text sort
-  reverse = reverse || false; // by default no reverse
-
-  var reversed = (reverse) ? -1 : 1;
-
-  var sortable = [];
-  for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-          sortable.push([key, obj[key]]);
-      }
-  }
-  if (isNumericSort)
-      sortable.sort(function (a, b) {
-          return reversed * (a[1][sortedBy] - b[1][sortedBy]);
-      });
-  else
-      sortable.sort(function (a, b) {
-          var x = a[1][sortedBy].toLowerCase(),
-              y = b[1][sortedBy].toLowerCase();
-          return x < y ? reversed * -1 : x > y ? reversed : 0;
-      });
-  return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
-};
-// Extract the index of the 'wrofklow.json' headers taking into account the id header of another list
-function extract_new_index(array, indexes) {
-	let idxs = array.map(function(val, index) {
-  	let idx = null;
-  	for( let i=0; i<indexes.length; i++) {
-			if (indexes[i].id === val) {
-      	idx = i;
-        break;
-      }
-    }
-    return idx;
-	});
-	return idxs;
-};
-// reorder the list of elements from the given list of indexes
-function reorder_index(array, indexes) {
-	let out = new Array();
-  for( let i=0; i<indexes.length; i++) {
-  	let idx = indexes[i];
-  	if (idx !== null) {
-    	out[idx] = array[i];
-    }
-	}
-  return out;
-};
-// Check if two arrays are equal
-function isEqual(a, b) { 
-  // if length is not equal 
-  if(a.length!=b.length) {
-    return false;
-  } else { 
-    // comapring each element of array 
-    for(var i=0;i<a.length;i++) {
-      if (a[i]!=b[i]) return false;
-    }
-    return true;
-  } 
-};
-// Check if all elements of array is empty
-function allBlanks(arr) {
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] != '') return false;
-  }
-  return true;
-}
-
 // create hash report of commands from a file
 function extract_list_cmds(wk, itbl) {
   // Extract the info from tables
@@ -109,7 +17,7 @@ function extract_list_cmds(wk, itbl) {
   let id = null;
   for (var i = 0; i < itbl.length; i++) {
     let l = itbl[i];
-    if ( l && l.length > 0 && l != '' && !(allBlanks(l))) {
+    if ( l && l.length > 0 && l != '' && !(importer.allBlanks(l))) {
       if ( l[0] !== undefined && l[0].startsWith('#') ) {
         id = l[0];
         id = id.replace('#','');
@@ -153,7 +61,11 @@ function extract_list_cmds(wk, itbl) {
     // get table values if the column names are equal
     if ( cmd_id in tbls ) {
       let tbl = tbls[cmd_id];
-      if ( isEqual(cmd['cols'], tbl['cols']) ) {
+      // // remove empty values
+      // let tbl_cols = tbl['cols'].filter(function (el) {
+      //   return (el != null) && (el != '');
+      // });
+      if ( importer.isEqual(cmd['cols'], tbl['cols']) ) {
         cmd['table'] = tbls[cmd_id]['table'];
       }
     }
@@ -198,7 +110,7 @@ for (var i = 0; i < wf['works'].length; i++) {
   try {
     if (fs.existsSync(`${wk_file}`)) {
       let s = fs.readFileSync(`${wk_file}`).toString();
-      tbl_cmds = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+      tbl_cmds = s.split('\n').map( row => row.trim().split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
       if ( !tbl_cmds ) {
         console.log(tbl_cmds);
         exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
@@ -427,3 +339,7 @@ for (var i = 0; i < wf['works'].length; i++) {
 // functions in the corresponding html template
 addValuesMainInputsPanel();
 addValuesDatabasesPanel();
+
+// check if some data of advanced options is available
+checkIfAdvancedOptionsExist();
+

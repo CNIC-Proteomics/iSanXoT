@@ -293,7 +293,27 @@ function extractWorkflowAttributes() {
     let wf = getObjectFromID(wfs, wf_id);
     return [pdir_def, ptype, pdir, wf_id, wf, cdir, cfg];
 }
-
+// Check if two arrays are equal
+function isEqual(a, b) {
+    // if length is not equal 
+    if(a.length!=b.length) {
+        return false;
+    } else { 
+        // comapring each element of array 
+        for(var i=0;i<a.length;i++) {
+            if (a[i]!=b[i]) return false;
+        }
+        return true;
+    }
+}
+// Check if all elements of array is empty
+function allBlanks(arr) {
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] != '' & arr[i] != null) return false;
+    }
+    return true;
+}
+  
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {
@@ -304,7 +324,9 @@ module.exports = {
     getCmdIDFromElements:       getCmdIDFromElements,
     getObjectFromID:            getObjectFromID,
     getIndexParamsWithAttr:     getIndexParamsWithAttr,
-    getIndexParamsWithKey:      getIndexParamsWithKey
+    getIndexParamsWithKey:      getIndexParamsWithKey,
+    isEqual:                    isEqual,
+    allBlanks:                  allBlanks
 };
 
 

@@ -229,8 +229,10 @@ def filter_dataframe(df, flt):
     comps = re.split(rl,flt)
     for cmp_str in comps:
         try:
+            # trim whitespaces and parenthesis
+            cmp_str = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_str)
             # extract the variable/operator/values from the logical condition
-            x = re.match(rf"\s*\(?\s*([^\s]*)\s([{rc}])\s*([^\s]*)\s*\)?\s*", cmp_str)
+            x = re.match(rf"([^\s]*)\s([{rc}])\s*([^\s]*)", cmp_str)
             if x:
                 var = x.group(1)
                 cmp = x.group(2)

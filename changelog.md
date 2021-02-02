@@ -1,6 +1,6 @@
 ## 0.2.5
 ```
-DATE: 2021_01
+DATE: 2021_02
 ```
 
 ### Highlights
@@ -13,11 +13,13 @@ DATE: 2021_01
 
 + Bug fixed: When you create a workflow from the scratch, there is a conflict with the relationship tables (CatDB and CatFile). Both tables are created. Then, two processes create the same relationship file.
 
-+ Bug fixed: the table of sanson command needs another Norm column.
++ The table of sanson command needs another Norm column: Lower norm and Higher norm.
+
++ If at least one cell of optinal parameters is filled, then the "advanced parameters" is shown.
 
 ### Changes in the Code Workflow
 
-+ Bug fixed in the programa of Reports. The filter function was not working correctly. The pandas "eval" function does not filter.
++ Bug fixed: The filter function was not working correctly in the REPORT command. The pandas "eval" function did not filter correctly.
 
 
 
