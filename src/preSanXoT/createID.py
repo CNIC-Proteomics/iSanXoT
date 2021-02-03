@@ -78,7 +78,7 @@ def main(args):
         logging.info("extract the list of files from the given experiments")
         infiles = list(indata['CREATE_ID']['infile'])
         # Append input directory to file list
-        infiles = [f"{args.indir}/{i}" for i in infiles] 
+        infiles = [i if os.path.isfile(i) else f"{args.indir}/{i}" for i in infiles] 
         logging.debug(infiles)
         
         logging.info("extract the list of experiments")
