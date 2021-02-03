@@ -318,8 +318,13 @@ def main(args):
         outdat = extract_xref_columns(outdat, thrdat, sup_cols, thr_cols, sup_name, thr_name, args.filters)
 
     
-    logging.info("remove duplicates")
+    logging.info("remove duplicates and remove row with any empty column")
+    # remove duplicates
     outdat.drop_duplicates(inplace=True)
+    # remove row with any empty columns
+    outdat.replace('', np.nan, inplace=True)
+    outdat.dropna(inplace=True)
+
 
     logging.info('print output')
     outdat.to_csv(args.outfile, sep="\t", index=False)
