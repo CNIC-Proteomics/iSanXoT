@@ -91,6 +91,7 @@ def _extract_columns(idf, cols):
             # create a column with the given constant
             # extract the column with the constant
             idf[col] = c
+            idf = idf.reset_index()
             df[col] = idf[col]
         elif '{' in col and '}' in col:
             c = int(re.findall(r'\{([^\}]*)\}', col)[0])
@@ -124,8 +125,7 @@ def _extract_columns(idf, cols):
                         df[col] = idf[s]
                     else:
                         df[col] = df[col] + "-" + idf[s]
-
-
+    
     return df
 
 def _filter_columns(idf, filters):
