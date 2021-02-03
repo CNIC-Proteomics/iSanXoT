@@ -5,13 +5,13 @@
   "description": "Long description for Basic Workflow. You can include HTML",
   "samples": [{
     "id": "basic/wspp_sbt_w_catdb",
-    "name": "Sample of WSPP-SBT using category db"
+    "name": "WSPP-SBT sample with iSanXoT databases"
   },{
     "id": "basic/wspp_sbt_w_catfile",
-    "name": "Sample of WSPP-SBT using category file"
+    "name": "WSPP-SBT sample with user-provided databases"
   },{
     "id": "basic/wsppg_sbt_w_catdb",
-    "name": "Sample of WSPPG-SBT using category db"
+    "name": "WSPPG-SBT sample with iSanXoT databases"
   }],
   "species": [
     { "name": "Human",     "scientific": "Homo sapiens" },
@@ -63,8 +63,8 @@
         { "type": "required", "id": "threshold", "name": "Threshold" },
         { "type": "required", "id": "jump_areas", "name": "Jump areas" },
         { "type": "required", "id": "fdr", "name": "FDR" },
-        { "type": "required", "id": "type_xcorr", "name": "Type xCorr" },
-        { "type": "required", "id": "lab_decoy", "name": "Label decoy" }
+        { "type": "required", "id": "type_xcorr", "name": "xCorr type" },
+        { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
       ]
     }]
   },{
@@ -243,13 +243,13 @@
     }]
   },{
     "id": "system",
-    "label": "System Biology",
+    "label": "Systems Biology",
     "description": "Short description for the current work (tab)",
     "file": "system.tsv",
     "cmds": [{
       "id": "SANSON",
-      "label": "SanSon",
-      "title": "Obtain system biology diagram",
+      "label": "Sanson",
+      "title": "Create similarity graph",
       "visible": true,
       "panel": "panels/advance-toggle.html",
       "params": [
