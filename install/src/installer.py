@@ -31,9 +31,10 @@ python_exec = sys.executable
 node_url = 'https://nodejs.org/dist/v10.14.2/node-v10.14.2-win-x64.zip'
 node_home = f"{lib_home}/node"
 tmpdir = f"{lib_home}/tmp"
-dbs_url = 'https://www.cnic.es/nextcloud/s/tbwyEbYwzaz2bET/download?path=%2F'
+cloud_url = 'https://www.cnic.es/nextcloud/s/cmWA4xZEBk2mjMZ/download?path=%2F'
+dbs_url = f"{cloud_url}dbs%2F"
 dbsdir = f"{lib_home}/dbs"
-samples_url = 'https://www.cnic.es/nextcloud/s/iMtCEZCQBDxmzde/download?path=%2F'
+samples_url = f"{cloud_url}samples%2F"
 spdir = f"{lib_home}/samples"
 
 
