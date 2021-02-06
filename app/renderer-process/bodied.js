@@ -5,6 +5,7 @@ let fs = require('fs');
 let remote = require('electron').remote;
 let exceptor = require('./exceptor');
 let importer = require('./imports');
+let ehandler = require('./ehandler');
 
 /*
  * Local functions
@@ -339,14 +340,17 @@ for (var i = 0; i < wf['works'].length; i++) {
 } // end loop of works (tabs)
 
 
+/*
+ * Activate the events
+ */
+
 // add values into panels, if apply
 // functions in the corresponding html template
-addValuesMainInputsPanel(remote, importer, exceptor);
-// addValuesDatabasesPanel(remote, importer, exceptor);
-addValuesPanel_CatDB(importer);
-addValuesPanel_CatFile(remote, importer, exceptor);
+ehandler.addValuesMainInputsPanel(remote, importer, exceptor);
+ehandler.addValuesPanel_CatDB(importer);
+ehandler.addValuesPanel_CatFile(remote, importer, exceptor);
 
 
 // check if some data of advanced options is available
-checkIfAdvancedOptionsExist(importer, exceptor);
+ehandler.checkIfAdvancedOptionsExist(importer, exceptor);
 

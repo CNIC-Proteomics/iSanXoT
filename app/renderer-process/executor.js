@@ -3,10 +3,9 @@
  */
 let exceptor = require('./exceptor');
 let importer = require('./imports');
+let ehandler = require('./ehandler');
 let sessioner = require('./sessioner');
 let fs = require('fs');
-let crypto = require('crypto');
-let path = require('path');
 let cProcess = require('child_process');
 var proc = null;
 
@@ -88,9 +87,9 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
         cfg['prj_workspace'][ws] = `${outdir}/${wf['prj_workspace'][ws]}`;
     }
     // add the main_inputs
-    cfg['main_inputs'] = createObjFromMainInputsPanel(); // function in the panel section
+    cfg['main_inputs'] = ehandler.createObjFromMainInputsPanel(); // function in the panel section
     // add the databases
-    cfg['databases'] = createObjFromDatabasesPanel(); // function in the panel section
+    cfg['databases'] = ehandler.createObjFromDatabasesPanel(); // function in the panel section
     // Create a tasktable for every work
     // Add the files into config file
     // Iterate over all the works of the workflow
@@ -184,31 +183,6 @@ function createConfigFiles(date_id, outdir, dte_dir, wf) {
     }
     return cfgfile;
 }
-
-// function checksum(str, algorithm, encoding) {
-//     return crypto
-//         .createHash(algorithm || 'md5')
-//         .update(str, 'utf8')
-//         .digest(encoding || 'hex')
-// }
-// function copyDiffFiles(srcDir, tgtDir) {
-//     let srcFiles = fs.readdirSync(srcDir);
-//     srcFiles.forEach( function (srcFile) {
-//         srcFile = `${srcDir}/${srcFile}`;
-//         let srcCont = fs.readFileSync(srcFile, "utf-8");
-//         let tgtFile = `${tgtDir}/${path.basename(srcFile)}`;
-//         if ( fs.existsSync(tgtFile) ) {
-//             let tgtCont = fs.readFileSync(tgtFile, "utf-8");
-//             let srcCS = checksum(srcCont);
-//             let tgtCS = checksum(tgtCont);
-//             if (srcCS != tgtCS ) {
-//                 fs.writeFileSync(tgtFile, srcCont);
-//             }
-//         } else {
-//             fs.writeFileSync(tgtFile, srcCont);
-//         }
-//     } );
-// };
 
 // Exec process
 function execSyncProcess(script, cmd) {
