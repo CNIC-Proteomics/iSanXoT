@@ -313,6 +313,17 @@ function allBlanks(arr) {
     }
     return true;
 }
+// Open Help Modals
+function openHelpModal(t) {
+    console.log("openHelpModal");
+    let t_parent = $(t).parents(`.tab-pane`);
+    let wk_id = $(t_parent).attr('id');
+    let cmd_id = $(t_parent).find('.page-header').attr('name');
+    console.log(`WK_ID: ${wk_id} > CMD: ${cmd_id}`);
+
+
+    $(`#${wk_id} #page-tasktable-${cmd_id} .modal`).modal();
+}
   
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
@@ -326,7 +337,8 @@ module.exports = {
     getIndexParamsWithAttr:     getIndexParamsWithAttr,
     getIndexParamsWithKey:      getIndexParamsWithKey,
     isEqual:                    isEqual,
-    allBlanks:                  allBlanks
+    allBlanks:                  allBlanks,
+    openHelpModal:              openHelpModal
 };
 
 
@@ -346,6 +358,7 @@ importHTMLtemplate(`${__dirname}/../sections/loader.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_basic.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_ptm.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_lblfree.html`);
+
 
 // Get input parameters (from URL)
 let filename = path.basename(window.location.pathname,'.html');

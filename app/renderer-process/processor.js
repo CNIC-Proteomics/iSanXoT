@@ -195,7 +195,6 @@ class logger {
                     let cmd_exec = l[3];
                     let rule_name = l[4];
                     let rule_perc = l[5];
-                    let status = l[6];
                     // get the index from the name
                     let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data
@@ -221,6 +220,12 @@ class logger {
                         data.cmds[cmd_index].etime = time;
                     }
                     data.cmds[cmd_index].perc = perc;
+                    if ( status == 'error' ) {
+                        data.cmds[cmd_index].status = status;
+                    }
+                    else {
+                        data.cmds[cmd_index].status = 'running';
+                    }
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_CMD_EXEC')) {
                     let l = line.split('\t');

@@ -1,6 +1,12 @@
 <template class="task-template" id="panel-main_inputs">
-<div id="panel-main_inputs">
+<div id="panel-advance">
+  <div class="helpadv" onclick="ehandler.openHelpModal(this)">
+    <svg class="bi text-info" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#info-square-fill" /></svg>
+  </div>
+  <div class="help_modal"></div>
+</div>
 
+<div id="panel-main_inputs">
   <div class="form-group">
     <h6 for="select-indir">Input folder</h6>  
     <div class="input-group col-sm">
@@ -21,19 +27,16 @@
     </div>
   </div>
 
-  <h6>Select input files</h6>
+  <h6>Add input files</h6>
 
 </div>
 <script>
 
 // Add values to Main_Inputs panel, if apply
-function addValuesMainInputsPanel() {
-  // Imported variables
-  let remote = require('electron').remote;
+function addValuesMainInputsPanel(remote, importer, exceptor) {
+  // Declare variables
   let mainWindow = remote.getCurrentWindow();
   let dialog = remote.dialog;
-  let exceptor = require(`${__dirname}/renderer-process/exceptor`);
-  let importer = require(`${__dirname}/renderer-process/imports`);
   let ptype = importer.ptype;
   let pdir = importer.pdir;
   let wf_exec = importer.wf_exec;

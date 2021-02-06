@@ -2,6 +2,7 @@
  * Import libraries
  */
 let fs = require('fs');
+let remote = require('electron').remote;
 let exceptor = require('./exceptor');
 let importer = require('./imports');
 
@@ -73,14 +74,13 @@ function extract_list_cmds(wk, itbl) {
   return cmds;  
 };
 
+
  /*
  * Import varialbles
  */
 
 let wf       = importer.wf;
-// let wf_id    = importer.wf_id;
 let cdir     = importer.cdir;
-// let pdir_def = importer.pdir_def;
 console.log(cdir);
 
 
@@ -211,6 +211,10 @@ for (var i = 0; i < wf['works'].length; i++) {
       if ( cmd_attr['panel'] ) {
         importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
       }
+      // add the help modal of the tasktable/command
+      if ( cmd_attr['help_modal'] ) {
+        importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
+      }
       // create html tasktable
       $(`#${wk_id} #page-tasktable-${cmd_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
       if (!cmd_table || cmd_table.length == 0) cmd_table = [[]]; // if the data table is empty, we init
@@ -337,9 +341,12 @@ for (var i = 0; i < wf['works'].length; i++) {
 
 // add values into panels, if apply
 // functions in the corresponding html template
-addValuesMainInputsPanel();
-addValuesDatabasesPanel();
+addValuesMainInputsPanel(remote, importer, exceptor);
+// addValuesDatabasesPanel(remote, importer, exceptor);
+addValuesPanel_CatDB(importer);
+addValuesPanel_CatFile(remote, importer, exceptor);
+
 
 // check if some data of advanced options is available
-checkIfAdvancedOptionsExist();
+checkIfAdvancedOptionsExist(importer, exceptor);
 

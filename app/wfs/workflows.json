@@ -42,6 +42,7 @@
       "title": "Provide Input Files",
       "visible": true,
       "panel": "panels/main_inputs.html",
+      "help_modal": "hmodals/main_inputs.html",
       "params": [
         { "type": "required", "id": "infile", "name": "Infile" },
         { "type": "required", "id": "experiment", "name": "Experiment" }
@@ -58,10 +59,11 @@
       "title": "Calculate FDR and masterQ",
       "visible": true,
       "panel": "panels/advance.html",
+      "help_modal": "hmodals/fdr.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "threshold", "name": "Threshold" },
-        { "type": "required", "id": "jump_areas", "name": "Jump areas" },
+        { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
+        { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
         { "type": "required", "id": "fdr", "name": "FDR" },
         { "type": "required", "id": "type_xcorr", "name": "xCorr type" },
         { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
@@ -77,7 +79,8 @@
       "label": "Rels. from Cat. DB",
       "title": "Create relationship files from Category DB",
       "visible": true,
-      "panel": "panels/databases.html",
+      "panel": "panels/databases_catdb.html",
+      "help_modal": "hmodals/databases_catdb.html",
       "params": [
         { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
         { "type": "required", "id": "inf_headers", "name": "Lower headers" },
@@ -95,7 +98,8 @@
       "label": "Rels. from Cat. File",
       "title": "Create relationship files from Category File",
       "visible": true,
-      "panel": "panels/databases.html",
+      "panel": "panels/databases_catfile.html",
+      "help_modal": "hmodals/databases_catfile.html",
       "params": [
         { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
         { "type": "required", "id": "inf_headers", "name": "Lower headers" },
@@ -120,6 +124,7 @@
       "title": "Calculate the WSPP - SBT",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/wspp_sbt.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
@@ -142,6 +147,7 @@
       "title": "Calculate the WSPPG - SBT",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/wsppg_sbt.html",
       "params": [
         { "type": "required", "id": "experiment", "name": "Experiment" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
@@ -174,6 +180,7 @@
       "title": "NorCombine",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/norcombine.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -190,6 +197,7 @@
       "title": "Calculate ratios",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/ratios.html",
       "params": [
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -207,6 +215,7 @@
       "title": "Integrate",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/integrate.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -223,6 +232,7 @@
       "title": "System Biology Triangle",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/sbt.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -252,6 +262,7 @@
       "title": "Create similarity graph",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/system.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene"] },
@@ -274,6 +285,7 @@
       "title": "Extract reports",
       "visible": true,
       "panel": "panels/advance-toggle.html",
+      "help_modal": "hmodals/reports.html",
       "params": [
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },

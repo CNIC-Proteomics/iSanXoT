@@ -371,3 +371,41 @@ section.tab-content > .form-inline {
     /* float: right; */
     min-height: 1.875rem;
 }
+.helpadv {
+    position: relative;
+    float: right;
+    cursor: pointer;
+}
+.modal-xl {
+    max-width: 1140px;
+}
+
+/*
+* ---------------------------------------------------
+*   HELP PAGES
+* -----------------------------------------------------
+*/
+
+#help {
+    padding: 20px;
+    background-color: white;
+}
+
+#help h1 {
+    text-align: center;
+}
+#help p {
+    color: black;
+    text-align: justify;
+    text-justify: inter-word;
+}
+#help figure.figure.rounded.float-right {
+    margin: 10px 0px 10px 10px;
+}
+#help .figure-caption {
+    font-size: 100%;
+}
+#help .footnote {
+    margin-top: 40px;
+    margin-bottom: 20px;
+}

@@ -1,4 +1,10 @@
 <template class="task-template" id="panel-databases-catdb">
+<div id="panel-advance">
+  <div class="helpadv" onclick="ehandler.openHelpModal(this)">
+    <svg class="bi text-info" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#info-square-fill" /></svg>
+  </div>
+  <div class="help_modal"></div>
+</div>
 
 <div id="panel-databases-catdb" class="panel-databases">
   <div class="form-group">
@@ -23,9 +29,11 @@
 </div>
 
 <script>
+
 // Add values into panel, if apply
-function addValuesPanel_CatDB(wf_exec) {
+function addValuesPanel_CatDB(importer) {
   // declare variables
+  let wf_exec  = importer.wf_exec;
   let wk_id = 'databases';
   let cmd_id = 'RELS_TABLE_CATDB';
   
@@ -67,5 +75,52 @@ function toggleTaskTable_CatDB(t) {
     $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('render');
   }
 }
+
+// Create object with the Databases data extracting from the HTML Elements
+function createObjFromDatabasesPanel() {
+  // declare variables
+  let rst = { };
+  let wk_id = 'databases';
+  let cmd_id_1 = 'RELS_TABLE_CATDB';
+  let cmd_id_2 = 'RELS_TABLE_CATFILE';
+
+  // extract variables...
+  // catdb
+  let species = $(`#${wk_id} .panel-databases [id='species'] option:selected`);
+  let db = $(`#${wk_id} .panel-databases [id='catids'] option:selected`).val();
+  // catfile
+  let cfile = $(`#${wk_id} .panel-databases [id='catfile']`).val();
+  let dfile = $(`#${wk_id} .panel-databases [id='dbfile']`).val();
+
+  // if all variables are defined and not empty, we take the values for that panel
+  // we take the category db by default
+  if ( species !== undefined && species.length > 0 && db !== undefined && db != '' ) {
+    rst['catid'] = db;
+    rst['species'] = '';
+    rst['catdbs'] = '';
+    for (var i = 0; i < species.length; i++) {
+      let o = species[i];
+      let v1 = $(o).val();
+      let v2 = $(o).text().toLowerCase();
+      // update species data
+      if (rst['species'] != '') { rst['species'] += `,${v1}` } else { rst['species'] += v1 }
+      // update category database
+      let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}_sw-tr.categories.tsv`;
+      if (rst['catdbs'] != '') { rst['catdbs'] += `;${v}` } else { rst['catdbs'] += v }
+    }
+    // unable table of CatDB and disable table of CatFile
+    $(`#${wk_id} #page-tasktable-${cmd_id_1} .disabled_tasktable`).toggleClass('disabled_tasktable tasktable');
+    $(`#${wk_id} #page-tasktable-${cmd_id_2} .tasktable`).toggleClass('tasktable disabled_tasktable');
+  }
+  else if ( cfile !== undefined && cfile != '' && dfile !== undefined && dfile != '' ) {
+    rst['catfile'] = cfile;
+    rst['dbfile'] = dfile;
+    // unable table of CatFile and disable table of CatDB
+    $(`#${wk_id} #page-tasktable-${cmd_id_2} .disabled_tasktable`).toggleClass('disabled_tasktable tasktable');
+    $(`#${wk_id} #page-tasktable-${cmd_id_1} .tasktable`).toggleClass('tasktable disabled_tasktable');
+  }
+  return rst;
+} // end createObjFromDatabasesPanel
+
 </script>
 </template>

@@ -159,6 +159,7 @@ def executor(proc):
             time.sleep(1)
         except:
             raise Exception("Caught KeyboardInterrupt, terminating workers")
+        print(f"\tLOOPING\t{cmd_name}\t{cmd_exec}\t{rule['name']}", flush=True)
     
     # It is the moment of the execution
     if cmd_exec == 'forced' and _all_ready(ifiles):

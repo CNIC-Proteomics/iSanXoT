@@ -1,3 +1,38 @@
+___
+## 0.2.6
+```
+DATE: 2021_02
+```
+
+### Highlights
+
++ We can force the execution of some commands.
+
++ TODO!! Finally, there is documentation!!.
+
++ TODO??? Now, iSanXoT accepts inputs from the search engines: Comet and MSFragger.
+
+### Changes in the Graphical User Interface
+
++ We have included the "force" column that is a flag to execute or not the command.
+
++ TODO!! There is documentation!!
+
++ Gramatical changes.
+
+### Changes in the Code Workflow
+
++ Bug fixed - createRels: There were a problem reporting the category2categoryall files when the input database came from two or more species. In the reindex of dataframe.
++ Bug fixed - createRels: there were empty cells.
+
++ Now, the table "Select input files" accepts a filename and the path of file for the column "Infile".
+
++ TODO!! There is new programa which reports some information (variances, ...) for each integration.
+
++ TODO??? Now iSanXoT accepts inputs from the search engines: Comet and MSFragger.
+
+
+___
 ## 0.2.5
 ```
 DATE: 2021_02
@@ -20,8 +55,6 @@ DATE: 2021_02
 ### Changes in the Code Workflow
 
 + Bug fixed: The filter function was not working correctly in the REPORT command. The pandas "eval" function did not filter correctly.
-
-
 
 ___
 ## 0.2.4

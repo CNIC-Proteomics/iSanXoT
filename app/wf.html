@@ -42,6 +42,8 @@
   <script>
     // Import the templates and global processes
     require('./renderer-process/imports');
+    // Import the module that controls the html events
+    let ehandler = require('./renderer-process/ehandler');
     // Print the version
     document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
   </script>
