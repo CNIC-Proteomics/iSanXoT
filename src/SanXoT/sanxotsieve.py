@@ -341,7 +341,7 @@ Use -H or --advanced-help for more details.""")
 
 def main(argv):
 	
-	version = "v0.18"
+	version = "v0.19"
 	analysisName = ""
 	analysisFolder = ""
 	varianceSeed = 0.001
@@ -395,6 +395,8 @@ def main(argv):
 		elif opt in ("-r", "--relfile", "--relationsfile"):
 			relationsFile = arg
 		elif opt in ("-n", "--newrelfile"):
+			newRelFile = arg
+		elif opt in ("-o", "--outlierrelfile"):
 			removedRelFile = arg
 		elif opt in ("-L", "--infofile"):
 			infoFile = arg
