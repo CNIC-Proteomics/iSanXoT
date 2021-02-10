@@ -27,6 +27,7 @@ LEVELS_NAMES = {
     's': 'scan',
     'p': 'peptide',
     'q': 'protein',
+    'g': 'gene',
     'c': 'category',
     'd': 'description'
 }
@@ -118,8 +119,10 @@ def create_report(ifiles, prefix, col_values):
     df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
 
     logging.info("revome 'all' column")
-    if 'a' in df.columns:
-        df.drop(columns=['a'], axis=1, inplace=True)
+    if re.search('all$', prefix_i):
+        df.drop(columns=[prefix_i], axis=1, inplace=True)
+    if re.search('all$', prefix_s):
+        df.drop(columns=[prefix_s], axis=1, inplace=True)
     
     logging.info("rename columns")
     df.rename(columns=LEVELS_NAMES, inplace=True)
