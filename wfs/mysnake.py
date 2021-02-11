@@ -39,8 +39,8 @@ def remove_outfiles(cfg):
     # go through each rule witin cmds
     for cmds in cfg['commands']:
         for cmd in cmds:
-            cmd_exec = cmd['execution_label']
-            if ( cmd_exec == 'forced' ):
+            cmd_force = cmd['force']
+            if ( cmd_force == 1 ):
                 outfiles = [ o.split(';') for rule in cmd['rules'] for o in rule['outfiles'].values() ]
                 # remove the output files from the list of list
                 [ os.remove(o) for out in outfiles for o in out if os.path.isfile(o) ]
@@ -97,7 +97,7 @@ def executor(proc):
     def _all_ready(files):
         return all([ _file_ready(f) for f in files ])
 
-    def _exec(cline, lfile, cmd_name, cmd_exec, rule_name, rule_pos):        
+    def _exec(cline, lfile, cmd_name, cmd_force, rule_name, rule_pos):        
         # output
         start_time = time.asctime()
         output = {
@@ -113,7 +113,7 @@ def executor(proc):
             lf = open(lfile, "a+")
             # Run the command
             cargs = shlex.split(cline) # convert string into args            
-            print(f"MYSNAKE_LOG_START_RULE_EXEC\t{start_time}\t{cmd_name}\t{cmd_exec}\t{rule['name']}\t{rule_pos}", flush=True)
+            print(f"MYSNAKE_LOG_START_RULE_EXEC\t{start_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}", flush=True)
             proc = subprocess.call(cargs, stdout=lf, stderr=subprocess.STDOUT)
             if proc != 0:
                 raise Exception("error")
@@ -127,15 +127,15 @@ def executor(proc):
             output['state'] = state
             output['end_time'] = end_time
             # print the end execution of rule
-            print(f"MYSNAKE_LOG_END_RULE_EXEC\t{end_time}\t{cmd_name}\t{cmd_exec}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
+            print(f"MYSNAKE_LOG_END_RULE_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
             # check if it is the last executed rule of command
             # in that case, we print the end execution of a command
             if eval(rule_pos) == 1.0:
-                print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_exec}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
+                print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
         return output
     
     # input parameter
-    cmd_name, cmd_exec, rule_pos, rule = proc['name'],proc['exec'],proc['rpos'],proc['rule']
+    cmd_name, cmd_force, rule_pos, rule = proc['name'],proc['force'],proc['rpos'],proc['rule']
 
     # declare output
     output = {
@@ -159,25 +159,25 @@ def executor(proc):
             time.sleep(1)
         except:
             raise Exception("Caught KeyboardInterrupt, terminating workers")
-        print(f"\tLOOPING\t{cmd_name}\t{cmd_exec}\t{rule['name']}", flush=True)
+        print(f"\tLOOPING\t{cmd_name}\t{cmd_force}\t{rule['name']}", flush=True)
     
     # It is the moment of the execution
-    if cmd_exec == 'forced' and _all_ready(ifiles):
-        output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_exec, rule['name'], rule_pos)
-    elif cmd_exec == 'exec' and not _all_ready(ofiles):
-        output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_exec, rule['name'], rule_pos)
-    elif cmd_exec == 'exec' and _all_ready(ifiles) and _all_ready(ofiles):
+    if cmd_force == 1 and _all_ready(ifiles):
+        output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
+    elif cmd_force == 0 and not _all_ready(ofiles):
+        output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
+    elif cmd_force == 0 and _all_ready(ifiles) and _all_ready(ofiles):
         state = 'cached'
         end_time = time.asctime()
-        output['cmd_exec'] = cmd_exec
+        output['cmd_force'] = cmd_force
         output['end_time'] = end_time
-        print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_exec}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
+        print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
     else:
         state = 'already_exec'
         end_time = time.asctime()
-        output['cmd_exec'] = cmd_exec
+        output['cmd_force'] = cmd_force
         output['end_time'] = end_time
-        print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_exec}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
+        print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
 
 
     return output
@@ -249,7 +249,7 @@ def main(args):
     try:
         cfg_rules = [ {
             'name': cmd['name'],
-            'exec': cmd['execution_label'],
+            'force': cmd['force'],
             'rpos': f"{i+1}/{len(cmd['rules'])}",
             'rule': cmd['rules'][i]
         } for cmds in cfg['commands'] for cmd in cmds for i in range(len(cmd['rules'])) ]

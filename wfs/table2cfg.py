@@ -287,6 +287,7 @@ def add_cmd(row, icmd):
     '''
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
+    
     # if 'output' folder does not exits, then we copy the value of 'input' folder
     if 'output' in row:
         if 'input' in row:
@@ -294,6 +295,10 @@ def add_cmd(row, icmd):
     else:
         if 'input' in row:
             row['output'] = row['input']
+    
+    # Add the label of forced execution
+    if 'force' in row:
+        cmd['force'] = int(row['force'])
             
     # Exception in SBT command!!
     # if "lowhig_level" and "inthig_level" don't exit, Then, we include the "low_level"ALL and "int_level"ALL, respectivelly.
@@ -329,12 +334,18 @@ def add_unique_cmd_from_table(df, icmd):
     '''
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
+    
     # get the list of unique experiments (in string)
     exps = ",".join(df['experiment'].unique()).replace(" ", "")
     if 'lab_decoy' in df.columns:
         ldecoy = df['lab_decoy'].values[0]
     else:
         ldecoy = ''
+        
+    # Add the label of forced execution
+    if 'force' in df:
+        cmd['force'] = int(df['force'].any(skipna=False))
+
     # go through the rules of cmd
     for i in range(len(cmd['rules'])):
         trule = cmd['rules'][i]

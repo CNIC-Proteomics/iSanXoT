@@ -53,22 +53,26 @@ function extract_list_cmds(wk, itbl) {
     });s
   }
   // Iterate over all commands
-  // create html sidebar and the tasktable
-  for (var j = 0; j < cmds.length; j++) {
-    // get variables
-    // get the attributes of command from the local file (JSON)
-    // get the data of table from the external files (TSV)
-    let cmd = cmds[j];
+  // get the attributes of command from the local file (workflow.JSON)
+  // get the data of table from the external files (TSV)
+  // extract the info for the tasktable ONLY when the columns between the 'workflow' and the external table are equal
+  for (var i = 0; i < cmds.length; i++) {
+    let cmd = cmds[i];
     let cmd_id = cmd['id'];
-    // get table values if the column names are equal
     if ( cmd_id in tbls ) {
       let tbl = tbls[cmd_id];
-      // // remove empty values
-      // let tbl_cols = tbl['cols'].filter(function (el) {
-      //   return (el != null) && (el != '');
-      // });
+      // check if the column names are equal
       if ( importer.isEqual(cmd['cols'], tbl['cols']) ) {
         cmd['table'] = tbls[cmd_id]['table'];
+
+        // // if the "force" column exists then we change the header adding the html checkbox
+        // let n = cmd['cols'].indexOf('force');
+        // if ( n  != -1 ) {
+        //   let h = cmd['header'][n];
+        //   // let c = `<input type='checkbox' class='htCheckboxRendererInput' ${('force' in wk[i] && wk[i]['force']) ? 'checked="checked"' : ''} >${h}</input>`;
+        //   let c = `<input type='checkbox' class='htCheckboxRendererInput' checked='checked'>${h}</input>`;
+        //   cmd['header'][n] = c;
+        // }
       }
     }
   }
@@ -111,7 +115,7 @@ for (var i = 0; i < wf['works'].length; i++) {
   try {
     if (fs.existsSync(`${wk_file}`)) {
       let s = fs.readFileSync(`${wk_file}`).toString();
-      tbl_cmds = s.split('\n').map( row => row.trim().split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+      tbl_cmds = s.split('\n').map( row => row.trimRight().split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
       if ( !tbl_cmds ) {
         console.log(tbl_cmds);
         exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
@@ -166,29 +170,6 @@ for (var i = 0; i < wf['works'].length; i++) {
     let cmd_params_readonlyrow_index = cmd_attr['readonly_rows'];
     
     // get the index of DropDown parameters
-    // Example:
-    // "cmds": [{
-    //   "id": "COMBINE",
-    //   "label": "Combine",
-    //   "visible": true,
-    //   "panel": "panels/advance.html",
-    //   "params": [
-    //     { "type": "required", "name": "input" },
-    //     { "type": "required", "name": "output" },
-    //     { "type": "required", "name": "level", "hottable": {
-    //       "header": [ "type", "file name"],
-    //       "data": {
-    //         "peptidesQ": "p2q_outStats.tsv",
-    //         "peptides": "p2a_outStats.tsv",
-    //         "proteinsC": "q2c_outStats.tsv",
-    //         "proteins": "q2a_outStats.tsv",
-    //         "categories": "c2a_outStats.tsv"  
-    //         }
-    //       }
-    //     },
-    //     { "type": "optional", "name": "more_params" }
-    //   ]
-    // }
     let [cmd_params_hottable_index, cmd_params_hottable] = importer.getIndexParamsWithKey(cmd_attr['params'], 'hottable');
 
     // get the index of select parameters
@@ -197,7 +178,8 @@ for (var i = 0; i < wf['works'].length; i++) {
     // get the index of dropdown parameters
     let [cmd_params_dropdown_index, cmd_params_dropdown] = importer.getIndexParamsWithKey(cmd_attr['params'], 'dropdown');
 
-
+    // get the index of checkbox parameters
+    let [cmd_params_checkbox_index, cmd_params_checkbox] = importer.getIndexParamsWithKey(cmd_attr['params'], 'checkbox');
 
     // Mandatory header is full
     if (  cmd_header && cmd_header.length > 0 ) {
@@ -269,15 +251,20 @@ for (var i = 0; i < wf['works'].length; i++) {
               this.editor = 'select';
               this.selectOptions = cmd_params_select[col];
             }
-            // column with handsontables inside (coming from the wortkflow.json config file)
+            // column with dropdown inside (coming from the wortkflow.json config file)
             if (cmd_params_dropdown_index && cmd_params_dropdown_index.length > 0 && cmd_params_dropdown_index.includes(col)) {
-              // this.editor = 'dropdown';
               this.source = cmd_params_dropdown[col];
               this.type = "autocomplete";
               this.strict = false;
               // this.filter = true;
               this.visibleRows = 10;
               this.trimDropdown = false;
+            }
+            // column with checkbox inside (coming from the wortkflow.json config file)
+            if (cmd_params_checkbox_index && cmd_params_checkbox_index.length > 0 && cmd_params_checkbox_index.includes(col)) {
+              this.type = "checkbox";
+              this.checkedTemplate = 1;
+              this.uncheckedTemplate = 0;
             }
             return cellProperties;
           },
