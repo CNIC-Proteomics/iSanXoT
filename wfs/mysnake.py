@@ -345,5 +345,6 @@ if __name__ == "__main__":
 
     # start main function
     logging.debug('start script: '+"{0}".format(" ".join([x for x in sys.argv])))
+    print('** start script: '+"{0}".format(" ".join([x for x in sys.argv])))
     main(args)
     logging.debug('end script')
