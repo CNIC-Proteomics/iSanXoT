@@ -115,7 +115,8 @@ for (var i = 0; i < wf['works'].length; i++) {
   try {
     if (fs.existsSync(`${wk_file}`)) {
       let s = fs.readFileSync(`${wk_file}`).toString();
-      tbl_cmds = s.split('\n').map( row => row.trimRight().split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+      // tbl_cmds = s.split('\n').map( row => row.trimRight().split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+      tbl_cmds = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
       if ( !tbl_cmds ) {
         console.log(tbl_cmds);
         exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
