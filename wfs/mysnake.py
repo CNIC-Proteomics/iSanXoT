@@ -227,6 +227,7 @@ def main(args):
                                   '-n','-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if proc.returncode != 0:
             raise Exception(f"{proc.stdout.decode('utf-8')}")
+        logging.debug(proc.stdout)
         # remove tmp folder of snakemake
         shutil.rmtree(f"{args.directory}/.snakemake")
     except Exception as exc:
@@ -238,10 +239,18 @@ def main(args):
 
     logging.debug("extract the order of processes")
     try:
-        proc_ord = re.findall(r'Job\s*\d+:\s*([^\:]*)',str(proc.stdout))
-        if not proc_ord:
-            raise Exception('the ordered list of processes is empty')
-        logging.debug(f"{proc_ord}")
+        # check if snakemake determines: Nothing to be done.
+        proc_some = re.findall(r'Building DAG of jobs...[\\n|\\r]+Nothing to be done.',str(proc.stdout))
+        if not proc_some:
+            # capture the list of jobs returned by snakemake
+            proc_ord = re.findall(r'Job\s*\d+:\s*([^\:]*)',str(proc.stdout))
+            if not proc_ord:
+                # the list of jobs is empty but due some error
+                raise Exception('the ordered list of processes is empty due some error')
+            logging.debug(f"{proc_ord}")
+        else:
+            # if Nothing to be done, the list of jobs is empty.
+            proc_ord = []
     except Exception as exc:
         sys.exit("ERROR!! Extracting the order of processes: {}".format(exc))
 
@@ -276,16 +285,14 @@ def main(args):
     try:
         # create a list of dict with the processes reported by the output of snakemake (the list of processes for the execution)
         rules_exec_ord = [ rules_exec[o] for o in proc_ord ]
-        if not rules_exec_ord:
-            raise Exception('the ordered list of rules is empty')
-        else:
-            total_cmds = len(list(set( [ c['name'] for c in rules_exec_ord ] )))
     except yaml.YAMLError as exc:
         sys.exit("ERROR!! Reordering the rules: {}".format(exc))
     
     logging.debug("add the cached processes into the list of processes will be executed")
     try:
         rules_ord = rules_notexec + rules_exec_ord
+        if rules_ord:
+            total_cmds = len(list(set( [ c['name'] for c in rules_ord ] )))
     except yaml.YAMLError as exc:
         sys.exit("ERROR!! Reordering the rules: {}".format(exc))
 
@@ -303,11 +310,6 @@ def main(args):
     pool.close()
     pool.join()
     
-    # logging.debug("wait for each running task to complete")
-    # for result in results:
-    #     out, err = result.get()
-    #     print("out: {} err: {}".format(out, err), flush=True)
-        
     print(f"MYSNAKE_LOG_FINISHED\t{time.asctime()}", flush=True)
 
     
