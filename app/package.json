@@ -1,6 +1,6 @@
 {
   "name": "iSanXoT",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
