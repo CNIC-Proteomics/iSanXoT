@@ -118,7 +118,7 @@
     }]
   },{
     "id": "stats_quantification",
-    "label": "Stats Quantification",
+    "label": "Quantification",
     "description": "Short description for the current work (tab)",
     "file": "stats_quantification.tsv",
     "cmds": [{
@@ -176,7 +176,7 @@
     }]
   },{
     "id": "integration",
-    "label": "Integration",
+    "label": "Combination",
     "description": "Short description for the current work (tab)",
     "file": "integration.tsv",
     "cmds": [{

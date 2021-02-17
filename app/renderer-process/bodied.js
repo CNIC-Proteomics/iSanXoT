@@ -17,6 +17,7 @@ function extract_list_cmds(wk, itbl) {
   let tbls = {};
   let order = 1;
   let id = null;
+  let cols_empty = [];
   for (var i = 0; i < itbl.length; i++) {
     let l = itbl[i];
     if ( l && l.length > 0 && l != '' && !(importer.allBlanks(l))) {
@@ -24,6 +25,11 @@ function extract_list_cmds(wk, itbl) {
         id = l[0];
         id = id.replace('#','');
         let cols = itbl[i+1];
+        // get all indexes of empty elements
+        // remove all empty elements in column headers
+        cols_empty = importer.getAllIndexes(cols,"");
+        cols = importer.removeListIndexes(cols, cols_empty);
+        // save
         tbls[id] = {
           'order': order,
           'cols': cols,
@@ -33,6 +39,10 @@ function extract_list_cmds(wk, itbl) {
         i = i+1; // increase index after header of command
       }
       else {
+        // remove all empty elements of header in the data
+        if (cols_empty.length > 0) {
+          l = importer.removeListIndexes(l, cols_empty);
+        }
         // save 
         tbls[id]['table'].push(l);
       }
@@ -64,15 +74,6 @@ function extract_list_cmds(wk, itbl) {
       // check if the column names are equal
       if ( importer.isEqual(cmd['cols'], tbl['cols']) ) {
         cmd['table'] = tbls[cmd_id]['table'];
-
-        // // if the "force" column exists then we change the header adding the html checkbox
-        // let n = cmd['cols'].indexOf('force');
-        // if ( n  != -1 ) {
-        //   let h = cmd['header'][n];
-        //   // let c = `<input type='checkbox' class='htCheckboxRendererInput' ${('force' in wk[i] && wk[i]['force']) ? 'checked="checked"' : ''} >${h}</input>`;
-        //   let c = `<input type='checkbox' class='htCheckboxRendererInput' checked='checked'>${h}</input>`;
-        //   cmd['header'][n] = c;
-        // }
       }
     }
   }

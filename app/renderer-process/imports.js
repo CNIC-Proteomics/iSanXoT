@@ -313,6 +313,23 @@ function allBlanks(arr) {
     }
     return true;
 }
+// Get all indexes of all ocurrences in array
+function getAllIndexes(arr, val) {
+    var indexes = [];
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] === val) {
+            indexes.push(i);
+        }
+    }
+    return indexes;
+}
+// Remove the list of indexes from array
+function removeListIndexes(arr, rem) {
+    for (var i = rem.length -1; i >= 0; i--) {
+        arr.splice(rem[i], 1);
+    }
+    return arr;
+}
 // Open Help Modals
 function openHelpModal(t) {
     console.log("openHelpModal");
@@ -338,6 +355,8 @@ module.exports = {
     getIndexParamsWithKey:      getIndexParamsWithKey,
     isEqual:                    isEqual,
     allBlanks:                  allBlanks,
+    getAllIndexes:              getAllIndexes,
+    removeListIndexes:          removeListIndexes,
     openHelpModal:              openHelpModal
 };
 
