@@ -1,4 +1,30 @@
 ___
+## 0.2.7
+```
+DATE: 2021_XX
+```
+
+### Highlights
+
++ TODO!! We can force the execution of some commands.
+
++ TODO??? Now, iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant.
+
+### Changes in the Graphical User Interface
+
++ TODO!!! Include the column "output" in the workflow log table.
+
++ TODO!! Improve the refresh of log tables.
+
+### Changes in the Code Workflow
+
++ TODO!! There is new programa which reports some information (variances, ...) for each integration.
+
++ TODO??? Now iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant (you have to include Ecoli species).
+
++ TODO!! There is new programa which reports some information (variances, ...) for each integration.
+
+___
 ## 0.2.6
 ```
 DATE: 2021_02
@@ -6,30 +32,37 @@ DATE: 2021_02
 
 ### Highlights
 
-+ We can force the execution of some commands.
++ We have started to include some documentation.
 
-+ TODO!! Finally, there is documentation!!.
-
-+ TODO??? Now, iSanXoT accepts inputs from the search engines: Comet and MSFragger.
++ We have included the "force" column that is a flag for the forced execution of command.
 
 ### Changes in the Graphical User Interface
 
-+ We have included the "force" column that is a flag to execute or not the command.
-
-+ TODO!! There is documentation!!
++ There is some documentation.
 
 + Gramatical changes.
 
++ The internal files of the application have been restructured.
+
++ We have included the "force" column that is a flag for the forced execution of command.
+
++ We have included the "gene2description" relationship file in the table.
+
++ Bug fixed: exporting the tasktable of databases section.
+
 ### Changes in the Code Workflow
 
-+ Bug fixed - createRels: There were a problem reporting the category2categoryall files when the input database came from two or more species. In the reindex of dataframe.
-+ Bug fixed - createRels: there were empty cells.
++ Bug fixed - createRels:
+	- There were a problem reporting the category2categoryall files when the input database came from two or more species. In the reindex of dataframe.
+	- there were empty cells.
 
 + Now, the table "Select input files" accepts a filename and the path of file for the column "Infile".
 
-+ TODO!! There is new programa which reports some information (variances, ...) for each integration.
++ The NextCloud url where the databases and samples are saved, have changed.
 
-+ TODO??? Now iSanXoT accepts inputs from the search engines: Comet and MSFragger.
++ report:
+	- We include the 'gene' column to the correct report.
+	- we delete the all columns correctly. 
 
 
 ___
