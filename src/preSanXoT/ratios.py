@@ -20,7 +20,10 @@ import numpy as np
 import concurrent.futures
 from itertools import repeat
 
-import common
+#########################
+# Import local packages #
+#########################
+import createID
 
 
 ###################
@@ -103,7 +106,7 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
-    indata = common.read_command_table(args.intbl)
+    indata = createID.read_command_table(args.intbl)
 
     logging.info("read input file")
     ddf = pd.read_csv(args.infile, sep="\t")

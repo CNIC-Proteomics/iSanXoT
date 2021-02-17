@@ -9,6 +9,9 @@ __maintainer__ = "Jose Rodriguez"
 __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
+#########################
+# Import global modules #
+#########################
 import os
 import sys
 import glob
@@ -19,8 +22,6 @@ import re
 import json
 import yaml
 import shlex
-
-
 
 ####################
 # Global variables #
@@ -39,9 +40,8 @@ RULE_SUFFIX         = None
 #########################
 # Import local packages #
 #########################
-
 sys.path.append(f"{ISANXOT_SRC_HOME}/src/preSanXoT/")
-import common
+import createID
 
 
 ###################
@@ -457,7 +457,7 @@ def main(args):
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
     infiles = ";".join([d['file'] for d in tpl['datfiles']])
-    indata = common.read_command_table(infiles)
+    indata = createID.read_command_table(infiles)
     
     
     # check the tasktable parameters for each command:
