@@ -61,7 +61,7 @@
       "panel": "panels/advance.html",
       "help_modal": "hmodals/fdr.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "experiment", "name": "Experiment" },
         { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
         { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
@@ -83,7 +83,7 @@
       "panel": "panels/databases_catdb.html",
       "help_modal": "hmodals/databases_catdb.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
         { "type": "required", "id": "inf_headers", "name": "Lower headers" },
         { "type": "required", "id": "sup_headers", "name": "Higher headers" },
@@ -103,7 +103,7 @@
       "panel": "panels/databases_catfile.html",
       "help_modal": "hmodals/databases_catfile.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
         { "type": "required", "id": "inf_headers", "name": "Lower headers" },
         { "type": "required", "id": "sup_headers", "name": "Higher headers" },
@@ -129,7 +129,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/wspp_sbt.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "experiment", "name": "Experiment" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -153,7 +153,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/wsppg_sbt.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "experiment", "name": "Experiment" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -187,7 +187,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/norcombine.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category",  "peptideall", "proteinall", "geneall", "categoryall"] },
@@ -205,7 +205,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/ratios.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -224,7 +224,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/integrate.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
@@ -242,7 +242,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/sbt.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -273,7 +273,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/system.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["protein", "gene", "category"] },
@@ -297,7 +297,7 @@
       "panel": "panels/advance-toggle.html",
       "help_modal": "hmodals/reports.html",
       "params": [
-        { "type": "required", "id": "force", "name": "FRC", "checkbox": [0,1] },
+        { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Input" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },

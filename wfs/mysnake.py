@@ -164,9 +164,9 @@ def executor(proc):
     # It is the moment of the execution
     if cmd_force == 1 and _all_ready(ifiles):
         output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
-    elif cmd_force == 0 and not _all_ready(ofiles):
+    elif (cmd_force == 0 or cmd_force == '') and not _all_ready(ofiles):
         output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
-    elif cmd_force == 0 and _all_ready(ifiles) and _all_ready(ofiles):
+    elif (cmd_force == 0 or cmd_force == '') and _all_ready(ifiles) and _all_ready(ofiles):
         state = 'cached'
         end_time = time.asctime()
         output['cmd_force'] = cmd_force

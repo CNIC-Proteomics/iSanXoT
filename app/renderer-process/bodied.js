@@ -115,7 +115,6 @@ for (var i = 0; i < wf['works'].length; i++) {
   try {
     if (fs.existsSync(`${wk_file}`)) {
       let s = fs.readFileSync(`${wk_file}`).toString();
-      // tbl_cmds = s.split('\n').map( row => row.trimRight().split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
       tbl_cmds = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
       if ( !tbl_cmds ) {
         console.log(tbl_cmds);
@@ -265,7 +264,7 @@ for (var i = 0; i < wf['works'].length; i++) {
             if (cmd_params_checkbox_index && cmd_params_checkbox_index.length > 0 && cmd_params_checkbox_index.includes(col)) {
               this.type = "checkbox";
               this.checkedTemplate = 1;
-              this.uncheckedTemplate = 0;
+              this.uncheckedTemplate = "";
             }
             return cellProperties;
           },
