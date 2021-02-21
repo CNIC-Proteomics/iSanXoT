@@ -20,6 +20,14 @@ import pandas as pd
 import concurrent.futures
 import itertools
 
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import PD
+import MSFragger
+import Comet
+import MaxQuant
 
 ####################
 # Common functions #
@@ -57,48 +65,67 @@ def read_command_table(ifiles):
                     indata[c2] = d
     return indata
 
-
 ###################
 # Local functions #
 ###################
-def processing_infiles_PD(file, Expt):
-    '''
-    Pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr
-    '''    
-    # read input file
-    df = pd.read_csv(file, sep="\t")
-    # rename columns
-    df.rename(columns={
-        'MHplus in Da': 'MH+ [Da]',
-        'Theo MHplus in Da': 'Theo. MH+ [Da]',
-        'Delta M in ppm': 'DeltaM [ppm]',
-        'Spectrum File': 'Spectrum_File',
-        'First Scan': 'Scan'
-    }, inplace=True)
-    # delete suffix value    
-    df["Spectrum_File"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True)
-    # delete suffix in the headers coming from PD 2.3
-    col = list(df.columns.values)
-    col[:] = [s.replace('Abundance: ', '') for s in col]
-    df.columns = col
-    # add Experiment column
-    df["Experiment"] = Expt
+def select_search_engines(file):
+    # read the first row
+    # determines which kind of searh engines we have.
+    # PD has to be "First Scan" column
+    # The first line is a commnet line in Comet
+    # MSFragger has to be "sannum" column
+    # MaxQuant has to be "PEP" column
+    d = pd.read_csv(file, nrows=0, sep="\t", index_col=False)    
+    search_engines = ["PD","Comet","MSFragger","MaxQuant"]
+    cond = ("First Scan" in list(d.columns), len(d.columns) == 4, "scannum" in list(d.columns), "PEP" in list(d.columns))
+    se = [i for (i, v) in zip(search_engines, cond) if v][0]
+    return se
+    
+def processing_infiles(file, Expt):
+    # determines which search engines we have
+    se = select_search_engines(file)
+    # processing the input files depending on
+    if se == "PD":
+        df = PD.processing_infiles(file, Expt)
+    elif se == "Comet":
+        df = Comet.processing_infiles(file, Expt)
+    elif se == "MSFragger":
+        df = MSFragger.processing_infiles(file, Expt)
+    elif se == "MaxQuant":
+        df = MaxQuant.processing_infiles(file, Expt)
     return df
 
 def print_by_experiment(df, outdir):
     '''
-    Calculate FDR and filter by cXCorr
+    Print the output file by experiments
     '''
     # get the experiment names from the input tuple df=(exp,df)
     # create workspace
     outdir_e = os.path.join(outdir, df[0])
     if not os.path.exists(outdir_e):
         os.makedirs(outdir_e, exist_ok=False)
+    # remove obsolete file
+    ofile = f"{outdir_e}/ID.tsv.tmp"
+    if os.path.isfile(ofile):
+        os.remove(ofile)
     # print the experiment files
-    df[1].to_csv(os.path.join(outdir_e, "ID.tsv.tmp"), sep="\t", index=False)
+    df[1].to_csv(ofile, sep="\t", index=False)
     # return tmp file
-    return f"{outdir_e}/ID.tsv.tmp"
+    return ofile
 
+def print_outfile(f):
+    '''
+    Rename the temporal files deleting the last suffix
+    '''
+    # get the output file deleting the last suffix
+    ofile = os.path.splitext(f)[0]
+    # remove obsolete output file
+    if os.path.isfile(ofile):
+        os.remove(ofile)
+    # rename the temporal file
+    os.rename(f, ofile)
+
+    
 
 def main(args):
     '''
@@ -125,14 +152,14 @@ def main(args):
         
         logging.info("processing the input file from the PD")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            ddf = executor.map( processing_infiles_PD, infiles, Expt )
+            ddf = executor.map( processing_infiles, infiles, Expt )
         ddf = pd.concat(ddf)
             
         logging.info("print the ID files by experiments")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
             tmpfiles = executor.map( print_by_experiment, list(ddf.groupby("Experiment")), itertools.repeat(args.outdir) )        
-        # rename the temporal files deleting the last suffix
-        [os.rename(f, os.path.splitext(f)[0]) for f in list(tmpfiles)]
+        # rename the temporal files
+        [print_outfile(f) for f in list(tmpfiles)]
     else:
         logging.error("there is not 'CREATE_ID' command")
 
