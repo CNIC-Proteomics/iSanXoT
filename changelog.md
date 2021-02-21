@@ -6,8 +6,7 @@ DATE: 2021_XX
 
 ### Highlights
 
-+ TODO!! We can force the execution of some commands.
-
++ T
 + TODO??? Now, iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant.
 
 ### Changes in the Graphical User Interface
@@ -34,7 +33,7 @@ DATE: 2021_02
 
 + We have started to include some documentation.
 
-+ We have included the "force" column that is a flag for the forced execution of command.
++ Due we have included a "force" column for each tasktable. For this reason, *this version is not compatible with projects executed by iSanXoT's with lower versions*.
 
 ### Changes in the Graphical User Interface
 
@@ -64,6 +63,7 @@ DATE: 2021_02
 	- We include the 'gene' column to the correct report.
 	- we delete the all columns correctly. 
 
++ installer: Now, we force the installation of some parts of requirements.
 
 ___
 ## 0.2.5
