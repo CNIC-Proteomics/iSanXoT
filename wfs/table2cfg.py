@@ -494,6 +494,12 @@ def main(args):
         del tpl_cmds[ tpl_cmds.index(c) ]
 
     
+    # if the cfg file of workflow has not 'database' information, we remove the indata of dataframes
+    if not tpl['databases']:
+        indata['RELS_TABLE_CATDB'].drop(indata['RELS_TABLE_CATDB'].index, inplace=True)
+        indata['RELS_TABLE_CATFILE'].drop(indata['RELS_TABLE_CATFILE'].index, inplace=True)
+
+
     # assign the global variables
     global MAIN_INPUTS_EXPDIR
     global MAIN_INPUTS_JOBDIR
