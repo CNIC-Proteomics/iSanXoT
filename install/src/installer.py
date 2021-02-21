@@ -161,16 +161,24 @@ def create_report_requirements(file):
                 pk,db,sp = line,None,None
                 report[pk] = {}
             elif line.startswith('$DATABASES='): # database manager line
-                pk,db,sp = None,line,None
-                database[db] = {}
+                pk,db,sp = None,None,None
+                s = re.split(r'[\s|\t]+', line)
+                db = s[0]
+                v = s[1] if len(s) > 1 else None
+                database[db] = v
             elif line.startswith('$SAMPLES='): # samples manager line
-                pk,db,sp = None,None,line
-                samples[sp] = {}
-            elif not line.startswith('#') and pk is not None: # package line
+                pk,db,sp = None,None,None
+                s = re.split(r'[\s|\t]+', line)
+                sp = s[0]
+                v = s[1] if len(s) > 1 else None
+                samples[sp] = v
+            elif not line.startswith('#'): # package line
                 s = re.split(r'\t+', line)
                 iparams = s[0]
                 pkg = s[1] if len(s) > 1 else ''
-                report[pk][pkg] = iparams
+                if pk is not None:
+                    report[pk][pkg] = iparams
+                    
         f.close()
     return report,database,samples
 
@@ -264,20 +272,20 @@ def main():
         print("-- upgrade databases")
         for manager,packages in db_new.items():
             # check if the new database version is already downloaded
-            if not manager in db_loc:
+            if not manager in db_loc or packages:
                 # download databases
                 iok = download_databases(manager)
-           # save the database in the local requirements 
+            # save the database in the local requirements 
             req_loc[manager] = {}
         
         # look through the new requirements for the databases ---
         print("-- upgrade samples")
         for manager,packages in sp_new.items():
-            # check if the new database version is already downloaded
-            if not manager in sp_loc:
+            # check if the new sample version is already downloaded
+            if not manager in sp_loc or packages:
                 # download databases
                 iok = download_samples(manager)
-           # save the database in the local requirements 
+           # save the sample in the local requirements 
             req_loc[manager] = {}
 
         # write string with the new requiremens into local file ---

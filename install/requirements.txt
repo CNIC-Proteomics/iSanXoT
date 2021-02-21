@@ -16,4 +16,4 @@ install --global	xlsx
 install --global	js-yaml
 install --global	fs-extra
 $DATABASES=202010
-$SAMPLES=basic
+$SAMPLES=basic  update
