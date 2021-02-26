@@ -18,7 +18,7 @@ function openHelpModal(t) {
   console.log(`WK_ID: ${wk_id} > CMD: ${cmd_id}`);
 
 
-  $(`#${wk_id} #page-tasktable-${cmd_id} .modal`).modal();
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .modal`).modal();
 
 }
 
@@ -54,12 +54,12 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
   
   // Add values
   if ( 'samples' == ptype ) {
-    $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${pdir}/${wf_exec['main_inputs']['indir']}`);
-    $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${pdir}/${wf_exec['main_inputs']['outdir']}`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #indir`).val(`${pdir}/${wf_exec['main_inputs']['indir']}`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #outdir`).val(`${pdir}/${wf_exec['main_inputs']['outdir']}`);
   }
   else {
-    $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${wf_exec['main_inputs']['indir']}`);
-    $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #indir`).val(`${wf_exec['main_inputs']['indir']}`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
   }
 
   // EVENTS
@@ -96,26 +96,26 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
     let files = fs.readdirSync(dir);
     if ( files !== undefined ) {
       for (var i = 0; i < files.length; i++) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('setDataAtCell', i, 0, `${dir}/${files[i]}`);
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('setDataAtCell', i, 0, `${dir}/${files[i]}`);
       }
     }
   };
 
   // events for the INPUT directory and OUTPUT directory
-  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-indir`).click(function() {
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-indir`).click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} #indir`).val(`${inpt}`);
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #indir`).val(`${inpt}`);
         fillInputFilesTable(inpt);
       }      
     });
   });
-  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-outdir`).click(function() {
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-outdir`).click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} #outdir`).val(`${inpt}`);
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #outdir`).val(`${inpt}`);
       }
     });
   });
@@ -164,10 +164,10 @@ function checkIfAdvancedOptionsExist(importer, exceptor) {
       let opt = importer.getIndexParamsWithAttr(cmd['params'], 'type', 'optional');
       if ( opt ) {
         // provide the event function
-        $(`#${wk_id} #page-tasktable-${cmd_id} .toggleadv`).change(toggleAdvParameters);
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .toggleadv`).change(toggleAdvParameters);
 
         // get cmd table
-        let cmd_table = $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).data('handsontable');
+        let cmd_table = $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).data('handsontable');
         if (cmd_table !== undefined) {
           // Iterate over the data of opt parameteers
           for (var k = 0; k < opt.length; k++) {
@@ -177,7 +177,7 @@ function checkIfAdvancedOptionsExist(importer, exceptor) {
             if ( cmd_data ) {
               // if there is data
               if ( !(importer.allBlanks(cmd_data)) ) {
-                $(`#${wk_id} #page-tasktable-${cmd_id} .toggleadv`).trigger('click');
+                $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .toggleadv`).trigger('click');
                 break;
               }
             }
@@ -220,10 +220,10 @@ function toggleAdvParameters() {
 
   // Show/Hide 'hiddenColumns'
   if ( $(t).prop('checked') ) {
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': opt, 'indicators': false } });
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': opt, 'indicators': false } });
   }
   else {
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': [], 'indicators': false } });
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': [], 'indicators': false } });
   }
 }
 
@@ -300,24 +300,24 @@ function addValuesPanel_CatDB(importer) {
   // with species
   for (var i = 0; i < wf['species'].length; i++) {
     let wf_species = wf['species'][i];
-    $(`#${wk_id} #page-tasktable-${cmd_id} #species`).append(`<option value="${wf_species['scientific']}">${wf_species['name']}</option>`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`).append(`<option value="${wf_species['scientific']}">${wf_species['name']}</option>`);
   }
   // with database version of categories
-  $(`#${wk_id} #page-tasktable-${cmd_id} #catids`).append(`<option value="" >Select database version...</option>`);
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="" >Select database version...</option>`);
   for (var i = 0; i < wf['catids'].length; i++) {
     let wf_catids = wf['catids'][i];
-    $(`#${wk_id} #page-tasktable-${cmd_id} #catids`).append(`<option value="${wf_catids['id']}" >${wf_catids['name']}</option>`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="${wf_catids['id']}" >${wf_catids['name']}</option>`);
   }
 
   // Add values
   if ( 'species' in wf_exec['databases'] && 'catid' in wf_exec['databases'] && 'catdbs' in wf_exec['databases'] ) {
     let species = wf_exec['databases']['species'].split(',');
-    $(`#${wk_id} #page-tasktable-${cmd_id} #species`).selectpicker('val', species);
-    $(`#${wk_id} #page-tasktable-${cmd_id} #catids`).val(`${wf_exec['databases']['catid']}`);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`).selectpicker('val', species);
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).val(`${wf_exec['databases']['catid']}`);
   }
   
   // Hide table
-  $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
 
 } // end addValuesPanel_CatDB
 
@@ -327,11 +327,11 @@ function toggleTaskTable_CatDB(t) {
   let cmd_id = 'RELS_TABLE_CATDB';
 
   if ( $(t).prop('checked') ) {
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
   }
   else {
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).show();
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('render');
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).show();
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('render');
   }
 }
 
@@ -356,17 +356,17 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
   // Add values
   if ( 'catfile' in wf_exec['databases'] && 'dbfile' in wf_exec['databases']) {
       if ( 'samples' == ptype ) { // library path + category/db FILE
-      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${pdir}/${wf_exec['databases']['catfile']}`);
-      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${pdir}/${wf_exec['databases']['dbfile']}`);
+      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catfile`).val(`${pdir}/${wf_exec['databases']['catfile']}`);
+      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #dbfile`).val(`${pdir}/${wf_exec['databases']['dbfile']}`);
     }
     else {  // category/db FILE
-      $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${wf_exec['databases']['catfile']}`);
-      $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${wf_exec['databases']['dbfile']}`);
+      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catfile`).val(`${wf_exec['databases']['catfile']}`);
+      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #dbfile`).val(`${wf_exec['databases']['dbfile']}`);
     }
   }
 
   // Hide table
-  $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
 
   /*
    * Events
@@ -397,7 +397,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     return out;
   };
   // events for the DB file and CATegory file BUTTON
-  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-dbfile`).click(function() {
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-dbfile`).click(function() {
     let opts = {
       properties: ['openFile'],
       filters :[
@@ -408,11 +408,11 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No database file selected`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} #dbfile`).val(`${inpt}`);
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #dbfile`).val(`${inpt}`);
       }
     });
   });
-  $(`#${wk_id} #page-tasktable-${cmd_id} button.select-catfile`).click(function() {
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-catfile`).click(function() {
     let opts = {
       properties: ['openFile'],
       filters :[
@@ -423,7 +423,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No category file seleted`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} #page-tasktable-${cmd_id} #catfile`).val(`${inpt}`);
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catfile`).val(`${inpt}`);
       }
     });
   });
@@ -436,11 +436,11 @@ function toggleTaskTable_CatFile(t) {
   let cmd_id = 'RELS_TABLE_CATFILE';
 
   if ( $(t).prop('checked') ) {
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).hide();
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
   }
   else {
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).show();
-    $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('render');
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).show();
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('render');
   }
 } // end toggleTaskTable_CatFile
 
