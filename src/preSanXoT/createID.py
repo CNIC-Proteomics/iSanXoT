@@ -65,9 +65,6 @@ def read_command_table(ifiles):
                     indata[c2] = d
     return indata
 
-###################
-# Local functions #
-###################
 def select_search_engines(file):
     # read the first row
     # determines which kind of searh engines we have.
@@ -80,38 +77,6 @@ def select_search_engines(file):
     cond = ("First Scan" in list(d.columns), len(d.columns) == 4, "scannum" in list(d.columns), "PEP" in list(d.columns))
     se = [i for (i, v) in zip(search_engines, cond) if v][0]
     return se
-    
-def processing_infiles(file, Expt):
-    # determines which search engines we have
-    se = select_search_engines(file)
-    # processing the input files depending on
-    if se == "PD":
-        df = PD.processing_infiles(file, Expt)
-    elif se == "Comet":
-        df = Comet.processing_infiles(file, Expt)
-    elif se == "MSFragger":
-        df = MSFragger.processing_infiles(file, Expt)
-    elif se == "MaxQuant":
-        df = MaxQuant.processing_infiles(file, Expt)
-    return df
-
-def print_by_experiment(df, outdir):
-    '''
-    Print the output file by experiments
-    '''
-    # get the experiment names from the input tuple df=(exp,df)
-    # create workspace
-    outdir_e = os.path.join(outdir, df[0])
-    if not os.path.exists(outdir_e):
-        os.makedirs(outdir_e, exist_ok=False)
-    # remove obsolete file
-    ofile = f"{outdir_e}/ID.tsv.tmp"
-    if os.path.isfile(ofile):
-        os.remove(ofile)
-    # print the experiment files
-    df[1].to_csv(ofile, sep="\t", index=False)
-    # return tmp file
-    return ofile
 
 def print_outfile(f):
     '''
@@ -124,6 +89,59 @@ def print_outfile(f):
         os.remove(ofile)
     # rename the temporal file
     os.rename(f, ofile)
+
+###################
+# Local functions #
+###################
+def processing_infiles(file, Expt, se):
+    
+    # se = 'Comet'
+    
+    # processing the input files depending on
+    if se == "PD":
+        df = PD.processing_infiles(file, Expt)
+    elif se == "Comet":
+        df = Comet.processing_infiles(file, Expt)
+    elif se == "MSFragger":
+        df = MSFragger.processing_infiles(file, Expt)
+    elif se == "MaxQuant":
+        df = MaxQuant.processing_infiles(file, Expt)
+    else:
+        return None
+    return df
+
+def print_by_experiment(df, expt_se_files, outdir):
+    '''
+    Print the output file by experiments
+    '''
+    # get the experiment names from the input tuple df=(exp,df)
+    exp = df[0]
+    # create workspace
+    outdir_e = os.path.join(outdir, exp)
+    if not os.path.exists(outdir_e):
+        os.makedirs(outdir_e, exist_ok=False)
+    # remove obsolete file
+    ofile = f"{outdir_e}/ID.tsv.tmp"
+    if os.path.isfile(ofile):
+        os.remove(ofile)
+    # print the experiment files with the header
+    # we extract the search engine and the input files for the current experiment
+    # create comment line given the following information:
+    #   - search engines
+    #   - list of input files
+    of = open(ofile, 'w')
+    se = [(i[1],i[2]) for i in expt_se_files if i[0] == exp] # zip(Expt, search_engine, inputfile)
+    if se:
+        s = se[0][0] # get the first value of "search engine"
+        f = [i[1] for i in se] # get the list of input files
+        of.write(f"# search_engine: {s}\n")
+        of.write( "# infiles:\n")
+        of.write( "# {}\n".format("\n# ".join(f)) )
+    df[1].to_csv(of, index=False, sep="\t", line_terminator='\n')
+    of.close()
+    # df[1].to_csv(ofile, sep="\t", index=False)
+    return ofile
+
 
     
 
@@ -146,19 +164,25 @@ def main(args):
         infiles = [i if os.path.isfile(i) else f"{args.indir}/{i}" for i in infiles] 
         logging.debug(infiles)
         
+        logging.info("extract the search engines from the given experiments")
+        ses = [select_search_engines(i) for i in infiles] 
+        logging.debug(ses)
+        
         logging.info("extract the list of experiments")
         Expt    = list(indata['CREATE_ID']['experiment'])
         logging.debug(Expt)
         
-        logging.info("processing the input file from the PD")
+        
+        logging.info("processing the input file")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            ddf = executor.map( processing_infiles, infiles, Expt )
+            ddf = executor.map( processing_infiles, infiles, Expt, ses )
         ddf = pd.concat(ddf)
-            
+
+                
         logging.info("print the ID files by experiments")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-            tmpfiles = executor.map( print_by_experiment, list(ddf.groupby("Experiment")), itertools.repeat(args.outdir) )        
-        # rename the temporal files
+            tmpfiles = executor.map( print_by_experiment, list(ddf.groupby("Experiment")), itertools.repeat(zip(Expt,ses,infiles)), itertools.repeat(args.outdir) )  
+        # rename tmp file deleting before the original file 
         [print_outfile(f) for f in list(tmpfiles)]
     else:
         logging.error("there is not 'CREATE_ID' command")

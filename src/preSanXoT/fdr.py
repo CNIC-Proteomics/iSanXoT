@@ -22,9 +22,57 @@ import xml.etree.ElementTree as etree
 import concurrent.futures
 from itertools import repeat
 
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import createID
+import PD
+import MSFragger
+import Comet
+
 ###################
 # Local functions #
 ###################
+
+def select_search_engines(file):
+    # read the first line to know which searh engine we have.
+    with open(file) as f: first_line = f.readline()
+    fa = re.findall(r'^# search_engine: ([^\s]*)', first_line)
+    if fa: se = fa[0]
+    else: se = None
+    return se
+
+def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
+    # read which search engines we have
+    se = select_search_engines(file)
+    # processing the input files depending on
+    if se == "PD": df = PD.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
+    elif se == "Comet": df = Comet.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
+    elif se == "MSFragger": df = MSFragger.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
+    return df
+
+def FdrXc(df, typeXCorr, FDRlvl):
+    '''
+    Calculate FDR and filter by cXCorr
+    '''
+    # get the dataframe from the input tuple df=(exp,df)
+    # sort by the type of score
+    df = df[1].sort_values(by=[typeXCorr,"T_D"], ascending=False)
+    # rank the target and decoy individually
+    df["rank"] = df.groupby("T_D").cumcount()+1
+    df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
+    df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
+    df["rank_D"] = np.where(df["T_D"]==0, df["rank"], 0)
+    df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
+    # calcultate FDR: FDR = rank(D)/rank(T)
+    df["FdrXc"] = df["rank_D"]/df["rank_T"]
+    # filter by input FDR
+    df = df[ df["FdrXc"] <= FDRlvl ]
+    # discard decoy
+    df = df[ df["T_D"] == 1 ]
+    return df
+
 def extract_modifications(s_ddf):
     '''
     Create modifications dictionary from xml-doc of UNIMOD
@@ -51,108 +99,19 @@ def join_modifications(mods):
             modifications[m2] = '('+mono_mass+')'
     return modifications
 
-
-def targetdecoy(df, tagDecoy):
+def SequenceMod(df, mods, file):
     '''
-    Assing target and decoy proteins
-    '''    
-    z = list(df["Protein Accessions"].str.split(";"))
-    p = [(all(tagDecoy  in item for item in i )) for i in z]
-    r = [0 if i==True else 1 for i in p]
-    return r
-
-def Jumps(df, JumpsAreas):
-    '''
-    Correct monoisotopic mass
-    '''
-    s1=df["DeltaM [ppm]"]
-    s2=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-1.003355))/df["Theo. MH+ [Da]"]*1e6
-    s3=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+1.003355))/df["Theo. MH+ [Da]"]*1e6
-    s4=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]-2*1.003355))/df["Theo. MH+ [Da]"]*1e6
-    s5=(df["Theo. MH+ [Da]"]-(df["MH+ [Da]"]+2*1.003355))/df["Theo. MH+ [Da]"]*1e6
-    df1 = pd.DataFrame( {"1":s1,"2":s2,"3":s3,"4":s4,"5":s5 })
-    if JumpsAreas == 1:
-        j = ["1"]
-    elif JumpsAreas == 3: 
-        j = ["1","2","3"]
-    elif JumpsAreas == 5: 
-        j = ["1","2","3","4","5"]
-    Deltamass=df1[j].abs().min(axis=1)
-
-    x = list( zip(s1,s2,s3,s4,s5) )
-
-    return Deltamass,x
-
-def cXCorr(df):
-    '''
-    Calculate cXCorr
-    '''
-    rc=np.where(df['Charge']>=3, '1.22', '1').astype(float)
-    cXCorr1= np.log(df['XCorr']/rc)/np.log(2*df['Sequence'].str.len())
-    return cXCorr1
-
-def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
-    '''
-    Pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr
-    '''    
-    # read input file
-    df = pd.read_csv(file, sep="\t")
-    # assing target and decoy proteins
-    df["T_D"] = targetdecoy(df, tagDecoy)
-    df = df[df["Search Engine Rank"] == 1 ]
-    # correct monoisotopic mass
-    df["JDeltaM [ppm]"],df["JDeltaM"] = Jumps(df, JumpsAreas)
-    df = df[ df["JDeltaM [ppm]"].abs() <= deltaMassThreshold ]
-    # calculate cXCorr
-    df["cXCorr"] = cXCorr(df)
-    return df
-
-def SequenceMod(df, mods):
-    '''
-    Extract modifications and replace for final values
-    '''
-    # extract modifications and replace for final values
-    s = df['Modifications'].fillna('').replace(mods, regex=True)
-    # create indexes list
-    sn = list( s.replace({
-        '(\S*N-Term\S*)': '',
-        '\([^)]*\)': '',
-        '(\s)': '',
-        '([A-Z])': '',
-    }, regex=True).str.split(";") )
-    sn = [list(filter(None,i)) for i in sn]
-    sn = [[int(i) for i in j] for j in sn]
-    [[a.insert(0,0) ] for a in sn]
-    # create Modifications list
-    sa = list( s.replace({
-        '(\S*N-Term\S*)': '',
-        '[^\(\)]*\(([^\)]+)\)': "["+ r"\1];"
-    }, regex=True).str.split(";") )
-    sa = [list(filter(None,i)) for i in sa]
-    # split sequence and insert modification
-    l = list(df["Sequence"])
-    f = [[a[i:j]for i,j in zip(b,b[1:]+[None])] for a,b in zip(l,sn)]
-    x = ["".join(list(itertools.chain.from_iterable(list(itertools.zip_longest(i,j,fillvalue=''))))) for i,j in list(zip(f,sa))]
-    return x
-
-def FdrXc(df, typeXCorr, FDRlvl, mods):
-    '''
-    Calculate FDR and filter by cXCorr
+    Create a sequence with modifications
     '''
     # get the dataframe from the input tuple df=(exp,df)
-    df = df[1].sort_values(by=[typeXCorr,"T_D"], ascending=False)
-    df["rank"] = df.groupby("T_D").cumcount()+1
-    df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
-    df["rank_T"] = df["rank_T"].replace(to_replace=0, method='ffill')
-    df["rank_D"] = np.where(df["T_D"]==0, df["rank"], 0)
-    df["rank_D"] = df["rank_D"].replace(to_replace=0, method='ffill')
-    df["FdrXc"] = df["rank_D"]/df["rank_T"]
-    df = df[ df["FdrXc"] <= FDRlvl ] # filter by input FDR
-    df = df[ df["T_D"] == 1 ] # discard decoy
-    if mods:
-        df["SequenceMod"] = SequenceMod(df, mods)
+    df = df[1]
+    # read which search engines we have
+    se = select_search_engines(file)
+    # create sequence with modifications depending on
+    if se == "PD": df["SequenceMod"] = PD.SequenceMod(df, mods)
+    elif se == "Comet": df["SequenceMod"] = Comet.SequenceMod(df)
+    elif se == "MSFragger": df["SequenceMod"] = MSFragger.SequenceMod(df)
     return df
-
 
 
 
@@ -168,29 +127,36 @@ def main(args):
     JumpsAreas = args.jump_areas
     
   
-    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass, calculate cXCorr")
+    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass")
     ddf = preProcessing(args.infile, deltaMassThreshold, tagDecoy, JumpsAreas)
 
       
+    logging.info("calculate the FDR by experiment")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+        ddf = executor.map(FdrXc, list(ddf.groupby("Experiment")), repeat(typeXCorr), repeat(FDRlvl))
+    ddf = pd.concat(ddf)
+
+    
     logging.info("create modifications dictionary from xml-doc of UNIMOD")
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
         mods = executor.map(extract_modifications, ddf['Modifications'], chunksize=int(len(ddf)/args.n_workers))
     modifications = join_modifications(mods)
     logging.debug(modifications)
 
-
-    logging.info("calculate the FDR by experiment")
+    
+    logging.info("calculate the SequenceMod by experiment")
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        ddf = executor.map(FdrXc, list(ddf.groupby("Experiment")), repeat(typeXCorr), repeat(FDRlvl), repeat(modifications))
+        ddf = executor.map(SequenceMod, list(ddf.groupby("Experiment")), repeat(modifications), repeat(args.infile))
     ddf = pd.concat(ddf)
 
-    
+
     logging.info("print the output")
     # print to tmp file
     f = f"{args.outfile}.tmp"
     ddf.to_csv(f, sep="\t", index=False)
-    # rename tmp file
-    os.rename(f, os.path.splitext(f)[0])
+    # rename tmp file deleting before the original file 
+    createID.print_outfile(f)
+
 
 
 if __name__ == '__main__':
@@ -205,7 +171,7 @@ if __name__ == '__main__':
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',  '--infile', required=True, help='Input file: ID.tsv')
     parser.add_argument('-f',  '--fdr', type=float, default=0.01, help='FDR value (default: %(default)s)')
-    parser.add_argument('-x',  '--type_xcorr', type=str, choices=['XCorr','cXCorr'], default='XCorr', help='Calculate FDR from the type of XCorr (default: %(default)s)')
+    parser.add_argument('-x',  '--type_xcorr', type=str, default='XCorr', help="Calculate FDR from the the given scores: 'XCorr','cXCorr','hyperscore' (default: %(default)s)")
     parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
     parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
