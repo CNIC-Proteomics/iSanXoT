@@ -65,7 +65,16 @@ input:disabled, button:disabled {
     color: #fff;
     background-color: slategray;
     border-color: black;
-    margin-left: 0.3em;
+    /* margin-left: 0.3em; */
+}
+#accordion a.btn-primary:hover {
+    background-color: #5a6268;
+}
+
+
+
+#accordion button.dropdown-toggle {
+    color: #fff;
 }
 #accordion .card-header {
     font-weight: 400;
@@ -75,6 +84,9 @@ input:disabled, button:disabled {
 }
 #accordion  .card-body a {
     padding-left: 5px;
+}
+#accordion .btn-group.right {
+    float: right;
 }
 
 /* ---------------------------------------------------
