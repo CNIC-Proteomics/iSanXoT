@@ -164,7 +164,8 @@ function getMostRecentDir(dir) {
     // let files = fs.readdirSync(dir).reverse();
     let files = getDirectories(dir);
     return (files.length > 0)? files[0] : undefined;
-}  
+}
+
 // Get a string with the local date
 function getWFDate() {
     let d = new Date();
@@ -177,22 +178,26 @@ function getWFDate() {
     s = ('0' + d.getSeconds()).slice(-2);
     return Y+M+D+h+m+s;
 }
+
 // Get the id of current Workflow extracting from the HTML Elements
 function getWorkflowIDFromElements() {
     let id = $(`#bodied h3.text-center`).attr('name'); // get the id from the html tag
     return id;
 }
+
 // Get the id of current Work extracting from the HTML Elements
 function getWorkIDFromElements() {
     let id = $("#bodied .worklist li .active").attr('name');
     return id;
 }
+
 // Get the id of current Command extracting from the HTML Elements
 function getCmdIDFromElements() {
     let id = $(`#bodied .tab-pane.active .page-header`).attr('name'); // get the id from the html tag
     return id;
 }
-// Get the first object from ID value of workflows.json file
+
+// Get an object of list from given ID
 function getObjectFromID(data, id) {
     let rst = data.filter(obj => { return obj.id === `${id}` });
     if ( !rst || jQuery.isEmptyObject(rst) ) {
@@ -201,6 +206,38 @@ function getObjectFromID(data, id) {
     rst = rst[0]; // get the firt(unique) element
     return rst;
 }
+
+// Create the information of works
+// Go through the works of the workflow and fill the information of work and commands
+function createWrkflowFromID(wfs, wf_id) {
+    // get the workflow data from id
+    let rst = getObjectFromID(wfs['workflows'], wf_id);
+    // create the information of works for the workflow
+    let wks = [];
+    for (var i = 0; i < rst['works'].length; i++) {
+        let wk_id = rst['works'][i]['id'];
+        // extract the information of commands for each work
+        let cmds = [];
+        for (var j = 0; j < rst['works'][i]['cmds'].length; j++) {
+            let cmd_id = rst['works'][i]['cmds'][j];
+            // extract the info of cmd
+            let cmd = getObjectFromID(wfs['commands'], cmd_id);
+            // add the cmd
+            cmds.push(cmd);
+        }
+        // extract the info of work
+        let wk = getObjectFromID(wfs['works'], wk_id);
+        // add the work with the list of cmds
+        wk['cmds'] = cmds;
+        wks.push(wk);
+    }  
+    // create the info of works
+    rst['works'] = wks
+    // add the workspace
+    rst['prj_workspace'] = wfs['prj_workspace'];
+    return rst;
+}
+
 // Get the list of index with the given attribute value
 function getIndexParamsWithAttr(data, key, attr) {
     function findWithAttr(array, ke, at) {
@@ -218,6 +255,7 @@ function getIndexParamsWithAttr(data, key, attr) {
     }
     return rst;
 }
+
 // Get the list of index with the given attribute value
 function getIndexParamsWithKey(data, key) {
     function findWithAttr(array, ke) {
@@ -236,6 +274,7 @@ function getIndexParamsWithKey(data, key) {
     }
     return [rst,cnt];
 }
+
 // Extract the main information from Workflow
 function extractWorkflowAttributes() {
     // Get input parameters (from URL)
@@ -290,9 +329,14 @@ function extractWorkflowAttributes() {
 
     // Get workflow attributes from the wf_id
     let wfs = JSON.parse( fs.readFileSync(`${__dirname}/../wfs/workflows.json`) );
-    let wf = getObjectFromID(wfs, wf_id);
-    return [pdir_def, ptype, pdir, wf_id, wf, cdir, cfg];
+    let wf = createWrkflowFromID(wfs, wf_id);
+
+    // Get the list of databases
+    let catdbs = wfs['catdbs'];
+
+    return [pdir_def, ptype, pdir, wf_id, wf, catdbs, cdir, cfg];
 }
+
 // Check if two arrays are equal
 function isEqual(a, b) {
     // if length is not equal 
@@ -306,6 +350,7 @@ function isEqual(a, b) {
         return true;
     }
 }
+
 // Check if all elements of array is empty
 function allBlanks(arr) {
     for (var i = 0; i < arr.length; i++) {
@@ -313,6 +358,7 @@ function allBlanks(arr) {
     }
     return true;
 }
+
 // Get all indexes of all ocurrences in array
 function getAllIndexes(arr, val) {
     var indexes = [];
@@ -323,6 +369,7 @@ function getAllIndexes(arr, val) {
     }
     return indexes;
 }
+
 // Remove the list of indexes from array
 function removeListIndexes(arr, rem) {
     for (var i = rem.length -1; i >= 0; i--) {
@@ -330,6 +377,7 @@ function removeListIndexes(arr, rem) {
     }
     return arr;
 }
+
 // Open Help Modals
 function openHelpModal(t) {
     console.log("openHelpModal");
@@ -389,6 +437,7 @@ if ( filename == "wf" ) {
         pdir,
         wf_id,
         wf,
+        catdbs,
         cdir,
         wf_exec
     ] = extractWorkflowAttributes();
@@ -399,6 +448,7 @@ if ( filename == "wf" ) {
     module.exports.wf_date_id = wf_date_id;
     module.exports.wf_id = wf_id;
     module.exports.wf = wf;
+    module.exports.catdbs = catdbs;
     module.exports.cdir = cdir;
     module.exports.wf_exec = wf_exec;
 

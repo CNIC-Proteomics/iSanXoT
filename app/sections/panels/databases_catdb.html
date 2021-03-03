@@ -8,24 +8,21 @@
 
 <div id="panel-databases-catdb" class="panel-databases">
   <div class="form-group">
-    <h6 for="select-species">Select Species</h6>
-    <div class="input-group col-sm-6">
-      <select id="species" class="selectpicker form-control" multiple data-style="btn-selectpicker" data-actions-box="true" title="Choose one or more of the following...">
-      </select>    
-    </div>
-  </div>  
-
-  <div class="form-group">
-    <h6 for="select-catids">Select the UniProt version of category database</h6>
+    <h6 for="select-catids">First, select the UniProt version of category database</h6>
     <div class="input-group col-sm">
       <select class="custom-select" id="catids"></select>
     </div>
   </div>
-
   <div class="form-group">
+    <h6 for="select-species">Then, select the species</h6>
+    <div class="input-group col-sm-6">
+      <select id="species" class="selectpicker form-control" multiple data-style="btn-selectpicker" data-actions-box="true" title="Choose one or more of the following..."></select>    
+    </div>
+  </div>
+  <!-- <div class="form-group">
     <h6 for="select-catids">Show/Hide relationship tables</h6>
     <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show" data-off="Hide" data-onstyle="light" data-offstyle="dark" data-width="50px" data-height="30px" data-size="sm" onchange="ehandler.toggleTaskTable_CatDB(this)" checked>
-  </div>
+  </div> -->
 </div>
 
 </template>

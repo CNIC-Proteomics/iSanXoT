@@ -8,6 +8,15 @@ let importer = require('./imports');
 let ehandler = require('./ehandler');
 
 /*
+ * Import varialbles
+ */
+
+let wf       = importer.wf;
+let cdir     = importer.cdir;
+console.log(cdir);
+
+
+/*
  * Local functions
  */
 
@@ -79,15 +88,6 @@ function extract_list_cmds(wk, itbl) {
   }
   return cmds;  
 };
-
-
- /*
- * Import varialbles
- */
-
-let wf       = importer.wf;
-let cdir     = importer.cdir;
-console.log(cdir);
 
 
 /*

@@ -288,36 +288,61 @@ function createObjFromDatabasesPanel() {
  * 
  */
 
-
+// Add species in the select option
+function addSpeciesInSelect(select, catdbs, catid) {
+  // clear the select object
+  $(select).selectpicker('destroy');
+  $(select).find('option').remove().end();
+  // get the catdb from id
+  let catdb = importer.getObjectFromID(catdbs, catid);
+  if ( catdb !== undefined ) {
+    // add the species from the catdb
+    for (var i = 0; i < catdb['species'].length; i++) {
+      let wf_species = catdb['species'][i];
+      $(select).append(`<option value="${wf_species['scientific']}">${wf_species['name']}</option>`);
+    }
+  }
+  // refresh the select
+  $(select).selectpicker('refresh');
+}
 // Add values into panel, if apply
 function addValuesPanel_CatDB(importer) {
   // declare variables
+  let catdbs  = importer.catdbs;
   let wf_exec  = importer.wf_exec;
   let wk_id = 'databases';
   let cmd_id = 'RELS_TABLE_CATDB';
   
-  // Init html objects
-  // with species
-  for (var i = 0; i < wf['species'].length; i++) {
-    let wf_species = wf['species'][i];
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`).append(`<option value="${wf_species['scientific']}">${wf_species['name']}</option>`);
-  }
-  // with database version of categories
+  // Init the databases
   $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="" >Select database version...</option>`);
-  for (var i = 0; i < wf['catids'].length; i++) {
-    let wf_catids = wf['catids'][i];
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="${wf_catids['id']}" >${wf_catids['name']}</option>`);
+  for (var i = 0; i < catdbs.length; i++) {
+    let wf_catdbs = catdbs[i];
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="${wf_catdbs['id']}" >${wf_catdbs['name']}</option>`);
   }
 
   // Add values
   if ( 'species' in wf_exec['databases'] && 'catid' in wf_exec['databases'] && 'catdbs' in wf_exec['databases'] ) {
+    // fill with the catdb id
+    let catid = wf_exec['databases']['catid'];
+    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).val(`${catid}`);
+    // fill the select object from the catid
+    addSpeciesInSelect(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`, catdbs, catid);
+    // select the given species
     let species = wf_exec['databases']['species'].split(',');
     $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`).selectpicker('val', species);
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).val(`${wf_exec['databases']['catid']}`);
   }
   
   // Hide table
   $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
+
+  // Add the values of species every time the catdb changes
+  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).change(function(){
+    $("option:selected", this).each(function() {
+      // fill the select object from the catid
+      let catid = this.value;
+      addSpeciesInSelect(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`, catdbs, catid);
+    });
+  });
 
 } // end addValuesPanel_CatDB
 
@@ -334,7 +359,6 @@ function toggleTaskTable_CatDB(t) {
     $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('render');
   }
 }
-
 
 
 /*

@@ -1,27 +1,93 @@
 ___
-## 0.2.7
+## 0.3.0
 ```
 DATE: 2021_XX
 ```
 
 ### Highlights
 
-+ T
-+ TODO??? Now, iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant.
++ Installation of "java" computer software for the WF of identification.
 
 ### Changes in the Graphical User Interface
 
-+ TODO!!! Include the column "output" in the workflow log table.
+
+### Changes in the Code Workflow
+
++ Installation of "java" computer software for the WF of identification.
+
+___
+## 0.2.7_LABEL_FREE
+```
+DATE: 2021_03
+```
+
+### Highlights
+
++ Label-Free workflow.
+
++ Documentation.
+
++ We have include the Ecoli species.
+
+### Changes in the Graphical User Interface
+
++ Label-Free workflow.
+
++ Documentation.
 
 + TODO!! Improve the refresh of log tables.
+
++ TODO!! We have included more worked-out examples from MSFragger result and Comet.
+
++ TODO!!! Include the column "output" in the workflow log table.
+
++ TODO!! We have included Ecoli species.
 
 ### Changes in the Code Workflow
 
 + TODO!! There is new programa which reports some information (variances, ...) for each integration.
 
-+ TODO??? Now iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant (you have to include Ecoli species).
++ TODO??? Now iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant.
 
-+ TODO!! There is new programa which reports some information (variances, ...) for each integration.
++ TODO!! New program that reports some information (variances, ...) for each integration.
+
+
++ TODO!! WE HAVE TO IMPROVE THE CREATERELS PROGRAM!! SIMPLYFY THE CODE AND ADD THE THIRD COLUMN.
+
+
+___
+## 0.2.7
+```
+DATE: 2021_03
+```
+
+### Highlights
+
++ TODO the quantification!!! Now, iSanXoT accepts inputs from the search engines: PD, Comet, MSFragger, and MaxQuant.
+
+### Changes in the Graphical User Interface
+
++ We have changed the species structure of data in the workflow config file.
+
++ We have changed the structure of the workflow config file:
+
++ We have changed the appareance of worked-out examples.
+
++ TODO!! Change to Feb 2021 DATABASE because the protein2category files is not working.
+
++ TODO!! Bug fixed: refreshing the log tables.
+
+### Changes in the Code Workflow
+
++ TODO the quantification!!! iSanXoT accepts inputs from the search engines: PD, Comet, MSFragger, and MaxQuant.
+
++ TODO!!! In the case of duplicated scans for Comet results, we take the scans with the best cXCorr and then, with the duplicated, we get the first one.
+
++ TODO!! NEW QUANTIFICATION COMMAND!!
+
++ Bug fixed: the report program as for "gene2description" file that is not exist.
+
++ TODO!! Comprueba que la salida de los "worked-out examples" da un REPORT correcto sobre todo por los reports "2description". Que no haya duplicaciones!! Comprueba Category2Description!!
 
 ___
 ## 0.2.6
