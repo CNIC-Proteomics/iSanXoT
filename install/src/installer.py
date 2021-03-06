@@ -27,11 +27,15 @@ requirement_loc_file = "{}/{}".format(sys.argv[2],'requirements.txt')
 
 dirname = os.path.dirname(__file__)
 lib_home = os.path.dirname(requirement_loc_file)
+
 python_exec = sys.executable
+
 node_url = 'https://nodejs.org/dist/v10.14.2/node-v10.14.2-win-x64.zip'
 node_home = f"{lib_home}/node"
 tmpdir = f"{lib_home}/tmp"
 cloud_url = 'https://www.cnic.es/nextcloud/s/cmWA4xZEBk2mjMZ/download?path=%2F'
+exec_url = f"{cloud_url}install%2Fwindows%2F"
+execdir = f"{lib_home}/exec"
 dbs_url = f"{cloud_url}dbs%2F"
 dbsdir = f"{lib_home}/dbs"
 samples_url = f"{cloud_url}samples%2F"
@@ -42,6 +46,15 @@ spdir = f"{lib_home}/samples"
 ###################
 # Local functions #
 ###################
+
+# Create directories recursively, if they don't exist
+def prepare_workspace(dirs):
+    if not os.path.exists(dirs):
+        try:
+            os.makedirs(dirs)
+        except:
+            sys.exit("ERROR!! preparing the workspace")
+
 def exec_command(cmd):
     try:
         print(f'-- exec: {cmd}')
@@ -52,6 +65,26 @@ def exec_command(cmd):
             sys.exit(f"ERROR!! executing the command line:: {cmd}")
     except Exception as exc:
         sys.exit(f"ERROR!! executing the command line: {cmd}\n{exc}")
+
+def install_exec_manager(manager, url, odir):
+    try:
+        # local library
+        import core
+        print("-- create builder")
+        c = core.builder(tmpdir)
+        print("-- download files: "+url+" > "+tmpdir)
+        file = c.download_url(url, outdir=tmpdir)
+        print("-- unzip files: "+file+" > "+tmpdir)
+        c.unzip_file(file,  tmpdir)
+        print("-- move files to outdir")
+        c.move_files(tmpdir, odir)
+        print("-- remove tmpdir")
+        c.remove_dir(tmpdir)
+        # if everything was fine
+        return True
+
+    except Exception as exc:
+        sys.exit(f"ERROR!! downloading databases: {manager}\n{exc}")
 
 def install_pkg_manager_pip():
     exec_command(f'{python_exec} {dirname}/get-pip.py --no-warn-script-location')
@@ -78,7 +111,7 @@ def install_pkg_manager_npm(manager):
 def install_pkg_manager(manager):
     try:
         # handle manager file
-        manager = "{}/{}".format(lib_home, manager.replace('$MANAGER=',''))
+        manager = "{}/{}".format(lib_home, manager)
         # check if package manager is installed
         if not (os.path.isfile(manager) or os.path.isfile(manager+'.exe')):
             if 'pip' in manager:
@@ -92,12 +125,12 @@ def install_pkg_manager(manager):
     except Exception as exc:
         sys.exit(f"ERROR!! installing manager: {manager}\n{exc}")
                 
-def install_package(manager, iparams, pkg):
+def install_package(manager, pkg):
     try:
         # handle manager file
-        manager = "{}/{}".format(lib_home, manager.replace('$MANAGER=',''))
+        manager = "{}/{}".format(lib_home, manager)
         # create command
-        cmd = f'{manager} {iparams} {pkg}'
+        cmd = f'{manager} {pkg}'
         print(f'-- exec: {cmd}')
         crun = subprocess.call(cmd, shell=True)
         # if everything was fine
@@ -113,7 +146,7 @@ def download_databases(manager):
         # local library
         import core
         # handle manager file
-        version = manager.replace('$DATABASES=','')
+        version = manager
         print("-- create builder")
         c = core.builder(dbsdir)
         print("-- create url")
@@ -132,7 +165,7 @@ def download_samples(manager):
         # local library
         import core
         # handle manager file
-        version = manager.replace('$SAMPLES=','')
+        version = manager
         print("-- create builder")
         c = core.builder(spdir)
         print("-- create url")
@@ -150,49 +183,72 @@ def create_report_requirements(file):
     '''
     Create dictionary with the manager and its required packages
     '''
-    report,database,samples = {},{},{}
+    report = {}
     if os.path.isfile(file):
         f = open(file)
         lines = f.read().splitlines()
-        pk,db,sp = None,None,None
+        key1,key2 = None,None
         for line in lines:
             line = line.rstrip()
-            if line.startswith('$MANAGER='): # package manager line
-                pk,db,sp = line,None,None
-                report[pk] = {}
-            elif line.startswith('$DATABASES='): # database manager line
-                pk,db,sp = None,None,None
-                s = re.split(r'[\s|\t]+', line)
-                db = s[0]
-                v = s[1] if len(s) > 1 else None
-                database[db] = v
-            elif line.startswith('$SAMPLES='): # samples manager line
-                pk,db,sp = None,None,None
-                s = re.split(r'[\s|\t]+', line)
-                sp = s[0]
-                v = s[1] if len(s) > 1 else None
-                samples[sp] = v
-            elif not line.startswith('#'): # package line
-                s = re.split(r'\t+', line)
-                iparams = s[0]
-                pkg = s[1] if len(s) > 1 else ''
-                if pk is not None:
-                    report[pk][pkg] = iparams
-                    
+            if line.startswith('$'): # compiler manager line
+                key1,key2 = None,None
+                l = re.findall('^\$([^\=]*)=(.*)', line)
+                if (len(l) == 1 and len(l[0]) == 2):
+                    key1 = l[0][0]
+                    key2 = l[0][1]
+                    if not key1 in report:
+                        report[key1] = {}
+                    report[key1][key2] = []
+            elif not line.startswith('#') and key1 is not None and key2 is not None: # package line
+                report[key1][key2].append(line)
         f.close()
-    return report,database,samples
+    return report
 
 def create_str_requirements(req):
     '''
     Create string with the manager and its required packages
     '''
     cont = ''
-    for manager,packages in req.items():
-        cont += f"{manager}\n"
-        for pkg,iparams in packages.items():
-            cont += f"{iparams}\t{pkg}\n"
+    for t, r in req.items():
+        for manager,packages in r.items():
+            cont += f"${t}={manager}\n"
+            for pkg in packages:
+                cont += f"{pkg}\n"            
     return cont
 
+def install_report(trep, req_new, req_loc):
+    # look through the new requirements
+    for manager,packages in req_new[trep].items():
+        # extract the optional parameter
+        man = re.split(r'[\s|\t]+', manager)
+        if man:
+            manager = man[0]
+            # check if the new package manager is already installed
+            if (not trep in req_loc) or (not manager in req_loc[trep]):
+                if trep == 'EXEC':
+                    man_dir = man[1] if len(man) > 1 else manager # get the name of output dir. By default, the given file
+                    iok = install_exec_manager(manager, f"{exec_url}/{manager}", f"{execdir}/{man_dir}")
+                if trep == 'MANAGER':
+                    iok = install_pkg_manager(manager)
+                elif trep == 'DATABASES':
+                    iok = download_databases(manager)
+                elif trep == 'SAMPLES':
+                    iok = download_samples(manager)
+                # save modules in the req local
+                if iok:
+                    if not trep in req_loc:
+                        req_loc[trep] = {}
+                    if not manager in req_loc[trep]:
+                        req_loc[trep][manager] = []
+            # install package's
+            for pkg in packages:
+                # check if the new package is already installed
+                if not pkg in req_loc[trep][manager]:
+                    iok = install_package(manager, pkg)
+                    # save the new module
+                    if iok:
+                        req_loc[trep][manager].append(pkg)
+    return req_loc
 
 
 #################
@@ -202,98 +258,41 @@ def create_str_requirements(req):
 def main():
     '''
     Main function
-    '''    
+    '''
+    # preapare workspace
+    prepare_workspace(node_home)
+    prepare_workspace(execdir)
+    prepare_workspace(dbsdir)
+    prepare_workspace(spdir)
+    
     # create a dictionary with the package manager and its required packages
     # for the source (new) packages and for destinity (local) packages
-    req_new,db_new,sp_new = create_report_requirements(requirement_new_file)
-    req_loc,db_loc,sp_loc = create_report_requirements(requirement_loc_file)
+    req_new = create_report_requirements(requirement_new_file)
+    req_loc = create_report_requirements(requirement_loc_file)
 
-    # new installation of libraries
-    if not req_loc:
 
-        # look through the new requirements ---
-        print("-- install packages")
-        for manager,packages in req_new.items():
-            # install package manager
-            iok = install_pkg_manager(manager)
-            req_loc[manager] = {}
-            # install package's
-            for pkg,iparams in packages.items():
-                write_ok = install_package(manager, iparams, pkg)
-                # save the new required package
-                if write_ok:
-                    req_loc[manager][pkg] = iparams
-        
-        # look through the new requirements for the databases ---
-        print("-- install databases")
-        for manager,packages in db_new.items():
-            # download databases
-            iok = download_databases(manager)
-            # save the database in the local requirements 
-            req_loc[manager] = {}
+    # look through the new requirements for the excutor ---
+    print("-- install executors")
+    req_loc = install_report('EXEC', req_new, req_loc)
 
-        # look through the new requirements for the samples ---
-        print("-- look through the new samples")
-        for manager,packages in sp_new.items():
-            # download samples
-            iok = download_samples(manager)
-            # save the database in the local requirements 
-            req_loc[manager] = {}
-
-        # write string with the new requiremens into local file ---
-        if req_loc:
-            cont = create_str_requirements(req_loc)
-            if cont != '':
-                with open(requirement_loc_file, "w") as file:
-                    file.write(cont)
+    # look through the new requirements for the packages ---
+    print("-- install packages")
+    req_loc = install_report('MANAGER', req_new, req_loc)
+            
+    # look through the new requirements for the databases ---
+    print("-- install databases")
+    req_loc = install_report('DATABASES', req_new, req_loc)
     
-
-    # upgrade the library
-    else:
+    # look through the new requirements for the samples ---
+    print("-- install samples")
+    req_loc = install_report('SAMPLES', req_new, req_loc)
         
-        # look through the new requirements ---
-        print("-- upgrade packages")
-        for manager,packages in req_new.items():
-            # check if the new package manager is already installed
-            if not manager in req_loc:
-                # install package manager
-                iok = install_pkg_manager(manager)
-                req_loc[manager] = {}
-            # install package's
-            for pkg,iparams in packages.items():
-                # check if the new package is already installed
-                if not manager in req_loc or not pkg in req_loc[manager]:
-                    write_ok = install_package(manager, iparams, pkg)
-                    # save the new required package
-                    if write_ok:
-                        req_loc[manager][pkg] = iparams
-
-        # look through the new requirements for the databases ---
-        print("-- upgrade databases")
-        for manager,packages in db_new.items():
-            # check if the new database version is already downloaded
-            if not manager in db_loc or packages:
-                # download databases
-                iok = download_databases(manager)
-            # save the database in the local requirements 
-            req_loc[manager] = {}
-        
-        # look through the new requirements for the databases ---
-        print("-- upgrade samples")
-        for manager,packages in sp_new.items():
-            # check if the new sample version is already downloaded
-            if not manager in sp_loc or packages:
-                # download databases
-                iok = download_samples(manager)
-           # save the sample in the local requirements 
-            req_loc[manager] = {}
-
-        # write string with the new requiremens into local file ---
-        if req_loc:
-            cont = create_str_requirements(req_loc)
-            if cont != '':
-                with open(requirement_loc_file, "w") as file:
-                    file.write(cont)
+    # write string with the new requiremens into local file ---
+    if req_loc:
+        cont = create_str_requirements(req_loc)
+        if cont != '':
+            with open(requirement_loc_file, "w") as file:
+                file.write(cont)
 
      
     
