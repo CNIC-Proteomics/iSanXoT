@@ -56,7 +56,7 @@ DATE: 2021_03
 
 
 ___
-## 0.2.7
+## 0.2.8
 ```
 DATE: 2021_03
 ```
@@ -66,14 +66,6 @@ DATE: 2021_03
 + TODO the quantification!!! Now, iSanXoT accepts inputs from the search engines: PD, Comet, MSFragger, and MaxQuant.
 
 ### Changes in the Graphical User Interface
-
-+ We have changed the species structure of data in the workflow config file.
-
-+ We have changed the structure of the workflow config file:
-
-+ We have changed the appareance of worked-out examples.
-
-+ TODO!! Change to Feb 2021 DATABASE because the protein2category files is not working.
 
 + TODO!! Bug fixed: refreshing the log tables.
 
@@ -85,9 +77,40 @@ DATE: 2021_03
 
 + TODO!! NEW QUANTIFICATION COMMAND!!
 
-+ Bug fixed: the report program as for "gene2description" file that is not exist.
-
 + TODO!! Comprueba que la salida de los "worked-out examples" da un REPORT correcto sobre todo por los reports "2description". Que no haya duplicaciones!! Comprueba Category2Description!!
+
+___
+## 0.2.7
+```
+DATE: 2021_03
+```
+
+### Highlights
+
++ TODO!!Improvements in the REPORT program.
+
++ The installation module has been improved.
+
++ The image of Sanson diagram is reported.
+
+### Changes in the Graphical User Interface
+
++ The appareance of worked-out examples has changed.
+
++ The structure of workflow config file has changed.
+
++ The Mar. 2021 database has been added.
+
++ TODO!! Bug fixed: refreshing the log tables.
+
+### Changes in the Code Workflow
+
++ The installation module has been improved. Now, it install another programas like "java", "dot", etc. The installation of forced modules has been disabled.
+
++ The image of Sanson diagram is reported.
+
++ Bug fixed: In some cases, the report program needed the files "gene2description" and "category2description". Now, these files are created in the Database table.
+
 
 ___
 ## 0.2.6

@@ -1364,7 +1364,19 @@
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanson.py" '
 
-###################
+  # Rule: execute dot program to get the image of sanson diagram ---
+  - name: dotToImg
+    infiles:
+      DEL: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___graphviz.dot
+    outfiles:
+      -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___graphviz.png
+    parameters:
+      format:
+        -T: png
+    more_params: ''
+    cline: '"__ISANXOT_DOT_EXEC__" '
+
+    ###################
 
 
 

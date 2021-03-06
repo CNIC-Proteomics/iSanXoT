@@ -25,10 +25,11 @@ import shlex
 ####################
 # Global variables #
 ####################
-NCPUS            = int(2/3* mp.cpu_count())
-ISANXOT_LIB_HOME = os.environ['ISANXOT_LIB_HOME']
-ISANXOT_SRC_HOME = f"{os.path.dirname(__file__)}/.."
+ISANXOT_LIB_HOME       = os.environ['ISANXOT_LIB_HOME']
+ISANXOT_SRC_HOME       = f"{os.path.dirname(__file__)}/.."
+ISANXOT_SNAKEMAKE_EXEC = f"{ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe"
 
+NCPUS                  = int(2/3* mp.cpu_count())
 
 ###################
 # Local functions #
@@ -220,7 +221,7 @@ def main(args):
     logging.debug("validate the input files of workflow")
     try:
         # Run the command
-        proc = subprocess.run([f"{ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe",
+        proc = subprocess.run([f"{ISANXOT_SNAKEMAKE_EXEC}",
                                   '--configfile', f"{args.configfile}",
                                   '--snakefile',  f"{args.snakefile}",
                                   '--directory',  f"{args.directory}",
