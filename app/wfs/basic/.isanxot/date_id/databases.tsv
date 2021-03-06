@@ -11,6 +11,7 @@ force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_inf
 	__MAIN_INPUTS_CATDB__	Gene	[1]		gene2geneall				
 	__MAIN_INPUTS_CATDB__	Gene	Description		gene2description	__MAIN_INPUTS_CATDB__			
 	__MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall			"cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"	
+	__MAIN_INPUTS_CATDB__	cat_*	Description		category2description			"cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"	
 	__MAIN_INPUTS_RELDIR__/peptide2protein.tsv	SequenceMod	Gene		peptide2gene	__MAIN_INPUTS_RELDIR__/protein2gene.tsv			"{""rels_table"": ""-b""}"
 									
 #RELS_TABLE_CATFILE									
