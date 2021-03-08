@@ -9,6 +9,8 @@ let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`
 let fs = require('fs');
 let path = require('path');
 let logObject = undefined;
+const { dialog } = require('electron').remote
+
 
 window.onload = function(e) {
     // stop loading workflow
@@ -57,14 +59,7 @@ $(window).on('beforeunload',function() {
 
 
 /* LOGGER SECTION */
-const STATUS = {
-    1: 'starting',
-    2: 'running',
-    3: 'finished',
-    4: 'error',
-    5: 'stopped',
-    6: 'succesdfully'
-}
+
 // make Promise version of fs.readFile()
 fs.readFileAsync = function(filename, enc) {
     return new Promise(function(resolve, reject) {
@@ -134,8 +129,10 @@ class logger {
         let d2 = `${d.getFullYear()}-${(d.getMonth()+1)}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
         return d2;
     }
-    // parse text file
+    // parse the log file
     updateLogDataFromLogFile(data, cont) {
+        // don't update date if project has been stopped
+        if ( data.status == 'stopped' ) return 
         // get the log content
         let lines = cont.match(/(.*)/mg);
         // remove empty values
@@ -144,8 +141,8 @@ class logger {
         });
         // get log variables for the root process
         if ( lines.length >= 1 ) { data.status = 'preparing' }
-        data.selected = null;
         data.perc   = '0%';
+        data.message    = '';
         data.stime  = '-';
         data.etime  = '-';
         data.path  = path.dirname(data.logfile);
@@ -155,10 +152,12 @@ class logger {
         for (var i = 0; i < lines.length; i++) {
             let line = lines[i];
             if ( line != "" ) {
-
+                // parse log file for the project table ----
                 // parse the error messages
                 if (line.startsWith('ERROR')) {
-                    exceptor.showMessageBox('error',`${lines.slice(i+1).join('\n')}`, `${line}`, true);
+                    data.status = 'error';
+                    data.perc = '-';
+                    data.message = `${lines.slice(i+1).join('\n')}`;
                 }
                 // save the intermediante steps
                 else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
@@ -186,8 +185,8 @@ class logger {
                     data.perc   = '100%';
                     data.etime = this._parseDate(time)
                 }
-
-                // parse for the workflow log table (commands)
+                // parse log file for the workflow table (commands) ----
+                // parse the start log
                 else if (line.startsWith('MYSNAKE_LOG_START_RULE_EXEC')) {
                     let l = line.split('\t');
                     let time = l[1];
@@ -218,8 +217,11 @@ class logger {
                     if ( perc == '100%' ) {
                         data.cmds[cmd_index].status = 'finished';
                         data.cmds[cmd_index].etime = time;
+                        data.cmds[cmd_index].perc = perc;
                     }
-                    data.cmds[cmd_index].perc = perc;
+                    else {
+                        data.cmds[cmd_index].perc = perc;
+                    }
                     if ( status == 'error' ) {
                         data.cmds[cmd_index].status = status;
                     }
@@ -240,11 +242,19 @@ class logger {
                     // update data only when all processes of command have already finished (100%)
                     let perc = eval(rule_perc).toFixed(2)*100+'%';
                     if ( perc == '100%' ) {
-                        // update data
+                        // update cached data
                         if ( status == 'cached' ) {
                             data.cmds[cmd_index].status = status;
                             data.cmds[cmd_index].stime = time;
                             data.cmds[cmd_index].etime = time;
+                            data.cmds[cmd_index].perc = perc;
+                        }
+                        else if ( status == 'error' ) {
+                            data.cmds[cmd_index].status = status;
+                            data.cmds[cmd_index].perc = '-';
+                        }
+                        else {
+                            data.cmds[cmd_index].status = 'finished';
                             data.cmds[cmd_index].perc = perc;
                         }
                         // calculate the percentage for the statistic of project log table
@@ -257,24 +267,7 @@ class logger {
             }
         }
     }
-    // render log tables
-    renderLogTables(data) {
-        // update log tables (if apply)
-        let wktable = $("#workflowlogs .logtable").data('handsontable');
-        if ( wktable !== undefined ) {
-            if ( data !== undefined && 'cmds' in data ) {
-                $(`#workflowlogs .logtable`).handsontable({ data: data.cmds });
-                $(`#workflowlogs .logtable`).handsontable('render');    
-            }
-        }
-        let prjtable = $("#projectlogs .logtable").data('handsontable');
-        if ( prjtable !== undefined ) {
-            if ( data !== undefined ) {
-                $(`#projectlogs .logtable`).handsontable({ data: data });
-                $(`#projectlogs .logtable`).handsontable('render');
-            }
-        }
-    }
+
     // create project logs table
     createProjectLogsTable() {
         // reassign 'this' class for the following functions
@@ -282,27 +275,24 @@ class logger {
         // read all the files using Promise.all to time when all async readFiles has completed.
         Promise.all(this.data.map(a => this._getFile(a.logfile))).then(function(conts) {
             let pids = that.data.map(a => a.pid);
+            // read athe log file and update the log data
             for (var i = 0; i < pids.length; i++) {
                 that.updateLogDataFromLogFile(that.data[i], conts[i]);
             }
             // create log table
             $(`#projectlogs .logtable`).handsontable({
                 data: that.data,
-                colHeaders: ['Selected', 'PID', 'Status', '%', 'Start time', 'End time', 'Path', 'Cmds'],
+                colHeaders: ['PID', 'Status', '%', 'Start time', 'End time', 'Path', 'Message', 'Cmds'],
                 currentRowClassName: 'currentRow',
                 selectionMode: 'single',
                 rowHeaders: false,
                 outsideClickDeselects: false,
                 afterSelection: function(r,c) {
+                    // create the commands logs for the selected project
                     let data = this.getDataAtRow(r);
-                    let cmds = data[7];
-                    that.createWorkflowLogsTable(cmds);
+                    that.createWorkflowLogsTable(data);
                 },
                 columns: [{            
-                    data: 'selected',
-                    type: 'checkbox',
-                    className: "htCenter",
-                },{
                     data: 'pid',
                     readOnly: true,
                     className: "htCenter",
@@ -326,11 +316,14 @@ class logger {
                     data: 'path',
                     readOnly: true,
                 },{
+                    data: 'message',
+                    readOnly: true,
+                },{
                     data: 'cmds',
                     readOnly: true,
                 }],
                 hiddenColumns: {
-                    columns: [7],
+                    columns: [6,7],
                     indicators: false
                 },
                 width: '100%',
@@ -339,50 +332,87 @@ class logger {
             });
         });
     }
+
     // create workflow logs table
-    createWorkflowLogsTable(data) {
-        // create log table
-        $(`#workflowlogs .logtable`).handsontable({
-            data: data,
-            colHeaders: ['Command', 'Exec', 'Status', '%', 'Start time', 'End time'],
-            disableVisualSelection: true,
-            columns: [{
-                data: 'command',
-                readOnly: true,
-                className: "htCenter",
-            },{
-                data: 'execution_label',
-                readOnly: true,
-                className: "htCenter",
-            },{
-                data: 'status',
-                readOnly: true,
-                className: "htCenter",
-            },{
-                data: 'perc',
-                readOnly: true,
-                className: "htCenter",
-            },{
-                data: 'stime',
-                readOnly: true,
-                className: "htCenter",
-            },{
-                data: 'etime',
-                readOnly: true,
-                className: "htCenter",
-            }],
-            hiddenColumns: {
-                columns: [1],
-                indicators: false
-            },
-            width: '100%',
-            height: 'auto',
-            licenseKey: 'non-commercial-and-evaluation'
-        });
-        importer.doneResizing();
-        $(`#workflowlogs .logtable`).handsontable('render');
+    createWorkflowLogsTable(logData) {
+        // get values
+        let status = logData[1] || logData['status'];
+        let message = logData[6] || logData['message'];
+        let cmds = logData[7] || logData['cmds'];
+        // init panels
+        $(`#workflowlogs .message`).html(``);
+        $(`#workflowlogs .table`).html(`<div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>`);
+        // check if project has an error
+        if ( status == 'error' ) {
+            // remove old message/table
+            $(`#workflowlogs .logtable`).html(``);
+            // add the new log message
+            message = message.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+            $(`#workflowlogs .message`).html(`<div class="alert alert-danger" role="alert"><strong>${status.toUpperCase()}</strong><br/>${message}</div>`);
+        // otherwise, it prints the logs of commands
+        } else {
+            $(`#workflowlogs .logtable`).handsontable({
+                data: cmds,
+                colHeaders: ['Command', 'Exec', 'Status', '%', 'Start time', 'End time'],
+                disableVisualSelection: true,
+                columns: [{
+                    data: 'command',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'execution_label',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'status',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'perc',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'stime',
+                    readOnly: true,
+                    className: "htCenter",
+                },{
+                    data: 'etime',
+                    readOnly: true,
+                    className: "htCenter",
+                }],
+                hiddenColumns: {
+                    columns: [1],
+                    indicators: false
+                },
+                width: '100%',
+                height: 'auto',
+                licenseKey: 'non-commercial-and-evaluation'
+            });
+            importer.doneResizing();
+            $(`#projectlogs .logtable`).handsontable('render');
+            // $(`#workflowlogs .logtable`).handsontable('render');
+        }
     }
    
+    // render log tables
+    renderLogTables(data) {
+        // update log tables (if apply)
+        let wktable = $("#workflowlogs .logtable").data('handsontable');
+        if ( wktable !== undefined ) {
+            if ( data !== undefined && 'cmds' in data ) {
+                $(`#workflowlogs .logtable`).handsontable({ data: data.cmds });
+                $(`#workflowlogs .logtable`).handsontable('render');    
+            }
+        }
+        let prjtable = $("#projectlogs .logtable").data('handsontable');
+        if ( prjtable !== undefined ) {
+            if ( data !== undefined ) {
+                $(`#projectlogs .logtable`).handsontable({ data: data });
+                $(`#projectlogs .logtable`).handsontable('render');
+            }
+        }
+    }
+
 };
 
 function sendChildProcesses() {
@@ -417,6 +447,23 @@ function sendChildProcesses() {
     }
 };
 
+function getSelectedRow(logtable) {
+    let selRow = undefined, selIdx = undefined;
+    // take into account the table has the restrinction only one row/column (selectionMode: 'single')
+    let selRange = logtable.getSelected();
+    if ( selRange !== undefined ) {
+        selRange = selRange[0];
+        let r = selRange[0], c = selRange[1], r2 = selRange[2], c2 = selRange[3];
+        // get the data log of selected row
+        if (r == r2) {
+            // get data from selected selected row (PID project)
+            selRow = logtable.getDataAtRow(r);
+            selIdx = r;
+        }
+    }
+    return [selRow,selIdx];
+};
+
 function refreshLogger() {
     // send the new Child Process to IPC Render and save into Session calling callback function
     sendChildProcesses();
@@ -425,43 +472,38 @@ function refreshLogger() {
     // get the data log of selected row
     let logtable = $("#projectlogs .logtable").data('handsontable');
     if (logtable !== undefined) {
-        // take into account the table has the restrinction only one row/column (selectionMode: 'single')
-        let selRange = logtable.getSelected();
-        if ( selRange !== undefined ) {
-            selRange = selRange[0];
-            let r = selRange[0], c = selRange[1], r2 = selRange[2], c2 = selRange[3];
-            // get the data log of selected row
-            if (r == r2) {
-                // get data from selected selected row (PID project)
-                let selRow = logtable.getDataAtRow(r);
-                let pid = selRow[1];
-                let log_index = importer.getIndexParamsWithAttr(logObject.data, 'pid', pid);
-                let logData = logObject.data[log_index];
-                let logfile = logData.logfile;
-                // get the log content
-                let s = fs.readFileSync(logfile);
-                let cont = s.toString();
-                // update the log tables (project and workflow)
-                logObject.updateLogDataFromLogFile(logData, cont);
-                // render log tables
-                logObject.renderLogTables()
-            }
+        // get the selected Row
+        let [selRow,selIdx] = getSelectedRow(logtable);
+        if ( selRow !== undefined ) {
+            // get data from selected selected row (PID project)
+            let pid = selRow[0];
+            let log_index = importer.getIndexParamsWithAttr(logObject.data, 'pid', pid);
+            let logData = logObject.data[log_index];
+            let logfile = logData.logfile;
+            // get the log content
+            let s = fs.readFileSync(logfile);
+            let cont = s.toString();
+            // update the log tables (project and workflow)
+            logObject.updateLogDataFromLogFile(logData, cont);
+            logObject.createWorkflowLogsTable(logData);
+            // render log tables
+            logObject.renderLogTables()
         }
+        // if there is not selected row of project table, the project log is refresh only
         else {
             // update project log table
-
             // extract the session info
             let pids = JSON.parse( window.sessionStorage.getItem("pids") );
             // refresh the ids of child process from the pids
-            let ldata = [];
             if ( pids !== null ) {
                 for (var i = 0; i < pids.length; i++) {
+                    let logData = logObject.data[i];
                     let logfile = pids[i][1];
                     // get the log content
                     let s = fs.readFileSync(logfile);
                     let cont = s.toString();
                     // parse log file and update the data
-                    logObject.updateLogDataFromLogFile(logObject.data[i], cont);
+                    logObject.updateLogDataFromLogFile(logData, cont);
                 }
                 // render log tables
                 logObject.renderLogTables(logObject.data)
@@ -479,45 +521,62 @@ function refreshLogger() {
 
 // Kill processes
 if ( document.querySelector('#processor #stop') !== null ) {
-
+    // kill process and subprocess of selected project
     document.querySelector('#processor #stop').addEventListener('click', function() {
-
+        // get the data log of selected row
         let logtable = $("#projectlogs .logtable").data('handsontable');
-        logtable.getData().forEach(function (logdata, l) {
-            if ( logdata[0] ) { // check the first cell
-                let pid = logdata[1];
-                // get the list of all pids from the given pid (session variable)
-                let session_pids = JSON.parse( window.sessionStorage.getItem("pids") );
-                let pids = [];
-                for (let i = 0; i < session_pids.length; i++) {
-                    if ( pid == session_pids[i][2]) {
-                        pids = session_pids[i].slice(2);
-                    }
-                }                
-                // we start from the end (reverse)
-                // we get the child processes from the list of pids (session variable)
-                // kill the all processes
-                pids.reverse().forEach(function (pid) {
-                    console.log(`Look for child processes from sms ${pid}`);
-                    psTree(pid, function (err, children, callback) {  // check if it works always
-                        children.forEach(function (p) {
-                            try {
-                                console.log(`${p.PID} sub-process from ${pid} has been killed!`);
-                                process.kill(p.PID);
-                            } catch (e) {
-                                console.log(`error killing ${p.PID}: ${e}`);
-                            }
-                        });
-                        // kill the main process
-                        try {
-                            console.log(`${pid} has been killed!`);
-                            process.kill(pid);
-                        } catch (e) {
-                            console.log(`error killing ${pid}: ${e}`);
+        if (logtable !== undefined) {
+            // get the selected Row
+            let [selRow,selIdx] = getSelectedRow(logtable);
+            if ( selRow !== undefined ) {
+                let pid = selRow[0];
+                // ask to user to kill the processes
+                let options = {
+                    type: 'question',
+                    buttons: ['Yes', 'No'],
+                    message: `Do you want to kill the process and subprocess of ${pid} project?`,
+                  };
+                let response = dialog.showMessageBoxSync(null, options);
+                if ( response === 0 ) {
+                    // we get the child processes from the list of pids (session variable)
+                    // kill the all processes
+                    // we start from the end (reverse)
+                    let session_pids = JSON.parse( window.sessionStorage.getItem("pids") );
+                    let pids = [];
+                    for (let i = 0; i < session_pids.length; i++) {
+                        if ( pid == session_pids[i][2]) {
+                            pids = session_pids[i].slice(2);
                         }
-                    });    
-                });  
+                    }                
+                    pids.reverse().forEach(function (pid) {
+                        console.log(`Look for child processes from sms ${pid}`);
+                        psTree(pid, function (err, children, callback) {  // check if it works always
+                            children.forEach(function (p) { // kill the subprocesses
+                                try {
+                                    console.log(`${p.PID} sub-process from ${pid} has been killed!`);
+                                    process.kill(p.PID);
+                                } catch (e) {
+                                    console.log(`error killing ${p.PID}: ${e}`);
+                                }
+                            });
+                            try { // kill the main process
+                                console.log(`${pid} has been killed!`);
+                                process.kill(pid);
+                            } catch (e) {
+                                console.log(`error killing ${pid}: ${e}`);
+                            }
+                        });    
+                    });
+                    // indicated in the project log table that the project has been stopped
+                    logObject.data[selIdx].status = "stopped";
+                    // render log tables
+                    logObject.renderLogTables(logObject.data);
+                }
             }
-        });
+            else {
+                alert("Select one row of 'Project logs table'");
+            }    
+        }
     });
+
 }
