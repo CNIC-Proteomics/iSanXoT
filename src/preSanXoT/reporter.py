@@ -49,7 +49,7 @@ COL_VARS = {
     'vi':   'Vinf'
 }
 
-ROOT_FOLDER = '/names/'
+# ROOT_FOLDER = '/names/'
 
 
 
@@ -58,20 +58,24 @@ ROOT_FOLDER = '/names/'
 ###################
 def read_infiles(file):
     # read file
-    # df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA', 'excluded'], low_memory=False)
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
-    # get the name of 'experiment' until the root folder
-    # By default, we get the last folder name of path
+    # get the name of 'experiment' using the folder name
     fpath = os.path.dirname(file)
     name = os.path.basename(fpath)
-    # split until the root folder
-    if ROOT_FOLDER in fpath:
-        s = fpath.split(ROOT_FOLDER)
-        if len(s) > 1:
-            s = s[1]
-            name = re.sub(r'[/|\\]+', '_', s) # replace
     df['name'] = name
+
+    # # get the name of 'experiment' until the root folder
+    # # By default, we get the last folder name of path
+    # fpath = os.path.dirname(file)
+    # name = os.path.basename(fpath)
+    # # split until the root folder
+    # if ROOT_FOLDER in fpath:
+    #     s = fpath.split(ROOT_FOLDER)
+    #     if len(s) > 1:
+    #         s = s[1]
+    #         name = re.sub(r'[/|\\]+', '_', s) # replace
+    # df['name'] = name
     return df
 
 def create_report(ifiles, prefix, col_values):
@@ -105,11 +109,6 @@ def create_report(ifiles, prefix, col_values):
 
     logging.info(f"{prefix}: remove columns excepts: ["+','.join(col_values)+"]")
     df.drop(df.columns.difference(col_values), 1, inplace=True)
-    
-    # logging.info("mark the variables with the outliers")
-    # for c in col_vars:
-    #     df[c] = np.where((df['tags'].notna() & df['tags'].str.contains('out')), 'out_'+df[c], df[c])
-    # df.drop(columns=['tags'], axis=1, inplace=True)
     
     logging.info(f"{prefix}: add prefix to all columns except some")  
     keep_same = ['idinf', 'idsup', 'name']
@@ -154,7 +153,6 @@ def merge_intermediate(file, df):
 
     '''
     logging.info("read intermediate file")
-    # df2 = pd.read_csv(file, sep="\t", dtype=str, header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
     df2 = pd.read_csv(file, sep="\t", header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
     
     # rename multi-level header allowing the merge among dataframes
@@ -175,9 +173,10 @@ def merge_intermediate(file, df):
     logging.info("get the relationships intersection for the merging")
     cols_12_idx = list(set(cols_idx) & set(cols_2_idx))
     if cols_12_idx:
-        # merge with given intermediate report
+        # merge with given intermediate report.
+        # outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
         logging.info(f"merge with given intermediate report {cols_12_idx}")
-        df3 = pd.merge(df2,df, on=cols_12_idx)
+        df3 = pd.merge(df2,df, on=cols_12_idx, how='outer')
         
         # set row index with the columns (peptides,protein, or category) - level 0-
         logging.info("set row index with the columns (peptides,protein, or category) - level 0-")
@@ -185,21 +184,6 @@ def merge_intermediate(file, df):
         cols_idx_3 = list( set(list(LEVELS_NAMES.values())) & set(cols_3_l0) )
         df3.set_index(cols_idx_3, inplace=True)
         
-        # # for each column from the first dataframe (input file)
-        # # we add NaN values in the cell where there is not relationship
-        # # we take the prefix where the current level is selected.
-        # #   protein  -> n_yy2q   
-        # #   category -> n_yy2c
-        # prefix_templ = list(set([c for c in cols_3_l0 if c.startswith('n_') and c.endswith(f"2{prefix_i}")]))
-        # if prefix_templ:
-        #     # get the columns from the first df. without the relationship columns (peptide/protein/category)
-        #     cols = list(df.columns.get_level_values(0))
-        #     cols_diff = list( set(cols) - set(list(LEVELS_NAMES.values())) )
-        #     for c in cols_diff:
-        #         df3[c] = np.where(pd.isna(df3[prefix_templ]), np.NaN, df3[c])
-        
-        # assign to final variable
-        # df = df3.reset_index()
         return df3.reset_index()
         
 def filter_dataframe(df, flt):
@@ -281,15 +265,11 @@ def add_relations(idf, file):
     # read relationship file
     # column name to lowercase
     # add level to the columns
-    # df = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA', 'excluded'], low_memory=False)
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
     df.columns = map(str.lower, df.columns)
     df.columns = pd.MultiIndex.from_product([df.columns, ['']])
     # check how many columns are available in the givn df
-    # col_i = [c[0] for c in idf.columns]
-    # col_r = df.columns.to_list()
-    # ints = list(set(col_i) & set(col_r))
     col_i = [c for c in idf.columns]
     col_r = [c for c in df.columns]
     ints = [i for i in col_i for r in col_r if i == r]
@@ -307,6 +287,8 @@ def main(args):
     '''
     Main function
     '''
+    
+    # HANDLE with the parameters ----
     
     # Important note! We are not using the given input files.
     # We are going to take the folders and then, obtain the files from the calculated prefixes
@@ -334,50 +316,57 @@ def main(args):
     param_vars = [COL_VARS[v.lower()] for v in re.split(r'\s*,\s*', args.vars.strip()) if v.lower() in COL_VARS]
     param_values = COL_IDS + param_ids_vars + param_vars
 
+    logging.info("extract the list of given levels")
+    # get the levels to show. By default are all of them
+    if args.show_cols:
+        param_show_cols = re.split(r'\s*,\s*', args.show_cols.strip())
+    else:
+        param_show_cols = list(LEVELS_NAMES.values()) + list(COL_VARS.values())
+
+
+    # START with the work ----
 
     logging.info("create report from list of input files")
     df = create_report(listfiles, prefix, param_values)
     
 
-    # if apply and there is a relationship, we add an intermediate report
-    # check if given additional file exits
-    if args.rep_file and os.path.isfile( os.path.join(os.path.dirname(args.outfile), args.rep_file) ):
-        rep_file = os.path.join(os.path.dirname(args.outfile), args.rep_file)
-        logging.info(f"add an intermediate report {rep_file}")
-        df = merge_intermediate(rep_file, df)
-
-
-    # if apply and there is a external relationship, we add an intermediate report
-    # check if given additional file exits
-    if args.ext_rep_file and os.path.isfile(args.ext_rep_file):
-        rep_file = args.ext_rep_file
-        logging.info(f"add an external intermediate report {rep_file}")
-        df = merge_intermediate(rep_file, df)            
-
- 
     # remove columns with the same value. In special for the columns with 1's
     logging.info("discard the columns with 1's")
     df = df[[col for col in df.columns if not df[col].nunique()==1]]
-    
-    
-    if args.filter:
-        logging.info(f"filter the report {args.filter}")
-        df = filter_dataframe(df, args.filter)
 
 
+    # if apply and there is a relationship, we add an intermediate report
+    # check if given additional file exits
+    if args.rep_file:
+        if os.path.isfile(args.rep_file):
+            rep_file = args.rep_file
+        elif os.path.isfile( os.path.join(os.path.dirname(args.outfile), args.rep_file) ):
+            rep_file = os.path.join(os.path.dirname(args.outfile), args.rep_file)
+        if rep_file:
+            logging.info(f"add an intermediate report {rep_file}")
+            df = merge_intermediate(rep_file, df)
+
+ 
     if args.rel_file:
         logging.info(f"add the relationship values {args.rel_file}")
         df = add_relations(df, args.rel_file)
 
 
-    logging.info("reorder columns")
+    if args.filter:
+        logging.info(f"filter the report {args.filter}")
+        df = filter_dataframe(df, args.filter)
+
+
+    logging.info(f"show the given cols {param_show_cols}, reorder and remove duplicates")
     # sort list of tuples by specific ordering
     cols = list(df.columns)
-    cols_order = list(LEVELS_NAMES.values()) + list(COL_VARS.values())
+    cols_order = param_show_cols
     cols = [i for j in cols_order for i in filter(lambda k: k[0].startswith(j), cols)]
     # reindex columns with the new ordered list of tuples
     df = df.reindex(columns=cols)
-    
+    # remove duplicates
+    df.drop_duplicates(inplace=True)
+
     
     logging.info("print output file")
     df.to_csv(args.outfile, sep="\t", index=False)
@@ -398,10 +387,10 @@ if __name__ == "__main__":
     parser.add_argument('-o',   '--outfile',       required=True, help='Output file with the reports')
     parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
     parser.add_argument('-v',   '--vars',          required=True, default='Z,FDR,N', help='List of reported variables separated by comma')
-    parser.add_argument('-ir',  '--rep_file',      help='Add intermediate report file')
-    parser.add_argument('-xr',  '--ext_rep_file',  help='Add intermediate report file with absolute path')
+    parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
+    parser.add_argument('-s',   '--show_cols',     help='Which columns do you want to show in the output')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
-    parser.add_argument('-r',   '--rel_file',      help='Relationship file')
+    parser.add_argument('-rl',  '--rel_file',      help='Relationship file')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

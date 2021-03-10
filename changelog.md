@@ -1,22 +1,5 @@
 ___
-## 0.3.0
-```
-DATE: 2021_XX
-```
-
-### Highlights
-
-+ Installation of "java" computer software for the WF of identification.
-
-### Changes in the Graphical User Interface
-
-
-### Changes in the Code Workflow
-
-+ Installation of "java" computer software for the WF of identification.
-
-___
-## 0.2.7_LABEL_FREE
+## 0.2.9_LABEL_FREE
 ```
 DATE: 2021_03
 ```
@@ -56,7 +39,7 @@ DATE: 2021_03
 
 
 ___
-## 0.2.8
+## 0.2.8_QUANTIFICATION
 ```
 DATE: 2021_03
 ```
@@ -77,7 +60,6 @@ DATE: 2021_03
 
 + TODO!! NEW QUANTIFICATION COMMAND!!
 
-+ TODO!! Comprueba que la salida de los "worked-out examples" da un REPORT correcto sobre todo por los reports "2description". Que no haya duplicaciones!! Comprueba Category2Description!!
 
 ___
 ## 0.2.7
@@ -87,7 +69,7 @@ DATE: 2021_03
 
 ### Highlights
 
-+ TODO!!Improvements in the REPORT program.
++ Improvements in the REPORT command.
 
 + The installation module has been improved.
 
@@ -101,9 +83,16 @@ DATE: 2021_03
 
 + The Mar. 2021 database has been added.
 
-+ TODO!! Bug fixed: refreshing the log tables.
++ Improvements in the log tables of processes.
+
++ The REPORT command has new colummns.
 
 ### Changes in the Code Workflow
+
++ Improvements in the REPORT program:
+	+ New way to propvide the "description" info for the given level.
+	+ There is a new parameter 'show_leves' that allows us to say which levels we want in the report file.
+	+ Merge the given intermediate report using the union of keys from both frames.
 
 + The installation module has been improved. Now, it install another programas like "java", "dot", etc. The installation of forced modules has been disabled.
 

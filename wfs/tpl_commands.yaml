@@ -1391,9 +1391,10 @@
   - name: report
     infiles:
       -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
-      --rel_file: __MAIN_INPUTS_RELDIR__/__WF_LOW_LEVEL__2description.tsv
-      # optional input file
-      --rep_file: '' 
+      # optional input files.
+      # We have to put it here to check if file already exists
+      --rep_file: ''
+      --rel_file: ''
     outfiles:
       -o: __MAIN_INPUTS_RSTDIR__/__WF_OUTPUT__.tsv
     parameters:
@@ -1401,10 +1402,10 @@
         -l: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       vars:
         -v: __WF_REPORTED_VARS__
+      show_cols:
+        -s: ''
       filter:
         -f: ''
-      ext_rep_file:
-        -xr: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/reporter.py" __WF_VERBOSE__ '
 ###################

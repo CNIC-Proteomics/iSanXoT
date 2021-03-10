@@ -262,9 +262,10 @@
       { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
       { "type": "required", "id": "reported_vars", "name": "Reported vars" },
       { "type": "required", "id": "output", "name": "Output" },
-      { "type": "required", "id": "rep_file", "name": "Join with" },
-      { "type": "optional", "id": "filter", "name": "Filter" },
-      { "type": "optional", "id": "ext_rep_file", "name": "Join with ext. file" }
+      { "type": "optional", "id": "rep_file", "name": "Merge with report file" },
+      { "type": "optional", "id": "rel_file", "name": "Merge with relationship file" },
+      { "type": "optional", "id": "show_cols", "name": "Which cols you want to show" },
+      { "type": "optional", "id": "filter", "name": "Filter" }
     ]
   }],
   "works": [{
