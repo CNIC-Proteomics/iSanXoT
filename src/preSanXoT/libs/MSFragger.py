@@ -35,6 +35,8 @@ def processing_infiles(file, Expt):
     }, inplace=True)
     # add the Spectrum File column from the input file name
     df["Spectrum_File"] = file.split(".")[0]
+    # create Scan_Id
+    df["Scan_Id"] = df["Spectrum_File"].map(str) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
     # TODO!! we have to think in the Protein Accessions columns between the different search engines
     # df["Protein Accessions"]=parser_protein_acessions(df["Protein Accessions"])
     return df

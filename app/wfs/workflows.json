@@ -43,6 +43,17 @@
       { "type": "required", "id": "experiment", "name": "Experiment" }
     ]
   },{
+    "id": "CREATE_ID-JOINER",
+    "label": "Input Files",
+    "title": "Provide Input Files",
+    "visible": true,
+    "panel": "panels/main_inputs_ptm.html",
+    "help_modal": "hmodals/main_inputs_ptm.html",
+    "params": [
+      { "type": "required", "id": "infile", "name": "Infile" },
+      { "type": "required", "id": "experiment", "name": "Experiment" }
+    ]
+  },{
     "id": "FDR-MASTERQ",
     "label": "FDR",
     "title": "Calculate FDR and masterQ",
@@ -325,6 +336,34 @@
     },{
       "id": "fdr",
       "cmds": ["FDR-MASTERQ"]
+    },{
+      "id": "databases",
+      "cmds": ["RELS_TABLE_CATDB", "RELS_TABLE_CATFILE"]
+    },{
+      "id": "stats_quantification",
+      "cmds": ["RATIOS_WSPP-WSPP_SBT", "RATIOS_WSPP-WSPPG_SBT"]
+    },{
+      "id": "integration",
+      "cmds": ["NORCOMBINE", "RATIOS_INT", "INTEGRATE", "SBT"]
+    },{
+      "id": "system",
+      "cmds": ["SANSON"]
+    },{
+      "id": "reports",
+      "cmds": ["REPORT"]
+    }]
+  },{
+    "id": "ptm",
+    "label": "Basic PTM Workflow",
+    "sdesc": "<p><i>Basic PTM Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
+    "description": "Long description for Basic Workflow. You can include HTML",
+    "samples": [{
+      "id": "ptm/wspp_sbt",
+      "name": "WSPP-SBT sample"
+    }],
+    "works": [{
+      "id": "main_inputs",
+      "cmds": ["CREATE_ID-JOINER"]
     },{
       "id": "databases",
       "cmds": ["RELS_TABLE_CATDB", "RELS_TABLE_CATFILE"]

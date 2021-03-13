@@ -242,6 +242,7 @@ function createWrkflowFromID(wfs, wf_id) {
 function getIndexParamsWithAttr(data, key, attr) {
     function findWithAttr(array, ke, at) {
         let rst = [];
+        if (array === undefined) return rst;
         for(var i = 0; i < array.length; i += 1) {
             if(array[i][ke] === at) {
                 rst.push(i);
@@ -260,6 +261,7 @@ function getIndexParamsWithAttr(data, key, attr) {
 function getIndexParamsWithKey(data, key) {
     function findWithAttr(array, ke) {
         let [rst,cnt] = [ [],[] ];
+        if (array === undefined) return [rst,cnt];
         for(var i = 0; i < array.length; i += 1) {
             if(ke in array[i]) {
                 rst.push(i);
@@ -282,9 +284,9 @@ function extractWorkflowAttributes() {
     let ptype = url_params.get('ptype');
     let pdir = url_params.get('pdir');
     let cdir = undefined;
+    let indir = undefined;
     let wf_id = undefined;
     let cfg = undefined;
-    let pdir_def = `${process.env.ISANXOT_LIB_HOME}`;
     
 
     // Check Project directory and Config directory of project
@@ -296,8 +298,11 @@ function extractWorkflowAttributes() {
         cdir = `${pdir}/.isanxot`; // add the hidden folder where config files are saving
     }
     else if ( ptype == "samples" ) { // load local samples
-        pdir = `${pdir_def}/${ptype}/${pdir}`; // add path
+        pdir = `${process.env.ISANXOT_LIB_HOME}/${ptype}/${pdir}`; // add absolute path
         cdir = `${pdir}/.isanxot`; // add the hidden folder where config files are saving
+        // remove the current folder (type of sample)
+        let p = pdir.split(/[\/|\\]/);
+        indir = p.slice(0, p.length-1).join("/");
     }
 
     // Mandatory the project directory if 
@@ -334,7 +339,7 @@ function extractWorkflowAttributes() {
     // Get the list of databases
     let catdbs = wfs['catdbs'];
 
-    return [pdir_def, ptype, pdir, wf_id, wf, catdbs, cdir, cfg];
+    return [ptype, indir, pdir, wf_id, wf, catdbs, cdir, cfg];
 }
 
 // Check if two arrays are equal
@@ -432,9 +437,9 @@ let filename = path.basename(window.location.pathname,'.html');
 if ( filename == "wf" ) {
     // Create and export the workflow attributes
     [
-        pdir_def,
         ptype,
-        pdir,
+        indir,
+        outdir,
         wf_id,
         wf,
         catdbs,
@@ -442,9 +447,9 @@ if ( filename == "wf" ) {
         wf_exec
     ] = extractWorkflowAttributes();
     wf_date_id = getWFDate();
-    module.exports.pdir_def = pdir_def;
     module.exports.ptype = ptype;
-    module.exports.pdir = pdir;
+    module.exports.indir = indir;
+    module.exports.outdir = outdir;
     module.exports.wf_date_id = wf_date_id;
     module.exports.wf_id = wf_id;
     module.exports.wf = wf;

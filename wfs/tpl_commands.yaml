@@ -24,6 +24,45 @@
 
 ###################
 # COMMAND TEMPLATE 
+# Description: 
+- name: JOINER
+  description: Join the multiple experiment input-files in one unique file
+  force: 0
+  rules:
+  - name: joiner
+    infiles:
+      -ii: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
+    outfiles:
+      -o: __MAIN_INPUTS_EXPDIR__/ID-q.tsv
+    parameters:
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/joiner.py" -w __NCPU__ __WF_VERBOSE__ '
+###################
+
+
+
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
+- name: MERGE_INFILES
+  description: Merge multiple input files in one based on given columns
+  force: 0
+  rules:
+  - name: mergeID
+    infiles:
+      -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
+    outfiles:
+      -o: __MAIN_INPUTS_EXPDIR__/ID-q.tsv
+    parameters:
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/mergerInfiles.py" -w __NCPU__ __WF_VERBOSE__ '
+###################
+
+
+
+###################
+# COMMAND TEMPLATE 
 # Description:
 - name: FDR
   description: Calculation of FDR
@@ -171,7 +210,7 @@
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/u_scan.tsv
     parameters:
       tags:
-        -i: "[Spectrum_File]-[Scan]-[Charge]"
+        -i: "[Scan_Id]"
         -j: "[Xs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -k: "[Vs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -f: "[Experiment]==__WF_EXPERIMENT__"
@@ -511,7 +550,7 @@
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/u_scan.tsv
     parameters:
       tags:
-        -i: "[Spectrum_File]-[Scan]-[Charge]"
+        -i: "[Scan_Id]"
         -j: "[Xs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -k: "[Vs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -f: "[Experiment]==__WF_EXPERIMENT__"

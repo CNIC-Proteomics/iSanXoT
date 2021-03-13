@@ -165,7 +165,8 @@ def download_samples(manager):
         # local library
         import core
         # handle manager file
-        version = manager
+        # discard the version of sample to download
+        version = re.sub(r'\.\d*$','', manager)
         print("-- create builder")
         c = core.builder(spdir)
         print("-- create url")

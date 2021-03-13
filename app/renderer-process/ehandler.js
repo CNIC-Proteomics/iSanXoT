@@ -11,15 +11,10 @@ let importer = require('./imports');
 
 // Open Help Modals
 function openHelpModal(t) {
-  console.log("openHelpModal");
   let t_parent = $(t).parents(`.tab-pane`);
   let wk_id = $(t_parent).attr('id');
   let cmd_id = $(t_parent).find('.page-header').attr('name');
-  console.log(`WK_ID: ${wk_id} > CMD: ${cmd_id}`);
-
-
   $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .modal`).modal();
-
 }
 
 /*
@@ -35,10 +30,8 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
   let mainWindow = remote.getCurrentWindow();
   let dialog = remote.dialog;
   let ptype = importer.ptype;
-  let pdir = importer.pdir;
+  let indir = importer.indir;
   let wf_exec = importer.wf_exec;
-  let wk_id = 'main_inputs';
-  let cmd_id = 'CREATE_ID';
   
   // check
   if ( wf_exec === undefined ) {
@@ -46,20 +39,18 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
     console.log(`${errsms}`);
     exceptor.showErrorMessageBox('Error Message', `${errsms}`);
   }
-  if (!(wk_id in wf_exec)) {
-    let errsms = `'${wk_id}' key is not in wf_exec`;
-    console.log(`${errsms}`);
-    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-  }
   
   // Add values
   if ( 'samples' == ptype ) {
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #indir`).val(`${pdir}/${wf_exec['main_inputs']['indir']}`);
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #outdir`).val(`${pdir}/${wf_exec['main_inputs']['outdir']}`);
+    $(`[id^=main_inputs] #panel-main_inputs`).find(".main_inputs").each(function(){
+      $(this).find("input").val(`${process.env.ISANXOT_LIB_HOME}/${ptype}/${wf_exec['main_inputs'][this.id]}`);
+    });
+
   }
   else {
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #indir`).val(`${wf_exec['main_inputs']['indir']}`);
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #outdir`).val(`${wf_exec['main_inputs']['outdir']}`);
+    $(`[id^=main_inputs] #panel-main_inputs`).find(".main_inputs").each(function(){
+      $(this).find("input").val(`${wf_exec['main_inputs'][this.id]}`);
+    });
   }
 
   // EVENTS
@@ -96,26 +87,26 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
     let files = fs.readdirSync(dir);
     if ( files !== undefined ) {
       for (var i = 0; i < files.length; i++) {
-        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('setDataAtCell', i, 0, `${dir}/${files[i]}`);
+        $(`[id^=main_inputs] #panel-main_inputs .tasktable`).handsontable('setDataAtCell', i, 0, `${dir}/${files[i]}`);
       }
     }
   };
 
   // events for the INPUT directory and OUTPUT directory
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-indir`).click(function() {
+  $('#__MAIN_INPUTS_INDIR__  button').click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #indir`).val(`${inpt}`);
+        $(`#__MAIN_INPUTS_INDIR__ input`).val(`${inpt}`);
         fillInputFilesTable(inpt);
       }      
     });
   });
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-outdir`).click(function() {
+  $('#__MAIN_INPUTS_OUTDIR__  button').click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #outdir`).val(`${inpt}`);
+        $(`#__MAIN_INPUTS_OUTDIR__ input`).val(`${inpt}`);
       }
     });
   });
@@ -125,16 +116,12 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
 
 // Create object with the Main_Inputs data extracting from the HTML Elements
 function createObjFromMainInputsPanel() {
-  let rst = {
-    'indir':  $(`#panel-main_inputs [id=indir]`).val(),
-    'outdir': $(`#panel-main_inputs [id=outdir]`).val(),
-  };
-  let keys = ['indir','outdir'];
-  for (var i = 0; i < keys.length; i++) {
-    let k = keys[i];
-    let v = $(`#panel-main_inputs [id=${k}]`).val();
+  let rst = {};
+  $(`[id^=panel-main_inputs]`).find(".main_inputs").each(function() {
+    let k = this.id;
+    let v = $(this).find("input").val();
     rst[`${k}`] = v;
-  }
+  });
   return rst;
 } // end createObjFromMainInputsPanel
 
@@ -161,7 +148,7 @@ function checkIfAdvancedOptionsExist(importer, exceptor) {
       let cmd = wk['cmds'][j];
       let cmd_id = cmd['id'];
       // Get the list of optionals parameters
-      let opt = importer.getIndexParamsWithAttr(cmd['params'], 'type', 'optional');
+      let opt = ( 'params' in cmd && cmd['params'].length > 0) ? importer.getIndexParamsWithAttr(cmd['params'], 'type', 'optional') : [];
       if ( opt ) {
         // provide the event function
         $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .toggleadv`).change(toggleAdvParameters);

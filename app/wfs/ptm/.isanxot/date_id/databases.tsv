@@ -1,0 +1,13 @@
+#RELS_TABLE_CATDB									
+force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles	filters	more_params
+	__MAIN_INPUTS_PSMFILE__	Scan_Id	SiteSequence		scan2peptide				
+	__MAIN_INPUTS_PSMFILE__	SiteSequence	Protein_Accession		peptide2protein				
+	__MAIN_INPUTS_PSMFILE__	SiteSequence	[1]		peptide2peptideall				
+	__MAIN_INPUTS_PSMFILE__	Protein_Accession	[1]		protein2proteinall				
+	__MAIN_INPUTS_PSMFILE__	Protein_Accession	Description		protein2description	__MAIN_INPUTS_CATDB__			
+	__MAIN_INPUTS_PSMFILE__	Protein_Accession	cat_*		protein2category	__MAIN_INPUTS_CATDB__		"cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"	
+	__MAIN_INPUTS_PDMFILE__	pdm	StickerLabel		peptide2artefact				
+	__MAIN_INPUTS_PDMFILE__	pdm	pd		peptide2pd				
+	__MAIN_INPUTS_PDMFILE__	pd	q		pd2proteinpd				
+	__MAIN_INPUTS_PDMFILE__	pd	qdna		pd2qnda				
+	__MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall				

@@ -197,10 +197,15 @@ class logger {
                     // get the index from the name
                     let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
                     data.cmds[cmd_index].status = 'running';
                     data.cmds[cmd_index].stime = time;
-                    data.cmds[cmd_index].perc = perc;
+                    let perc = eval(rule_perc).toFixed(2)*100+'%';
+                    if ( perc == '100%' ) {
+                        data.cmds[cmd_index].perc = '99%';
+                    }
+                    else {
+                        data.cmds[cmd_index].perc = perc;
+                    }
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_RULE_EXEC')) {
                     let l = line.split('\t');

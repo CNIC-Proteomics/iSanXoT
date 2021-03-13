@@ -79,11 +79,11 @@ GOTO :updatePackages
 :: Process was not completed
     ECHO **
     ECHO ** ERROR: The execution was not completed successfully!!
-    SET /P DUMMY=End of execution. Hit ENTER to continue...
+    SET /P DUMMY=End of execution. Hit ENTER to exit...
     GOTO :EndProcess
 
 
 :: ------------------------------------------------
 :EndProcess
 :: Execution has finished
-    REM SET /P DUMMY=End of execution. Hit ENTER to continue...
+    REM SET /P DUMMY=End of execution. Hit ENTER to exit...

@@ -18,28 +18,21 @@ DATE: 2021_03
 
 + Documentation.
 
-+ TODO!! Improve the refresh of log tables.
-
 + TODO!! We have included more worked-out examples from MSFragger result and Comet.
 
 + TODO!!! Include the column "output" in the workflow log table.
 
-+ TODO!! We have included Ecoli species.
-
 ### Changes in the Code Workflow
-
-+ TODO!! There is new programa which reports some information (variances, ...) for each integration.
 
 + TODO??? Now iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant.
 
 + TODO!! New program that reports some information (variances, ...) for each integration.
 
-
 + TODO!! WE HAVE TO IMPROVE THE CREATERELS PROGRAM!! SIMPLYFY THE CODE AND ADD THE THIRD COLUMN.
 
 
 ___
-## 0.2.8_QUANTIFICATION
+## 0.2.9_QUANTIFICATION
 ```
 DATE: 2021_03
 ```
@@ -50,7 +43,6 @@ DATE: 2021_03
 
 ### Changes in the Graphical User Interface
 
-+ TODO!! Bug fixed: refreshing the log tables.
 
 ### Changes in the Code Workflow
 
@@ -60,6 +52,30 @@ DATE: 2021_03
 
 + TODO!! NEW QUANTIFICATION COMMAND!!
 
+
+___
+## 0.2.8
+```
+DATE: 2021_03
+```
+
+### Highlights
+
++ Pre-release of PTM workflow.
+
+### Changes in the Graphical User Interface
+
++ PTM workflow has been included. It is a preliminar version.
+
++ The interface accepts the input files for the PTM workflow.
+
+
+### Changes in the Code Workflow
+
++ Scan Id column has been added in the ID.tsv files. The value is "[Spectrum_File]-[Scan]-[Charge]" for the search engines: PD, MSFragger and Commet. 
+Therefore, the WSPP_SBT will accept that column values.
+
++ The samples files will have a version prefix.
 
 ___
 ## 0.2.7

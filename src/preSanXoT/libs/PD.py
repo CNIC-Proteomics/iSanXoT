@@ -37,6 +37,8 @@ def processing_infiles(file, Expt):
     }, inplace=True)
     # delete suffix value    
     df["Spectrum_File"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True)
+    # create Scan_Id
+    df["Scan_Id"] = df["Spectrum_File"].map(str) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
     # calculate cXCorr
     df["cXCorr"] = cXCorr(df)
     # delete suffix in the headers coming from PD 2.3

@@ -62,14 +62,18 @@ function extract_list_cmds(wk, itbl) {
   for (var i = 0; i < wk.length; i++) {
     let l = wk[i];
     let id = l['id'];
-    let cols = l['params'].map(a => a.id);
-    let header = l['params'].map(a => a.name);
+    let cols = [];
+    let header = [];
+    if ( 'params' in l && l['params'].length > 0) {
+      cols = l['params'].map(a => a.id);
+      header = l['params'].map(a => a.name);
+    }
     cmds.push({
       'id': id,
       'cols': cols,
       'header': header,
       'table': []
-    });s
+    });
   }
   // Iterate over all commands
   // get the attributes of command from the local file (workflow.JSON)
@@ -161,44 +165,46 @@ for (var i = 0; i < wf['works'].length; i++) {
     let cmd_label = cmd_attr['label'];
     let cmd_title = cmd_attr['title'];
 
-    // get the index of optional parameters
-    let cmd_params_opt_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'type', 'optional');
+    // create html sidebar
+    // If the command is not visible, we don't show the sidebar menu
+    if ( cmd_attr['visible'] ) {
+      $(`#${wk_id} #sidebar .cmds`).append(`<li><a id="${cmd_id}" title="${cmd_title}">${cmd_label}</a></li>`);
+    }
+    // create main div for the tasktable frames
+    $(`#${wk_id} #page-content`).append(`<div id="page-tasktable-${cmd_id}"></div>`);
+    // add create tasktable panel
+    if ( cmd_attr['panel'] ) {
+      importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
+    }
+    // add the help modal of the tasktable/command
+    if ( cmd_attr['help_modal'] ) {
+      importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
+    }
 
-    // get the index of Columns with readOnly parameter
-    let cmd_params_readonlycol_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'readOnly', true);
+    // Create the tasktable
+    if (cmd_header && cmd_header.length > 0 && 'params' in cmd_attr && cmd_attr['params'].length > 0) {
 
-    // get the index of Rows with readOnly parameter
-    let cmd_params_readonlyrow_index = cmd_attr['readonly_rows'];
-    
-    // get the index of DropDown parameters
-    let [cmd_params_hottable_index, cmd_params_hottable] = importer.getIndexParamsWithKey(cmd_attr['params'], 'hottable');
+      // get the index of optional parameters
+      let cmd_params_opt_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'type', 'optional');
 
-    // get the index of select parameters
-    let [cmd_params_select_index, cmd_params_select] = importer.getIndexParamsWithKey(cmd_attr['params'], 'select');
-    
-    // get the index of dropdown parameters
-    let [cmd_params_dropdown_index, cmd_params_dropdown] = importer.getIndexParamsWithKey(cmd_attr['params'], 'dropdown');
+      // get the index of Columns with readOnly parameter
+      let cmd_params_readonlycol_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'readOnly', true);
 
-    // get the index of checkbox parameters
-    let [cmd_params_checkbox_index, cmd_params_checkbox] = importer.getIndexParamsWithKey(cmd_attr['params'], 'checkbox');
+      // get the index of Rows with readOnly parameter
+      let cmd_params_readonlyrow_index = cmd_attr['readonly_rows'];
+      
+      // get the index of DropDown parameters
+      let [cmd_params_hottable_index, cmd_params_hottable] = importer.getIndexParamsWithKey(cmd_attr['params'], 'hottable');
 
-    // Mandatory header is full
-    if (  cmd_header && cmd_header.length > 0 ) {
-      // create html sidebar
-      // If the command is not visible, we don't show the sidebar menu
-      if ( cmd_attr['visible'] ) {
-        $(`#${wk_id} #sidebar .cmds`).append(`<li><a id="${cmd_id}" title="${cmd_title}">${cmd_label}</a></li>`);
-      }
-      // create main div for the tasktable frames
-      $(`#${wk_id} #page-content`).append(`<div id="page-tasktable-${cmd_id}"></div>`);
-      // add create tasktable panel
-      if ( cmd_attr['panel'] ) {
-        importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
-      }
-      // add the help modal of the tasktable/command
-      if ( cmd_attr['help_modal'] ) {
-        importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
-      }
+      // get the index of select parameters
+      let [cmd_params_select_index, cmd_params_select] = importer.getIndexParamsWithKey(cmd_attr['params'], 'select');
+      
+      // get the index of dropdown parameters
+      let [cmd_params_dropdown_index, cmd_params_dropdown] = importer.getIndexParamsWithKey(cmd_attr['params'], 'dropdown');
+
+      // get the index of checkbox parameters
+      let [cmd_params_checkbox_index, cmd_params_checkbox] = importer.getIndexParamsWithKey(cmd_attr['params'], 'checkbox');
+
       // create html tasktable
       $(`#${wk_id} #page-tasktable-${cmd_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
       if (!cmd_table || cmd_table.length == 0) cmd_table = [[]]; // if the data table is empty, we init
@@ -271,10 +277,6 @@ for (var i = 0; i < wf['works'].length; i++) {
           },
           licenseKey: 'non-commercial-and-evaluation'    
       });
-    }
-    else {
-      console.log(cmd_is);
-      exceptor.showErrorMessageBox('Error Message', `Inconsistency of tasktable header`, end=true);
     }
   } // end loop of commands
 

@@ -9,13 +9,13 @@
   
 <div id="panel-databases-catfile" class="panel-databases">
   <div class="form-group">
-    <h6 for="select-dbfile">Select protein database and decoy label</h6>
+    <h6>Select protein database and decoy label</h6>
     <div class="form-group row">
       <div class="form-group row col-sm">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Select your protein database file" id="dbfile" value="">
+          <input type="text" class="form-control" placeholder="Provide your protein sequence file in FASTA format" id="__MAIN_INPUTS_DBFILE__" value="">
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm select-dbfile" type="button">Select file</button>
+            <button class="btn btn-outline-secondary btn-sm" type="button">Select file</button>
           </div>
         </div>
       </div>
@@ -23,13 +23,13 @@
   </div>
 
   <div class="form-group">
-    <h6 for="select-catfile">Select protein-category relation file</h6>
+    <h6>Select protein-category relation file</h6>
     <div class="form-group row">
       <div class="form-group row col-sm">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Select your protein-category relation file" id="catfile" value="">
+          <input type="text" class="form-control" placeholder="Provide your protein-category relation file" id="__MAIN_INPUTS_CATFILE__" value="">
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary btn-sm select-catfile" type="button">Select file</button>
+            <button class="btn btn-outline-secondary btn-sm" type="button">Select file</button>
           </div>
         </div>
       </div>
@@ -37,7 +37,7 @@
   </div>
 
   <div class="form-group">
-    <h6 for="select-catids">Show/Hide relationship tables</h6>
+    <h6>Show/Hide relationship tables</h6>
     <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show" data-off="Hide" data-onstyle="light" data-offstyle="dark" data-width="50px" data-height="30px" data-size="sm" onchange="ehandler.toggleTaskTable_CatFile(this)" checked>
   </div>
 </div>

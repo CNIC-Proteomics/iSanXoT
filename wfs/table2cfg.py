@@ -535,8 +535,10 @@ def main(args):
             '__MAIN_INPUTS_RELDIR__':       MAIN_INPUTS_RELDIR,
             '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
             '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
-            '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['indir'],
-            '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['outdir'],
+            '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['__MAIN_INPUTS_OUTDIR__'],
+            '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['__MAIN_INPUTS_INDIR__'],
+            '__MAIN_INPUTS_PSMFILE__':      tpl['main_inputs']['__MAIN_INPUTS_PSMFILE__'],
+            '__MAIN_INPUTS_PDMFILE__':      tpl['main_inputs']['__MAIN_INPUTS_PDMFILE__'],
             '__MAIN_INPUTS_DBFILE__':       '',
             '__MAIN_INPUTS_CATFILE__':      '',
             '__MAIN_INPUTS_CATDB__':        '',
@@ -560,7 +562,7 @@ def main(args):
     logging.info("create a command for each table row")
     tpl['commands'] = []
     for cmd,df in indata.items():
-        if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ':
+        if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ' or cmd == 'JOINER':
             icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
             if icmd and not df.empty:
                 i = icmd[0]
