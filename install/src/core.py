@@ -55,8 +55,8 @@ class builder:
         '''
         dirs = [ name for name in os.listdir(srcdir) if os.path.isdir(os.path.join(srcdir, name)) ]
         srcdir = srcdir + '/' + dirs[0]
+        self.remove_dir(trgdir);
         print((srcdir +" > "+ trgdir))
-        # os.rename( srcdir, trgdir)
         startTime = time.clock()
         while 1:
             try:
@@ -72,7 +72,8 @@ class builder:
         '''
         Remove a directory
         '''
-        shutil.rmtree(dirs)
+        if os.path.exists(dirs):
+            shutil.rmtree(dirs)
 
     def remove_file(self, file):
         '''

@@ -85,7 +85,7 @@ def install_exec_manager(manager, url, odir):
         return True
 
     except Exception as exc:
-        sys.exit(f"ERROR!! downloading databases: {manager}\n{exc}")
+        sys.exit(f"ERROR!! downloading exec program: {manager}\n{exc}")
 
 def install_pkg_manager_pip():
     exec_command(f'{python_exec} {dirname}/get-pip.py --no-warn-script-location')
