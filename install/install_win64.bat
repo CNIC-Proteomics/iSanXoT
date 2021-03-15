@@ -82,12 +82,12 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
         ECHO ** install the 'python'
         CMD /C " "%INSTALL_HOME%/win/nuget.exe"  install python -Version "%PYTHON3x_VERSION%" -OutputDirectory "%ISANXOT_LIB_HOME%" "
         :: if everything was fine or not
-        IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
+        IF %ERRORLEVEL% GTR 1 GOTO :wrongProcess
         ECHO **
         ECHO ** move the 'python' folder
         CMD /C " ROBOCOPY "%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%" "%ISANXOT_LIB_HOME%/python" /NFL /NDL /NJH /NJS /NC /NS /NP /E /MOVE "
         :: if everything was fine or not
-        IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
+        IF %ERRORLEVEL% GTR 1 GOTO :wrongProcess
     )
 
 
@@ -96,7 +96,7 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
     ECHO ** install/upgrade libraries
     CMD /C " "%PYTHON3x_HOME%/tools/python" "%INSTALL_HOME%/src/installer.py" "%INSTALL_HOME%"  "%ISANXOT_LIB_HOME%" "
     :: if everything was fine or not
-    IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
+    IF %ERRORLEVEL% GTR 1 GOTO :wrongProcess
 
     :: everything was fine
     GOTO :successProcess

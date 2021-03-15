@@ -262,6 +262,7 @@ def main():
     Main function
     '''
     # preapare workspace
+    prepare_workspace(node_home)
     prepare_workspace(execdir)
     prepare_workspace(dbsdir)
     prepare_workspace(spdir)
