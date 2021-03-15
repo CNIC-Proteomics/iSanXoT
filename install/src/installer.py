@@ -32,6 +32,7 @@ python_exec = sys.executable
 
 node_url = 'https://nodejs.org/dist/v10.14.2/node-v10.14.2-win-x64.zip'
 node_home = f"{lib_home}/node"
+
 tmpdir = f"{lib_home}/tmp"
 cloud_url = 'https://www.cnic.es/nextcloud/s/cmWA4xZEBk2mjMZ/download?path=%2F'
 exec_url = f"{cloud_url}install%2Fwindows%2F"
@@ -261,7 +262,6 @@ def main():
     Main function
     '''
     # preapare workspace
-    prepare_workspace(node_home)
     prepare_workspace(execdir)
     prepare_workspace(dbsdir)
     prepare_workspace(spdir)
