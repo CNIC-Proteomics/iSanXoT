@@ -15,8 +15,8 @@ main_inputs:
   __MAIN_INPUTS_PSMFILE__: ''
   __MAIN_INPUTS_PDMFILE__: ''
 databases:
-  species: 'Mus musculus'
-  catid: '202103'
+  species: ''
+  catid: ''
   catdbs: ''
 datfiles:
   - type: main_inputs

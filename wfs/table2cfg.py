@@ -535,14 +535,11 @@ def main(args):
             '__MAIN_INPUTS_RELDIR__':       MAIN_INPUTS_RELDIR,
             '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
             '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
-            '__MAIN_INPUTS_OUTDIR__':       tpl['main_inputs']['__MAIN_INPUTS_OUTDIR__'],
-            '__MAIN_INPUTS_INDIR__':        tpl['main_inputs']['__MAIN_INPUTS_INDIR__'],
-            '__MAIN_INPUTS_PSMFILE__':      tpl['main_inputs']['__MAIN_INPUTS_PSMFILE__'],
-            '__MAIN_INPUTS_PDMFILE__':      tpl['main_inputs']['__MAIN_INPUTS_PDMFILE__'],
             '__MAIN_INPUTS_DBFILE__':       '',
             '__MAIN_INPUTS_CATFILE__':      '',
             '__MAIN_INPUTS_CATDB__':        '',
     }
+    # add the replacements for the databases
     if 'species' in tpl['databases']:
         repl['__SPECIES__'] = tpl['databases']['species']
     if 'catdbs' in tpl['databases']:
@@ -551,6 +548,9 @@ def main(args):
         repl['__MAIN_INPUTS_CATFILE__'] = tpl['databases']['catfile']
     if 'dbfile' in tpl['databases']:
         repl['__MAIN_INPUTS_DBFILE__'] = tpl['databases']['dbfile']
+    # add the replacements for the main_inputs
+    for main_input_id in tpl['main_inputs'].keys():
+        repl[main_input_id] = tpl['main_inputs'][main_input_id]
     # add the replacements for the data files of tasktable commands
     for datfile in tpl['datfiles']:
         l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
