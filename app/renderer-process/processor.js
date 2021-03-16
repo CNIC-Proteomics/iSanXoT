@@ -201,7 +201,7 @@ class logger {
                     data.cmds[cmd_index].stime = time;
                     let perc = eval(rule_perc).toFixed(2)*100+'%';
                     if ( perc == '100%' ) {
-                        data.cmds[cmd_index].perc = '99%';
+                        data.cmds[cmd_index].perc = '50%';
                     }
                     else {
                         data.cmds[cmd_index].perc = perc;

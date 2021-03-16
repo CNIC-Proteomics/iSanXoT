@@ -69,6 +69,9 @@ DATE: 2021_03
 
 + The interface accepts the input files for the PTM workflow.
 
++ Add an auto overflow for worlflow log table.
+
++ The identifier of HTML elements for the inputs have changed.
 
 ### Changes in the Code Workflow
 
@@ -76,6 +79,8 @@ DATE: 2021_03
 Therefore, the WSPP_SBT will accept that column values.
 
 + The samples files will have a version prefix.
+
++ The keys for the inputs: indir, outdir, catfile, etc. have changed.
 
 ___
 ## 0.2.7

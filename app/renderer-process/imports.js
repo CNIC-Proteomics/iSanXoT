@@ -45,7 +45,7 @@ function doneResizing() {
         $(`#panel-logger`).height(newheight);
     }
     if ( $('.logtable').length ) {
-        let newheight = winheight - 227;
+        let newheight = winheight - 210;
         $(`#workflowlogs .logtable`).height(newheight);
     }
 }
@@ -339,7 +339,8 @@ function extractWorkflowAttributes() {
     // Get the list of databases
     let catdbs = wfs['catdbs'];
 
-    return [ptype, indir, pdir, wf_id, wf, catdbs, cdir, cfg];
+    // return [ptype, indir, pdir, wf_id, wf, catdbs, cdir, cfg];
+    return [ptype, wf_id, wf, catdbs, cdir, cfg];
 }
 
 // Check if two arrays are equal
@@ -438,8 +439,8 @@ if ( filename == "wf" ) {
     // Create and export the workflow attributes
     [
         ptype,
-        indir,
-        outdir,
+        // indir,
+        // outdir,
         wf_id,
         wf,
         catdbs,
@@ -448,8 +449,8 @@ if ( filename == "wf" ) {
     ] = extractWorkflowAttributes();
     wf_date_id = getWFDate();
     module.exports.ptype = ptype;
-    module.exports.indir = indir;
-    module.exports.outdir = outdir;
+    // module.exports.indir = indir;
+    // module.exports.outdir = outdir;
     module.exports.wf_date_id = wf_date_id;
     module.exports.wf_id = wf_id;
     module.exports.wf = wf;

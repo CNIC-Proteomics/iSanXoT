@@ -30,7 +30,6 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
   let mainWindow = remote.getCurrentWindow();
   let dialog = remote.dialog;
   let ptype = importer.ptype;
-  let indir = importer.indir;
   let wf_exec = importer.wf_exec;
   
   // check
@@ -225,44 +224,42 @@ function toggleAdvParameters() {
 function createObjFromDatabasesPanel() {
   // declare variables
   let rst = { };
-  let wk_id = 'databases';
-  let cmd_id_1 = 'RELS_TABLE_CATDB';
-  let cmd_id_2 = 'RELS_TABLE_CATFILE';
 
   // extract variables...
   // catdb
-  let species = $(`#${wk_id} .panel-databases [id='species'] option:selected`);
-  let db = $(`#${wk_id} .panel-databases [id='catids'] option:selected`).val();
+  let species = $(`#__MAIN_INPUTS_SPECIES__  select  option:selected`);
+  let db = $(`#__MAIN_INPUTS_DBID__  select  option:selected`).val();
   // catfile
-  let cfile = $(`#${wk_id} .panel-databases [id='catfile']`).val();
-  let dfile = $(`#${wk_id} .panel-databases [id='dbfile']`).val();
+  let seqfile = $(`#__MAIN_INPUTS_SEQFILE__  input`).val();
+  let cfile = $(`#__MAIN_INPUTS_CATFILE__  input`).val();
 
   // if all variables are defined and not empty, we take the values for that panel
   // we take the category db by default
   if ( species !== undefined && species.length > 0 && db !== undefined && db != '' ) {
-    rst['catid'] = db;
-    rst['species'] = '';
-    rst['catdbs'] = '';
+    rst['__MAIN_INPUTS_DBID__'] = db;
+    rst['__MAIN_INPUTS_SPECIES__'] = '';
+    rst['__MAIN_INPUTS_CATDB__'] = '';
     for (var i = 0; i < species.length; i++) {
       let o = species[i];
       let v1 = $(o).val();
       let v2 = $(o).text().toLowerCase();
       // update species data
-      if (rst['species'] != '') { rst['species'] += `,${v1}` } else { rst['species'] += v1 }
+      if (rst['__MAIN_INPUTS_SPECIES__'] != '') { rst['__MAIN_INPUTS_SPECIES__'] += `,${v1}` } else { rst['__MAIN_INPUTS_SPECIES__'] += v1 }
       // update category database
       let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}_sw-tr.categories.tsv`;
-      if (rst['catdbs'] != '') { rst['catdbs'] += `;${v}` } else { rst['catdbs'] += v }
+      if (rst['__MAIN_INPUTS_CATDB__'] != '') { rst['__MAIN_INPUTS_CATDB__'] += `;${v}` } else { rst['__MAIN_INPUTS_CATDB__'] += v }
     }
     // unable table of CatDB and disable table of CatFile
-    $(`#${wk_id} #page-tasktable-${cmd_id_1} .disabled_tasktable`).toggleClass('disabled_tasktable tasktable');
-    $(`#${wk_id} #page-tasktable-${cmd_id_2} .tasktable`).toggleClass('tasktable disabled_tasktable');
+    $(`#panel-databases-catdb`).next('.disabled_tasktable').toggleClass('disabled_tasktable tasktable');
+    $(`#panel-databases-catfile`).next('.tasktable').toggleClass('tasktable disabled_tasktable');
+
   }
-  else if ( cfile !== undefined && cfile != '' && dfile !== undefined && dfile != '' ) {
-    rst['catfile'] = cfile;
-    rst['dbfile'] = dfile;
+  else if ( cfile !== undefined && cfile != '' && seqfile !== undefined && seqfile != '' ) {
+    rst['__MAIN_INPUTS_SEQFILE__'] = seqfile;
+    rst['__MAIN_INPUTS_CATFILE__'] = cfile;
     // unable table of CatFile and disable table of CatDB
-    $(`#${wk_id} #page-tasktable-${cmd_id_2} .disabled_tasktable`).toggleClass('disabled_tasktable tasktable');
-    $(`#${wk_id} #page-tasktable-${cmd_id_1} .tasktable`).toggleClass('tasktable disabled_tasktable');
+    $(`#panel-databases-catfile`).next('.disabled_tasktable').toggleClass('disabled_tasktable tasktable');
+    $(`#panel-databases-catdb`).next('.tasktable').toggleClass('tasktable disabled_tasktable');
   }
   return rst;
 } // end createObjFromDatabasesPanel
@@ -292,42 +289,41 @@ function addSpeciesInSelect(select, catdbs, catid) {
   // refresh the select
   $(select).selectpicker('refresh');
 }
+
 // Add values into panel, if apply
 function addValuesPanel_CatDB(importer) {
   // declare variables
   let catdbs  = importer.catdbs;
   let wf_exec  = importer.wf_exec;
-  let wk_id = 'databases';
-  let cmd_id = 'RELS_TABLE_CATDB';
   
   // Init the databases
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="" >Select database version...</option>`);
+  $(`#__MAIN_INPUTS_DBID__  select`).append(`<option value="" >Select database version...</option>`);
   for (var i = 0; i < catdbs.length; i++) {
     let wf_catdbs = catdbs[i];
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).append(`<option value="${wf_catdbs['id']}" >${wf_catdbs['name']}</option>`);
+    $(`#__MAIN_INPUTS_DBID__  select`).append(`<option value="${wf_catdbs['id']}" >${wf_catdbs['name']}</option>`);
   }
 
   // Add values
-  if ( 'species' in wf_exec['databases'] && 'catid' in wf_exec['databases'] && 'catdbs' in wf_exec['databases'] ) {
+  if ( '__MAIN_INPUTS_SPECIES__' in wf_exec['databases'] && '__MAIN_INPUTS_DBID__' in wf_exec['databases'] ) {
     // fill with the catdb id
-    let catid = wf_exec['databases']['catid'];
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).val(`${catid}`);
+    let catid = wf_exec['databases']['__MAIN_INPUTS_DBID__'];
+    $(`#__MAIN_INPUTS_DBID__ select`).val(`${catid}`);
     // fill the select object from the catid
-    addSpeciesInSelect(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`, catdbs, catid);
+    addSpeciesInSelect(`#__MAIN_INPUTS_SPECIES__ select`, catdbs, catid);
     // select the given species
-    let species = wf_exec['databases']['species'].split(',');
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`).selectpicker('val', species);
+    let species = wf_exec['databases']['__MAIN_INPUTS_SPECIES__'].split(',');
+    $(`#__MAIN_INPUTS_SPECIES__ select`).selectpicker('val', species);
   }
   
   // Hide table
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
+  $(`#panel-databases-catdb`).next('.tasktable').hide();
 
   // Add the values of species every time the catdb changes
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catids`).change(function(){
+  $(`#__MAIN_INPUTS_DBID__  select`).change(function(){
     $("option:selected", this).each(function() {
       // fill the select object from the catid
       let catid = this.value;
-      addSpeciesInSelect(`#${wk_id} [id^=page-tasktable-${cmd_id}] #species`, catdbs, catid);
+      addSpeciesInSelect(`#__MAIN_INPUTS_SPECIES__ select`, catdbs, catid);
     });
   });
 
@@ -335,17 +331,15 @@ function addValuesPanel_CatDB(importer) {
 
 // Show/Hide table
 function toggleTaskTable_CatDB(t) {
-  let wk_id = 'databases';
-  let cmd_id = 'RELS_TABLE_CATDB';
-
   if ( $(t).prop('checked') ) {
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
+    $(`#panel-databases-catdb`).next('.tasktable').hide();
   }
   else {
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).show();
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('render');
+    $(`#panel-databases-catdb`).next('.tasktable').show();
+    $(`#panel-databases-catdb`).next('.tasktable').handsontable('render');
+
   }
-}
+} // end toggleTaskTable_CatDB
 
 
 /*
@@ -361,23 +355,24 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
   let wf_exec  = importer.wf_exec;
   let mainWindow = remote.getCurrentWindow();
   let dialog = remote.dialog;
-  let wk_id = 'databases';
-  let cmd_id = 'RELS_TABLE_CATFILE';
   
   // Add values
-  if ( 'catfile' in wf_exec['databases'] && 'dbfile' in wf_exec['databases']) {
-      if ( 'samples' == ptype ) { // library path + category/db FILE
-      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catfile`).val(`${pdir}/${wf_exec['databases']['catfile']}`);
-      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #dbfile`).val(`${pdir}/${wf_exec['databases']['dbfile']}`);
+  if ( '__MAIN_INPUTS_CATFILE__' in wf_exec['databases'] && '__MAIN_INPUTS_SEQFILE__' in wf_exec['databases']) {
+    if ( 'samples' == ptype ) {
+      $(`#panel-databases-catfile`).find(".databases").each(function(){
+        $(this).find("input").val(`${process.env.ISANXOT_LIB_HOME}/${ptype}/${wf_exec['databases'][this.id]}`);
+      });
+
     }
-    else {  // category/db FILE
-      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catfile`).val(`${wf_exec['databases']['catfile']}`);
-      $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #dbfile`).val(`${wf_exec['databases']['dbfile']}`);
+    else {
+      $(`#panel-databases-catfile`).find(".databases").each(function(){
+        $(this).find("input").val(`${wf_exec['databases'][this.id]}`);
+      });
     }
   }
 
   // Hide table
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
+  $(`#panel-databases-catfile`).next('.tasktable').hide();
 
   /*
    * Events
@@ -408,7 +403,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     return out;
   };
   // events for the DB file and CATegory file BUTTON
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-dbfile`).click(function() {
+  $('#__MAIN_INPUTS_SEQFILE__  button').click(function() {
     let opts = {
       properties: ['openFile'],
       filters :[
@@ -419,11 +414,11 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No database file selected`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #dbfile`).val(`${inpt}`);
+        $(`#__MAIN_INPUTS_SEQFILE__ input`).val(`${inpt}`);
       }
     });
   });
-  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] button.select-catfile`).click(function() {
+  $('#__MAIN_INPUTS_CATFILE__  button').click(function() {
     let opts = {
       properties: ['openFile'],
       filters :[
@@ -434,7 +429,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No category file seleted`);
       if ( inpt !== undefined ) {
-        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] #catfile`).val(`${inpt}`);
+        $(`#__MAIN_INPUTS_CATFILE__ input`).val(`${inpt}`);
       }
     });
   });
@@ -443,15 +438,13 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
 
 // Show/Hide table
 function toggleTaskTable_CatFile(t) {
-  let wk_id = 'databases';
-  let cmd_id = 'RELS_TABLE_CATFILE';
-
   if ( $(t).prop('checked') ) {
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).hide();
+    $(`#panel-databases-catfile`).next('.tasktable').hide();
   }
   else {
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).show();
-    $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('render');
+    $(`#panel-databases-catfile`).next('.tasktable').show();
+    $(`#panel-databases-catfile`).next('.tasktable').handsontable('render');
+
   }
 } // end toggleTaskTable_CatFile
 

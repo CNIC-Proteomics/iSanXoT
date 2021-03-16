@@ -1,5 +1,5 @@
 name: basic
-version: 0.2.1
+version: 0.2.8
 date: 'date_id'
 ncpu: '4'
 verbose: '-vv'
@@ -13,9 +13,9 @@ main_inputs:
   __MAIN_INPUTS_OUTDIR__: ''
   __MAIN_INPUTS_INDIR__: ''
 databases:
-  species: ''
-  catid: ''
-  catdbs: ''
+  __MAIN_INPUTS_DBID__: ''
+  __MAIN_INPUTS_SPECIES__: ''
+  __MAIN_INPUTS_CATDB__: ''
 datfiles:
   - type: main_inputs
     file: 
