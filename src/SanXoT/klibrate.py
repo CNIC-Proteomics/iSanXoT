@@ -246,7 +246,7 @@ def residuals(params, inputRawData, inputRelations, medianSide, verbose = False,
 	windowWidth = medianSide * 2 + 1
 	if len(inputRawData) < windowWidth:
 		print('Error: window for median is bigger than total input size')
-		sys.exit()
+		sys.exit(1)
 	
 	# output = makeStats(k, variance, input = input)
 	nextIdXData = getNextIdX_klibrate(inputRawData, inputRelations, k, variance, alpha, giveMergedData = True)
@@ -262,7 +262,7 @@ def residuals(params, inputRawData, inputRelations, medianSide, verbose = False,
 	
 	if len(experArray) != len(theorArray):
 		print('Error: experimental and theoretical array do not match')
-		sys.exit()
+		sys.exit(1)
 	
 	if verbose:
 		if showSumSQ and len(experArray) == len(theorArray):
@@ -303,7 +303,7 @@ def getNextIdX_klibrate(idXVall, relations, k = 1.0, variance = 0.0, alpha = 1.0
 	
 	if len(mergedData) == 0:
 		print("Error, merged data list is empty. Please check the provided files do exist and are not corrupt.")
-		sys.exit()
+		sys.exit(1)
 	
 	while position < len(mergedData):
 		
@@ -414,7 +414,7 @@ def showGraphTool(inputRawData,
 	windowWidth = medianSide * 2 + 1
 	if len(inputRawData) < windowWidth:
 		print('Error: window for median is bigger than total input size')
-		sys.exit()
+		sys.exit(1)
 	
 	# output = makeStats(k, variance, input = input)
 	nextIdXData = getNextIdX_klibrate(inputRawData, inputRelations, k, variance, alpha, giveMergedData = True)
