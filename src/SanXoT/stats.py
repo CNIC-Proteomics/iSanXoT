@@ -1578,7 +1578,9 @@ def medianByIndex(list, index = 0):
 	# 	med = (list[len(list) / 2 - 1][index] + list[len(list) / 2][index]) / 2
 	# else:
 	# 	med = list[(len(list) - 1) / 2][index]
-	if len(list) % 2 == 0:
+	if len(list) == 0:
+		med = 0
+	elif len(list) % 2 == 0:
 		med = (list[int( len(list) / 2 - 1 )][index] + list[int( len(list) / 2 )][index]) / 2
 	else:
 		med = list[int( (len(list) - 1) / 2 )][index]
