@@ -82,6 +82,10 @@ Therefore, the WSPP_SBT will accept that column values.
 
 + The keys for the inputs: indir, outdir, catfile, etc. have changed.
 
++ The Default parameters for the "createSansonLevel" are included in the "tpl_commands".
+
++ "stats" file in "sanxot" program: Fix the bug when the given list is empty.
+
 ___
 ## 0.2.7
 ```
