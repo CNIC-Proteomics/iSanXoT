@@ -1385,7 +1385,7 @@
       tag:
         --tags: '!out'
       filter:
-        -f: ''
+        -f: '(FDR < 0.05) & (nq > 10) & (nq < 100)'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createSansonHighLevel.py" '
 

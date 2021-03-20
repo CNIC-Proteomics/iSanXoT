@@ -125,10 +125,11 @@ def main(args):
 
     # discards the tags
     logging.info("discard the given tags")
-    for t in re.split(r'\s*&\s*', args.tags.strip()):
-        if t.startswith('!'):
-            t = t.replace('!','')
-            indat = indat[indat['tags_rel'] != t ]
+    if args.tags and not args.tags.isspace():
+        for t in re.split(r'\s*&\s*', args.tags.strip()):
+            if t.startswith('\!') or t.startswith('!'):
+                t = t.replace('\!','').replace('!','')
+                indat = indat[indat['tags_rel'] != t ]
     
     # add the number of proteins (idinf_rel) per category (idinf): nq
     df = indat.groupby('idinf').agg({
@@ -138,13 +139,14 @@ def main(args):
     df.reset_index(inplace=True)
     indat = pd.merge(indat, df, on='idinf')
     
-    # apply given filter. By default: (FDR < 0.05) & (nq > 10) & (nq < 100)
-    indat = filter_dataframe(indat, args.filters)
+    # apply given filter. Recomendation: (FDR < 0.05) & (nq > 10) & (nq < 100)
+    if args.filters and not args.filters.isspace():
+        indat = filter_dataframe(indat, args.filters)
     
     # - Remove all the information (including all the headings) except for the names of the relevant categories.
     # - Remove duplicates
     indat = indat['idinf']
-    indat.drop_duplicates(inplace=True)
+    indat = indat.drop_duplicates()
 
     logging.info("print output file without header")
     indat.to_csv(args.outfile, sep="\t", index=False, header=False)
@@ -164,8 +166,10 @@ if __name__ == "__main__":
     parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple outStats files separated by comma')
     parser.add_argument('-rr',  '--refiles',  required=True, help='Multiple Relationship file separated by comma')
     parser.add_argument('-o',   '--outfile',  required=True, help='Output file with the relationship table')
-    parser.add_argument('-t',   '--tags',     default='!out', help='Multiple Relationship file separated by comma')
-    parser.add_argument('-f',   '--filters',  default='(FDR < 0.05) & (nq > 10) & (nq < 100)', help='Boolean expression for the filtering of report')
+    # parser.add_argument('-t',   '--tags',     default='!out', help='Multiple Relationship file separated by comma')
+    # parser.add_argument('-f',   '--filters',  default='(FDR < 0.05) & (nq > 10) & (nq < 100)', help='Boolean expression for the filtering of report')
+    parser.add_argument('-t',   '--tags',     help='Multiple Relationship file separated by comma')
+    parser.add_argument('-f',   '--filters',  help='Boolean expression for the filtering of report')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
