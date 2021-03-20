@@ -179,7 +179,7 @@ def download_samples(manager):
         # if everything was fine
         return True
     except Exception as exc:
-        sys.exit(f"ERROR!! downloading databases: {manager}\n{exc}")
+        sys.exit(f"ERROR!! downloading samples: {manager}\n{exc}")
 
 def create_report_requirements(file):
     '''
