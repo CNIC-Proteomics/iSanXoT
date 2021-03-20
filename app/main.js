@@ -18,7 +18,8 @@ let template = [
     { label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { label: "Workflows", submenu: [
-    { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic`) } }
+    { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic`) } },
+    { label: 'PTM', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/ptm`) } }
     // { label: 'Basic', submenu: [
     //   { label: 'with UniProt db', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_uniprot`) } },
     //   { label: 'with Category file', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_catfile`) } },
