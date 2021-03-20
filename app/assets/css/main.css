@@ -317,55 +317,55 @@ section.tab-content > .form-inline {
     color: #333;
     background-color: #fff;
     border-color: #ccc;
-  }
-  .btn-selectpicker:focus,
-  .btn-selectpicker.focus {
+}
+.btn-selectpicker:focus,
+.btn-selectpicker.focus {
     color: #333;
     background-color: #e6e6e6;
     border-color: #8c8c8c;
-  }
-  .btn-selectpicker:hover {
+}
+.btn-selectpicker:hover {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
-  }
-  .btn-selectpicker:active,
-  .btn-selectpicker.active,
-  .open > .dropdown-toggle.btn-selectpicker {
+}
+.btn-selectpicker:active,
+.btn-selectpicker.active,
+.open > .dropdown-toggle.btn-selectpicker {
     color: #333;
     background-color: #e6e6e6;
     background-image: none;
     border-color: #adadad;
-  }
-  .btn-selectpicker:active:hover,
-  .btn-selectpicker.active:hover,
-  .open > .dropdown-toggle.btn-selectpicker:hover,
-  .btn-selectpicker:active:focus,
-  .btn-selectpicker.active:focus,
-  .open > .dropdown-toggle.btn-selectpicker:focus,
-  .btn-selectpicker:active.focus,
-  .btn-selectpicker.active.focus,
-  .open > .dropdown-toggle.btn-selectpicker.focus {
+}
+.btn-selectpicker:active:hover,
+.btn-selectpicker.active:hover,
+.open > .dropdown-toggle.btn-selectpicker:hover,
+.btn-selectpicker:active:focus,
+.btn-selectpicker.active:focus,
+.open > .dropdown-toggle.btn-selectpicker:focus,
+.btn-selectpicker:active.focus,
+.btn-selectpicker.active.focus,
+.open > .dropdown-toggle.btn-selectpicker.focus {
     color: #333;
     background-color: #d4d4d4;
     border-color: #8c8c8c;
-  }
-  .btn-selectpicker.disabled:hover,
-  .btn-selectpicker[disabled]:hover,
-  fieldset[disabled] .btn-selectpicker:hover,
-  .btn-selectpicker.disabled:focus,
-  .btn-selectpicker[disabled]:focus,
-  fieldset[disabled] .btn-selectpicker:focus,
-  .btn-selectpicker.disabled.focus,
-  .btn-selectpicker[disabled].focus,
-  fieldset[disabled] .btn-selectpicker.focus {
+}
+.btn-selectpicker.disabled:hover,
+.btn-selectpicker[disabled]:hover,
+fieldset[disabled] .btn-selectpicker:hover,
+.btn-selectpicker.disabled:focus,
+.btn-selectpicker[disabled]:focus,
+fieldset[disabled] .btn-selectpicker:focus,
+.btn-selectpicker.disabled.focus,
+.btn-selectpicker[disabled].focus,
+fieldset[disabled] .btn-selectpicker.focus {
     background-color: #fff;
     border-color: #ccc;
-  }
-  .btn-selectpicker .badge {
+}
+.btn-selectpicker .badge {
     color: #fff;
     background-color: #333;
-  }
+}
   
 
 /*
