@@ -118,13 +118,13 @@ def _extract_columns(idf, cols):
             # # extract the list of columns by name
             # if col in idf.columns:
             #     df[col] = idf[col]
-            # extract the list of columns by name separated by the delimeter '-'
-            for s in col.split("-"):
+            # extract the list of columns by name separated by the delimeter ':'
+            for s in col.split(":"):
                 if s in idf.columns:
                     if df.empty:
                         df[col] = idf[s]
                     else:
-                        df[col] = df[col] + "-" + idf[s]
+                        df[col] = df[col] + ":" + idf[s]
     
     return df
 
@@ -288,10 +288,10 @@ def main(args):
     
     
     logging.info("init output dataframe")
-    inf_name = re.sub(r"\s+",'-', args.inf_header)
-    sup_name = re.sub(r"\s+",'-', args.sup_header)
+    inf_name = re.sub(r"\s+",':', args.inf_header)
+    sup_name = re.sub(r"\s+",':', args.sup_header)
     if args.thr_header:
-        thr_name = re.sub(r"\s+",'-', args.thr_header)
+        thr_name = re.sub(r"\s+",':', args.thr_header)
         
     
     if args.xref_before:
