@@ -33,8 +33,8 @@
   },
   "commands": [{
     "id": "CREATE_ID",
-    "label": "Input Files",
-    "title": "Provide Input Files",
+    "label": "Input files",
+    "title": "Provide input files",
     "visible": true,
     "panel": "panels/main_inputs.html",
     "help_modal": "hmodals/main_inputs.html",
@@ -44,8 +44,8 @@
     ]
   },{
     "id": "CREATE_ID-JOINER",
-    "label": "Input Files",
-    "title": "Provide Input Files",
+    "label": "Input files",
+    "title": "Provide input files",
     "visible": true,
     "panel": "panels/main_inputs_ptm.html",
     "help_modal": "hmodals/main_inputs_ptm.html",
@@ -56,7 +56,7 @@
   },{
     "id": "FDR-MASTERQ",
     "label": "FDR",
-    "title": "Calculate FDR and masterQ",
+    "title": "FDR calculation",
     "visible": true,
     "panel": "panels/advance.html",
     "help_modal": "hmodals/fdr.html",
@@ -65,14 +65,14 @@
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
       { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
-      { "type": "required", "id": "fdr", "name": "FDR" },
+      { "type": "required", "id": "fdr", "name": "FDR cutoff" },
       { "type": "required", "id": "type_xcorr", "name": "xCorr type" },
       { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
     ]
   },{
     "id": "RELS_TABLE_CATDB",
-    "label": "Rels. from Cat. DB",
-    "title": "Create relationship files from Category DB",
+    "label": "Relations from category database",
+    "title": "Prepare relation files from UniProt database",
     "visible": true,
     "panel": "panels/databases_catdb.html",
     "help_modal": "hmodals/databases_catdb.html",
@@ -91,8 +91,8 @@
     "readonly_rows": []
   },{
     "id": "RELS_TABLE_CATFILE",
-    "label": "Rels. from Cat. File",
-    "title": "Create relationship files from Category File",
+    "label": "Relations from category file",
+    "title": "Prepare relation files from category file",
     "visible": true,
     "panel": "panels/databases_catfile.html",
     "help_modal": "hmodals/databases_catfile.html",
@@ -112,7 +112,7 @@
   },{
     "id": "RATIOS_WSPP-WSPP_SBT",
     "label": "WSPP - SBT",
-    "title": "Calculate the WSPP - SBT",
+    "title": "WSPP - SBT calculations",
     "visible": true,
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/wspp_sbt.html",
@@ -136,7 +136,7 @@
   },{
     "id": "RATIOS_WSPP-WSPPG_SBT",
     "label": "WSPPG - SBT",
-    "title": "Calculate the WSPPG - SBT",
+    "title": "WSPPG - SBT calculations",
     "visible": true,
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/wsppg_sbt.html",
@@ -164,7 +164,7 @@
   },{
     "id": "NORCOMBINE",
     "label": "NorCombine",
-    "title": "NorCombine",
+    "title": "Sample/experiment combination",
     "visible": true,
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/norcombine.html",
@@ -354,8 +354,8 @@
     }]
   },{
     "id": "ptm",
-    "label": "Basic PTM Workflow",
-    "sdesc": "<p><i>Basic PTM Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
+    "label": "PTM Workflow",
+    "sdesc": "<p><i>PTM Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes validation of peptide-spectrum matches (PSMs) through pRatio, calculation of isotope channel ratios and statistical assessment of alterations to peptide, protein and functional category abundance based on the weighted spectrum, peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
     "description": "Long description for Basic Workflow. You can include HTML",
     "samples": [{
       "id": "ptm/wspp_sbt",
