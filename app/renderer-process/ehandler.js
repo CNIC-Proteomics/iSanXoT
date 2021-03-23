@@ -91,7 +91,7 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
     }
   };
 
-  // events for the INPUT directory and OUTPUT directory
+  // events for the inputs
   $('#__MAIN_INPUTS_INDIR__  button').click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
@@ -106,6 +106,22 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
       let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
       if ( inpt !== undefined ) {
         $(`#__MAIN_INPUTS_OUTDIR__ input`).val(`${inpt}`);
+      }
+    });
+  });
+  $('#__MAIN_INPUTS_PSMFILE__  button').click(function() {
+    dialog.showOpenDialog(mainWindow).then((files) => {
+      let inpt = extractInputDirectoryFile(files, `No input file selected`);
+      if ( inpt !== undefined ) {
+        $(`#__MAIN_INPUTS_PSMFILE__ input`).val(`${inpt}`);
+      }
+    });
+  });
+  $('#__MAIN_INPUTS_PDMFILE__  button').click(function() {
+    dialog.showOpenDialog(mainWindow).then((files) => {
+      let inpt = extractInputDirectoryFile(files, `No input file selected`);
+      if ( inpt !== undefined ) {
+        $(`#__MAIN_INPUTS_PDMFILE__ input`).val(`${inpt}`);
       }
     });
   });
