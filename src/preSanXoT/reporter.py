@@ -52,6 +52,11 @@ COL_VARS = {
 # ROOT_FOLDER = '/names/'
 
 
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import createID
 
 ###################
 # Local functions #
@@ -277,7 +282,7 @@ def add_relations(idf, file):
     # to add the relationship
     if len(ints) == 1:
         r = ints[0]
-        idf = pd.merge(idf, df, on=[r])
+        idf = pd.merge(idf, df, on=[r], how='outer')
     return idf
 
 #################
@@ -369,7 +374,11 @@ def main(args):
 
     
     logging.info("print output file")
-    df.to_csv(args.outfile, sep="\t", index=False)
+    # print to tmp file
+    f = f"{args.outfile}.tmp"
+    df.to_csv(f, sep="\t", index=False)
+    # rename tmp file deleting before the original file 
+    createID.print_outfile(f)
 
 
 
