@@ -110,16 +110,11 @@ def main(args):
     indat = pd.read_csv(args.infiles, sep="\t", na_values=['NA'], low_memory=False)
 
     logging.info("read relationship files")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-    #     indat = executor.map(read_infiles,args.refiles.split(";"))
-    # indat = pd.concat(indat)
-    redat = pd.read_csv(args.refiles, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
-    
+    redat = pd.read_csv(args.refiles, sep="\t", usecols=['idinf','idsup','n','tags'], na_values=['NA'], low_memory=False)
     # rename columns of relation file because we are going to use the 'idsup' as 'idinf'
-    logging.info("rename columns of relationship files")
-    redat.rename(columns={'idinf':'idinf_rel', 'idsup':'idinf', 'tags': 'tags_rel'}, inplace=True)
+    redat.rename(columns={'idinf':'idinf_rel', 'idsup':'idinf', 'n':'n_rel', 'tags':'tags_rel'}, inplace=True)
 
-    # merge df's based on 'idinf' column
+    # merge (intersection) df's based on 'idinf' column
     logging.info("merge df's based on 'idinf' column")
     indat = pd.merge(indat,redat, on='idinf')
 
@@ -131,15 +126,7 @@ def main(args):
                 t = t.replace('\!','').replace('!','')
                 indat = indat[indat['tags_rel'] != t ]
     
-    # add the number of proteins (idinf_rel) per category (idinf): nq
-    df = indat.groupby('idinf').agg({
-        'idinf_rel': 'count'
-    })
-    df.rename(columns={'idinf_rel': 'nq'}, inplace=True)
-    df.reset_index(inplace=True)
-    indat = pd.merge(indat, df, on='idinf')
-    
-    # apply given filter. Recomendation: (FDR < 0.05) & (nq > 10) & (nq < 100)
+    # apply given filter. Recomendation: (FDR < 0.05) & (n_rel > 10) & (n_rel < 100)
     if args.filters and not args.filters.isspace():
         indat = filter_dataframe(indat, args.filters)
     

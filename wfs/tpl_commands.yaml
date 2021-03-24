@@ -1378,14 +1378,14 @@
   - name: sanson_higher_levels
     infiles:
       -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_HIG_LEVEL__2__WF_HIG_NORM___outStats.tsv
-      -r: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
+      -r: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
     outfiles:
       -o: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__2__WF_HIG_NORM___clean.tsv
     parameters:
       tag:
         --tags: '!out'
       filter:
-        -f: '(FDR < 0.05) & (nq > 10) & (nq < 100)'
+        -f: '(FDR < 0.05) & (n_rel > 10) & (n_rel < 100)'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/createSansonHighLevel.py" '
 
