@@ -3,6 +3,7 @@
  */
 let exceptor = require('./exceptor');
 let importer = require('./imports');
+let fs = require('fs');
 
 
 /*
@@ -79,14 +80,16 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
     return out;
   };
   // fill the table with the input files from the given directory
+  // add only files end with...
   function fillInputFilesTable(dir) {
-    // Imported variables
-    let fs = require('fs');
-
     let files = fs.readdirSync(dir);
     if ( files !== undefined ) {
+      let nrow = 0;
       for (var i = 0; i < files.length; i++) {
-        $(`[id^=main_inputs] #panel-main_inputs .tasktable`).handsontable('setDataAtCell', i, 0, `${dir}/${files[i]}`);
+        if ( files[i].endsWith("PSMs.txt") ) {
+          $(`[id^=main_inputs] #panel-main_inputs`).next('.tasktable').handsontable('setDataAtCell', nrow, 0, `${dir}/${files[i]}`);
+          nrow++;
+        }
       }
     }
   };
