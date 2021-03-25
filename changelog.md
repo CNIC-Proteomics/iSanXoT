@@ -52,6 +52,38 @@ DATE: 2021_03
 
 + TODO!! NEW QUANTIFICATION COMMAND!!
 
++ TODO!! ARREGLAR CUANDO NO ABRE UN PROYECTO SI ESTAMOS EN LA PARTE DE LOGS"!!"
+
++ TODO!! ARREGLAR EL ERROR QUE CUANDO ESCRIBES UN OUTPUT DEL TIPO "Control_1_cArt/cQ" (subcarpeta), que se creen bien los "OUTPUTFILES" y no HAYA UN ERROR DE "output cyclic". Ejemplo con 
+S:\U_Proteomica\LABS\LAB_ARR\MouseLDL-HighFattyDiet\PTMs\iSanXoT_029
+
+
+___
+## 0.2.9
+```
+DATE: 2021_03
+```
+
+### Highlights
+
++ The Basic PTM workflow is optimised.
+
+### Changes in the Graphical User Interface
+
++ Open correctly the dialog to load the input files in a PTM workflow.
+
++ Style changes.
+
++ Load correctly the "input file" table.
+
+### Changes in the Code Workflow
+
++ The createRels program admits the ':' delimter for the join of columns.
+
++ The REPORT program shows the level without relationship with the high-level. For example, it shows the protein without descriptions or it shows the protein without genes.
+
++ Filtering correctly the file used by SANSON program.
+
 
 ___
 ## 0.2.8
