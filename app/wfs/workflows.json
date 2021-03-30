@@ -43,6 +43,19 @@
       { "type": "required", "id": "experiment", "name": "Experiment" }
     ]
   },{
+    "id": "CREATE_ID_QUANTIFICATION",
+    "label": "Input files",
+    "title": "Provide input files",
+    "visible": true,
+    "panel": "panels/main_inputs2.html",
+    "help_modal": "hmodals/main_inputs.html",
+    "params": [
+      { "type": "required", "id": "infile", "name": "Infile" },
+      { "type": "required", "id": "experiment", "name": "Experiment" },
+      { "type": "optional", "id": "mzfile", "name": "mz File" },
+      { "type": "optional", "id": "type_tmt", "name": "Type of TMT" }
+    ]
+  },{
     "id": "CREATE_ID-JOINER",
     "label": "Input files",
     "title": "Provide input files",
@@ -275,7 +288,7 @@
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "optional", "id": "rep_file", "name": "Merge with report file" },
       { "type": "optional", "id": "rel_file", "name": "Merge with relationship file" },
-      { "type": "optional", "id": "show_cols", "name": "Which cols you want to show" },
+      { "type": "optional", "id": "show_cols", "name": "Level Names to show" },
       { "type": "optional", "id": "filter", "name": "Filter" }
     ]
   }],
@@ -332,7 +345,7 @@
     }],
     "works": [{
       "id": "main_inputs",
-      "cmds": ["CREATE_ID"]
+      "cmds": ["CREATE_ID_QUANTIFICATION"]
     },{
       "id": "fdr",
       "cmds": ["FDR-MASTERQ"]

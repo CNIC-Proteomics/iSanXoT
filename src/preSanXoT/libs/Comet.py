@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # import modules
+import os
 import pandas as pd
 import numpy as np
 import re
@@ -19,9 +20,12 @@ def cXCorr(df):
     return cXCorr1
 
 def parser_protein_acessions(prot):
-	p=list(prot.replace(",",";",regex=True).str.split(";"))
-	p=[";".join(re.sub(r".*(\|(.*?)\|).*", r'\2', i)) for i in p]
-	return p
+    '''
+    Parse the protein description if it comes from UniProt (SwissProt and TrEMBL)
+    '''
+    p = list(prot.replace(",",";",regex=True).str.split(";"))
+    p = [";".join([ re.sub(r".*(\|(.*?)\|).*", r'\2', i) if re.match(r'^[sp|tr]', i) else i for i in x]) for x in p]
+    return p
 
 def processing_infiles(file, Expt):
     '''
@@ -40,24 +44,23 @@ def processing_infiles(file, Expt):
         'charge':        'Charge',
         'xcorr':         'XCorr',
         'plain_peptide': 'Sequence',
-        'protein':       'Protein Accessions',
         'modifications': 'Modifications'
     }, inplace=True)
     # add the Spectrum File column from the input file name
-    df["Spectrum_File"] = file.split(".")[0]
+    df["Spectrum_File"] = os.path.basename(file)
     # create Scan_Id
-    df["Scan_Id"] = df["Spectrum_File"].map(str) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
+    df["Scan_Id"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
     # calculate cXCorr
     df["cXCorr"] = cXCorr(df)
-    # TODO!! we have to think in the Protein Accessions columns between the different search engines
-    # df["Protein Accessions"]=parser_protein_acessions(df["Protein Accessions"])
+    # parse the protein description
+    df["Protein_Accessions"] = parser_protein_acessions(df["protein"])
     return df
 
 def targetdecoy(df, tagDecoy, sep):
     '''
     Assing target and decoy proteins
     '''    
-    z = list(df["Protein Accessions"].str.split(sep))
+    z = list(df["Protein_Accessions"].str.split(sep))
     p = [(all(tagDecoy  in item for item in i )) for i in z]
     r = [0 if i==True else 1 for i in p]
     return r

@@ -86,7 +86,7 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
     if ( files !== undefined ) {
       let nrow = 0;
       for (var i = 0; i < files.length; i++) {
-        if ( files[i].endsWith("PSMs.txt") ) {
+        if ( files[i].endsWith("PSMs.txt") || files[i].endsWith("result.tsv") || files[i].endsWith(".txt") ) {
           $(`[id^=main_inputs] #panel-main_inputs`).next('.tasktable').handsontable('setDataAtCell', nrow, 0, `${dir}/${files[i]}`);
           nrow++;
         }

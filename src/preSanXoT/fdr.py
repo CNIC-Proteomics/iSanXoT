@@ -35,21 +35,22 @@ import Comet
 # Local functions #
 ###################
 
-def select_search_engines(file):
-    # read the first line to know which searh engine we have.
-    with open(file) as f: first_line = f.readline()
-    fa = re.findall(r'^# search_engine: ([^\s]*)', first_line)
-    if fa: se = fa[0]
-    else: se = None
-    return se
+# def select_search_engines(file):
+#     # read the first line to know which searh engine we have.
+#     with open(file) as f: first_line = f.readline()
+#     fa = re.findall(r'^# search_engine: ([^\s]*)', first_line)
+#     if fa: se = fa[0]
+#     else: se = None
+#     return se
 
 def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
     # read which search engines we have
-    se = select_search_engines(file)
+    se = createID.select_search_engines(file)
     # processing the input files depending on
     if se == "PD": df = PD.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
     elif se == "Comet": df = Comet.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
     elif se == "MSFragger": df = MSFragger.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
+    else: df = None
     return df
 
 def FdrXc(df, typeXCorr, FDRlvl):
@@ -106,7 +107,7 @@ def SequenceMod(df, mods, file):
     # get the dataframe from the input tuple df=(exp,df)
     df = df[1]
     # read which search engines we have
-    se = select_search_engines(file)
+    se = createID.select_search_engines(file)
     # create sequence with modifications depending on
     if se == "PD": df["SequenceMod"] = PD.SequenceMod(df, mods)
     elif se == "Comet": df["SequenceMod"] = Comet.SequenceMod(df)
@@ -129,6 +130,10 @@ def main(args):
   
     logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass")
     ddf = preProcessing(args.infile, deltaMassThreshold, tagDecoy, JumpsAreas)
+    if ddf is None:
+        sms = "At least, one of input files is wrong"
+        logging.error(sms)
+        sys.exit(sms)
 
       
     logging.info("calculate the FDR by experiment")

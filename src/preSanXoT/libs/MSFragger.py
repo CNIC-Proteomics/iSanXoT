@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # import modules
+import os
 import pandas as pd
 import re
 import itertools
@@ -10,8 +11,11 @@ import itertools
 # Local functions #
 ###################
 def parser_protein_acessions(prot):
-    p=list(prot)
-    p=[re.sub(r".*(\|(.*?)\|).*", r'\2', i) for i in p]
+    '''
+    Parse the protein description if it comes from UniProt (SwissProt and TrEMBL)
+    '''
+    p = list(prot)
+    p = [re.sub(r".*(\|(.*?)\|).*", r'\2', i) if re.match(r'^[sp|tr]', i) else i for i in p]
     return p
 
 def processing_infiles(file, Expt):
@@ -30,22 +34,21 @@ def processing_infiles(file, Expt):
         'hit_rank':          'Search Engine Rank',
         'charge':            'Charge',
         'peptide':           'Sequence',
-        'protein':           'Protein Accessions',
         'modification_info': 'Modifications'
     }, inplace=True)
     # add the Spectrum File column from the input file name
-    df["Spectrum_File"] = file.split(".")[0]
+    df["Spectrum_File"] = os.path.basename(file)
     # create Scan_Id
-    df["Scan_Id"] = df["Spectrum_File"].map(str) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
-    # TODO!! we have to think in the Protein Accessions columns between the different search engines
-    # df["Protein Accessions"]=parser_protein_acessions(df["Protein Accessions"])
+    df["Scan_Id"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
+    # parse the protein description
+    df["Protein_Accessions"] = parser_protein_acessions(df["protein"])
     return df
 
 def targetdecoy(df, tagDecoy, sep):
     '''
     Assing target and decoy proteins
     '''    
-    z = list(df["Protein Accessions"].str.split(sep))
+    z = list(df["Protein_Accessions"].str.split(sep))
     p = [(all(tagDecoy  in item for item in i )) for i in z]
     r = [0 if i==True else 1 for i in p]
     return r

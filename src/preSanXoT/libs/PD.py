@@ -33,12 +33,11 @@ def processing_infiles(file, Expt):
         'Theo MHplus in Da': 'Theo. MH+ [Da]',
         'Delta M in ppm': 'DeltaM [ppm]',
         'Spectrum File': 'Spectrum_File',
-        'First Scan': 'Scan'
+        'First Scan': 'Scan',
+        'Protein Accessions': 'Protein_Accessions'
     }, inplace=True)
-    # delete suffix value    
-    df["Spectrum_File"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True)
     # create Scan_Id
-    df["Scan_Id"] = df["Spectrum_File"].map(str) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
+    df["Scan_Id"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
     # calculate cXCorr
     df["cXCorr"] = cXCorr(df)
     # delete suffix in the headers coming from PD 2.3
@@ -52,7 +51,7 @@ def targetdecoy(df, tagDecoy, sep):
     '''
     Assing target and decoy proteins
     '''    
-    z = list(df["Protein Accessions"].str.split(sep))
+    z = list(df["Protein_Accessions"].str.split(sep))
     p = [(all(tagDecoy  in item for item in i )) for i in z]
     r = [0 if i==True else 1 for i in p]
     return r

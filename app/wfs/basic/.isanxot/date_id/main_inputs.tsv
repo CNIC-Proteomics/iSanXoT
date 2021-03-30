@@ -1,2 +1,2 @@
-#CREATE_ID	
-infile	experiment
+#CREATE_ID_QUANTIFICATION			
+infile	experiment	mzfile	type_tmt

@@ -32,6 +32,11 @@ import MaxQuant
 ####################
 # Common functions #
 ####################
+
+def read_infiles(file):
+    indat = pd.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
+    return indat
+
 def read_command_table(ifiles):
     '''
     read the multiple input files to string and split by command
@@ -65,18 +70,34 @@ def read_command_table(ifiles):
                     indata[c2] = d
     return indata
 
-def select_search_engines(file):
-    # read the first row
+def select_search_engines(inpt):
+    # if the input is file, read the first row
+    # otherwise, we get dataframe
+    if isinstance(inpt, str) and os.path.isfile(inpt):
+        d = pd.read_csv(inpt, nrows=0, sep="\t", comment='#', index_col=False)
+    else:
+        d = inpt
     # determines which kind of searh engines we have.
-    # PD has to be "First Scan" column
-    # The first line is a commnet line in Comet
-    # MSFragger has to be "sannum" column
-    # MaxQuant has to be "PEP" column
-    d = pd.read_csv(file, nrows=0, sep="\t", index_col=False)    
     search_engines = ["PD","Comet","MSFragger","MaxQuant"]
-    cond = ("First Scan" in list(d.columns), len(d.columns) == 4, "scannum" in list(d.columns), "PEP" in list(d.columns))
+    cond = (
+        "DeltaScore" in list(d.columns) and "DeltaCn" in list(d.columns), # PD
+        len(d.columns) == 4 or ("delta_cn" in list(d.columns) and "sp_score" in list(d.columns) and "q_score" in list(d.columns)), # Comet
+        "hyperscore" in list(d.columns) and "nextscore" in list(d.columns), # MSFragger
+        "PEP" in list(d.columns) # MaxQuant
+    )
     se = [i for (i, v) in zip(search_engines, cond) if v][0]
     return se
+
+def get_path_file(i, indir):
+    '''
+    Get the full path
+    '''
+    if os.path.isfile(i):
+        return i        
+    elif os.path.isfile(f"{indir}/{i}"):
+        return f"{indir}/{i}"
+    else:
+        return None
 
 def print_outfile(f):
     '''
@@ -94,10 +115,9 @@ def print_outfile(f):
 # Local functions #
 ###################
 def processing_infiles(file, Expt, se):
-    
-    # se = 'Comet'
-    
-    # processing the input files depending on
+    '''
+    Processing the input files depending on search engine
+    '''
     if se == "PD":
         df = PD.processing_infiles(file, Expt)
     elif se == "Comet":
@@ -110,7 +130,7 @@ def processing_infiles(file, Expt, se):
         return None
     return df
 
-def print_by_experiment(df, expt_se_files, outdir):
+def print_by_experiment(df, outdir, outfname):
     '''
     Print the output file by experiments
     '''
@@ -121,25 +141,11 @@ def print_by_experiment(df, expt_se_files, outdir):
     if not os.path.exists(outdir_e):
         os.makedirs(outdir_e, exist_ok=False)
     # remove obsolete file
-    ofile = f"{outdir_e}/ID.tsv.tmp"
+    ofile = f"{outdir_e}/{outfname}.tmp"
     if os.path.isfile(ofile):
         os.remove(ofile)
-    # print the experiment files with the header
-    # we extract the search engine and the input files for the current experiment
-    # create comment line given the following information:
-    #   - search engines
-    #   - list of input files
-    of = open(ofile, 'w')
-    se = [(i[1],i[2]) for i in expt_se_files if i[0] == exp] # zip(Expt, search_engine, inputfile)
-    if se:
-        s = se[0][0] # get the first value of "search engine"
-        f = [i[1] for i in se] # get the list of input files
-        of.write(f"# search_engine: {s}\n")
-        of.write( "# infiles:\n")
-        of.write( "# {}\n".format("\n# ".join(f)) )
-    df[1].to_csv(of, index=False, sep="\t", line_terminator='\n')
-    of.close()
-    # df[1].to_csv(ofile, sep="\t", index=False)
+    # print
+    df[1].to_csv(ofile, index=False, sep="\t", line_terminator='\n')
     return ofile
 
 
@@ -156,36 +162,48 @@ def main(args):
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
     indata = read_command_table(args.intbl)
+    if not 'CREATE_ID_QUANTIFICATION' in indata:
+        sms = "there is not 'CREATE_ID_QUANTIFICATION' task-table"
+        logging.error(sms)
+        sys.exit(sms)
+    else:    
+        indata = indata['CREATE_ID_QUANTIFICATION']
 
-    if 'CREATE_ID' in indata:
-        logging.info("extract the list of files from the given experiments")
-        infiles = list(indata['CREATE_ID']['infile'])
-        # Append input directory to file list
-        infiles = [i if os.path.isfile(i) else f"{args.indir}/{i}" for i in infiles] 
-        logging.debug(infiles)
-        
-        logging.info("extract the search engines from the given experiments")
-        ses = [select_search_engines(i) for i in infiles] 
-        logging.debug(ses)
-        
-        logging.info("extract the list of experiments")
-        Expt    = list(indata['CREATE_ID']['experiment'])
-        logging.debug(Expt)
-        
-        
-        logging.info("processing the input file")
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            ddf = executor.map( processing_infiles, infiles, Expt, ses )
-        ddf = pd.concat(ddf)
 
-                
-        logging.info("print the ID files by experiments")
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-            tmpfiles = executor.map( print_by_experiment, list(ddf.groupby("Experiment")), itertools.repeat(zip(Expt,ses,infiles)), itertools.repeat(args.outdir) )  
-        # rename tmp file deleting before the original file 
-        [print_outfile(f) for f in list(tmpfiles)]
-    else:
-        logging.error("there is not 'CREATE_ID' command")
+    logging.info("extract the list of files from the given experiments")
+    infiles = [get_path_file(i, args.indir) for i in list(indata['infile']) if not pd.isna(i)] # if apply, append input directory to file list
+    logging.debug(infiles)
+    if not all(infiles):
+        sms = "At least, one of input files is wrong"
+        logging.error(sms)
+        sys.exit(sms)
+
+
+    logging.info("extract the search engines from the given experiments")
+    ses = [select_search_engines(i) for i in infiles] 
+    logging.debug(ses)
+    
+    
+    logging.info("extract the list of experiments")
+    Expt = list(indata['experiment'])
+    logging.debug(Expt)
+    
+    
+    logging.info("processing the input file")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
+        ddf = executor.map( processing_infiles, infiles, Expt, ses )
+    ddf = pd.concat(ddf)
+    # ddf = processing_infiles(infiles[0], Expt[0], ses[0])
+
+            
+    logging.info("print the ID files by experiments")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+        tmpfiles = executor.map( print_by_experiment,
+                                list(ddf.groupby("Experiment")),
+                                itertools.repeat(args.outdir),
+                                itertools.repeat("ID.tsv") )
+    [print_outfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
+        
 
 
 

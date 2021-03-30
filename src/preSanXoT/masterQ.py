@@ -26,19 +26,6 @@ __status__ = "Development"
 
 
 # -------
-# def extract_proteins(df, tagDecoy):
-#     '''
-#     Extract the proteins list discarding DECOY proteins
-#     '''
-#     # create a list for both lists
-#     ps = list(df['Protein Accessions'].fillna("").str.split("\s*;\s*"))
-#     # remove DECOY
-#     da = [ [i for i in s if i and not (tagDecoy in i)] for s in ps ]
-#     # get the first protein
-#     pm = [ s[0] for s in da ]
-#     # create the list of proteins discarding DECOY
-#     pr = [ ";".join([i for i in s[1:] if i]) for s in da ]
-#     return pm,pr
 
 def extract_proteins(df, tagDecoy, indb):
     '''
@@ -81,17 +68,17 @@ def get_num_peptides(df):
     Create the report with the protein values
     '''
     # convert string to list
-    df1 = df['Protein Accessions'].str.split(r'\s*;\s*')
+    df1 = df['Protein_Accessions'].str.split(r'\s*;\s*')
     # get unique values of proteins
     df1 = df1.apply(lambda x: np.unique(x))
     # concat with sequnce
     df2 = pd.concat([df['SequenceMod'], df1], axis=1, sort=False)
     # explode the list
-    df2 = df2.explode('Protein Accessions')
+    df2 = df2.explode('Protein_Accessions')
     # group by protein and sum the number of peptides
-    df2 = df2.groupby('Protein Accessions')['SequenceMod'].count().reset_index()
+    df2 = df2.groupby('Protein_Accessions')['SequenceMod'].count().reset_index()
     # rename and drop
-    df2.rename(columns={'SequenceMod': 'num_peptides', 'Protein Accessions': 'Proteins'}, inplace=True)
+    df2.rename(columns={'SequenceMod': 'num_peptides', 'Protein_Accessions': 'Proteins'}, inplace=True)
     # return
     return df2
 
@@ -163,7 +150,7 @@ def main(args):
         # extract the list of proteins discarding DECOY proteins
         # extract the descripton of proteins
         logging.info('create a report with the proteins info')
-        indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins(indat['Protein Accessions'], args.lab_decoy, indb)
+        indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins(indat['Protein_Accessions'], args.lab_decoy, indb)
     else:
         # Sort the proteins by Num. Peptides and Alphanumeric
 
@@ -172,10 +159,10 @@ def main(args):
 # CONCURRENT FUTURE!!!
             
         logging.info('create the report with the peptides and proteins')
-        npeptides = get_num_peptides( indat[['SequenceMod','Protein Accessions']] )
+        npeptides = get_num_peptides( indat[['SequenceMod','Protein_Accessions']] )
 
         logging.info('calculate the masterQ')
-        indat["Protein"],indat["Protein_Redundancy"] = get_master_protein(indat['Protein Accessions'], npeptides)
+        indat["Protein"],indat["Protein_Redundancy"] = get_master_protein(indat['Protein_Accessions'], npeptides)
 
     
     logging.info('print output')

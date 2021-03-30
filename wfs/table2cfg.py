@@ -556,7 +556,7 @@ def main(args):
     logging.info("create a command for each table row")
     tpl['commands'] = []
     for cmd,df in indata.items():
-        if cmd == 'CREATE_ID' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ' or cmd == 'JOINER':
+        if cmd == 'CREATE_ID' or cmd == 'CREATE_ID_QUANTIFICATION' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ' or cmd == 'JOINER':
             icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
             if icmd and not df.empty:
                 i = icmd[0]

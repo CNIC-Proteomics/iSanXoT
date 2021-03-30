@@ -18,7 +18,7 @@ let wf_date_id = undefined;
 
 const { ipcRenderer } = require('electron');
 const { BrowserWindow, dialog } = require('electron').remote
-let mainWindow = BrowserWindow.getFocusedWindow();
+const mainWindow = BrowserWindow.getFocusedWindow();
 
 
 /*

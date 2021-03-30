@@ -10,8 +10,8 @@ install --no-warn-script-location	pandas==0.25.2
 install --no-warn-script-location	more-itertools==7.2.0
 install --no-warn-script-location	concurrent-utils==0.2.0
 install --no-warn-script-location	biopython==1.74
-# install --no-warn-script-location	lxml==4.6.2
-# install --no-warn-script-location	scikit-learn==0.24.1
+install --no-warn-script-location	lxml==4.6.2
+install --no-warn-script-location	scikit-learn==0.24.1
 $MANAGER=node/npm
 config set			scripts-prepend-node-path true
 install --save-dev --save-exact --global	electron@^7.x.x

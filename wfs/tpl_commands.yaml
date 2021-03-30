@@ -25,6 +25,42 @@
 ###################
 # COMMAND TEMPLATE 
 # Description: 
+- name: CREATE_ID_QUANTIFICATION
+  description: Create the ID and ID-quant files for iSanXoT
+  force: 0
+  rules:
+  - name: createID
+    infiles:
+      -i: __MAIN_INPUTS_INDIR__
+      -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
+    outfiles:        
+      -x: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
+    parameters:
+      outdir:
+        -o: __MAIN_INPUTS_EXPDIR__
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createID.py" -w __NCPU__ __WF_VERBOSE__ '
+  - name: createQuant
+    infiles:
+      -i: __MAIN_INPUTS_INDIR__
+      -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
+      -r: __ISANXOT_SRC_HOME__/src/preSanXoT/reporter_ion_isotopic.tsv
+      -xx: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
+    outfiles:        
+      -x: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-quant.tsv
+    parameters:
+      outdir:
+        -o: __MAIN_INPUTS_EXPDIR__
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createQuant.py" -w __NCPU__ __WF_VERBOSE__ '
+###################
+
+
+
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
 - name: JOINER
   description: Join the multiple experiment input-files in one unique file
   force: 0
@@ -44,25 +80,6 @@
 
 ###################
 # COMMAND TEMPLATE 
-# Description: 
-- name: MERGE_INFILES
-  description: Merge multiple input files in one based on given columns
-  force: 0
-  rules:
-  - name: mergeID
-    infiles:
-      -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
-    outfiles:
-      -o: __MAIN_INPUTS_EXPDIR__/ID-q.tsv
-    parameters:
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/mergerInfiles.py" -w __NCPU__ __WF_VERBOSE__ '
-###################
-
-
-
-###################
-# COMMAND TEMPLATE 
 # Description:
 - name: FDR
   description: Calculation of FDR
@@ -70,9 +87,9 @@
   rules:
   - name: fdr
     infiles:
-      -i: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
+      -i: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-quant.tsv
     outfiles:
-      -o: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-fdr.tsv
+      -o: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-qfdr.tsv
     parameters:
       threshold:
         -t: 15
@@ -99,7 +116,7 @@
   rules:
   - name: masterq
     infiles:
-      -ii: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-fdr.tsv
+      -ii: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-qfdr.tsv
     outfiles:
       -o: __MAIN_INPUTS_EXPDIR__/ID-mq.tsv
     parameters:
