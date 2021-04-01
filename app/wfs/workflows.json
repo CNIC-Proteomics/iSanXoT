@@ -43,7 +43,7 @@
       { "type": "required", "id": "experiment", "name": "Experiment" }
     ]
   },{
-    "id": "CREATE_ID_QUANTIFICATION",
+    "id": "CREATE_IDQUANT",
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
@@ -345,7 +345,7 @@
     }],
     "works": [{
       "id": "main_inputs",
-      "cmds": ["CREATE_ID_QUANTIFICATION"]
+      "cmds": ["CREATE_IDQUANT"]
     },{
       "id": "fdr",
       "cmds": ["FDR-MASTERQ"]

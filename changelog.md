@@ -24,38 +24,37 @@ DATE: 2021_03
 
 ### Changes in the Code Workflow
 
-+ TODO??? Now iSanXoT accepts inputs from the search engines: Comet, MSFragger, and MaxQuant.
-
 + TODO!! New program that reports some information (variances, ...) for each integration.
 
 + TODO!! WE HAVE TO IMPROVE THE CREATERELS PROGRAM!! SIMPLYFY THE CODE AND ADD THE THIRD COLUMN.
 
++ TODO!! ARREGLAR CUANDO NO ABRE UN PROYECTO SI ESTAMOS EN LA PARTE DE LOGS"!!"
+
++ TODO!! ARREGLAR EL ERROR QUE CUANDO ESCRIBES UN OUTPUT DEL TIPO "Control_1_cArt/cQ" (subcarpeta), que se creen bien los "OUTPUTFILES" y no HAYA UN ERROR DE "output cyclic". Ejemplo con 
+S:\U_Proteomica\LABS\LAB_ARR\MouseLDL-HighFattyDiet\PTMs\iSanXoT_029
+
 
 ___
-## 0.2.9_QUANTIFICATION
+## 0.2.10
 ```
-DATE: 2021_03
+DATE: 2021_04
 ```
 
 ### Highlights
 
-+ TODO the quantification!!! Now, iSanXoT accepts inputs from the search engines: PD, Comet, MSFragger, and MaxQuant.
++ Now iSanXoT extracts the quantification from mzML files.
+
++ iSanXoT accepts identifications from the search engines: PD, Comet and MSFragger.
 
 ### Changes in the Graphical User Interface
 
 
 ### Changes in the Code Workflow
 
-+ TODO the quantification!!! iSanXoT accepts inputs from the search engines: PD, Comet, MSFragger, and MaxQuant.
++ We have joined in a program the identification and quantification programs (createIDQuant).
 
-+ TODO!!! In the case of duplicated scans for Comet results, we take the scans with the best cXCorr and then, with the duplicated, we get the first one.
++ In the case of duplicated scans for Comet results, we take the scans with the best cXCorr and then, with the duplicated, we get the first one.
 
-+ TODO!! NEW QUANTIFICATION COMMAND!!
-
-+ TODO!! ARREGLAR CUANDO NO ABRE UN PROYECTO SI ESTAMOS EN LA PARTE DE LOGS"!!"
-
-+ TODO!! ARREGLAR EL ERROR QUE CUANDO ESCRIBES UN OUTPUT DEL TIPO "Control_1_cArt/cQ" (subcarpeta), que se creen bien los "OUTPUTFILES" y no HAYA UN ERROR DE "output cyclic". Ejemplo con 
-S:\U_Proteomica\LABS\LAB_ARR\MouseLDL-HighFattyDiet\PTMs\iSanXoT_029
 
 
 ___

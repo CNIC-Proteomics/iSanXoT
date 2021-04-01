@@ -35,14 +35,6 @@ import Comet
 # Local functions #
 ###################
 
-# def select_search_engines(file):
-#     # read the first line to know which searh engine we have.
-#     with open(file) as f: first_line = f.readline()
-#     fa = re.findall(r'^# search_engine: ([^\s]*)', first_line)
-#     if fa: se = fa[0]
-#     else: se = None
-#     return se
-
 def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
     # read which search engines we have
     se = createID.select_search_engines(file)

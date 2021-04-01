@@ -54,6 +54,15 @@ def processing_infiles(file, Expt):
     df["cXCorr"] = cXCorr(df)
     # parse the protein description
     df["Protein_Accessions"] = parser_protein_acessions(df["protein"])
+    # In the case of duplicated scans, we take the scans with the best cXCorr and if the xcore is duplicated we then get the first one.
+    # move the Scan_Id to the last column
+    df = df.sort_values(by=["Scan_Id","cXCorr","Protein_Accessions"], ascending=[True, False, False]) \
+        .groupby(["Scan_Id"], sort=False) \
+        .first() \
+        .reset_index()
+    c = list(df.columns)
+    c = c[1:] + [c[0]]
+    df = df[c]
     return df
 
 def targetdecoy(df, tagDecoy, sep):

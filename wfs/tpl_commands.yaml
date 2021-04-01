@@ -25,34 +25,22 @@
 ###################
 # COMMAND TEMPLATE 
 # Description: 
-- name: CREATE_ID_QUANTIFICATION
-  description: Create the ID and ID-quant files for iSanXoT
+- name: CREATE_IDQUANT
+  description: Create a file with the identifications and if apply, the quantification
   force: 0
   rules:
-  - name: createID
+  - name: createIDQuant
     infiles:
       -i: __MAIN_INPUTS_INDIR__
       -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
+      -r: __ISANXOT_SRC_HOME__/src/preSanXoT/reporter_ion_isotopic.tsv
     outfiles:        
       -x: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
     parameters:
       outdir:
         -o: __MAIN_INPUTS_EXPDIR__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createID.py" -w __NCPU__ __WF_VERBOSE__ '
-  - name: createQuant
-    infiles:
-      -i: __MAIN_INPUTS_INDIR__
-      -t: __MAIN_INPUTS_DATFILE_MAIN_INPUTS__
-      -r: __ISANXOT_SRC_HOME__/src/preSanXoT/reporter_ion_isotopic.tsv
-      -xx: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
-    outfiles:        
-      -x: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-quant.tsv
-    parameters:
-      outdir:
-        -o: __MAIN_INPUTS_EXPDIR__
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createQuant.py" -w __NCPU__ __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/createIDQuant.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
 
 
@@ -87,9 +75,9 @@
   rules:
   - name: fdr
     infiles:
-      -i: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-quant.tsv
+      -i: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID.tsv
     outfiles:
-      -o: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-qfdr.tsv
+      -o: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-fdr.tsv
     parameters:
       threshold:
         -t: 15
@@ -116,7 +104,7 @@
   rules:
   - name: masterq
     infiles:
-      -ii: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-qfdr.tsv
+      -ii: __MAIN_INPUTS_EXPDIR__/__WF_EXPERIMENT__/ID-fdr.tsv
     outfiles:
       -o: __MAIN_INPUTS_EXPDIR__/ID-mq.tsv
     parameters:
