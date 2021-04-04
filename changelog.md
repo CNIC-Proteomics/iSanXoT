@@ -1,22 +1,14 @@
 ___
-## 0.2.9_LABEL_FREE
+## 0.2.X
 ```
-DATE: 2021_03
+DATE: 2021_YY
 ```
 
 ### Highlights
 
-+ Label-Free workflow.
-
-+ Documentation.
-
-+ We have include the Ecoli species.
++ TODO!! Documentation.
 
 ### Changes in the Graphical User Interface
-
-+ Label-Free workflow.
-
-+ Documentation.
 
 + TODO!! We have included more worked-out examples from MSFragger result and Comet.
 
@@ -25,8 +17,6 @@ DATE: 2021_03
 ### Changes in the Code Workflow
 
 + TODO!! New program that reports some information (variances, ...) for each integration.
-
-+ TODO!! WE HAVE TO IMPROVE THE CREATERELS PROGRAM!! SIMPLYFY THE CODE AND ADD THE THIRD COLUMN.
 
 + TODO!! ARREGLAR CUANDO NO ABRE UN PROYECTO SI ESTAMOS EN LA PARTE DE LOGS"!!"
 
@@ -46,14 +36,26 @@ DATE: 2021_04
 
 + iSanXoT accepts identifications from the search engines: PD, Comet and MSFragger.
 
++ Label-Free workflow.
+
++ We have include the Ecoli species.
+
 ### Changes in the Graphical User Interface
 
++ The GUI includes the CREATE_IDQUANT command.
+
++ Label-Free workflow.
 
 ### Changes in the Code Workflow
 
 + We have joined in a program the identification and quantification programs (createIDQuant).
 
 + In the case of duplicated scans for Comet results, we take the scans with the best cXCorr and then, with the duplicated, we get the first one.
+
++ createRes:
+TODO!! WE HAVE TO IMPROVE THE CREATERELS PROGRAM!! SIMPLYFY THE CODE AND ADD THE THIRD COLUMN.
+
+
 
 
 
