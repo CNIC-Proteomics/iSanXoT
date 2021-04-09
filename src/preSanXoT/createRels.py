@@ -8,7 +8,6 @@ import logging
 import re
 import pandas as pd
 import numpy as np
-# import concurrent.futures
 
 
 # Module metadata variables
@@ -20,113 +19,61 @@ __maintainer__ = "Jose Rodriguez"
 __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
+
 ###################
 # Local functions #
 ###################
+
 def read_infiles(file):
     indat = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
     return indat
 
-def get_cols_from_inheaders(df, headers):
-    if not df.empty:
-        cols = df.columns
-        cols = re.split(r'\s*&\s*', headers) if headers else []
-        for c in cols:
-            if not( '*' in c or '!' in c or ('[' in c and ']' in c) or ('{' in c and '}' in c) ) and not( c in cols ):
-                logging.error(f"The column name {c} does not exit in the given files")
-                sys.exit(1)
-    return cols
 
-def exploding_columns(idf):
-    def _exploding_columns(idf, x, y):
-        # Exploding into multiple cells
-        # We start with creating a new dataframe from the series with  as the index
-        df = pd.DataFrame(idf[x].str.split(';').tolist(), index=idf[y]).stack()
-        # We now want to get rid of the secondary index
-        # To do this, we will make  as a column (it can't be an index since the values will be duplicate)
-        df = df.reset_index([0,y])
-        # rename colum
-        df.rename(columns={0:x}, inplace=True)
-        # reorder columns from the given df
-        cols = idf.columns.tolist()
-        df = df[cols]
-        return df
-        
-    cols = idf.columns.tolist()
-    it = iter(cols)
-    for x in it:
-        y = next(it)
-        # check if ';' exits in column
-        df = _exploding_columns(idf, x, y) if any(idf[x].str.contains(';')) else idf
-        df = _exploding_columns(df, y, x) if any(idf[y].str.contains(';')) else df
-    return df
-    
-def create_crossref_dataframe(inf_df, sup_df):
-    # if given output dataframe is not empty and has only one column, then 
-    # make the cross-reference between the given output df and the calculated df
-    df = pd.DataFrame()
-    if not inf_df.empty:
-        inf_cols = inf_df.columns.to_list()
-        sup_cols = []
-        for ic in inf_cols:
-            sup_cols += [ c for c in sup_df.columns if sup_df[c].isin(inf_df[ic]).any() ]
-        # if we have xref columns, then we merge both dataframes
-        if sup_cols and len(inf_cols) == len(sup_cols):
-            df = pd.merge(sup_df, inf_df, left_on=sup_cols, right_on=inf_cols)
-        else:
-            df = sup_df
-    else:
-        df = sup_df
+def get_cols_from_inheaders(df_cols, headers):
+    out = []
+    if df_cols and headers:
+        if isinstance(headers, str): headers = re.split(r'\s*:\s*', headers)
+        for c in headers:
+            if c in df_cols:
+                out.append(c)
+            elif '*' in c:
+                c = c.replace('*','\w+')
+                for s in df_cols:
+                    if re.match(c, s):
+                        out = out + [ m for m in re.findall(c, s)]
+            elif '[' in c and ']' in c:
+                out.append(c)
+            elif '{' in c and '}' in c:
+                out.append(c)
+    return out
 
-    return df
 
 def _extract_columns(idf, cols):
     df = pd.DataFrame()
-    for col in cols:
-        # check if the col is a constant value: [1]
-        # check if the col is a the order of column: {1}
-        # otherwise, the col is the list of column names
-        if '[' in col and ']' in col:
-            c = re.findall(r'\[([^\]]*)\]', col)[0]
-            # create a column with the given constant
-            # extract the column with the constant
-            idf[col] = c
-            idf = idf.reset_index()
-            df[col] = idf[col]
-        elif '{' in col and '}' in col:
-            c = int(re.findall(r'\{([^\}]*)\}', col)[0])
-            # rename the output header
-            df.rename(columns={col: idf.columns[c]}, inplace=True)
-            # extract the column by position
-            df[idf.columns[c]] = idf[idf.columns[c]]
-        elif '*' in col:
-            # convert to regex replacing '*' to '\w+'
-            col = col.replace('*','\w+')
-            col = rf"({col})"
-            # get the columns that match with the given col name (regex)
-            ms = []
-            for s in idf.columns:
-                if re.match(col, s):
-                    ms = ms + [ m for m in re.findall(col, s)]
-            df[ms] = idf[ms]
-        elif '!' in col:
-            # delete ! char
-            col = col.replace('!','')
-            # remove column
-            df.drop(col, axis=1, inplace=True, errors='ignore')
-        else:
-            # # extract the list of columns by name
-            # if col in idf.columns:
-            #     df[col] = idf[col]
-            # extract the list of columns by name separated by the delimeter ':'
-            for s in col.split(":"):
-                if s in idf.columns:
-                    if df.empty:
-                        df[col] = idf[s]
-                    else:
-                        df[col] = df[col] + ":" + idf[s]
-    
+    # get the first columns
+    col = cols[0] if len(cols) >= 1 else None
+    # check if the col is a constant value: [X]
+    # check if the col is a the order of column: {1}
+    # otherwise, the col is the list of column names
+    if col and '[' in col and ']' in col:
+        c = re.findall(r'\[([^\]]*)\]', col)[0]
+        # create a column with the given constant
+        # extract the column with the constant
+        idf[col] = c
+        idf = idf.reset_index()
+        df[col] = idf[col]
+    elif col and '{' in col and '}' in col:
+        c = int(re.findall(r'\{([^\}]*)\}', col)[0])
+        # rename the output header
+        df.rename(columns={col: idf.columns[c]}, inplace=True)
+        # extract the column by position
+        df[idf.columns[c]] = idf[idf.columns[c]]
+    elif col:
+        # extract the list of columns by name
+        df = idf[cols]
+            
     return df
+
 
 def _filter_columns(idf, filters):
     
@@ -175,72 +122,77 @@ def _filter_columns(idf, filters):
     
     return idf
 
-def extract_columns(idf, list_cols, list_names, filters=None):
+
+def extract_columns(idf, name, cols, filters=None):
     # init output dataframe
-    odf = pd.DataFrame(columns=list_names)
-    # the number of columns and names has to be te same
-    if len(list_cols) == len(list_names):
-        # look through the list of columns and names
-        for i,cols in enumerate(list_cols):
-            # get the name of colums
-            name = list_names[i]
+    odf = pd.DataFrame(columns=[name])
+    
+    # extract columns
+    df = _extract_columns(idf, cols)
+    
+    # Check if we get something
+    if df.empty:
+        logging.error(f"We can not extract data from the {name} column")
+        sys.exit(1)
+    else:
+        
+        # Filter the columns
+        if filters:
+            df = _filter_columns(df, filters)
 
-            # extract columns
-            df = _extract_columns(idf, cols)
-                    
-            # Check if we get something
-            if df.empty:
-                logging.error(f"We can not extract data from the {name} column")
-                sys.exit(1)
+        # If there are multiple columns, we concatenate in one
+        c = df.columns.tolist()
+        if len(c) > 1:
+            if ':' in name:
+                odf[name] = [":".join([str(j) for j in s if not pd.isnull(j)]) for s in df.to_numpy()]
             else:
-                # filter columns
-                if filters:
-                    df = _filter_columns(df, filters)
-                
-                # If there are multiple columns, we concatenate in one
-                c = df.columns.tolist()
-                if len(c) > 1:
-                    #WARNING!!!!!
-                    odf[name] = [";".join([str(j) for j in s if not pd.isnull(j)]) for s in df.to_numpy()]
-                else:
-                    c = "".join(c)
-                    odf[name] = df[c]
-                
-        # remove duplicates
-        odf.drop_duplicates(inplace=True)
-
-        # remove row with any empty columns
-        odf.replace('', np.nan, inplace=True)
-        odf.dropna(inplace=True)
-
+                odf[name] = [";".join([str(j) for j in s if not pd.isnull(j)]) for s in df.to_numpy()]
+        else:
+            c = "".join(c)
+            odf[name] = df[c]
+    
     return odf
 
-def extract_xref_columns(inf_df, sup_df, inf_cols, sup_cols, inf_name, sup_name, filters=None):
-    # extract only inferior column
-    inf_out = extract_columns(inf_df, [inf_cols], [inf_name], filters)
-    
-    # if apply we create the dataframe with the cross-reference columns based on the given df's
-    xref_df = create_crossref_dataframe(inf_out, sup_df)
 
-    # extract inferior and superior columns
-    sup_out = extract_columns(xref_df, [inf_cols,sup_cols], [inf_name,sup_name], filters)
+def exploding_columns(idf):
+    def _exploding_columns(idf, x, y):
+        # replace np.nan to ''
+        idf.replace(np.nan, '', inplace=True)
+        # Exploding into multiple cells
+        # We start with creating a new dataframe from the series with  as the index
+        df = pd.DataFrame(idf[x].str.split(';').tolist(), index=idf[y]).stack().rename(x)
+        df = df.reset_index()
+        # convert the index, which is a list of tuple, into columns
+        a = df.iloc[:,0].tolist()
+        df[y] = pd.DataFrame(a, columns=y)
+        # remove columns based on the old index (2 columns)
+        df.drop( df.columns[0:2], axis=1, inplace=True)
+        # reorder columns from the given df
+        cols = idf.columns.tolist()
+        df = df[cols]
+        return df
         
-    return sup_out
+    cols = idf.columns.tolist()
+    df = idf
+    for x in cols:
+        y = [i for i in cols if i != x]
+        # check if ';' exits in column
+        if any(idf[x].str.contains(';')): df = _exploding_columns(idf, x, y)
+    return df
 
-def extract_xref_columns_before_merge(inf_df, sup_df, inf_cols, sup_cols, inf_name, sup_name, filters=None):
+
+def merge_unknown_columns(df_inf, df_sup):
     # extract interseted column
-    ic = inf_df.columns
-    sc = sup_df.columns
+    ic = df_inf.columns
+    sc = df_sup.columns
     k = list(set(ic) & set(sc))
     if k and len(k) >= 1:
-        xref_df = pd.merge(inf_df, sup_df, on=k)
+        df = pd.merge(df_inf, df_sup, on=k)
 
-    # extract inferior and superior columns
-    sup_out = extract_columns(xref_df, [inf_cols,sup_cols], [inf_name,sup_name], filters)
-        
-    return sup_out
+    return df
 
-    
+
+
 #################
 # Main function #
 #################
@@ -248,82 +200,102 @@ def main(args):
     '''
     Main function
     '''
+    # get input variables
+    header_inf = args.inf_header
+    header_sup = args.sup_header
+    header_thr = args.thr_header
+    filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"
+    
     logging.info("read input files of inferior header")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-    #     infdat = executor.map(read_infiles,args.inf_infiles.split(";"))
-    # infdat = pd.concat(infdat)
     l = []
     for f in args.inf_infiles.split(";"):
         d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
         l.append(d)
-    infdat = pd.concat(l)
+    datinf = pd.concat(l)
 
-    logging.info("read input file of superior header")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-    #     supdat = executor.map(read_infiles,args.sup_infiles.split(";"))
-    # supdat = pd.concat(supdat)
-    l = []
-    for f in args.sup_infiles.split(";"):
-        d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
-        l.append(d)
-    supdat = pd.concat(l)
+    datsup = None
+    if args.sup_infiles:
+        logging.info("read input file of superior header")
+        l = []
+        for f in args.sup_infiles.split(";"):
+            d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
+            l.append(d)
+        datsup = pd.concat(l)
 
-    if args.thr_header:
+    datthr = None
+    if args.thr_infiles:
         logging.info("read input file of third header")
-        # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-        #     thrdat = executor.map(read_infiles,args.thr_infiles.split(";"))
-        # thrdat = pd.concat(thrdat)
         l = []
         for f in args.thr_infiles.split(";"):
             d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
             l.append(d)
-        thrdat = pd.concat(l)
+        datthr = pd.concat(l)
     
     
-    logging.info("check if input headers are within dataframes")
-    inf_cols = get_cols_from_inheaders(infdat, args.inf_header)
-    sup_cols = get_cols_from_inheaders(supdat, args.sup_header)
-    if args.thr_header:
-        thr_cols = get_cols_from_inheaders(thrdat, args.thr_header) 
+    
+    logging.info("get the columns from the given headers")
+    # get the columns of all tables
+    cols_datinf = datinf.columns.to_list()
+    cols_datsup = datsup.columns.to_list() if (datsup is not None and not datsup.empty) else []
+    datthr_cols = datthr.columns.to_list() if (datthr is not None and not datthr.empty) else []
+    # get the inf/sup/thr columns based on all tables
+    all_cols = cols_datinf + cols_datsup + datthr_cols
+    cols_inf = get_cols_from_inheaders(all_cols, header_inf)
+    cols_sup = get_cols_from_inheaders(all_cols, header_sup)
+    cols_thr = get_cols_from_inheaders(all_cols, header_thr)
     
     
-    logging.info("init output dataframe")
-    inf_name = re.sub(r"\s+",':', args.inf_header)
-    sup_name = re.sub(r"\s+",':', args.sup_header)
-    if args.thr_header:
-        thr_name = re.sub(r"\s+",':', args.thr_header)
+    
+    
+    logging.info("merge the given files based on the intersected columns")
+    # get the intersected columns
+    iheader = cols_inf + cols_sup + cols_thr
+    iicols = get_cols_from_inheaders(cols_datinf, iheader)
+    iscols = get_cols_from_inheaders(cols_datsup, iheader) if (datsup is not None and not datsup.empty) else []
+    itcols = get_cols_from_inheaders(datthr_cols, iheader) if (datthr is not None and not datthr.empty) else []
+    # first files - second files
+    df = datinf
+    if (datsup is not None and not datsup.empty):
+        intcols = np.intersect1d(iicols,iscols).tolist() if iscols else iicols
+        if intcols:
+            df = df.merge(datsup, left_on=intcols, right_on=intcols, how='left', suffixes=('_old', ''))
+        else:
+            df = merge_unknown_columns(df, datsup)
+    # second files - third files
+    if (datthr is not None and not datthr.empty):
+        intcols = np.intersect1d(iscols,itcols).tolist() if itcols else intcols
+        if intcols: df = df.merge(datthr, left_on=intcols, right_on=intcols, how='left', suffixes=('_old', ''))
+    
+    
+    
+    
+    logging.info("extract the columns")
+    outdat = extract_columns(df, header_inf, cols_inf, filters)
+    if cols_sup: outdat[header_sup] = extract_columns(df, header_sup, cols_sup, filters)
+    if cols_thr: outdat[header_thr] = extract_columns(df, header_thr, cols_thr, filters)
+    
+    
+    
         
-    
-    if args.xref_before:
-        logging.info("make cross-reference before extract the inferior-superior level")        
-        outdat = extract_xref_columns_before_merge(infdat, supdat, inf_cols, sup_cols, inf_name, sup_name, args.filters)        
-        
-    else:    
-        logging.info("extract the inferior-superior level")
-        outdat = extract_xref_columns(infdat, supdat, inf_cols, sup_cols, inf_name, sup_name, args.filters)
-        
-            
     logging.info("change the order of columns")
     cols = outdat.columns.to_list()
-    cols = [cols[i] for i in [1,0]]
+    cols = [cols[i] for i in [1,0,2] if (i < len(cols))]
     outdat = outdat[cols]
+
+
 
 
     logging.info("exploding the columns into multiple rows")
     outdat = exploding_columns(outdat)
-    
 
-    if args.thr_header:
-        logging.info("extract the superior-third level")
-        outdat = extract_xref_columns(outdat, thrdat, sup_cols, thr_cols, sup_name, thr_name, args.filters)
 
-    
     logging.info("remove duplicates and remove row with any empty column")
     # remove duplicates
     outdat.drop_duplicates(inplace=True)
     # remove row with any empty columns
     outdat.replace('', np.nan, inplace=True)
     outdat.dropna(inplace=True)
+
 
 
     logging.info('print output')
@@ -336,13 +308,6 @@ def main(args):
 
 if __name__ == "__main__":
     
-    class addDefaultToOtherParams(argparse.Action):
-        # adapted from documentation
-        def __call__(self, parser, namespace, values, option_string=None):
-            setattr(namespace, self.dest, values)
-            setattr(namespace, 'sup_infiles', values)
-            setattr(namespace, 'thr_infiles', values)
-        
     # parse arguments
     parser = argparse.ArgumentParser(
         description='Create the relationship tables from several files',
@@ -352,16 +317,13 @@ if __name__ == "__main__":
           -o rels_table.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',  '--inf_header',  required=True, help='Column(s) for the inferior level')
-    parser.add_argument('-ii', '--inf_infiles',  required=True, action=addDefaultToOtherParams, help='Input file for the inferior header')
-    parser.add_argument('-j',  '--sup_header',  required=True, help='Column(s) for the superior level')
+    parser.add_argument('-j',  '--sup_header',  help='Column(s) for the superior level')
+    parser.add_argument('-k',  '--thr_header',  help='Column(s) for the third level')
+    parser.add_argument('-ii', '--inf_infiles',  required=True, help='Input file for the inferior header')
     parser.add_argument('-ji', '--sup_infiles',  help='Input file for the superior header')
-    parser.add_argument('-k',  '--thr_header',  help='Column(s) for the third level')    
-    parser.add_argument('-ki', '--thr_infiles',  help='Input file for the third header')   
+    parser.add_argument('-ki', '--thr_infiles',  help='Input file for the third header')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the relationship table')
-    parser.add_argument('-f',  '--filters',   help='Boolean expression for the filtering of report')
-    parser.add_argument('-b',  '--xref_before', action='store_true', help='Make a cross-reference with the input files before everything')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
