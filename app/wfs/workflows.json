@@ -110,9 +110,7 @@
       { "type": "required", "id": "thr_headers", "name": "3rd headers" },
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "required", "id": "sup_infiles", "name": "Higher infiles" },
-      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" },
-      { "type": "required", "id": "filters", "name": "Filters" },
-      { "type": "required", "id": "more_params", "name": "More params" }
+      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" }
     ],
     "readonly_rows": []
   },{
@@ -130,9 +128,7 @@
       { "type": "required", "id": "thr_headers", "name": "3rd headers" },
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "required", "id": "sup_infiles", "name": "Higher infiles" },
-      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" },
-      { "type": "required", "id": "filters", "name": "Filters" },
-      { "type": "required", "id": "more_params", "name": "More params" }
+      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" }
     ],
     "readonly_rows": []
   },{

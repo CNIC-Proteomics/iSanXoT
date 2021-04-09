@@ -20,5 +20,5 @@ install --global	xlsx
 install --global	js-yaml
 install --global	fs-extra
 $DATABASES=202103
-$SAMPLES=basic.1
-$SAMPLES=ptm.1
+$SAMPLES=basic.2
+$SAMPLES=ptm.2
