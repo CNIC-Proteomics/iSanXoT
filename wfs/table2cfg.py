@@ -403,7 +403,7 @@ def add_params_cline(cmds):
         for rule in cmd['rules']:
             cparams = ''
             # Add suffix in the name and increase the value
-            rname = f"{rule['name']}_{RULE_SUFFIX}"
+            rname = f"{cmd['name']}_rule{RULE_SUFFIX}"
             rule['name'] = rname
             RULE_SUFFIX += 1
             # Add the log file
