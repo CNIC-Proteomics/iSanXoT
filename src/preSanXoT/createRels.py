@@ -177,7 +177,7 @@ def exploding_columns(idf):
     for x in cols:
         y = [i for i in cols if i != x]
         # check if ';' exits in column
-        if any(idf[x].str.contains(';')): df = _exploding_columns(idf, x, y)
+        if any(df[x].str.contains(';')): df = _exploding_columns(df, x, y)
     return df
 
 
@@ -253,6 +253,10 @@ def main(args):
     iicols = get_cols_from_inheaders(cols_datinf, iheader)
     iscols = get_cols_from_inheaders(cols_datsup, iheader) if (datsup is not None and not datsup.empty) else []
     itcols = get_cols_from_inheaders(datthr_cols, iheader) if (datthr is not None and not datthr.empty) else []
+    # remove the column values with [] and {}
+    iicols = [ c for c in iicols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
+    iscols = [ c for c in iscols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
+    itcols = [ c for c in itcols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
     # first files - second files
     df = datinf
     if (datsup is not None and not datsup.empty):

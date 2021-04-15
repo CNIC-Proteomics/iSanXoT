@@ -265,7 +265,7 @@ function createObjFromDatabasesPanel() {
       // update species data
       if (rst['__MAIN_INPUTS_SPECIES__'] != '') { rst['__MAIN_INPUTS_SPECIES__'] += `,${v1}` } else { rst['__MAIN_INPUTS_SPECIES__'] += v1 }
       // update category database
-      let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}_sw-tr.categories.tsv`;
+      let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}.categories.tsv`;
       if (rst['__MAIN_INPUTS_CATDB__'] != '') { rst['__MAIN_INPUTS_CATDB__'] += `;${v}` } else { rst['__MAIN_INPUTS_CATDB__'] += v }
     }
     // unable table of CatDB and disable table of CatFile

@@ -1,19 +1,8 @@
 {
   "description": "Long description for iSanXoT.",
   "catdbs": [{
-    "id": "202010",
-    "name": "Oct. 2020",
-    "species": [
-      { "name": "Human",     "scientific": "Homo sapiens" },
-      { "name": "Mouse",     "scientific": "Mus musculus" },
-      { "name": "Pig",       "scientific": "Sus scrofa" },
-      { "name": "Rat",       "scientific": "Rattus norvegicus" },
-      { "name": "Rabbit",    "scientific": "Oryctolagus cuniculus" },
-      { "name": "Zebrafish", "scientific": "Danio rerio" }
-    ]
-  },{
-    "id": "202103",
-    "name": "Mar. 2021",
+    "id": "202104",
+    "name": "Apr. 2021",
     "species": [
       { "name": "Human",     "scientific": "Homo sapiens" },
       { "name": "Mouse",     "scientific": "Mus musculus" },
@@ -53,7 +42,7 @@
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "optional", "id": "mzfile", "name": "mz File" },
-      { "type": "optional", "id": "type_tmt", "name": "Type of TMT" }
+      { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]
   },{
     "id": "CREATE_IDQUANT-JOINER",
@@ -66,7 +55,7 @@
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "optional", "id": "mzfile", "name": "mz File" },
-      { "type": "optional", "id": "type_tmt", "name": "Type of TMT" }
+      { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]
   },{
     "id": "CREATE_ID-JOINER",
@@ -87,7 +76,7 @@
     "panel": "panels/advance.html",
     "help_modal": "hmodals/fdr.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
       { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
@@ -103,7 +92,7 @@
     "panel": "panels/databases_catdb.html",
     "help_modal": "hmodals/databases_catdb.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
       { "type": "required", "id": "inf_headers", "name": "Lower headers" },
       { "type": "required", "id": "sup_headers", "name": "Higher headers" },
@@ -121,7 +110,7 @@
     "panel": "panels/databases_catfile.html",
     "help_modal": "hmodals/databases_catfile.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
       { "type": "required", "id": "inf_headers", "name": "Lower headers" },
       { "type": "required", "id": "sup_headers", "name": "Higher headers" },
@@ -139,7 +128,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/wspp_sbt.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
       { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -163,7 +152,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/wsppg_sbt.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
       { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -191,7 +180,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/wspp_sbt.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
       { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -213,7 +202,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/wsppg_sbt.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
       { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -239,7 +228,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/norcombine.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "input", "name": "Input" },
       { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
       { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category",  "peptideall", "proteinall", "geneall", "categoryall"] },
@@ -257,7 +246,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/ratios.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
       { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
       { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -276,7 +265,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/integrate.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "input", "name": "Input" },
       { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
       { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
@@ -294,7 +283,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/sbt.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "input", "name": "Input" },
       { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
       { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
@@ -319,7 +308,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/system.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "input", "name": "Input" },
       { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene"] },
       { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["protein", "gene", "category"] },
@@ -337,7 +326,7 @@
     "panel": "panels/advance-toggle.html",
     "help_modal": "hmodals/reports.html",
     "params": [
-      { "type": "required", "id": "force", "name": "FRC", "checkbox": ["",1] },
+      { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
       { "type": "required", "id": "input", "name": "Input" },
       { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
       { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
@@ -345,7 +334,7 @@
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "optional", "id": "rep_file", "name": "Merge with report file" },
       { "type": "optional", "id": "rel_file", "name": "Merge with relationship file" },
-      { "type": "optional", "id": "show_cols", "name": "Level Names to show" },
+      { "type": "optional", "id": "show_level", "name": "Level Names to show" },
       { "type": "optional", "id": "filter", "name": "Filter" }
     ]
   }],
