@@ -99,24 +99,20 @@ def create_report(ifiles, prefix, col_values):
     logging.debug(f"{prefix}: rename inf,sup columns")
     df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
 
-    logging.debug("revome column that contain 'all' in the name")
-    if re.search('all$', prefix_i):
-        df.drop(columns=[prefix_i], axis=1, inplace=True)
-    if re.search('all$', prefix_s):
-        df.drop(columns=[prefix_s], axis=1, inplace=True)
-    
     logging.debug("pivot table")
     # get the columns that are LEVELS (from the prefixes)
     cols_idx = [prefix_i] + [prefix_s]
     df = pd.pivot_table(df, index=cols_idx, columns=[COL_EXP], aggfunc='first')
     df = df.reset_index()
+    
     logging.debug("add  'LEVEL' label")
     cols_name = [(c[0],'LEVEL') if c[1] == '' else c for c in df.columns]
     df.columns = pd.MultiIndex.from_tuples(cols_name)
-    
-    logging.debug("discard the columns with 1's")
+
+    logging.debug("discard the columns with 1's (all)")
     df = df[[col for col in df.columns if not df[col].nunique()==1]]
-    
+
+        
     return df
 
 def merge_intermediate(file, df):

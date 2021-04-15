@@ -2179,7 +2179,7 @@
         -l: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       vars:
         -v: __WF_REPORTED_VARS__
-      show_cols:
+      show_level:
         -s: ''
       filter:
         -f: ''
