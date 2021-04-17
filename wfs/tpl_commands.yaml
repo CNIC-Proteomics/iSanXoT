@@ -297,6 +297,8 @@
         -a: peptide2protein
       maxiterations:
         -m: 600
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_p2q_sanxotsieve
@@ -314,6 +316,8 @@
         -f: 0.01
       p>q_var(x):
         -v: ''
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_p2q_sanxot2
@@ -401,6 +405,8 @@
         -a: peptide2peptideall
       maxiterations:
         -m: 600
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_p2a_sanxotsieve
@@ -414,8 +420,10 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_fdr:
+      p>a_fdr:
         -f: 0
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_p2a_sanxot2
@@ -430,7 +438,7 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_tag:
+      p>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -463,7 +471,7 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_fdr:
+      q>a_fdr:
         -f: 0
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
@@ -479,7 +487,7 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_tag:
+      q>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -499,6 +507,8 @@
         -a: category2categoryall
       maxiterations:
         -m: 600
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_c2a_sanxotsieve
@@ -511,10 +521,12 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_fdr:
+      c>a_fdr:
         -f: 0
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wspp_c2a_sanxot2
@@ -528,9 +540,9 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
-      i>h_tag:
+      c>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -637,6 +649,8 @@
         -a: peptide2protein
       maxiterations:
         -m: 600
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_p2q_sanxotsieve
@@ -654,6 +668,8 @@
         -f: 0.01
       p>q_var(x):
         -v: ''
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_p2q_sanxot2
@@ -688,6 +704,8 @@
         -a: peptide2gene
       maxiterations:
         -m: 600
+      p>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_p2g_sanxotsieve
@@ -701,10 +719,12 @@
     parameters:
       anal:
         -a: peptide2gene
-      p>q_fdr:
+      p>g_fdr:
         -f: 0.01
-      p>q_var(x):
+      p>g_var(x):
         -v: ''
+      p>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_p2g_sanxot2
@@ -719,9 +739,9 @@
     parameters:
       anal:
         -a: peptide2gene
-      p>q_var(x):
+      p>g_var(x):
         -v: ''
-      p>q_tag:
+      p>g_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -739,6 +759,8 @@
         -a: protein2gene
       maxiterations:
         -m: 600
+      q>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_q2g_sanxotsieve
@@ -752,10 +774,12 @@
     parameters:
       anal:
         -a: protein2gene
-      q>c_fdr:
+      q>g_fdr:
         -f: 0.01
-      q>c_var(x):
+      q>g_var(x):
         -v: ''
+      q>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_q2g_sanxot2
@@ -770,9 +794,9 @@
     parameters:
       anal:
         -a: protein2gene
-      q>c_var(x):
+      q>g_var(x):
         -v: ''
-      q>c_tag:
+      q>g_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -803,9 +827,9 @@
     parameters:
       anal:
         -a: gene2category
-      q>c_fdr:
+      g>c_fdr:
         -f: 0.01
-      q>c_var(x):
+      g>c_var(x):
         -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
@@ -821,9 +845,9 @@
     parameters:
       anal:
         -a: gene2category
-      q>c_var(x):
+      g>c_var(x):
         -v: ''
-      q>c_tag:
+      g>c_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -843,6 +867,8 @@
         -a: peptide2peptideall
       maxiterations:
         -m: 600
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_p2a_sanxotsieve
@@ -856,8 +882,10 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_fdr:
+      p>a_fdr:
         -f: 0
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_p2a_sanxot2
@@ -872,7 +900,7 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_tag:
+      p>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -892,6 +920,8 @@
         -a: protein2proteinall
       maxiterations:
         -m: 600
+      q>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_q2a_sanxotsieve
@@ -905,8 +935,10 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_fdr:
+      q>a_fdr:
         -f: 0
+      q>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_q2a_sanxot2
@@ -921,7 +953,7 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_tag:
+      q>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -941,9 +973,11 @@
         -a: gene2geneall
       maxiterations:
         -m: 600
+      g>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
-  - name: wsppg_q2a_sanxotsieve
+  - name: wsppg_g2a_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
       -r: __MAIN_INPUTS_RELDIR__/gene2geneall.tsv
@@ -954,11 +988,13 @@
     parameters:
       anal:
         -a: gene2geneall
-      l>h_fdr:
+      g>a_fdr:
         -f: 0
+      g>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
-  - name: wsppg_q2a_sanxot2
+  - name: wsppg_g2a_sanxot2
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
       -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_tagged.tsv
@@ -970,7 +1006,7 @@
     parameters:
       anal:
         -a: gene2geneall
-      l>h_tag:
+      g>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -990,6 +1026,8 @@
         -a: category2categoryall
       maxiterations:
         -m: 600
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_c2a_sanxotsieve
@@ -1002,10 +1040,12 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_fdr:
+      c>a_fdr:
         -f: 0
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_c2a_sanxot2
@@ -1019,9 +1059,9 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
-      i>h_tag:
+      c>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1079,6 +1119,8 @@
         -a: peptide2protein
       maxiterations:
         -m: 600
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wpp_p2q_sanxotsieve
@@ -1096,6 +1138,8 @@
         -f: 0.01
       p>q_var(x):
         -v: ''
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wpp_p2q_sanxot2
@@ -1183,6 +1227,8 @@
         -a: peptide2peptideall
       maxiterations:
         -m: 600
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wpp_p2a_sanxotsieve
@@ -1196,8 +1242,10 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_fdr:
+      p>a_fdr:
         -f: 0
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wpp_p2a_sanxot2
@@ -1212,7 +1260,7 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_tag:
+      p>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1232,6 +1280,8 @@
         -a: protein2proteinall
       maxiterations:
         -m: 600
+      q>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wpp_q2a_sanxotsieve
@@ -1245,8 +1295,10 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_fdr:
+      q>a_fdr:
         -f: 0
+      q>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wpp_q2a_sanxot2
@@ -1261,7 +1313,7 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_tag:
+      q>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1281,6 +1333,8 @@
         -a: category2categoryall
       maxiterations:
         -m: 600
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wpp_c2a_sanxotsieve
@@ -1293,10 +1347,12 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_fdr:
+      c>a_fdr:
         -f: 0
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wpp_c2a_sanxot2
@@ -1310,9 +1366,9 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
-      i>h_tag:
+      c>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1370,6 +1426,8 @@
         -a: peptide2protein
       maxiterations:
         -m: 600
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wppg_p2q_sanxotsieve
@@ -1387,6 +1445,8 @@
         -f: 0.01
       p>q_var(x):
         -v: ''
+      p>q_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wppg_p2q_sanxot2
@@ -1421,6 +1481,8 @@
         -a: peptide2gene
       maxiterations:
         -m: 600
+      p>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wppg_p2g_sanxotsieve
@@ -1434,10 +1496,12 @@
     parameters:
       anal:
         -a: peptide2gene
-      p>q_fdr:
+      p>g_fdr:
         -f: 0.01
-      p>q_var(x):
+      p>g_var(x):
         -v: ''
+      p>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wppg_p2g_sanxot2
@@ -1452,9 +1516,9 @@
     parameters:
       anal:
         -a: peptide2gene
-      p>q_var(x):
+      p>g_var(x):
         -v: ''
-      p>q_tag:
+      p>g_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1472,6 +1536,8 @@
         -a: protein2gene
       maxiterations:
         -m: 600
+      q>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wppg_q2g_sanxotsieve
@@ -1485,10 +1551,12 @@
     parameters:
       anal:
         -a: protein2gene
-      q>c_fdr:
+      q>g_fdr:
         -f: 0.01
-      q>c_var(x):
+      q>g_var(x):
         -v: ''
+      q>g_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wppg_q2g_sanxot2
@@ -1503,9 +1571,9 @@
     parameters:
       anal:
         -a: protein2gene
-      q>c_var(x):
+      q>g_var(x):
         -v: ''
-      q>c_tag:
+      q>g_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1536,9 +1604,9 @@
     parameters:
       anal:
         -a: gene2category
-      q>c_fdr:
+      g>c_fdr:
         -f: 0.01
-      q>c_var(x):
+      g>c_var(x):
         -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
@@ -1554,9 +1622,9 @@
     parameters:
       anal:
         -a: gene2category
-      q>c_var(x):
+      g>c_var(x):
         -v: ''
-      q>c_tag:
+      g>c_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1576,6 +1644,8 @@
         -a: peptide2peptideall
       maxiterations:
         -m: 600
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wppg_p2a_sanxotsieve
@@ -1589,8 +1659,10 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_fdr:
+      p>a_fdr:
         -f: 0
+      p>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wppg_p2a_sanxot2
@@ -1605,7 +1677,7 @@
     parameters:
       anal:
         -a: peptide2peptideall
-      l>h_tag:
+      p>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1625,6 +1697,8 @@
         -a: protein2proteinall
       maxiterations:
         -m: 600
+      q>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wppg_q2a_sanxotsieve
@@ -1638,8 +1712,10 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_fdr:
+      q>a_fdr:
         -f: 0
+      q>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wppg_q2a_sanxot2
@@ -1654,7 +1730,7 @@
     parameters:
       anal:
         -a: protein2proteinall
-      l>h_tag:
+      q>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1676,7 +1752,7 @@
         -m: 600
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
-  - name: wppg_q2a_sanxotsieve
+  - name: wppg_g2a_sanxotsieve
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
       -r: __MAIN_INPUTS_RELDIR__/gene2geneall.tsv
@@ -1687,11 +1763,11 @@
     parameters:
       anal:
         -a: gene2geneall
-      l>h_fdr:
+      g>a_fdr:
         -f: 0
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
-  - name: wppg_q2a_sanxot2
+  - name: wppg_g2a_sanxot2
     infiles:
       -d: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene.tsv
       -r: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__/gene2geneall_tagged.tsv
@@ -1703,7 +1779,7 @@
     parameters:
       anal:
         -a: gene2geneall
-      l>h_tag:
+      g>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1723,6 +1799,8 @@
         -a: category2categoryall
       maxiterations:
         -m: 600
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wppg_c2a_sanxotsieve
@@ -1735,10 +1813,12 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_fdr:
+      c>a_fdr:
         -f: 0
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
+      c>a_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wppg_c2a_sanxot2
@@ -1752,9 +1832,9 @@
     parameters:
       anal:
         -a: category2categoryall
-      i>h_var(x):
+      c>a_var(x):
         -v: 0
-      i>h_tag:
+      c>a_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
@@ -1810,6 +1890,8 @@
         -a: __WF_LEVEL__2__WF_NORM__
       maxiterations:
         -m: 600
+      tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: comb_sanxotsieve
@@ -1827,6 +1909,8 @@
         -f: 0.01
       var(x):
         -v: ''
+      tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: comb_sanxot2
@@ -1900,6 +1984,8 @@
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       maxiterations:
         -m: 600
+      tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: int_sanxotsieve
@@ -1917,6 +2003,8 @@
         -f: 0.01
       var(x):
         -v: ''
+      tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: int_sanxot2
@@ -1963,6 +2051,8 @@
         -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
       maxiterations:
         -m: 600
+      l>i_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: sbt_l2i_sanxotsieve
@@ -1980,6 +2070,8 @@
         -f: 0.01
       l>i_var(x):
         -v: ''
+      l>i_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: sbt_l2i_sanxot2
@@ -2014,6 +2106,8 @@
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
       maxiterations:
         -m: 600
+      i>h_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: sbt_i2h_sanxotsieve
@@ -2030,6 +2124,8 @@
         -f: 0
       i>h_var(x):
         -v: 0
+      i>h_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: sbt_i2h_sanxot2
@@ -2063,6 +2159,8 @@
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
       maxiterations:
         -m: 600
+      l>h_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: sbt_l2h_sanxotsieve
@@ -2078,6 +2176,8 @@
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
       l>h_fdr:
         -f: 0
+      l>h_tag:
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: sbt_l2h_sanxot2
@@ -2168,8 +2268,7 @@
   - name: report
     infiles:
       -ii: __MAIN_INPUTS_NAMDIR__/__WF_INPUT__/**/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
-      # optional input files.
-      # We have to put it here to check if file already exists
+      # Optional input files but it is necesary check if exits to run the program
       --rep_file: ''
       --rel_file: ''
     outfiles:

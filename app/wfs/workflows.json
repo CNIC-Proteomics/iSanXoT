@@ -81,7 +81,7 @@
       { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
       { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
       { "type": "required", "id": "fdr", "name": "FDR cutoff" },
-      { "type": "required", "id": "type_xcorr", "name": "xCorr type" },
+      { "type": "required", "id": "type_xcorr", "name": "Score" },
       { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
     ]
   },{

@@ -165,8 +165,11 @@ def _add_datparams_params(p, trule, dat):
                     del trule['parameters'][p] # delete the optional parameter of variance
             # Exceptions in the 'Tag' parameters:
             # Update the template values (not overwrite from the given data)
-            elif p.endswith('Tag'):
-                trule['parameters'][p][k] += ' & '+ dat
+            elif p.endswith('tag'):
+                if trule['parameters'][p][k] == '':
+                    trule['parameters'][p][k] = dat
+                else:
+                    trule['parameters'][p][k] += ' & '+ dat
             # The rest of kind of parameters
             else:
                 if dat and dat != 'nan':
@@ -247,9 +250,9 @@ def add_datparams(p, trule, val):
         _add_datparams_params(p, trule, val)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
-    # handle the parameters not required
-    if trule['parameters'] is not None and p in trule['parameters']:
-        _add_datparams_params(p, trule, val)
+    # # handle the parameters not required
+    # if trule['parameters'] is not None and p in trule['parameters']:
+    #     _add_datparams_params(p, trule, val)
 
 
 
@@ -403,11 +406,12 @@ def add_params_cline(cmds):
         for rule in cmd['rules']:
             cparams = ''
             # Add suffix in the name and increase the value
-            rname = f"{cmd['name']}_rule{RULE_SUFFIX}"
+            rname = f"{rule['name']}_{RULE_SUFFIX}"
             rule['name'] = rname
             RULE_SUFFIX += 1
             # Add the log file
-            rule['logfile'] = "{}/{}/{}".format(MAIN_INPUTS_LOGDIR, TPL_DATE, f"{rname}.log")
+            lname = f"{cmd['name']}_rule{RULE_SUFFIX}"
+            rule['logfile'] = "{}/{}/{}".format(MAIN_INPUTS_LOGDIR, TPL_DATE, f"{lname}.log")
             # Create command line with the input, output files and the parameters
             for p in ['infiles','outfiles','parameters']:
                 if rule[p] is not None:
