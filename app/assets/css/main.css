@@ -193,6 +193,7 @@ input:disabled, button:disabled {
 ----------------------------------------------------- */
 #panel-logger {
     margin: 10px 10px 10px 20px;
+    overflow-y: auto !important;
 }
 #projectlogs {
     margin-bottom: 10px;
@@ -205,7 +206,6 @@ input:disabled, button:disabled {
 }
 #workflowlogs .logtable {
     margin-bottom: 5px;
-    overflow-y: auto !important;
 }
 
 /* ---------------------------------------------------

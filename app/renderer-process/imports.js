@@ -40,14 +40,14 @@ function doneResizing() {
         $(`#page-tasktable-CREATE_ID .tasktable`).height('auto');
         $(`#page-tasktable-CREATE_ID .wtHolder`).height('auto');
     }
-    if ( $('#panel-logger').length ) {
-        let newheight = winheight - 156;
-        $(`#panel-logger`).height(newheight);
-    }
-    if ( $('.logtable').length ) {
-        let newheight = winheight - 210;
-        $(`#workflowlogs .logtable`).height(newheight);
-    }
+    // if ( $('#panel-logger').length ) {
+    //     let newheight = winheight - 156;
+    //     $(`#panel-logger`).height(newheight);
+    // }
+    // if ( $('.logtable').length ) {
+    //     let newheight = winheight - 210;
+    //     $(`#workflowlogs .logtable`).height(newheight);
+    // }
 }
 
 // Function when the windows is resize
