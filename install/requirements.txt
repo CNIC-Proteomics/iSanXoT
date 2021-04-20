@@ -19,6 +19,6 @@ install --global	ps-tree
 install --global	xlsx
 install --global	js-yaml
 install --global	fs-extra
-$DATABASES=202103
+$DATABASES=202104
 $SAMPLES=basic.2
 $SAMPLES=ptm.2
