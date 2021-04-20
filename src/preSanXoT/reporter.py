@@ -187,15 +187,22 @@ def filter_dataframe(df, flt):
             # trim whitespaces and parenthesis
             cmp_str = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_str)
             # extract the variable/operator/values from the logical condition
-            x = re.match(rf"([^\s]*)\s([{rc}])\s*([^\s]*)", cmp_str)
+            x = re.match(rf"^(.*)\s+({rc})\s+(.*)$", cmp_str)
             if x:
-                var = x.group(1)
-                cmp = x.group(2)
-                val = x.group(3)
+                var = x.group(1).strip()
+                cmp = x.group(2).strip()
+                val = x.group(3).strip()
+                # use the multi-variables to filter the multiple columns
+                if '@' in var:
+                    v = var.split('@')
+                    var0 = v[1]
+                    vs = r'|'.join([rf"^\('{var0}',\s*'{v}'\)" for v in re.split(r'\s*,\s*', v[0])])
+                else:
+                    vs = rf"^\('{var}"
             # filter the column names
             # remember the columns are multiindex. For example, ('n_protein2category, '126_vs_Mean')
             # This is the reason we have included \(' in the regex
-            d = df.filter(regex=f"^\('{var}", axis=1)
+            d = df.filter(regex=f"{vs}", axis=1)
         except Exception as exc:
             # not filter
             logging.error(f"It is not filtered. There was a problem getting the columns: {cmp_str}\n{exc}")
