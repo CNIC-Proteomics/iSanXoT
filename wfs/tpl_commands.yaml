@@ -1982,6 +1982,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       maxiterations:
         -m: 600
       tag:
@@ -1999,6 +2001,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       fdr:
         -f: 0.01
       var(x):
@@ -2019,6 +2023,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       var(x):
         -v: ''
       tag:
@@ -2049,6 +2055,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       maxiterations:
         -m: 600
       l>i_tag:
@@ -2066,6 +2074,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       l>i_fdr:
         -f: 0.01
       l>i_var(x):
@@ -2086,6 +2096,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       l>i_var(x):
         -v: ''
       l>i_tag:
@@ -2104,6 +2116,8 @@
     parameters:
       anal:
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       maxiterations:
         -m: 600
       i>h_tag:
@@ -2120,6 +2134,8 @@
     parameters:
       anal:
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       i>h_fdr:
         -f: 0
       i>h_var(x):
@@ -2139,6 +2155,8 @@
     parameters:
       anal:
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       i>h_var(x):
         -v: 0
       i>h_tag:
@@ -2157,6 +2175,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       maxiterations:
         -m: 600
       l>h_tag:
@@ -2174,6 +2194,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       l>h_fdr:
         -f: 0
       l>h_tag:
@@ -2192,6 +2214,8 @@
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
+      place:
+        -p: __MAIN_INPUTS_NAMDIR__/__WF_OUTPUT__
       l>h_tag:
         --tags: '!out'
     more_params: ''
