@@ -7,7 +7,7 @@ import argparse
 import logging
 import pandas as pd
 import re
-# import concurrent.futures
+import numpy as np
 
 
 # Module metadata variables
@@ -104,9 +104,6 @@ def main(args):
     Main function
     '''    
     logging.info("read stats files")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-    #     indat = executor.map(read_infiles,args.infiles.split(";"))
-    # indat = pd.concat(indat)
     indat = pd.read_csv(args.infiles, sep="\t", na_values=['NA'], low_memory=False)
 
     logging.info("read relationship files")
@@ -122,8 +119,9 @@ def main(args):
     logging.info("discard the given tags")
     if args.tags and not args.tags.isspace():
         for t in re.split(r'\s*&\s*', args.tags.strip()):
-            if t.startswith('\!') or t.startswith('!'):
-                t = t.replace('\!','').replace('!','')
+            if t.startswith('!') or t.startswith('\!') or t.startswith('/!'):
+                t = t.replace('!','').replace('\!','').replace('/!','')
+                indat['tags_rel'].replace(np.nan, '', regex=True, inplace=True)
                 indat = indat[indat['tags_rel'] != t ]
     
     # apply given filter. Recomendation: (FDR < 0.05) & (n_rel > 10) & (n_rel < 100)

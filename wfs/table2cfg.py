@@ -407,10 +407,10 @@ def add_params_cline(cmds):
             cparams = ''
             # Add suffix in the name and increase the value
             rname = f"{rule['name']}_{RULE_SUFFIX}"
+            lname = f"{cmd['name']}#{rule['name']}#rule{RULE_SUFFIX}"
             rule['name'] = rname
             RULE_SUFFIX += 1
             # Add the log file
-            lname = f"{cmd['name']}_rule{RULE_SUFFIX}"
             rule['logfile'] = "{}/{}/{}".format(MAIN_INPUTS_LOGDIR, TPL_DATE, f"{lname}.log")
             # Create command line with the input, output files and the parameters
             for p in ['infiles','outfiles','parameters']:
