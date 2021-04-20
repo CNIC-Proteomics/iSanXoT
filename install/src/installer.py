@@ -232,13 +232,13 @@ def install_report(trep, req_new, req_loc):
                     man_dir = man[1] if len(man) > 1 else manager # get the name of output dir. By default, the given file
                     iok = install_exec_manager(manager, f"{exec_url}/{manager}", f"{execdir}/{man_dir}")
                 if trep == 'MANAGER':
-                    print("-- install packages")
+                    print("** install packages")
                     iok = install_pkg_manager(manager)
                 elif trep == 'DATABASES':
-                    print("-- install databases")
+                    print("** install databases")
                     iok = download_databases(manager)
                 elif trep == 'SAMPLES':
-                    print("-- install samples")
+                    print("** install samples")
                     iok = download_samples(manager)
                 # save modules in the req local
                 if iok:
