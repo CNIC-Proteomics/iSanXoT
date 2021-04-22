@@ -251,11 +251,7 @@
       { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
       { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
       { "type": "required", "id": "v_method", "name": "V method", "select": ["form", "max", "avg"] },
-      { "type": "required", "id": "output", "name": "Output" },
-      { "type": "optional", "id": "tag", "name": "Tag" },
-      { "type": "optional", "id": "fdr", "name": "FDR" },
-      { "type": "optional", "id": "var(x)", "name": "Var(x)" },
-      { "type": "optional", "id": "more_params", "name": "More params" }
+      { "type": "required", "id": "output", "name": "Output" }
     ]
   },{
     "id": "INTEGRATE",
@@ -334,7 +330,7 @@
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "optional", "id": "rep_file", "name": "Merge with report file" },
       { "type": "optional", "id": "rel_file", "name": "Merge with relationship file" },
-      { "type": "optional", "id": "show_level", "name": "Level Names to show" },
+      { "type": "optional", "id": "show_level", "name": "Level names to show" },
       { "type": "optional", "id": "filter", "name": "Filter" }
     ]
   }],
