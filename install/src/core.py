@@ -38,7 +38,6 @@ class builder:
         outfile = outfile if outfile else url_fname.path.split("/")[-1]
         file = f"{outdir}/{outfile}"
         # downlaod
-        print( f"URL: {url} > FILE: {file}")
         urllib.request.urlretrieve(url, file)
         return file
 
