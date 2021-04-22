@@ -528,20 +528,20 @@ def main(args):
     # replace the constants for the config template and the command templates
     logging.info("replace the constants for the config template and the command templates")
     repl = {        
-            '__ISANXOT_SRC_HOME__':         ISANXOT_SRC_HOME,
-            '__ISANXOT_PYTHON_EXEC__':      ISANXOT_PYTHON_EXEC,
-            '__ISANXOT_JAVA_EXEC__':        ISANXOT_JAVA_EXEC,
-            '__ISANXOT_DOT_EXEC__':         ISANXOT_DOT_EXEC,
-            '__NCPU__':                     str(tpl['ncpu']),
-            '__WF_VERBOSE__':               str(tpl['verbose']),
-            '__MAIN_INPUTS_EXPDIR__':       MAIN_INPUTS_EXPDIR,
-            '__MAIN_INPUTS_NAMDIR__':       MAIN_INPUTS_JOBDIR,
-            '__MAIN_INPUTS_RELDIR__':       MAIN_INPUTS_RELDIR,
-            '__MAIN_INPUTS_RSTDIR__':       MAIN_INPUTS_RSTDIR,
-            '__MAIN_INPUTS_LOGDIR__':       MAIN_INPUTS_LOGDIR,
-            '__MAIN_INPUTS_SEQFILE__':       '',
-            '__MAIN_INPUTS_CATFILE__':      '',
-            '__MAIN_INPUTS_CATDB__':        '',
+            '__ISANXOT_SRC_HOME__':     ISANXOT_SRC_HOME,
+            '__ISANXOT_PYTHON_EXEC__':  ISANXOT_PYTHON_EXEC,
+            '__ISANXOT_JAVA_EXEC__':    ISANXOT_JAVA_EXEC,
+            '__ISANXOT_DOT_EXEC__':     ISANXOT_DOT_EXEC,
+            '__NCPU__':                 str(tpl['ncpu']),
+            '__WF_VERBOSE__':           str(tpl['verbose']),
+            '__EXPDIR__':               MAIN_INPUTS_EXPDIR,
+            '__NAMDIR__':               MAIN_INPUTS_JOBDIR,
+            '__RELDIR__':               MAIN_INPUTS_RELDIR,
+            '__RSTDIR__':               MAIN_INPUTS_RSTDIR,
+            '__LOGDIR__':               MAIN_INPUTS_LOGDIR,
+            '__SEQFILE__':              '',
+            '__CATFILE__':              '',
+            '__CATDB__':                '',
     }
     # add the replacements for the databases
     for k_id in tpl['databases'].keys():
@@ -551,7 +551,7 @@ def main(args):
         repl[k_id] = tpl['main_inputs'][k_id]
     # add the replacements for the data files of tasktable commands
     for datfile in tpl['datfiles']:
-        l = "__MAIN_INPUTS_DATFILE_{}__".format(datfile['type'].upper())
+        l = "__DATFILE_{}__".format(datfile['type'].upper())
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
     tpl_cmds = replace_val_rec(tpl_cmds, repl)

@@ -1,5 +1,5 @@
 name: lblfree
-version: 0.2.10
+version: 0.2.11
 date: 'date_id'
 ncpu: '4'
 verbose: '-vv'
@@ -10,12 +10,12 @@ prj_workspace:
   rstdir: 
   logdir: 
 main_inputs:
-  __MAIN_INPUTS_OUTDIR__: ''
-  __MAIN_INPUTS_INDIR__: ''
+  __OUTDIR__: ''
+  __INDIR__: ''
 databases:
-  __MAIN_INPUTS_DBID__: ''
-  __MAIN_INPUTS_SPECIES__: ''
-  __MAIN_INPUTS_CATDB__: ''
+  __DBID__: ''
+  __SPECIES__: ''
+  __CATDB__: ''
 datfiles:
   - type: main_inputs
     file: 

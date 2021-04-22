@@ -301,7 +301,7 @@ input:disabled, button:disabled {
 .form-control {
     font-size: inherit;
 }
-#species, #__MAIN_INPUTS_INDIR__, #__MAIN_INPUTS_OUTDIR__, #modfile, #dbfile, #catfile, #def-dbfile, #def-catfile, #decoylabel, .custom-select {
+#species, #__INDIR__, #__OUTDIR__, #modfile, #dbfile, #catfile, #def-dbfile, #def-catfile, #decoylabel, .custom-select {
     height: 30px;
 }
 section.tab-content > .form-inline {

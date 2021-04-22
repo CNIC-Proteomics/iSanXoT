@@ -258,7 +258,7 @@ if ( document.querySelector('#executor #start') !== null ) {
 // save project
 function saveProject(wf_date_id, wf) {
     // get the output directory
-    let outdir = $(`#__MAIN_INPUTS_OUTDIR__ input`).val();
+    let outdir = $(`#__OUTDIR__ input`).val();
     // prepare the workspace of project
     let [dte_dir, log_dir] = preparePrjWorkspace(wf_date_id, outdir, wf['prj_workspace']);
     // create datafiles

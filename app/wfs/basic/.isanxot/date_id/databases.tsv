@@ -1,24 +1,24 @@
 #RELS_TABLE_CATDB							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Scan_Id	SequenceMod		scan2peptide		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	SequenceMod	Protein		peptide2protein		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	SequenceMod	[1]		peptide2peptideall		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Protein	[1]		protein2proteinall		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Protein	Description		protein2description	__MAIN_INPUTS_CATDB__	
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Protein	Gene		protein2gene	__MAIN_INPUTS_CATDB__	
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Protein	cat_*		protein2category	__MAIN_INPUTS_CATDB__	
-	__MAIN_INPUTS_CATDB__	Gene	cat_*		gene2category		
-	__MAIN_INPUTS_CATDB__	Gene	[1]		gene2geneall		
-	__MAIN_INPUTS_CATDB__	Gene	Description		gene2description		
-	__MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall		
-	__MAIN_INPUTS_RELDIR__/peptide2protein.tsv	SequenceMod	Gene		peptide2gene	__MAIN_INPUTS_RELDIR__/protein2gene.tsv	
+	__EXPDIR__/ID-q.tsv	Scan_Id	SequenceMod		scan2peptide		
+	__EXPDIR__/ID-q.tsv	SequenceMod	Protein		peptide2protein		
+	__EXPDIR__/ID-q.tsv	SequenceMod	[1]		peptide2peptideall		
+	__EXPDIR__/ID-q.tsv	Protein	[1]		protein2proteinall		
+	__EXPDIR__/ID-q.tsv	Protein	Description		protein2description	__CATDB__	
+	__EXPDIR__/ID-q.tsv	Protein	Gene		protein2gene	__CATDB__	
+	__EXPDIR__/ID-q.tsv	Protein	cat_*		protein2category	__CATDB__	
+	__CATDB__	Gene	cat_*		gene2category		
+	__CATDB__	Gene	[1]		gene2geneall		
+	__CATDB__	Gene	Description		gene2description		
+	__CATDB__	cat_*	[1]		category2categoryall		
+	__RELDIR__/peptide2protein.tsv	SequenceMod	Gene		peptide2gene	__RELDIR__/protein2gene.tsv	
 							
 #RELS_TABLE_CATFILE							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Scan_Id	SequenceMod		scan2peptide		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	SequenceMod	Protein		peptide2protein		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	SequenceMod	[1]		peptide2peptideall		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Protein	[1]		protein2proteinall		
-	__MAIN_INPUTS_EXPDIR__/ID-q.tsv	Protein	Description		protein2description		
-	__MAIN_INPUTS_CATFILE__	{1}	{0}		protein2category		
-	__MAIN_INPUTS_CATFILE__	{0}	[1]		category2categoryall		
+	__EXPDIR__/ID-q.tsv	Scan_Id	SequenceMod		scan2peptide		
+	__EXPDIR__/ID-q.tsv	SequenceMod	Protein		peptide2protein		
+	__EXPDIR__/ID-q.tsv	SequenceMod	[1]		peptide2peptideall		
+	__EXPDIR__/ID-q.tsv	Protein	[1]		protein2proteinall		
+	__EXPDIR__/ID-q.tsv	Protein	Description		protein2description		
+	__CATFILE__	{1}	{0}		protein2category		
+	__CATFILE__	{0}	[1]		category2categoryall		

@@ -95,36 +95,36 @@ function addValuesMainInputsPanel(remote, importer, exceptor) {
   };
 
   // events for the inputs
-  $('#__MAIN_INPUTS_INDIR__  button').click(function() {
+  $('#__INDIR__  button').click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
       if ( inpt !== undefined ) {
-        $(`#__MAIN_INPUTS_INDIR__ input`).val(`${inpt}`);
+        $(`#__INDIR__ input`).val(`${inpt}`);
         fillInputFilesTable(inpt);
       }      
     });
   });
-  $('#__MAIN_INPUTS_OUTDIR__  button').click(function() {
+  $('#__OUTDIR__  button').click(function() {
     dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
       let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
       if ( inpt !== undefined ) {
-        $(`#__MAIN_INPUTS_OUTDIR__ input`).val(`${inpt}`);
+        $(`#__OUTDIR__ input`).val(`${inpt}`);
       }
     });
   });
-  $('#__MAIN_INPUTS_PSMFILE__  button').click(function() {
+  $('#__PSMFILE__  button').click(function() {
     dialog.showOpenDialog(mainWindow).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No input file selected`);
       if ( inpt !== undefined ) {
-        $(`#__MAIN_INPUTS_PSMFILE__ input`).val(`${inpt}`);
+        $(`#__PSMFILE__ input`).val(`${inpt}`);
       }
     });
   });
-  $('#__MAIN_INPUTS_PDMFILE__  button').click(function() {
+  $('#__PDMFILE__  button').click(function() {
     dialog.showOpenDialog(mainWindow).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No input file selected`);
       if ( inpt !== undefined ) {
-        $(`#__MAIN_INPUTS_PDMFILE__ input`).val(`${inpt}`);
+        $(`#__PDMFILE__ input`).val(`${inpt}`);
       }
     });
   });
@@ -246,27 +246,27 @@ function createObjFromDatabasesPanel() {
 
   // extract variables...
   // catdb
-  let species = $(`#__MAIN_INPUTS_SPECIES__  select  option:selected`);
-  let db = $(`#__MAIN_INPUTS_DBID__  select  option:selected`).val();
+  let species = $(`#__SPECIES__  select  option:selected`);
+  let db = $(`#__DBID__  select  option:selected`).val();
   // catfile
-  let seqfile = $(`#__MAIN_INPUTS_SEQFILE__  input`).val();
-  let cfile = $(`#__MAIN_INPUTS_CATFILE__  input`).val();
+  let seqfile = $(`#__SEQFILE__  input`).val();
+  let cfile = $(`#__CATFILE__  input`).val();
 
   // if all variables are defined and not empty, we take the values for that panel
   // we take the category db by default
   if ( species !== undefined && species.length > 0 && db !== undefined && db != '' ) {
-    rst['__MAIN_INPUTS_DBID__'] = db;
-    rst['__MAIN_INPUTS_SPECIES__'] = '';
-    rst['__MAIN_INPUTS_CATDB__'] = '';
+    rst['__DBID__'] = db;
+    rst['__SPECIES__'] = '';
+    rst['__CATDB__'] = '';
     for (var i = 0; i < species.length; i++) {
       let o = species[i];
       let v1 = $(o).val();
       let v2 = $(o).text().toLowerCase();
       // update species data
-      if (rst['__MAIN_INPUTS_SPECIES__'] != '') { rst['__MAIN_INPUTS_SPECIES__'] += `,${v1}` } else { rst['__MAIN_INPUTS_SPECIES__'] += v1 }
+      if (rst['__SPECIES__'] != '') { rst['__SPECIES__'] += `,${v1}` } else { rst['__SPECIES__'] += v1 }
       // update category database
       let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}.categories.tsv`;
-      if (rst['__MAIN_INPUTS_CATDB__'] != '') { rst['__MAIN_INPUTS_CATDB__'] += `;${v}` } else { rst['__MAIN_INPUTS_CATDB__'] += v }
+      if (rst['__CATDB__'] != '') { rst['__CATDB__'] += `;${v}` } else { rst['__CATDB__'] += v }
     }
     // unable table of CatDB and disable table of CatFile
     $(`#panel-databases-catdb`).next('.disabled_tasktable').toggleClass('disabled_tasktable tasktable');
@@ -274,8 +274,8 @@ function createObjFromDatabasesPanel() {
 
   }
   else if ( cfile !== undefined && cfile != '' && seqfile !== undefined && seqfile != '' ) {
-    rst['__MAIN_INPUTS_SEQFILE__'] = seqfile;
-    rst['__MAIN_INPUTS_CATFILE__'] = cfile;
+    rst['__SEQFILE__'] = seqfile;
+    rst['__CATFILE__'] = cfile;
     // unable table of CatFile and disable table of CatDB
     $(`#panel-databases-catfile`).next('.disabled_tasktable').toggleClass('disabled_tasktable tasktable');
     $(`#panel-databases-catdb`).next('.tasktable').toggleClass('tasktable disabled_tasktable');
@@ -316,33 +316,33 @@ function addValuesPanel_CatDB(importer) {
   let wf_exec  = importer.wf_exec;
   
   // Init the databases
-  $(`#__MAIN_INPUTS_DBID__  select`).append(`<option value="" >Select database version...</option>`);
+  $(`#__DBID__  select`).append(`<option value="" >Select database version...</option>`);
   for (var i = 0; i < catdbs.length; i++) {
     let wf_catdbs = catdbs[i];
-    $(`#__MAIN_INPUTS_DBID__  select`).append(`<option value="${wf_catdbs['id']}" >${wf_catdbs['name']}</option>`);
+    $(`#__DBID__  select`).append(`<option value="${wf_catdbs['id']}" >${wf_catdbs['name']}</option>`);
   }
 
   // Add values
-  if ( '__MAIN_INPUTS_SPECIES__' in wf_exec['databases'] && '__MAIN_INPUTS_DBID__' in wf_exec['databases'] ) {
+  if ( '__SPECIES__' in wf_exec['databases'] && '__DBID__' in wf_exec['databases'] ) {
     // fill with the catdb id
-    let catid = wf_exec['databases']['__MAIN_INPUTS_DBID__'];
-    $(`#__MAIN_INPUTS_DBID__ select`).val(`${catid}`);
+    let catid = wf_exec['databases']['__DBID__'];
+    $(`#__DBID__ select`).val(`${catid}`);
     // fill the select object from the catid
-    addSpeciesInSelect(`#__MAIN_INPUTS_SPECIES__ select`, catdbs, catid);
+    addSpeciesInSelect(`#__SPECIES__ select`, catdbs, catid);
     // select the given species
-    let species = wf_exec['databases']['__MAIN_INPUTS_SPECIES__'].split(',');
-    $(`#__MAIN_INPUTS_SPECIES__ select`).selectpicker('val', species);
+    let species = wf_exec['databases']['__SPECIES__'].split(',');
+    $(`#__SPECIES__ select`).selectpicker('val', species);
   }
   
   // Hide table
   $(`#panel-databases-catdb`).next('.tasktable').hide();
 
   // Add the values of species every time the catdb changes
-  $(`#__MAIN_INPUTS_DBID__  select`).change(function(){
+  $(`#__DBID__  select`).change(function(){
     $("option:selected", this).each(function() {
       // fill the select object from the catid
       let catid = this.value;
-      addSpeciesInSelect(`#__MAIN_INPUTS_SPECIES__ select`, catdbs, catid);
+      addSpeciesInSelect(`#__SPECIES__ select`, catdbs, catid);
     });
   });
 
@@ -376,7 +376,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
   let dialog = remote.dialog;
   
   // Add values
-  if ( '__MAIN_INPUTS_CATFILE__' in wf_exec['databases'] && '__MAIN_INPUTS_SEQFILE__' in wf_exec['databases']) {
+  if ( '__CATFILE__' in wf_exec['databases'] && '__SEQFILE__' in wf_exec['databases']) {
     if ( 'samples' == ptype ) {
       $(`#panel-databases-catfile`).find(".databases").each(function(){
         $(this).find("input").val(`${process.env.ISANXOT_LIB_HOME}/${ptype}/${wf_exec['databases'][this.id]}`);
@@ -422,7 +422,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     return out;
   };
   // events for the DB file and CATegory file BUTTON
-  $('#__MAIN_INPUTS_SEQFILE__  button').click(function() {
+  $('#__SEQFILE__  button').click(function() {
     let opts = {
       properties: ['openFile'],
       filters :[
@@ -433,11 +433,11 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No database file selected`);
       if ( inpt !== undefined ) {
-        $(`#__MAIN_INPUTS_SEQFILE__ input`).val(`${inpt}`);
+        $(`#__SEQFILE__ input`).val(`${inpt}`);
       }
     });
   });
-  $('#__MAIN_INPUTS_CATFILE__  button').click(function() {
+  $('#__CATFILE__  button').click(function() {
     let opts = {
       properties: ['openFile'],
       filters :[
@@ -448,7 +448,7 @@ function addValuesPanel_CatFile(remote, importer, exceptor) {
     dialog.showOpenDialog(mainWindow, opts).then((files) => {
       let inpt = extractInputDirectoryFile(files, `No category file seleted`);
       if ( inpt !== undefined ) {
-        $(`#__MAIN_INPUTS_CATFILE__ input`).val(`${inpt}`);
+        $(`#__CATFILE__ input`).val(`${inpt}`);
       }
     });
   });

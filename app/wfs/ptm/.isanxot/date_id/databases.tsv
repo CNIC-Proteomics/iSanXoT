@@ -1,26 +1,26 @@
 #RELS_TABLE_CATDB							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__MAIN_INPUTS_PSMFILE__	Scan_Id	SiteSequence		scan2peptide		
-	__MAIN_INPUTS_PSMFILE__	SiteSequence	Protein_Accession		peptide2protein		
-	__MAIN_INPUTS_PSMFILE__	SiteSequence	[1]		peptide2peptideall		
-	__MAIN_INPUTS_PSMFILE__	Protein_Accession	[1]		protein2proteinall		
-	__MAIN_INPUTS_PSMFILE__	Protein_Accession	Description		protein2description	__MAIN_INPUTS_CATDB__	
-	__MAIN_INPUTS_PSMFILE__	Protein_Accession	cat_*		protein2category	__MAIN_INPUTS_CATDB__	
-	__MAIN_INPUTS_PDMFILE__	pdm	StickerLabel		peptide2artefact		
-	__MAIN_INPUTS_PDMFILE__	pdm	pd		peptide2pd		
-	__MAIN_INPUTS_PDMFILE__	pd	q		pd2proteinpd		
-	__MAIN_INPUTS_PDMFILE__	pd	qdna		pd2qnda		
-	__MAIN_INPUTS_CATDB__	cat_*	[1]		category2categoryall		
+	__PSMFILE__	Scan_Id	SiteSequence		scan2peptide		
+	__PSMFILE__	SiteSequence	Protein_Accession		peptide2protein		
+	__PSMFILE__	SiteSequence	[1]		peptide2peptideall		
+	__PSMFILE__	Protein_Accession	[1]		protein2proteinall		
+	__PSMFILE__	Protein_Accession	Description		protein2description	__CATDB__	
+	__PSMFILE__	Protein_Accession	cat_*		protein2category	__CATDB__	
+	__PDMFILE__	pdm	StickerLabel		peptide2artefact		
+	__PDMFILE__	pdm	pd		peptide2pd		
+	__PDMFILE__	pd	q		pd2proteinpd		
+	__PDMFILE__	pd	qdna		pd2qnda		
+	__CATDB__	cat_*	[1]		category2categoryall		
 							
 #RELS_TABLE_CATFILE							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__MAIN_INPUTS_PSMFILE__	Scan_Id	SiteSequence		scan2peptide		
-	__MAIN_INPUTS_PSMFILE__	SiteSequence	Protein_Accession		peptide2protein		
-	__MAIN_INPUTS_PSMFILE__	SiteSequence	[1]		peptide2peptideall		
-	__MAIN_INPUTS_PSMFILE__	Protein_Accession	[1]		protein2proteinall		
-	__MAIN_INPUTS_PDMFILE__	pdm	StickerLabel		peptide2artefact		
-	__MAIN_INPUTS_PDMFILE__	pdm	pd		peptide2pd		
-	__MAIN_INPUTS_PDMFILE__	pd	q		pd2proteinpd		
-	__MAIN_INPUTS_PDMFILE__	pd	qdna		pd2qnda		
-	__MAIN_INPUTS_CATFILE__	{1}	{0}		protein2category		
-	__MAIN_INPUTS_CATFILE__	{0}	[1]		category2categoryall		
+	__PSMFILE__	Scan_Id	SiteSequence		scan2peptide		
+	__PSMFILE__	SiteSequence	Protein_Accession		peptide2protein		
+	__PSMFILE__	SiteSequence	[1]		peptide2peptideall		
+	__PSMFILE__	Protein_Accession	[1]		protein2proteinall		
+	__PDMFILE__	pdm	StickerLabel		peptide2artefact		
+	__PDMFILE__	pdm	pd		peptide2pd		
+	__PDMFILE__	pd	q		pd2proteinpd		
+	__PDMFILE__	pd	qdna		pd2qnda		
+	__CATFILE__	{1}	{0}		protein2category		
+	__CATFILE__	{0}	[1]		category2categoryall		
