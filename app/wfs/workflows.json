@@ -1,7 +1,7 @@
 {
   "description": "Long description for iSanXoT.",
   "catdbs": [{
-    "id": "202104",
+    "id": "202104.1",
     "name": "Apr. 2021",
     "species": [
       { "name": "Human",     "scientific": "Homo sapiens" },
@@ -18,7 +18,8 @@
     "jobdir": "jobs",
     "reldir": "rels",
     "rstdir": "reports",
-    "logdir": "logs"    
+    "logdir": "logs",
+    "stadir": "stats"
   },
   "commands": [{
     "id": "CREATE_ID",
@@ -243,7 +244,7 @@
     "label": "Ratios",
     "title": "Calculate ratios",
     "visible": true,
-    "panel": "panels/advance-toggle.html",
+    "panel": "panels/advance.html",
     "help_modal": "hmodals/ratios.html",
     "params": [
       { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },

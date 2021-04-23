@@ -39,6 +39,7 @@ MAIN_INPUTS_JOBDIR  = None
 MAIN_INPUTS_RELDIR  = None
 MAIN_INPUTS_RSTDIR  = None
 MAIN_INPUTS_LOGDIR  = None
+MAIN_INPUTS_STADIR  = None
 RULE_SUFFIX         = None
 
 #########################
@@ -516,12 +517,14 @@ def main(args):
     global MAIN_INPUTS_RELDIR
     global MAIN_INPUTS_RSTDIR
     global MAIN_INPUTS_LOGDIR
+    global MAIN_INPUTS_STADIR
     global TPL_DATE
     MAIN_INPUTS_EXPDIR = tpl['prj_workspace']['expdir']
     MAIN_INPUTS_JOBDIR = tpl['prj_workspace']['jobdir']
     MAIN_INPUTS_RELDIR = tpl['prj_workspace']['reldir']
     MAIN_INPUTS_RSTDIR = tpl['prj_workspace']['rstdir']
     MAIN_INPUTS_LOGDIR = tpl['prj_workspace']['logdir']
+    MAIN_INPUTS_STADIR = tpl['prj_workspace']['stadir']
     TPL_DATE           = tpl['date']
     
     
@@ -539,6 +542,7 @@ def main(args):
             '__RELDIR__':               MAIN_INPUTS_RELDIR,
             '__RSTDIR__':               MAIN_INPUTS_RSTDIR,
             '__LOGDIR__':               MAIN_INPUTS_LOGDIR,
+            '__STADIR__':               MAIN_INPUTS_STADIR,
             '__SEQFILE__':              '',
             '__CATFILE__':              '',
             '__CATDB__':                '',

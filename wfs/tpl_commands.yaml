@@ -61,6 +61,14 @@
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/joiner.py" -w __NCPU__ __WF_VERBOSE__ '
+  - name: getIDstats
+    infiles:
+      -i: __EXPDIR__/ID-mq.tsv
+    outfiles:        
+      -o: __STADIR__/ID-stats.tsv
+    parameters:
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/stats/getIDstats.py" __WF_VERBOSE__ '
 ###################
 
 
@@ -114,6 +122,14 @@
         -l: __WF_LAB_DECOY__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/preSanXoT/masterQ.py" -w __NCPU__ __WF_VERBOSE__ '
+  - name: getIDstats
+    infiles:
+      -i: __EXPDIR__/ID-mq.tsv
+    outfiles:        
+      -o: __STADIR__/ID-stats.tsv
+    parameters:
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/stats/getIDstats.py" __WF_VERBOSE__ '
 ###################
 
 
