@@ -24,11 +24,6 @@ __status__ = "Development"
 # Local functions #
 ###################
 
-def read_infiles(file):
-    indat = pd.read_csv(file, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
-    return indat
-
-
 def get_cols_from_inheaders(df_cols, headers):
     out = []
     if df_cols and headers:
@@ -204,7 +199,10 @@ def main(args):
     header_inf = args.inf_header
     header_sup = args.sup_header
     header_thr = args.thr_header
-    filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"
+    
+    # HARD-CODE: Filter the GO terms based on the evidence codes:
+    # http://geneontology.org/docs/guide-go-evidence-codes/
+    # filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"
     
     logging.info("read input files of inferior header")
     l = []
