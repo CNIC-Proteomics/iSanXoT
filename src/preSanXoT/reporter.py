@@ -236,7 +236,8 @@ def filter_dataframe(df, flt):
 
     return df_new
 
-def add_relations(idf, file):
+def add_relation(idf, file):
+    
     # read relationship file
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
@@ -313,9 +314,11 @@ def main(args):
             df = merge_intermediate(rep_file, df)
 
  
-    if args.rel_file:
-        logging.info(f"add the relationship values {args.rel_file}")
-        df = add_relations(df, args.rel_file)
+    if args.rel_files:
+        logging.info(f"add the relationship values {args.rel_files}")
+        for file in re.split(r'\s*;\s*', args.rel_files.strip()):
+            if os.path.isfile(file):
+                df = add_relation(df, file)
 
 
     if args.filter:
@@ -379,9 +382,9 @@ if __name__ == "__main__":
     parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
     parser.add_argument('-v',   '--vars',          required=True, default='Z,FDR,N', help='List of reported variables separated by comma')
     parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
+    parser.add_argument('-rl',  '--rel_files',      help='Multiple relationship files separated by semicolon')
     parser.add_argument('-s',   '--show_cols',     help='Which columns do you want to show in the output')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
-    parser.add_argument('-rl',  '--rel_file',      help='Relationship file')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 
