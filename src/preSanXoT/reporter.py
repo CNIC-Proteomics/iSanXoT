@@ -380,7 +380,7 @@ if __name__ == "__main__":
     parser.add_argument('-ii',  '--infiles',       required=True, help='Multiple input files separated by semicolon')
     parser.add_argument('-o',   '--outfile',       required=True, help='Output file with the reports')
     parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
-    parser.add_argument('-v',   '--vars',          required=True, default='Z,FDR,N', help='List of reported variables separated by comma')
+    parser.add_argument('-v',   '--vars',          required=True, help='List of reported variables separated by comma')
     parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
     parser.add_argument('-rl',  '--rel_files',      help='Multiple relationship files separated by semicolon')
     parser.add_argument('-s',   '--show_cols',     help='Which columns do you want to show in the output')

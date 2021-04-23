@@ -209,6 +209,20 @@ def _transform_report_path(val):
     else:
         return ''
 
+# return the list of relationship files separated by semicolon
+def _transform_relationship_path(vals):
+    # for each relationship name
+    l = []
+    for val in vals.split(','):
+        # the intermediate report file is with in Result WORKSPACE
+        if val != 'nan' and val != '':
+            val = val.strip() # remove all the leading and trailing whitespace characters
+            l.append( "{}/{}".format(MAIN_INPUTS_RELDIR, f"{val}.tsv") )
+    if len(l) > 0:
+        return ";".join(l)
+    else:
+        return ''
+
 def add_datparams(p, trule, val):
     # remove all the leading and trailing whitespace characters
     val = val.strip()
@@ -237,6 +251,12 @@ def add_datparams(p, trule, val):
         l = '__WF_'+p.upper()+'__'
         # transform the input file
         v = _transform_report_path(val)
+        _add_datparams_params(p, trule, v)
+
+    elif p == 'rel_file':
+        l = '__WF_'+p.upper()+'__'
+        # transform the input file
+        v = _transform_relationship_path(val)
         _add_datparams_params(p, trule, v)
 
     elif p == 'more_params':
