@@ -203,6 +203,7 @@ def main(args):
     # HARD-CODE: Filter the GO terms based on the evidence codes:
     # http://geneontology.org/docs/guide-go-evidence-codes/
     # filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"
+    filters = None
     
     logging.info("read input files of inferior header")
     l = []
