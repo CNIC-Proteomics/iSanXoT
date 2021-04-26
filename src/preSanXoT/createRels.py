@@ -236,9 +236,9 @@ def main(args):
     # get the columns of all tables
     cols_datinf = datinf.columns.to_list()
     cols_datsup = datsup.columns.to_list() if (datsup is not None and not datsup.empty) else []
-    datthr_cols = datthr.columns.to_list() if (datthr is not None and not datthr.empty) else []
+    cols_datthr = datthr.columns.to_list() if (datthr is not None and not datthr.empty) else []
     # get the inf/sup/thr columns based on all tables
-    all_cols = cols_datinf + cols_datsup + datthr_cols
+    all_cols = cols_datinf + cols_datsup + cols_datthr
     cols_inf = get_cols_from_inheaders(all_cols, header_inf)
     cols_sup = get_cols_from_inheaders(all_cols, header_sup)
     cols_thr = get_cols_from_inheaders(all_cols, header_thr)
@@ -251,7 +251,7 @@ def main(args):
     iheader = cols_inf + cols_sup + cols_thr
     iicols = get_cols_from_inheaders(cols_datinf, iheader)
     iscols = get_cols_from_inheaders(cols_datsup, iheader) if (datsup is not None and not datsup.empty) else []
-    itcols = get_cols_from_inheaders(datthr_cols, iheader) if (datthr is not None and not datthr.empty) else []
+    itcols = get_cols_from_inheaders(cols_datthr, iheader) if (datthr is not None and not datthr.empty) else []
     # remove the column values with [] and {}
     iicols = [ c for c in iicols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
     iscols = [ c for c in iscols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
