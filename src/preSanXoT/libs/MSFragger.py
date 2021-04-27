@@ -42,6 +42,8 @@ def processing_infiles(file, Expt):
     df["Scan_Id"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
     # parse the protein description
     df["Protein_Accessions"] = parser_protein_acessions(df["protein"])
+    # add the protein description
+    df["Protein_Descriptions"] = df["protein"]
     return df
 
 def targetdecoy(df, tagDecoy, sep):

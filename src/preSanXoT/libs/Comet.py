@@ -54,6 +54,8 @@ def processing_infiles(file, Expt):
     df["cXCorr"] = cXCorr(df)
     # parse the protein description
     df["Protein_Accessions"] = parser_protein_acessions(df["protein"])
+    # add the protein description
+    df["Protein_Descriptions"] = df["protein"]
     # In the case of duplicated scans, we take the scans with the best cXCorr and if the xcore is duplicated we then get the first one.
     # move the Scan_Id to the last column
     df = df.sort_values(by=["Scan_Id","cXCorr","Protein_Accessions"], ascending=[True, False, False]) \

@@ -34,7 +34,8 @@ def processing_infiles(file, Expt):
         'Delta M in ppm': 'DeltaM [ppm]',
         'Spectrum File': 'Spectrum_File',
         'First Scan': 'Scan',
-        'Protein Accessions': 'Protein_Accessions'
+        'Protein Accessions':   'Protein_Accessions',
+        'Protein Descriptions': 'Protein_Descriptions'
     }, inplace=True)
     # create Scan_Id
     df["Scan_Id"] = df["Spectrum_File"].replace('\.[^$]*$', '', regex=True) + '-' + df["Scan"].map(str) + '-' + df["Charge"].map(str)
