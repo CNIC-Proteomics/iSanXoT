@@ -9,7 +9,7 @@ import pandas
 import numpy as np
 import concurrent.futures
 import pandas as pd
-from Bio import SeqIO
+# from Bio import SeqIO
 
 
 
@@ -27,41 +27,58 @@ __status__ = "Development"
 
 # -------
 
-def extract_proteins(df, tagDecoy, indb):
+# def extract_proteins(df, tagDecoy, indb):
+#     '''
+#     Extract the proteins list discarding DECOY proteins
+#     '''
+#     # local functions
+#     def get_fasta_desc(q):
+#         if indb is not None and q in indb:
+#             return ">"+indb[q].description
+#         else:
+#             return ''
+#     # create a list for both lists
+#     ps = list(df.fillna("").str.split("\s*;\s*"))
+#     # remove DECOY
+#     da = [ [i for i in s if i and not (tagDecoy in i)] for s in ps ]
+#     # get the first protein
+#     pm = [ s[0] for s in da ]
+#     # create the list of proteins discarding DECOY
+#     pr = [ ";".join([i for i in s[1:] if i]) for s in da ]
+#     # get the description if apply
+#     dm = list(map(get_fasta_desc, pm))
+#     return pm,pr,dm
+
+def extract_proteins2(df, tagDecoy):
     '''
     Extract the proteins list discarding DECOY proteins
     '''
-    # local functions
-    def get_fasta_desc(q):
-        if indb is not None and q in indb:
-            return ">"+indb[q].description
-        else:
-            return ''
+    # fill na
+    df = df.fillna("")
     # create a list for both lists
-    ps = list(df.fillna("").str.split("\s*;\s*"))
-    # remove DECOY
-    da = [ [i for i in s if i and not (tagDecoy in i)] for s in ps ]
-    # get the first protein
-    pm = [ s[0] for s in da ]
-    # create the list of proteins discarding DECOY
-    pr = [ ";".join([i for i in s[1:] if i]) for s in da ]
-    # get the description if apply
-    dm = list(map(get_fasta_desc, pm))
+    ps = list(df['Protein_Accessions'].str.split("\s*;\s*"))
+    ds = list(df['Protein_Descriptions'].str.split("\s*;\s*"))
+    # remove DECOY from the list of tuples (protein,description)
+    da = [ [(i,j) for i,j in zip(p,d) if i and not (tagDecoy in i)] for p,d in zip(ps,ds) ]
+    # get the first (protein,description)
+    pm,dm = zip(*[ s[0] for s in da ])
+    # create the list of proteins of redundancy (the rest of proteins)
+    pr = [ ";".join([i[0] for i in s[1:] if i[0]]) for s in da ]
     return pm,pr,dm
 
-def sort_proteins(df, tagDecoy):
-    '''
-    Sort the list of proteins and retrieve the first and the rest (discarding DECOY proteins)
-    '''
-    # create a list of tuples with the (ProteinID,ProteinDescription,ProteinLength)
-    a = list(df.fillna("").str.split("\s*;\s*"))
-    # sort and discard the DECOY proteins
-    da = [ [i for i in sorted(s) if not (tagDecoy in i[0]) and all(i)] for s in a ]
-    # from the list of protein: the first element, and the rest (redundancy)
-    pm = [ i[0] for i in da ]
-    pr = [ ";".join(i[1:]) for i in da ]
-    # return
-    return pm,pr
+# def sort_proteins(df, tagDecoy):
+#     '''
+#     Sort the list of proteins and retrieve the first and the rest (discarding DECOY proteins)
+#     '''
+#     # create a list of tuples with the (ProteinID,ProteinDescription,ProteinLength)
+#     a = list(df.fillna("").str.split("\s*;\s*"))
+#     # sort and discard the DECOY proteins
+#     da = [ [i for i in sorted(s) if not (tagDecoy in i[0]) and all(i)] for s in a ]
+#     # from the list of protein: the first element, and the rest (redundancy)
+#     pm = [ i[0] for i in da ]
+#     pr = [ ";".join(i[1:]) for i in da ]
+#     # return
+#     return pm,pr
 
 def get_num_peptides(df):
     '''
@@ -113,17 +130,17 @@ def get_master_protein(df, npeptides):
     # return
     return m,t
 
-def get_fasta_report(file):
-    '''
-    Create the FASTA report
-    '''
-    def _create_key_id(rec):
-        if (rec.startswith("sp") or rec.startswith("tr")) and "|" in rec:
-            return rec.split("|")[1]
-        else:
-            return rec
-    indb = SeqIO.index(file, "fasta", key_function=_create_key_id)
-    return indb
+# def get_fasta_report(file):
+#     '''
+#     Create the FASTA report
+#     '''
+#     def _create_key_id(rec):
+#         if (rec.startswith("sp") or rec.startswith("tr")) and "|" in rec:
+#             return rec.split("|")[1]
+#         else:
+#             return rec
+#     indb = SeqIO.index(file, "fasta", key_function=_create_key_id)
+#     return indb
 
 def read_infiles(file):
     indat = pandas.read_csv(file, sep="\t", na_values=['NA'], low_memory=False)
@@ -138,20 +155,21 @@ def main(args):
         indat = executor.map(read_infiles,args.infiles.split(";"))
     indat = pd.concat(indat)
     
-    # get the index of proteins: for UniProt case!! (key_function)
-    if args.indb is not None and os.path.isfile(args.indb):
-        logging.info('create a UniProt report')
-        indb = get_fasta_report(args.indb)
-    else:
-        indb = None
+    # # get the index of proteins: for UniProt case!! (key_function)
+    # if args.indb is not None and os.path.isfile(args.indb):
+    #     logging.info('create a UniProt report')
+    #     indb = get_fasta_report(args.indb)
+    # else:
+    #     indb = None
     
     if not args.masterq:
         # retrieve the columns without any filter
         # extract the list of proteins discarding DECOY proteins
         # extract the descripton of proteins
         logging.info('create a report with the proteins info')
-        indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins(indat['Protein_Accessions'], args.lab_decoy, indb)
-        if not indb: indat.drop("Description", axis=1, inplace=True)
+        # indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins(indat['Protein_Accessions'], args.lab_decoy, indb)
+        # if not indb: indat.drop("Description", axis=1, inplace=True)
+        indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins2(indat[['Protein_Accessions','Protein_Descriptions']], args.lab_decoy)
     else:
         # Sort the proteins by Num. Peptides and Alphanumeric
 
@@ -193,7 +211,7 @@ if __name__ == "__main__":
     parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple input files separated by comma')
     parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the masterQ column')
-    parser.add_argument('-d',  '--indb',    help='in the case of a tie, we apply the sorted protein sequence using the given FASTA file')
+    # parser.add_argument('-d',  '--indb',    help='in the case of a tie, we apply the sorted protein sequence using the given FASTA file')
     parser.add_argument('-m',  '--masterq', default=False, action='store_true', help="Flag to determines if we get the masterQ or not")
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
