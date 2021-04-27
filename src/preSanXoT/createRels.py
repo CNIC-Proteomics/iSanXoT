@@ -176,6 +176,34 @@ def exploding_columns(idf):
     return df
 
 
+def check_xrefprotein_columns(intcols, df_inf, cols_datsup):
+    '''
+    WARNING!!! THIS METHOD IS HARD-CORE!! But it was the only way I thought to do it
+    First, check if intersection columns is "Protein".
+    Second, check if the columns of sup df contains the xref proteins.
+    Third, extract the first value (not NaN) of 'Protein', and check if the value keeps the regex of one xref id.
+    Fourth, replace the 'Protein' by the new xref column name.
+    '''
+    # check if intersection columns is "Protein"
+    if 'Protein' in intcols:
+        # check if the columns of sup df contains the xref proteins
+        xrefs = {'xref_Ensembl_protId':   r'^ENS(\w{3})?P\d+',
+                 'xref_Ensembl_transcId': r'^ENS(\w{3})?T\d+',
+                 'xref_Ensembl_GeneId':   r'^ENS(\w{3})?G\d+',
+                 'xref_RefSeq_protId':    r'^[N|X|Y]P_\d+',
+                 'xref_RefSeq_transcId':  r'^[N|X][M|C]_\d+',
+        }
+        intxrefs = np.intersect1d(list(xrefs.keys()),cols_datsup).tolist() if cols_datsup else []
+        # extract the first value (not NaN) of 'Protein'
+        # x = df_inf['Protein'].sort_values(ascending=False).tolist()[0]
+        x = df_inf['Protein'].tolist()[0]
+        # check if the value keeps the regex of one xref id
+        m = [ i for i,r in xrefs.items() if re.match(r,x) ]
+        if m:
+            intcols = [ m[0] if i == 'Protein' else i for i in intcols ]
+      
+    return intcols
+
 def merge_unknown_columns(df_inf, df_sup):
     # extract interseted column
     ic = df_inf.columns
@@ -261,13 +289,20 @@ def main(args):
     if (datsup is not None and not datsup.empty):
         intcols = np.intersect1d(iicols,iscols).tolist() if iscols else iicols
         if intcols:
-            df = df.merge(datsup, left_on=intcols, right_on=intcols, how='left', suffixes=('_old', ''))
+            # check if the intersection column is xref protein
+            # in apply, returns the xref column
+            intcols2 = check_xrefprotein_columns(intcols, df, cols_datsup)
+            df = df.merge(datsup, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
         else:
             df = merge_unknown_columns(df, datsup)
     # second files - third files
     if (datthr is not None and not datthr.empty):
         intcols = np.intersect1d(iscols,itcols).tolist() if itcols else intcols
-        if intcols: df = df.merge(datthr, left_on=intcols, right_on=intcols, how='left', suffixes=('_old', ''))
+        if intcols:
+            # check if the intersection column is xref protein
+            # in apply, returns the xref column
+            intcols2 = check_xrefprotein_columns(intcols, df, cols_datthr)
+            df = df.merge(datthr, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
     
     
     
