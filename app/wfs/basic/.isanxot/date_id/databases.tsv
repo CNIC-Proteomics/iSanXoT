@@ -1,12 +1,12 @@
 #RELS_TABLE_CATDB							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__EXPDIR__/ID-q.tsv	Scan_Id	SequenceMod		scan2peptide		
-	__EXPDIR__/ID-q.tsv	SequenceMod	Protein		peptide2protein		
-	__EXPDIR__/ID-q.tsv	SequenceMod	[1]		peptide2peptideall		
-	__EXPDIR__/ID-q.tsv	Protein	[1]		protein2proteinall		
-	__EXPDIR__/ID-q.tsv	Protein	Description		protein2description	__CATDB__	
-	__EXPDIR__/ID-q.tsv	Protein	Gene		protein2gene	__CATDB__	
-	__EXPDIR__/ID-q.tsv	Protein	cat_*		protein2category	__CATDB__	
+	__EXPDIR__/ID-mq.tsv	Scan_Id	SequenceMod		scan2peptide		
+	__EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein		
+	__EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall		
+	__EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall		
+	__EXPDIR__/ID-mq.tsv	Protein	Protein_Description		protein2description		
+	__EXPDIR__/ID-mq.tsv	Protein	Gene		protein2gene	__CATDB__	
+	__EXPDIR__/ID-mq.tsv	Protein	cat_*		protein2category	__CATDB__	
 	__CATDB__	Gene	cat_*		gene2category		
 	__CATDB__	Gene	[1]		gene2geneall		
 	__CATDB__	Gene	Description		gene2description		
@@ -15,10 +15,10 @@ force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_inf
 							
 #RELS_TABLE_CATFILE							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__EXPDIR__/ID-q.tsv	Scan_Id	SequenceMod		scan2peptide		
-	__EXPDIR__/ID-q.tsv	SequenceMod	Protein		peptide2protein		
-	__EXPDIR__/ID-q.tsv	SequenceMod	[1]		peptide2peptideall		
-	__EXPDIR__/ID-q.tsv	Protein	[1]		protein2proteinall		
-	__EXPDIR__/ID-q.tsv	Protein	Description		protein2description		
+	__EXPDIR__/ID-mq.tsv	Scan_Id	SequenceMod		scan2peptide		
+	__EXPDIR__/ID-mq.tsv	SequenceMod	Protein		peptide2protein		
+	__EXPDIR__/ID-mq.tsv	SequenceMod	[1]		peptide2peptideall		
+	__EXPDIR__/ID-mq.tsv	Protein	[1]		protein2proteinall		
+	__EXPDIR__/ID-mq.tsv	Protein	Description		protein2description		
 	__CATFILE__	{1}	{0}		protein2category		
 	__CATFILE__	{0}	[1]		category2categoryall		

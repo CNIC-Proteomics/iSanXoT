@@ -169,7 +169,7 @@ def main(args):
         logging.info('create a report with the proteins info')
         # indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins(indat['Protein_Accessions'], args.lab_decoy, indb)
         # if not indb: indat.drop("Description", axis=1, inplace=True)
-        indat["Protein"],indat["Protein_Redundancy"],indat["Description"] = extract_proteins2(indat[['Protein_Accessions','Protein_Descriptions']], args.lab_decoy)
+        indat["Protein"],indat["Protein_Redundancy"],indat["Protein_Description"] = extract_proteins2(indat[['Protein_Accessions','Protein_Descriptions']], args.lab_decoy)
     else:
         # Sort the proteins by Num. Peptides and Alphanumeric
 
