@@ -428,7 +428,7 @@ def add_params_cline(cmds):
             cparams = ''
             # Add suffix in the name and increase the value
             rname = f"{rule['name']}_{RULE_SUFFIX}"
-            lname = f"{cmd['name']}#{rule['name']}#rule{RULE_SUFFIX}"
+            lname = f"{cmd['name']}#rule{RULE_SUFFIX}#{rule['name']}"
             rule['name'] = rname
             RULE_SUFFIX += 1
             # Add the log file
@@ -563,7 +563,7 @@ def main(args):
             '__RSTDIR__':               MAIN_INPUTS_RSTDIR,
             '__LOGDIR__':               MAIN_INPUTS_LOGDIR,
             '__STADIR__':               MAIN_INPUTS_STADIR,
-            '__SEQFILE__':              '',
+            # '__SEQFILE__':              '',
             '__CATFILE__':              '',
             '__CATDB__':                '',
     }
