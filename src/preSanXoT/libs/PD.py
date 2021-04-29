@@ -5,6 +5,10 @@ import pandas as pd
 import numpy as np
 import itertools
 
+###################
+# Local variables #
+###################
+COLS_NEEDED = ['Spectrum File','First Scan','Protein Accessions','Protein Descriptions']
 
 ###################
 # Local functions #

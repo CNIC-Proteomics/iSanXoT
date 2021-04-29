@@ -7,6 +7,17 @@ import numpy as np
 import re
 import itertools
 
+###################
+# Local variables #
+###################
+COLS_NEEDED = {
+    'scan':          'Scan',
+    'num':           'Search Engine Rank',
+    'charge':        'Charge',
+    'xcorr':         'XCorr',
+    'plain_peptide': 'Sequence',
+    'modifications': 'Modifications'
+}
 
 ###################
 # Local functions #

@@ -6,6 +6,10 @@ import pandas as pd
 import re
 import itertools
 
+###################
+# Local variables #
+###################
+COLS_NEEDED = ['scannum','hit_rank','charge','peptide','modification_info']
 
 ###################
 # Local functions #

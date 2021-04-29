@@ -81,12 +81,13 @@ def select_search_engines(inpt):
     # determines which kind of searh engines we have.
     search_engines = ["PD","Comet","MSFragger","MaxQuant"]
     cond = (
-        "DeltaScore" in list(d.columns) and "DeltaCn" in list(d.columns), # PD
-        len(d.columns) == 4 or ("delta_cn" in list(d.columns) and "sp_score" in list(d.columns) and "q_score" in list(d.columns)), # Comet
-        "hyperscore" in list(d.columns) and "nextscore" in list(d.columns), # MSFragger
-        "PEP" in list(d.columns) # MaxQuant
+        all(c in list(d.columns) for c in PD.COLS_NEEDED), # PD
+        len(d.columns) == 4 or all(c in list(d.columns) for c in Comet.COLS_NEEDED), # Comet
+        all(c in list(d.columns) for c in MSFragger.COLS_NEEDED), # MSFragger
+        all(c in list(d.columns) for c in MaxQuant.COLS_NEEDED) # MaxQuant
     )
-    se = [i for (i, v) in zip(search_engines, cond) if v][0]
+    se = [i for (i, v) in zip(search_engines, cond) if v]
+    se = se[0] if se else None
     return se
 
 def get_path_file(i, indir):
@@ -182,8 +183,13 @@ def main(args):
 
 
     logging.info("extract the search engines from the given experiments")
-    ses = [select_search_engines(i) for i in infiles] 
+    ses = [select_search_engines(i) for i in infiles]
     logging.debug(ses)
+    if not all(ses):
+        sms = "The search engines has not been recognized"
+        logging.error(sms)
+        sys.exit(sms)
+
     
     
     logging.info("extract the list of experiments")

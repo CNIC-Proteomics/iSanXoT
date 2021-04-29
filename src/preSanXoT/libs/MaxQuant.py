@@ -3,6 +3,10 @@
 # import modules
 import pandas as pd
 
+###################
+# Local variables #
+###################
+COLS_NEEDED = ['Sequence','Modifications','Proteins','Protein Names']
 
 ###################
 # Local functions #
