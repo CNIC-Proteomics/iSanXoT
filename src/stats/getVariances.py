@@ -39,20 +39,28 @@ def main(args):
     dat = []    
     for infile in infiles:
         # get dir name (integration)
-        bname = os.path.basename(os.path.dirname(infile))
+        dname = os.path.dirname(infile)
+        bname = os.path.basename(dname)
+        
         # get file name of script
         fname = os.path.splitext(os.path.basename(infile))[0]
         fname = re.sub('\_.*$','',fname)
+        
         # get variance
         fh = open(infile, "r").read()
         v = re.findall("Variance = (.*)", fh)
         v = v[0] if v else np.nan
+        
+        # get the link to sigmoide
+        sname = os.path.join(dname, f"{fname}_outGraph.png")
+        sname = sname if os.path.isfile(sname) else np.nan
+        
         # append data
-        dat.append((bname,fname,v))
+        dat.append((bname,fname,v,sname))
     
     
     logging.info("create a dataframe with the integration/variance")
-    outdat = pd.DataFrame(dat, columns=['name','integration','variance'])
+    outdat = pd.DataFrame(dat, columns=['name','integration','variance','sigmoide_paths'])
     
     logging.info('print output')
     outdat.to_csv(args.outfile, sep="\t", index=False)

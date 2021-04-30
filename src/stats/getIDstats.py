@@ -29,16 +29,15 @@ def main(args):
     logging.info("read input file")
     indat = pd.read_csv(args.infile, sep="\t", comment='#', na_values=['NA'], low_memory=False)
 
-# Psm=data.groupby("file")["Scan"].count()
-# Peptides=data.groupby("file")["Modified Sequence"].unique().str.len()
-# Proteins=data.groupby("file")["Protein"].unique().str.len()
-    
+
     logging.info("get statistics from identification results")
     outdat = indat.groupby('Spectrum_File').agg({
         'Scan': 'count',
+        'SequenceMod': lambda x: len(x.unique()),
         'Protein': lambda x: len(x.unique())
     })
     outdat = outdat.reset_index()
+    outdat.rename(columns={'Spectrum_File': 'spectrum_files', 'Scan':'scans', 'SequenceMod': 'peptides', 'Protein': 'proteins'}, inplace=True)
 
     
     logging.info('print output')
