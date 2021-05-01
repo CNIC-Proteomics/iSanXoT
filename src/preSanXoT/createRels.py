@@ -171,7 +171,7 @@ def exploding_columns(idf):
     return df
 
 
-def check_xrefprotein_columns(intcols, df_inf, cols_datsup):
+def replace_by_xrefprotein(intcols, iscols, df_inf, cols_datsup):
     '''
     WARNING!!! THIS METHOD IS HARD-CORE!! But it was the only way I thought to do it
     First, check if intersection columns is "Protein".
@@ -196,8 +196,9 @@ def check_xrefprotein_columns(intcols, df_inf, cols_datsup):
         m = [ i for i,r in xrefs.items() if re.match(r,x) ]
         if m:
             intcols = [ m[0] if i == 'Protein' else i for i in intcols ]
+            iscols  = [ m[0] if i == 'Protein' else i for i in iscols ]
       
-    return intcols
+    return intcols,iscols
 
 def merge_unknown_columns(df_inf, df_sup):
     # extract interseted column
@@ -294,16 +295,17 @@ def main(args):
         intcols = np.intersect1d(iicols,iscols).tolist() if iscols else iicols
         if intcols:
             logging.info("merge the first file and the second file based on the intersected columns")
+
+            # Check the Protein column:
+            # check if the intersection column is from a xref-protein column, by default is the protein column
+            intcols2,iscols = replace_by_xrefprotein(intcols, iscols, outdat, cols_datsup)
+            
             # extract the inf columns
-            outdat = outdat[iicols]
+            outdat = outdat[iicols]            
             # extract the sup columns
             datsup = datsup[iscols]
             
-            # Check the Protein column:
-            # check if the intersection column is from a xref-protein column, by default is the protein column
-            intcols2 = check_xrefprotein_columns(intcols, outdat, cols_datsup)
-            
-            # merge the inf - sup file
+            # merge the inf - sup df's
             outdat = outdat.merge(datsup, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
         else:
             logging.info("make cross-reference with the first and second file before merge")
@@ -315,12 +317,14 @@ def main(args):
         if intcols:
             logging.info("merge with the third based on the intersected columns")
             
+            # Check the Protein column:
+            # check if the intersection column is from a xref-protein column, by default is the protein column
+            intcols2,itcols = replace_by_xrefprotein(intcols, itcols, outdat, cols_datthr)
+            
             # extract the thr columns
             datthr = datthr[itcols]
             
-            # Check the Protein column:
-            # check if the intersection column is from a xref-protein column, by default is the protein column
-            intcols2 = check_xrefprotein_columns(intcols, outdat, cols_datthr)
+            # merge withe thr df
             outdat = outdat.merge(datthr, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
             
         else:
