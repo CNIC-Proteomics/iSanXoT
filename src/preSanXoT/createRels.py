@@ -43,45 +43,15 @@ def get_cols_from_inheaders(df_cols, headers):
     return out
 
 
-def _extract_columns(idf, cols):
-    df = pd.DataFrame()
-    # get the first columns
-    col = cols[0] if len(cols) >= 1 else None
-    # check if the col is a constant value: [X]
-    # check if the col is a the order of column: {1}
-    # otherwise, the col is the list of column names
-    if col and '[' in col and ']' in col:
-        c = re.findall(r'\[([^\]]*)\]', col)[0]
-        # create a column with the given constant
-        # extract the column with the constant
-        idf[col] = c
-        idf = idf.reset_index()
-        df[col] = idf[col]
-    elif col and '{' in col and '}' in col:
-        c = int(re.findall(r'\{([^\}]*)\}', col)[0])
-        # rename the output header
-        df.rename(columns={col: idf.columns[c]}, inplace=True)
-        # extract the column by position
-        df[idf.columns[c]] = idf[idf.columns[c]]
-    elif col:
-        # extract the list of columns by name
-        df = idf[cols]
-            
-    return df
-
-
-def _filter_columns(idf, filters):
+def filter_rows(idf, filters):
     
     # filter values
     def _filter_tuple(tup, filt, tup_avail):
-        out = []
-        for i,t in enumerate(tup):
-            if i in tup_avail: # filter olny in the columns available
-                s = ";".join(re.findall(rf"{filt}", t)) if not pd.isnull(t) else np.nan
-                s = np.nan if s == '' else s
-            else:
-                s = t
-            out.append(s)
+        # filter olny in the selected columns
+        out = [ re.findall(rf"{filt}", str(t)) if i in tup_avail else t for i,t in enumerate(tup) ]
+        # the list of tuples coming from the "findall" is joined with ';'
+        out = [ ';'.join([str(x) for t in l for x in t if x != '']) if isinstance(l,list) else l for l in out]
+
         return tuple(out)
     
     # get columns
@@ -106,45 +76,70 @@ def _filter_columns(idf, filters):
                 # create pattern with the string separated by comma
                 # eg.
                 # f = IDA,ISS,HDA
-                # p = ([^\;]*\|IDA:[^\;]*|[^\;]*\|ISS:[^\;]*|[^\;]*\|HDA:[^\;]*)
-                p = ":[^\;]*|[^\;]*\|".join( re.split(r'\s*,\s*',f) )
-                p = rf"([^\;]*\|{p}:[^\;]*)"
+                # r"IDA:\[([^\]]+)\]|ISS:\[([^\]]+)\]|HDA:\[([^\]]+)\]"
+                p = ":\[([^\]]+)\]|".join( re.split(r'\s*,\s*',f) )
+                p = rf"{p}:\[([^\]]+)\]"
                 # create list of tuples
                 # apply pattern for the list of tuples                    
-                idf_tuples = [tuple(x) for x in idf.to_numpy()]
-                idf_filt = [_filter_tuple(tup,p, tup_avail) for tup in idf_tuples]
-                idf = pd.DataFrame(idf_filt, columns=idf.columns.tolist())
+                df_tuples = [tuple(x) for x in idf.to_numpy()]
+                df_filt = [_filter_tuple(tup,p, tup_avail) for tup in df_tuples]
+                idf = pd.DataFrame(df_filt, columns=idf.columns.tolist())
     
+    # Important! for the reduction of memory
+    # remove duplicates
+    idf.drop_duplicates(inplace=True)
+
     return idf
 
 
-def extract_columns(idf, name, cols, filters=None):
-    # init output dataframe
-    odf = pd.DataFrame(columns=[name])
-    
-    # extract columns
-    df = _extract_columns(idf, cols)
-    
-    # Check if we get something
-    if df.empty:
-        logging.error(f"We can not extract data from the {name} column")
-        sys.exit(1)
-    else:
-        
-        # Filter the columns
-        if filters:
-            df = _filter_columns(df, filters)
-
-        # If there are multiple columns, we concatenate in one
-        c = df.columns.tolist()
-        if len(c) > 1:
-            if ':' in name:
-                odf[name] = [":".join([str(j) for j in s if not pd.isnull(j)]) for s in df.to_numpy()]
+def extract_and_join_columns(idf, header_inf, header_sup, header_thr, cols_inf, cols_sup, cols_thr):
+    # extract the columns. If there are multiple columns, join in one
+    def _extract_and_join_columns(idf, cols, header):
+        out = []
+        if len(cols) > 1:
+            if ':' in header:
+                out = [":".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
             else:
-                odf[name] = [";".join([str(j) for j in s if not pd.isnull(j)]) for s in df.to_numpy()]
-        else:
-            c = "".join(c)
-            odf[name] = df[c]
+                out = [";".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
+        elif len(cols) == 1:
+            # get the column
+            col = cols[0]
+            # check if the col is a constant value: [X]
+            # check if the col is a the order of column: {1}
+            # otherwise, the col is the list of column names
+            if col and '[' in col and ']' in col:
+                c = re.findall(r'\[([^\]]*)\]', col)[0]
+                # create a column with the given constant
+                # extract the column with the constant
+                idf[col] = c
+                # idf = idf.reset_index()
+                out = idf[col]
+            elif col and '{' in col and '}' in col:
+                c = int(re.findall(r'\{([^\}]*)\}', col)[0])
+                # extract the column by position
+                out = idf[idf.columns[c]]
+            elif col:
+                # extract the column
+                out = idf[col]
+        return out
+
+    # create a list of tuple with the (input columns and the output heaers)
+    colheaders = [(cols_inf,header_inf)]
+    if header_sup and cols_sup: colheaders.append((cols_sup,header_sup))
+    if header_thr and cols_thr: colheaders.append((cols_thr,header_thr))
+    
+    # init output dataframe
+    odf = pd.DataFrame(columns=[h[1] for h in colheaders])
+    
+    # get the columns with its -header
+    for col,header in colheaders:
+        odf[header] = _extract_and_join_columns(idf, col, header)
+
+    # remove duplicates to reduce the use of memory
+    odf.drop_duplicates(inplace=True)
+    # remove row with any empty columns
+    odf.replace('', np.nan, inplace=True)
+    odf.dropna(inplace=True)
     
     return odf
 
@@ -211,6 +206,8 @@ def merge_unknown_columns(df_inf, df_sup):
     k = list(set(ic) & set(sc))
     if k and len(k) >= 1:
         df = pd.merge(df_inf, df_sup, on=k)
+    else:
+        df = None
 
     return df
 
@@ -230,8 +227,9 @@ def main(args):
     
     # HARD-CODE: Filter the GO terms based on the evidence codes:
     # http://geneontology.org/docs/guide-go-evidence-codes/
-    # filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"
-    filters = None
+    # IMPORTANT NOTE!! This filter is important because otherwise the memory exploits
+    filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP"
+    # filters = None
     
     logging.info("read input files of inferior header")
     l = []
@@ -274,53 +272,77 @@ def main(args):
     
     
     
-    logging.info("merge the given files based on the intersected columns")
+    logging.info("get the intersected columns")
     # get the intersected columns
     iheader = cols_inf + cols_sup + cols_thr
     iicols = get_cols_from_inheaders(cols_datinf, iheader)
     iscols = get_cols_from_inheaders(cols_datsup, iheader) if (datsup is not None and not datsup.empty) else []
     itcols = get_cols_from_inheaders(cols_datthr, iheader) if (datthr is not None and not datthr.empty) else []
-    # remove the column values with [] and {}
+    # remove the column values with [x] and {x}
     iicols = [ c for c in iicols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
     iscols = [ c for c in iscols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
     itcols = [ c for c in itcols if not ('[' in c and ']' in c) and not ('{' in c and '}' in c) ]
+    
+    
+    
+    # EXTRACT AND MERGE SECTION ---
+    
     # first files - second files
-    df = datinf
+    outdat = datinf
     if (datsup is not None and not datsup.empty):
+        # chech if there are intersected columns
         intcols = np.intersect1d(iicols,iscols).tolist() if iscols else iicols
         if intcols:
-            # check if the intersection column is xref protein
-            # in apply, returns the xref column
-            intcols2 = check_xrefprotein_columns(intcols, df, cols_datsup)
-            df = df.merge(datsup, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
+            logging.info("merge the first file and the second file based on the intersected columns")
+            # extract the inf columns
+            outdat = outdat[iicols]
+            # extract the sup columns
+            datsup = datsup[iscols]
+            
+            # Check the Protein column:
+            # check if the intersection column is from a xref-protein column, by default is the protein column
+            intcols2 = check_xrefprotein_columns(intcols, outdat, cols_datsup)
+            
+            # merge the inf - sup file
+            outdat = outdat.merge(datsup, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
         else:
-            df = merge_unknown_columns(df, datsup)
+            logging.info("make cross-reference with the first and second file before merge")
+            outdat = merge_unknown_columns(outdat, datsup)
+    
     # second files - third files
     if (datthr is not None and not datthr.empty):
         intcols = np.intersect1d(iscols,itcols).tolist() if itcols else intcols
         if intcols:
-            # check if the intersection column is xref protein
-            # in apply, returns the xref column
-            intcols2 = check_xrefprotein_columns(intcols, df, cols_datthr)
-            df = df.merge(datthr, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
+            logging.info("merge with the third based on the intersected columns")
+            
+            # extract the thr columns
+            datthr = datthr[itcols]
+            
+            # Check the Protein column:
+            # check if the intersection column is from a xref-protein column, by default is the protein column
+            intcols2 = check_xrefprotein_columns(intcols, outdat, cols_datthr)
+            outdat = outdat.merge(datthr, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
+            
+        else:
+            logging.info("make cross-reference with the third file before merge")
+            outdat = merge_unknown_columns(outdat, datthr)
+
     
-    
-    
-    
-    logging.info("extract the columns")
-    outdat = extract_columns(df, header_inf, cols_inf, filters)
-    if cols_sup: outdat[header_sup] = extract_columns(df, header_sup, cols_sup, filters)
-    if cols_thr: outdat[header_thr] = extract_columns(df, header_thr, cols_thr, filters)
-    
-    
-    
+    # FILTER SECTION ---
+    if filters:
+        logging.info("filter the rows")
+        outdat = filter_rows(outdat, filters)
         
+
+    # EXTRACT BASED ON HEADER NAME AND JOIN MULTIPLE COLUMNS IN ONE ---
+    logging.info("join the columns and add 1's")
+    outdat = extract_and_join_columns(outdat, header_inf, header_sup, header_thr, cols_inf, cols_sup, cols_thr)
+    
+    
     logging.info("change the order of columns")
     cols = outdat.columns.to_list()
     cols = [cols[i] for i in [1,0,2] if (i < len(cols))]
     outdat = outdat[cols]
-
-
 
 
     logging.info("exploding the columns into multiple rows")
@@ -335,12 +357,8 @@ def main(args):
     outdat.dropna(inplace=True)
 
 
-
     logging.info('print output')
     outdat.to_csv(args.outfile, sep="\t", index=False)
-
-
-
 
 
 
