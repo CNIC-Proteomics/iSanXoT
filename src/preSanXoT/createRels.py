@@ -190,7 +190,6 @@ def replace_by_xrefprotein(intcols, iscols, df_inf, cols_datsup):
         }
         intxrefs = np.intersect1d(list(xrefs.keys()),cols_datsup).tolist() if cols_datsup else []
         # extract the first value (not NaN) of 'Protein'
-        # x = df_inf['Protein'].sort_values(ascending=False).tolist()[0]
         x = df_inf['Protein'].tolist()[0]
         # check if the value keeps the regex of one xref id
         m = [ i for i,r in xrefs.items() if re.match(r,x) ]
