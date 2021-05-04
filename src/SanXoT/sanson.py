@@ -601,6 +601,12 @@ def associateElements(inStats = "", uFile = "", relFile = ""):
 	
 	# WARNING! higherElements must be a list of lists
 	# with each sublist being id, n, Z, FDR, X
+    
+    # begin: jmrc
+	if not higherElements:
+		sms = "ERROR: higherElements is empty. The higherElements must be a list of lists with each sublist being id, n, Z, FDR, X"
+		sys.exit(sms)
+    # end: jmrc
 	
 	elementList = []
 	if higherElements[0] == ['id', 'Z', 'n']:
@@ -898,7 +904,7 @@ Usage: sanson.py -z[stats file] -r[relations file] -c[higher level list file] [O
 
 def main(argv):
 
-	version = "v1.13"
+	version = "v1.14"
 	verbose = False
 	similarityLimit = -1.0 # if remain as -1, it will be calculated
 	graphLimits = 6.0
