@@ -159,18 +159,20 @@ def integrate(data = None,
 	
 	if data == None:
 		if len(dataFile) == 0:
-			print("Error: no input data")
-			if forHtml: print("</br>")
-			sys.exit()
+			sms = "Error: no input data"
+			if forHtml: sms += "</br>"
+			print(sms)
+			sys.exit(sms)
 		else:
 			data = stats.loadInputDataFile(dataFile)
 	
 	if relations == None:
 		if len(relationsFile) == 0:
 			if not confluenceRelfile:
-				print("Error: no relations file")
-				if forHtml: print("</br>")
-				sys.exit()
+				sms = "Error: no relations file"
+				if forHtml: sms += "</br>"
+				print(sms)
+				sys.exit(sms)
 			else: # then means a confluence is made from the data file, getting ids from column 0 (first)
 				idsForConfluence = stats.extractColumns(data, 0)
 				relations = stats.getConfluenceList(idsForConfluence, deleteDuplicates = True)
@@ -196,9 +198,10 @@ def integrate(data = None,
 			stats.saveFile(randomisedFileName, filteredRelations, "idsup\tidinf")
 
 	if filteredRelations == None and len(filteredRelations) == 0:
-		print("Error: no relations data")
-		if forHtml: print("</br>")
-		sys.exit()
+		sms = "Error: no relations data"
+		if forHtml: sms += "</br>"
+		print(sms)
+		sys.exit(sms)
 	
 	success = True
 	if forceParameters:
@@ -507,12 +510,13 @@ def calculateExcluded(relsExcludedOriginal,
 
 def printErrorFileMissing(file = "file", argument = None):
 
-	print()
-	print("Error: file name for " + file + " is missing.")
+	sms = "\n"
+	sms += "Error: file name for " + file + " is missing.\n"
 	if argument != None:
-		print("Use " + argument + " for this parameter (using the short path).")
-	print("Use -h for help.")
-	sys.exit()
+		sms += "Use " + argument + " for this parameter (using the short path).\n"
+	sms += "Use -h for help.\n"
+	print(sms)
+	sys.exit(sms)
 
 #------------------------------------------------------
 
@@ -533,8 +537,9 @@ def getNextIdX_sanxot(idXVall, relations, variance = 0.0, giveMergedData = False
 	XWlist = []
 	
 	if len(mergedData) == 0:
-		print("Error, merged data list is empty. Please check the provided files do exist and are not corrupt.")
-		sys.exit()
+		sms = "Error, merged data list is empty. Please check the provided files do exist and are not corrupt."
+		print(sms)
+		sys.exit(sms)
 	
 	while position < len(mergedData):
 		
@@ -577,8 +582,9 @@ def makeStats(variance = 0.0, inputFile = "", input = None):
 	# ***
 	if not input:
 		if len(inputFile) == 0:
-			print('Error: no input file')
-			sys.exit()
+			sms = 'Error: no input file'
+			print(sms)
+			sys.exit(sms)
 		
 		input = loadFile(inputFile)
 	
@@ -1067,7 +1073,7 @@ Use -H or --advanced-help for more details.""")
 def main(argv):
 
 	# general
-	version = "v2.19"
+	version = "v2.20"
 	
 	# filename options
 	analysisName = ""
