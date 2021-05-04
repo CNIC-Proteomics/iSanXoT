@@ -134,6 +134,9 @@ def main(args):
     indat = indat.drop_duplicates()
 
     logging.info("print output file without header")
+    if indat.empty:
+        sms = "ERROR!! The result is empty"
+        sys.exit(sms)
     indat.to_csv(args.outfile, sep="\t", index=False, header=False)
 
 
