@@ -18,11 +18,31 @@ import glob
 import re
 import pandas as pd
 import numpy as np
+import base64
+from PIL import Image
+from io import BytesIO
+
 
 
 ###################
 # Local functions #
 ###################
+
+def get_thumbnail(path):
+    i = Image.open(path)
+    i.thumbnail((300, 300), Image.LANCZOS)
+    return i
+
+def image_base64(im):
+    if isinstance(im, str):
+        im = get_thumbnail(im)
+    with BytesIO() as buffer:
+        im.save(buffer, 'png')
+        return base64.b64encode(buffer.getvalue()).decode()
+
+def image_formatter(im):
+    return f'<img src="data:image/png;base64,{image_base64(im)}">'
+
 
 
 def main(args):
@@ -30,7 +50,8 @@ def main(args):
     Main function
     '''
     logging.info("get the list of variance files from input folder recursively")
-    infiles = glob.glob(os.path.join(args.indir,'**/*_variance.txt'), recursive = True)
+    # infiles = glob.glob(os.path.join(args.indir,'**/*_variance.txt'), recursive = True)
+    infiles = glob.glob(os.path.join(args.indir,'**/*_infoFile.txt'), recursive = True)
     if not infiles:
         sys.exit("ERROR!! There are not variance files")
     
@@ -60,10 +81,28 @@ def main(args):
     
     
     logging.info("create a dataframe with the integration/variance")
-    outdat = pd.DataFrame(dat, columns=['name','integration','variance','sigmoide_paths'])
+    outdat = pd.DataFrame(dat, columns=['name','integration','variance','sigmoide'])
     
-    logging.info('print output')
-    outdat.to_csv(args.outfile, sep="\t", index=False)
+
+    logging.info('print html output')
+    # include the sigmoide image in base64
+    outdat_html = outdat.to_html(index=False, escape=False, justify='center', formatters={'sigmoide': image_formatter})
+    outhtml = f'''
+<!DOCTYPE html>
+<html>
+<head lang='en'>
+    <meta charset='UTF-8'>
+    <title>Variance report</title>
+</head>
+<body>
+    <h2>Variance report</h2>
+     {outdat_html}
+</body>
+</html>'''
+    f = open(args.outfile, "w")
+    f.write(outhtml)
+    f.close()
+
     
     
 
