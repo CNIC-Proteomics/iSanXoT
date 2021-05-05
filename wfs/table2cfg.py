@@ -26,12 +26,7 @@ import shlex
 ####################
 # Global variables #
 ####################
-ISANXOT_LIB_HOME    = os.environ['ISANXOT_LIB_HOME']
-ISANXOT_SRC_HOME    = f"{os.path.dirname(__file__)}/.."
-ISANXOT_PYTHON_EXEC = sys.executable
-ISANXOT_JAVA_EXEC   = f"{ISANXOT_LIB_HOME}/exec/java/bin/java.exe"
-ISANXOT_DOT_EXEC    = f"{ISANXOT_LIB_HOME}/exec/graphviz/bin/dot.exe"
-
+import gvars
 
 OUTPUTS_FOR_CMD     = None
 TPL_DATE            = None
@@ -45,7 +40,7 @@ RULE_SUFFIX         = None
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{ISANXOT_SRC_HOME}/src/preSanXoT/")
+sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/preSanXoT/")
 import createID
 
 
@@ -551,10 +546,10 @@ def main(args):
     # replace the constants for the config template and the command templates
     logging.info("replace the constants for the config template and the command templates")
     repl = {        
-            '__ISANXOT_SRC_HOME__':     ISANXOT_SRC_HOME,
-            '__ISANXOT_PYTHON_EXEC__':  ISANXOT_PYTHON_EXEC,
-            '__ISANXOT_JAVA_EXEC__':    ISANXOT_JAVA_EXEC,
-            '__ISANXOT_DOT_EXEC__':     ISANXOT_DOT_EXEC,
+            '__ISANXOT_SRC_HOME__':     gvars.ISANXOT_SRC_HOME,
+            '__ISANXOT_PYTHON_EXEC__':  gvars.ISANXOT_PYTHON_EXEC,
+            '__ISANXOT_JAVA_EXEC__':    gvars.ISANXOT_JAVA_EXEC,
+            '__ISANXOT_DOT_EXEC__':     gvars.ISANXOT_DOT_EXEC,
             '__NCPU__':                 str(tpl['ncpu']),
             '__WF_VERBOSE__':           str(tpl['verbose']),
             '__EXPDIR__':               MAIN_INPUTS_EXPDIR,

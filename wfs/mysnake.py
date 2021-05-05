@@ -9,6 +9,9 @@ __maintainer__ = "Jose Rodriguez"
 __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
+#########################
+# Import global modules #
+#########################
 import os
 import sys
 import argparse
@@ -21,15 +24,12 @@ import re
 import time
 import shlex
 
-
 ####################
 # Global variables #
 ####################
-ISANXOT_LIB_HOME       = os.environ['ISANXOT_LIB_HOME']
-ISANXOT_SRC_HOME       = f"{os.path.dirname(__file__)}/.."
-ISANXOT_SNAKEMAKE_EXEC = f"{ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe"
+import gvars
 
-NCPUS                  = int(2/3* mp.cpu_count())
+NCPUS = int(2/3* mp.cpu_count())
 
 ###################
 # Local functions #
@@ -220,7 +220,7 @@ def main(args):
     logging.debug("validate the input files of workflow")
     try:
         # Run the command
-        proc = subprocess.run([f"{ISANXOT_SNAKEMAKE_EXEC}",
+        proc = subprocess.run([f"{gvars.ISANXOT_SNAKEMAKE_EXEC}",
                                   '--configfile', f"{args.configfile}",
                                   '--snakefile',  f"{args.snakefile}",
                                   '--directory',  f"{args.directory}",
@@ -310,6 +310,24 @@ def main(args):
     pool.close()
     pool.join()
     
+    
+    # ------
+    print(f"MYSNAKE_STATS_EXECUTING\t{time.asctime()}", flush=True)
+    logging.debug("execute the statistic processes")
+    try:
+        # command line
+        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/src/stats/getVariances.py"
+        --indir    "{args.directory}/jobs"
+        --outfile  "{args.directory}/stats/variance_report.html"'''
+        # Run the command
+        cargs = shlex.split(cline) # convert string into args            
+        proc = subprocess.call(cargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if proc != 0:
+            raise Exception("error")
+    except Exception as exc:
+        sys.exit("ERROR!! Getting the variance report:\n{}".format(exc))
+
+    # ------
     print(f"MYSNAKE_LOG_FINISHED\t{time.asctime()}", flush=True)
 
     
