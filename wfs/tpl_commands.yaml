@@ -408,8 +408,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: peptide2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, FDR_low>high = 0
+    # With-outliers. Calculated-Var. FDR = 0
   - name: wspp_p2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
@@ -430,7 +429,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoFile.txt
@@ -447,7 +446,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptideall.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
@@ -456,13 +455,12 @@
       anal:
         -a: peptide2peptideall
       p>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: protein2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, FDR_low>high = 0
+    # ! outliers. Var = var_q2c. FDR = 0
   - name: wspp_q2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -509,9 +507,8 @@
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: category2all (intermediate to high) ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPP-SBT, Var_int>high = 0 and FDR_int>high = 0
+    # Rule: category2all ---
+    # With-outliers. Var = 0. FDR = 0
   - name: wspp_c2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
@@ -560,7 +557,7 @@
       c>a_var(x):
         -v: 0
       c>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 # END: WSPP_SBT
@@ -764,6 +761,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
   # Rule: protein2gene ---
+  # ! outliers. Var = 0. FDR = 0
   - name: wsppg_q2g_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -784,7 +782,6 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2gene.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/protein2gene_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_infoFile.txt
@@ -792,9 +789,9 @@
       anal:
         -a: protein2gene
       q>g_fdr:
-        -f: 0.01
+        -f: 0
       q>g_var(x):
-        -v: ''
+        -v: 0
       q>g_tag:
         --tags: ''
     more_params: ''
@@ -803,7 +800,6 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/protein2gene_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/gene.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormW.tsv
@@ -812,13 +808,14 @@
       anal:
         -a: protein2gene
       q>g_var(x):
-        -v: ''
+        -v: 0
       q>g_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
   # Rule: gene2category ---
+  # ! outliers. Calculated-Var. FDR = 0.01
   - name: wsppg_g2c_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/gene.tsv
@@ -870,8 +867,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: peptide2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPPG-SBT, FDR_low>high = 0
+    # With-outliers. Calculated-Var. FDR = 0
   - name: wsppg_p2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
@@ -892,7 +888,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoFile.txt
@@ -909,7 +905,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptideall.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
@@ -918,13 +914,12 @@
       anal:
         -a: peptide2peptideall
       p>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: protein2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPPG-SBT, FDR_low>high = 0
+    # With-outliers. Calculated-Var. FDR = 0
   - name: wsppg_q2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -945,7 +940,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2proteinall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoFile.txt
@@ -962,7 +957,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/proteinall.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
@@ -971,13 +966,12 @@
       anal:
         -a: protein2proteinall
       q>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: gene2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPPG-SBT, FDR_low>high = 0
+    # ! outliers. Var = Var_g2c. FDR = 0
   - name: wsppg_g2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/gene.tsv
@@ -1028,9 +1022,8 @@
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: category2all (intermediate to high) ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WSPPG-SBT, Var_int>high = 0 and FDR_int>high = 0
+    # Rule: category2all ---
+    # With-outliers. Var = 0. FDR = 0
   - name: wsppg_c2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
@@ -1079,7 +1072,7 @@
       c>a_var(x):
         -v: 0
       c>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 # END: WSPPG_SBT
@@ -1230,8 +1223,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: peptide2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPP-SBT, FDR_low>high = 0
+    # With outliers. Calculated-Var. FDR = 0
   - name: wpp_p2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
@@ -1252,7 +1244,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoFile.txt
@@ -1269,7 +1261,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptideall.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
@@ -1278,13 +1270,12 @@
       anal:
         -a: peptide2peptideall
       p>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: protein2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPP-SBT, FDR_low>high = 0
+    # ! outliers. Var = Var_q2c. FDR = 0
   - name: wpp_q2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -1335,9 +1326,8 @@
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: category2all (intermediate to high) ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPP-SBT, Var_int>high = 0 and FDR_int>high = 0
+    # Rule: category2all ---
+    # With-outliers. Var = 0. FDR = 0
   - name: wpp_c2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
@@ -1386,7 +1376,7 @@
       c>a_var(x):
         -v: 0
       c>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 # END: WPP_SBT
@@ -1541,6 +1531,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
   # Rule: protein2gene ---
+  # ! outliers. Var = 0. FDR = 0
   - name: wppg_q2g_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -1561,7 +1552,6 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2gene.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/protein2gene_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_infoFile.txt
@@ -1569,9 +1559,9 @@
       anal:
         -a: protein2gene
       q>g_fdr:
-        -f: 0.01
+        -f: 0
       q>g_var(x):
-        -v: ''
+        -v: 0
       q>g_tag:
         --tags: ''
     more_params: ''
@@ -1580,7 +1570,6 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/protein2gene_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/gene.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormW.tsv
@@ -1589,13 +1578,14 @@
       anal:
         -a: protein2gene
       q>g_var(x):
-        -v: ''
+        -v: 0
       q>g_tag:
         --tags: '!out'
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
   # Rule: gene2category ---
+  # ! outliers. Calculated-Var. FDR = 0.01
   - name: wppg_g2c_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/gene.tsv
@@ -1647,8 +1637,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: peptide2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPPG-SBT, FDR_low>high = 0
+    # With-outliers. Calculated-Var. FDR = 0
   - name: wppg_p2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
@@ -1669,7 +1658,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoFile.txt
@@ -1686,7 +1675,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptideall.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
@@ -1695,13 +1684,12 @@
       anal:
         -a: peptide2peptideall
       p>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: protein2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPPG-SBT, FDR_low>high = 0
+    # With-outliers. Calculated-Var. FDR = 0
   - name: wppg_q2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -1722,7 +1710,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2proteinall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoFile.txt
@@ -1739,7 +1727,7 @@
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
+      -V: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/proteinall.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
@@ -1748,13 +1736,12 @@
       anal:
         -a: protein2proteinall
       q>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: gene2all ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPPG-SBT, FDR_low>high = 0
+    # ! outliers. Var = Var_g2c. FDR = 0
   - name: wppg_g2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/gene.tsv
@@ -1801,9 +1788,8 @@
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
-    # Rule: category2all (intermediate to high) ---
-    # In SBT, Var_low>high is always the same than Var_low>int
-    # In WPPG-SBT, Var_int>high = 0 and FDR_int>high = 0
+    # Rule: category2all ---
+    # With-outliers. Var = 0. FDR = 0
   - name: wppg_c2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
@@ -1852,7 +1838,7 @@
       c>a_var(x):
         -v: 0
       c>a_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 # END: WPPG_SBT
@@ -2062,6 +2048,7 @@
   rules:
 
     # Rule: sanxot integration: lower to intermediate ---
+    # Without outliers and the variance is calculated. FDR = 0
   - name: sbt_l2i_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
@@ -2123,6 +2110,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: sanxot integration: intermediate to high ---
+    # With outliers and the variance is 0. FDR = 0
   - name: sbt_i2h_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
@@ -2177,11 +2165,12 @@
       i>h_var(x):
         -v: 0
       i>h_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
     # Rule: sanxot integration: lower to high ---
+    # With outliers and the variance is from low2int. FDR = 0
   - name: sbt_l2h_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
@@ -2234,7 +2223,7 @@
       place:
         -p: __NAMDIR__/__WF_OUTPUT__
       l>h_tag:
-        --tags: '!out'
+        --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -f '
 
