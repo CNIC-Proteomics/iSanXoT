@@ -50,8 +50,7 @@ def main(args):
     Main function
     '''
     logging.info("get the list of variance files from input folder recursively")
-    # infiles = glob.glob(os.path.join(args.indir,'**/*_variance.txt'), recursive = True)
-    infiles = glob.glob(os.path.join(args.indir,'**/*_infoFile.txt'), recursive = True)
+    infiles = glob.glob(os.path.join(args.indir,'**/*_variance.txt'), recursive = True)
     if not infiles:
         sys.exit("ERROR!! There are not variance files")
     
