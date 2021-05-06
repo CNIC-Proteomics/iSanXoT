@@ -10,14 +10,7 @@ import itertools
 ###################
 # Local variables #
 ###################
-COLS_NEEDED = {
-    'scan':          'Scan',
-    'num':           'Search Engine Rank',
-    'charge':        'Charge',
-    'xcorr':         'XCorr',
-    'plain_peptide': 'Sequence',
-    'modifications': 'Modifications'
-}
+COLS_NEEDED = ['scan','num','charge','xcorr','plain_peptide','modifications','protein']
 
 ###################
 # Local functions #

@@ -9,7 +9,7 @@ import itertools
 ###################
 # Local variables #
 ###################
-COLS_NEEDED = ['scannum','hit_rank','charge','peptide','modification_info']
+COLS_NEEDED = ['scannum','hit_rank','charge','peptide','modification_info','protein']
 
 ###################
 # Local functions #

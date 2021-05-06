@@ -8,7 +8,7 @@ import itertools
 ###################
 # Local variables #
 ###################
-COLS_NEEDED = ['Spectrum File','First Scan','Protein Accessions','Protein Descriptions']
+COLS_NEEDED = ['Spectrum File','First Scan','Sequence','Modifications','Protein Accessions','Protein Descriptions']
 
 ###################
 # Local functions #
