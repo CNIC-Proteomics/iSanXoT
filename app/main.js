@@ -38,11 +38,14 @@ let template = [
   //   { label: 'Check for Updates', click() { mainWindow.loadFile('checkupdates.html') } },
   // ]},  
   { label: "Help", submenu: [
-    { label: 'General', click() { mainWindow.loadFile('help.html') } },
-    { label: 'Basic workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
-    // { label: 'PTM workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
-    // { label: 'Label-Free workflow', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } }
-  ]},  
+    { label: 'General', click() { mainWindow.loadURL(`file://${__dirname}/help.html`) } },    
+    { label: 'Workflows', submenu: [
+      { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
+      { label: 'PTM', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
+      { label: 'Label-Free', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } },
+    ]},
+    { label: 'Commands', click() { mainWindow.loadURL(`file://${__dirname}/commands.html`) } },
+  ]},
 ]
 // Add 'debugging' menu
 if (process.env.ISANXOT_MODE != "production") {

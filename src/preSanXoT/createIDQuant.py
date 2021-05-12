@@ -14,8 +14,8 @@ import os
 import sys
 import argparse
 import logging
-import re
-import io
+# import re
+# import io
 import pandas as pd
 import concurrent.futures
 import itertools
@@ -24,6 +24,7 @@ import itertools
 # Import local packages #
 #########################
 sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import common
 import PD
 import MSFragger
 import Comet
@@ -38,38 +39,38 @@ def read_infiles(file):
     indat = pd.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
     return indat
 
-def read_command_table(ifiles):
-    '''
-    read the multiple input files to string and split by command
-    create a list of tuples (command, dataframe with parameters)
-    dropping empty rows and empty columns
-    create a dictionary with the concatenation of dataframes for each command
-    {command} = concat.dataframes
-    '''
-    indata = dict()
-    idta = ''
-    # read the multiple input files to string and split by command
-    for f in ifiles.split(";"):
-        with open(f, "r") as file:
-            idta += file.read()
-    # create a list of tuples (command, dataframe with parameters)
-    match = re.findall(r'\s*#([^\s]*)\s*([^#]*)', idta, re.I | re.M)
-    idta = [(c,pd.read_csv(io.StringIO(l), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')) for c,l in match]
-    # create a dictionary with the concatenation of dataframes for each command
-    for c, d in idta:
-        # discard the rows when the first empty columns
-        if not d.empty:
-            l = list(d[d.iloc[:,0] == 'nan'].index)
-            d = d.drop(l)
-        if c in indata:
-            indata[c] = pd.concat( [indata[c], d], sort=False)
-        else:
-            for c2 in c.split('-'):
-                if c2 in indata:
-                    indata[c2] = pd.concat( [indata[c2], d], sort=False)
-                else:
-                    indata[c2] = d
-    return indata
+# def read_command_table(ifiles):
+#     '''
+#     read the multiple input files to string and split by command
+#     create a list of tuples (command, dataframe with parameters)
+#     dropping empty rows and empty columns
+#     create a dictionary with the concatenation of dataframes for each command
+#     {command} = concat.dataframes
+#     '''
+#     indata = dict()
+#     idta = ''
+#     # read the multiple input files to string and split by command
+#     for f in ifiles.split(";"):
+#         with open(f, "r") as file:
+#             idta += file.read()
+#     # create a list of tuples (command, dataframe with parameters)
+#     match = re.findall(r'\s*#([^\s]*)\s*([^#]*)', idta, re.I | re.M)
+#     idta = [(c,pd.read_csv(io.StringIO(l), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')) for c,l in match]
+#     # create a dictionary with the concatenation of dataframes for each command
+#     for c, d in idta:
+#         # discard the rows when the first empty columns
+#         if not d.empty:
+#             l = list(d[d.iloc[:,0] == 'nan'].index)
+#             d = d.drop(l)
+#         if c in indata:
+#             indata[c] = pd.concat( [indata[c], d], sort=False)
+#         else:
+#             for c2 in c.split('-'):
+#                 if c2 in indata:
+#                     indata[c2] = pd.concat( [indata[c2], d], sort=False)
+#                 else:
+#                     indata[c2] = d
+#     return indata
 
 def select_search_engines(inpt):
     # if the input is file, read the first row
@@ -101,17 +102,17 @@ def get_path_file(i, indir):
     else:
         return None
 
-def print_outfile(f):
-    '''
-    Rename the temporal files deleting the last suffix
-    '''
-    # get the output file deleting the last suffix
-    ofile = os.path.splitext(f)[0]
-    # remove obsolete output file
-    if os.path.isfile(ofile):
-        os.remove(ofile)
-    # rename the temporal file
-    os.rename(f, ofile)
+# def print_outfile(f):
+#     '''
+#     Rename the temporal files deleting the last suffix
+#     '''
+#     # get the output file deleting the last suffix
+#     ofile = os.path.splitext(f)[0]
+#     # remove obsolete output file
+#     if os.path.isfile(ofile):
+#         os.remove(ofile)
+#     # rename the temporal file
+#     os.rename(f, ofile)
 
 ###################
 # Local functions #
@@ -163,7 +164,7 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
-    indata = read_command_table(args.intbl)
+    indata = common.read_command_table(args.intbl)
     if not 'CREATE_IDQUANT' in indata:
         sms = "There is not 'CREATE_IDQUANT' task-table"
         logging.error(sms)
@@ -252,7 +253,7 @@ def main(args):
                                 list(ddf.groupby("Experiment")),
                                 itertools.repeat(args.outdir),
                                 itertools.repeat("ID.tsv") )
-    [print_outfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
+    [common.print_outfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
         
 
 

@@ -40,8 +40,8 @@ RULE_SUFFIX         = None
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/preSanXoT/")
-import createID
+sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/preSanXoT/libs/")
+import common
 
 
 ###################
@@ -483,7 +483,7 @@ def main(args):
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
     infiles = ";".join([d['file'] for d in tpl['datfiles']])
-    indata = createID.read_command_table(infiles)
+    indata = common.read_command_table(infiles)
     
     
     # check the tasktable parameters for each command:

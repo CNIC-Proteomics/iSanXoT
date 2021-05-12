@@ -30,14 +30,23 @@ def main(args):
     indat = pd.read_csv(args.infile, sep="\t", comment='#', na_values=['NA'], low_memory=False)
 
 
+    logging.info("join the columns sequence+modifications to have unique peptides")
+    indat['Seq+Mod'] = indat['Sequence']+'+'+indat['Modifications']
+    
     logging.info("get statistics from identification results")
+    # For Comet-PTM
+    # outdat = indat.groupby('Filename').agg({
+    #     'Raw_FirstScan': 'count',
+    #     'SiteSequence': lambda x: len(x.unique()),
+    #     'Protein_Accession': lambda x: len(x.unique())
+    # })
     outdat = indat.groupby('Spectrum_File').agg({
-        'Scan': 'count',
-        'SequenceMod': lambda x: len(x.unique()),
+        'Scan_Id': 'count',
+        'Seq+Mod': lambda x: len(x.unique()),
         'Protein': lambda x: len(x.unique())
     })
     outdat = outdat.reset_index()
-    outdat.rename(columns={'Spectrum_File': 'spectrum_files', 'Scan':'scans', 'SequenceMod': 'peptides', 'Protein': 'proteins'}, inplace=True)
+    outdat.rename(columns={'Spectrum_File': 'spectrum_files', 'Scan_Id':'scans', 'Seq+Mod': 'peptides', 'Protein': 'proteins'}, inplace=True)
 
     
     logging.info('print output')

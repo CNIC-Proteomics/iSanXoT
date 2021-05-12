@@ -12,6 +12,7 @@ install --no-warn-script-location	concurrent-utils==0.2.0
 install --no-warn-script-location	biopython==1.74
 install --no-warn-script-location	lxml==4.6.2
 install --no-warn-script-location	scikit-learn==0.24.1
+install --no-warn-script-location	Pillow==8.2.0
 $MANAGER=node/npm
 config set			scripts-prepend-node-path true
 install --save-dev --save-exact --global	electron@^7.x.x
@@ -19,7 +20,7 @@ install --global	ps-tree
 install --global	xlsx
 install --global	js-yaml
 install --global	fs-extra
-$DATABASES=202104.1
-$SAMPLES=basic.3
-$SAMPLES=ptm.3
-$SAMPLES=lblfree.3
+$DATABASES=202105
+$SAMPLES=basic.4
+$SAMPLES=ptm.4
+$SAMPLES=lblfree.4

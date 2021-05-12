@@ -25,6 +25,8 @@ src/*/*.Rproj
 # install
 install/*/__pycache__
 
+# wfs
+wfs/__pycache__/
 
 # preSanXoT
 

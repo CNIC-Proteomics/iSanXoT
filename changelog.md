@@ -6,7 +6,6 @@ DATE: 2021_YY
 
 ### Highlights
 
-+ TODO!! Documentation.
 
 ### Changes in the Graphical User Interface
 
@@ -16,12 +15,82 @@ DATE: 2021_YY
 
 ### Changes in the Code Workflow
 
-+ TODO!! New program that reports some information (variances, ...) for each integration.
-
 + TODO!! ARREGLAR CUANDO NO ABRE UN PROYECTO SI ESTAMOS EN LA PARTE DE LOGS"!!"
 
 + TODO!! ARREGLAR EL ERROR QUE CUANDO ESCRIBES UN OUTPUT DEL TIPO "Control_1_cArt/cQ" (subcarpeta), que se creen bien los "OUTPUTFILES" y no HAYA UN ERROR DE "output cyclic". Ejemplo con 
 S:\U_Proteomica\LABS\LAB_ARR\MouseLDL-HighFattyDiet\PTMs\iSanXoT_029
+
+
++ TODO!! Label-Free workflow.
+
++ iSanXoT accepts identifications from the search engines: PD, Comet and MSFragger. TODO!!! Debe incluir la table de "Reporter ion Distribution"
+
++ We have joined in a program the identification and quantification programs (createIDQuant). Important note! 
+
++ TODO!! TABLA de cuantificacione por separado!!! por experimento.
+
+
++ TODO!! CREART CADA "PESTAÑA" COMO UNA PLUGIN INDEPENDIENTE. EN UN DIRECTORIO CON LOS FICHEROS HTML, TABLAS Y COMANDOS NECESARIOS.
++ TODO!! INSTALACIÓN PARA LINUX Y MAC!!
+
++ TODO!! Documentation. PONER LOS NOMBRES DE LOS BUSCADORES EN LA DOCUMENTACIÓN Y EN LA INTERFAZ!!
+
++ TODO!! No aparecen las columnas opcionales de INTEGRAGTE, ¡SBT, etc cuando está activado el botón.
+
+
+___
+## 0.2.11
+```
+DATE: 2021_04
+```
+
+### Highlights
+
+
+### Changes in the Graphical User Interface
+
++ The parameters of RATIOS command (Tag, FDR and Var(x)) have been deleted because they weren't needed.
+
++ The prefix "__MAIN_INPUTS_" has been deleted in the constant names.
+
+### Changes in the Code Workflow
+
++ The prefix "__MAIN_INPUTS_" has been deleted in the constant names.
+
++ REPORT program accepts multiple relationship files. It is only necessary to add the relationship name in the REPORT task-table.
+
++ PD, MSF and Comet now include 'Protein_Descriptions' column based on their own columns.
+
++ 'ID.tsv' from MaxQuant results now include the 'Protein_Description' column getting the first value.
+
++ MASTERQ: The FASTA input parameter is OBSOLETE. Now, we use only the 'Protein_Description' from the results of search engines.
+
++ CREATEIDQUANT: The columns need to recognize the search engine have changed.
+
++ STATS programs: Two programs have been included in the workflow. A program which gets the ID statistics, and other that gets the variances with the sigmoide image for each integration.
+
++ CREATERELS:
+	- Adds new function that replaces the 'Protein' column by the new xref column name, if it is applicable.
+	- New design in the algorithm to reduce the time/memory in the execution.
+	- Filter section has been included.
+
++ SANXOT v2.20: retrieves the error message using the sys.exit().
+
++ SANSON v1.14: retrieves new error message when the higherElement file is empty.
+
+TODO!! Aprovecho para contarte que en el Sanson de este ejemplo el número de componentes que aparece en la representación de las categorías es contando los outliers de la integración q2c, cuando debería ser el número sin outliers.
+
+
+
++ TABLE2CFG and MYSNAKE: the global variables have been included in a different module.
+
++ MYSNAKE: The program, which creates the report of variances, has been added.
+
++ Some variances in the WSPPG_SBT have changed.
+
++ Common library for the scripts has been created.
+
+
 
 
 ___
@@ -32,30 +101,36 @@ DATE: 2021_04
 
 ### Highlights
 
-+ Now iSanXoT extracts the quantification from mzML files.
++ The "REPORT" program has been improved.
 
-+ iSanXoT accepts identifications from the search engines: PD, Comet and MSFragger.
-
-+ Label-Free workflow.
-
-+ We have include the Ecoli species.
++ The parameters for the third column has been revised.
 
 ### Changes in the Graphical User Interface
 
-+ The GUI includes the CREATE_IDQUANT command.
-
-+ Label-Free workflow.
++ The GUI includes the CREATE_IDQUANT command but it is a preliminar implementation.
 
 ### Changes in the Code Workflow
 
-+ We have joined in a program the identification and quantification programs (createIDQuant).
++ There is a preliminar implementation of CREATE_IDQUANT program that accepts the identifications from the search engines: PD, Comet and MSFragger. It is not ready yet!!
 
 + In the case of duplicated scans for Comet results, we take the scans with the best cXCorr and then, with the duplicated, we get the first one.
 
-+ createRes:
-TODO!! WE HAVE TO IMPROVE THE CREATERELS PROGRAM!! SIMPLYFY THE CODE AND ADD THE THIRD COLUMN.
++ masterQ: The "Description" is removed if the value is not created.
 
++ createRes: The program has been simplified. The third column is retrieved correctly.
 
++ The Database task-table has changed. The filter columns has been deleted.
+
++ The "REPORT" program has been improved:
+	- It accepts any kind of level name.
+	- It merges all the columns from the inpu "relationship" file.
+	- It filters by multiple columns or single column.
+
++ The filename of logs has changed.
+
++ The parameters for the third column has been revised.
+
++ Include all outputs for each sanxot-sanxotsieve-sanxot in the INTEGRATION and SBT commands.
 
 
 

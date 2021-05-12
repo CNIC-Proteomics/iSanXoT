@@ -44,7 +44,7 @@ COL_VARS = {
 # Import local packages #
 #########################
 sys.path.append(f"{os.path.dirname(__file__)}/libs")
-import createID
+import common
 
 ###################
 # Local functions #
@@ -154,88 +154,6 @@ def merge_intermediate(file, df):
         
         return df3
         
-def filter_dataframe(df, flt):
-    '''
-    Filter the dataframe
-
-    Parameters
-    ----------
-    df : pandas dataframe
-        Report.
-        
-    flt : str
-        Boolean expression.
-
-    Returns
-    -------
-    Filtered dataframe.
-
-    '''
-    # variable with the boolean operators
-    comparisons = ['>=', '<=', '!=', '<>', '==', '>', '<']
-    # logicals = ['\|', '&', '~']
-    logicals = ['&'] # for the moment only works with AND
-    rc = r'|'.join(comparisons)
-    rl = r'|'.join(logicals)
-    # variable with index
-    idx = pd.Series([])
-    
-    # go throught the comparisons
-    comps = re.split(rl,flt)
-    for cmp_str in comps:
-        try:
-            # trim whitespaces and parenthesis
-            cmp_str = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_str)
-            # extract the variable/operator/values from the logical condition
-            x = re.match(rf"^(.*)\s+({rc})\s+(.*)$", cmp_str)
-            if x:
-                var = x.group(1).strip()
-                cmp = x.group(2).strip()
-                val = x.group(3).strip()
-                # use the multi-variables to filter the multiple columns
-                if '@' in var:
-                    v = var.split('@')
-                    var0 = v[1]
-                    vs = r'|'.join([rf"^\('{var0}',\s*'{v}'\)" for v in re.split(r'\s*,\s*', v[0])])
-                else:
-                    vs = rf"^\('{var}"
-            # filter the column names
-            # remember the columns are multiindex. For example, ('n_protein2category, '126_vs_Mean')
-            # This is the reason we have included \(' in the regex
-            d = df.filter(regex=f"{vs}", axis=1)
-        except Exception as exc:
-            # not filter
-            logging.error(f"It is not filtered. There was a problem getting the columns: {cmp_str}\n{exc}")
-            df_new = df
-            break
-        try:
-            # evaluate condition
-            ix = pd.eval(f"(d {cmp} {val})").any(axis=1)
-            # comparison between two index Series
-            # all -> &
-            # any -> |
-            if not idx.empty:
-                if not ix.empty:
-                    idx = pd.eval("(idx & ix)")
-            else:
-                idx = ix
-        except Exception as exc:
-            # not filter
-            logging.error(f"It is not filtered. There was a problem evaluating the condition: {cmp_str}\n{exc}")
-            df_new = df
-            break
-
-    # extract the dataframe from the index
-    try:        
-        if not idx.empty:
-            df_new = df[idx]
-    except Exception as exc:
-        # not filter
-        logging.error(f"It is not filtered. There was a problem extracting the datafram from the index rows: {exc}")
-        df_new = df
-
-    return df_new
-
 def add_relation(idf, file):
     
     # read relationship file
@@ -323,7 +241,7 @@ def main(args):
 
     if args.filter:
         logging.info(f"filter the report {args.filter}")
-        df = filter_dataframe(df, args.filter)
+        df = common.filter_dataframe_multiindex(df, args.filter)
 
 
     # RETRIEVE AND SORT the columns ----
@@ -363,7 +281,7 @@ def main(args):
     f = f"{args.outfile}.tmp"
     df.to_csv(f, sep="\t", index=False)
     # rename tmp file deleting before the original file 
-    createID.print_outfile(f)
+    common.print_outfile(f)
 
 
 

@@ -19,6 +19,11 @@ __maintainer__ = "Jose Rodriguez"
 __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import common
 
 ###################
 # Local functions #
@@ -42,55 +47,20 @@ def get_cols_from_inheaders(df_cols, headers):
                 out.append(c)
     return out
 
-
-def filter_rows(idf, filters):
+def extract_and_filter(df, cols, filters):
     
-    # filter values
-    def _filter_tuple(tup, filt, tup_avail):
-        # filter olny in the selected columns
-        out = [ re.findall(rf"{filt}", str(t)) if i in tup_avail else t for i,t in enumerate(tup) ]
-        # the list of tuples coming from the "findall" is joined with ';'
-        out = [ ';'.join([str(x) for t in l for x in t if x != '']) if isinstance(l,list) else l for l in out]
-
-        return tuple(out)
-    
-    # get columns
-    cols = idf.columns.tolist()
-    # get list of filters
-    flts = re.split(r'\s*&\s*', filters) if filters else []
-    for flt in flts:
-        fc = re.split(r'\s*:\s*', flt)
-        if fc and len(fc) == 2:
-            col = fc[0]
-            f = fc[1]            
-            # get the columns that match with the given col name (regex)
-            tup_avail = []
-            col = col.replace('*','\w+')# convert to regex replacing '*' to '\w+'
-            col = rf"({col})"
-            for i,c in enumerate(cols):
-                if re.match(col, c):
-                    tup_avail = tup_avail + [ i for m in re.findall(col, c)]
-
-            # if we find matched columns we apply the filters
-            if tup_avail:
-                # create pattern with the string separated by comma
-                # eg.
-                # f = IDA,ISS,HDA
-                # r"IDA:\[([^\]]+)\]|ISS:\[([^\]]+)\]|HDA:\[([^\]]+)\]"
-                p = ":\[([^\]]+)\]|".join( re.split(r'\s*,\s*',f) )
-                p = rf"{p}:\[([^\]]+)\]"
-                # create list of tuples
-                # apply pattern for the list of tuples                    
-                df_tuples = [tuple(x) for x in idf.to_numpy()]
-                df_filt = [_filter_tuple(tup,p, tup_avail) for tup in df_tuples]
-                idf = pd.DataFrame(df_filt, columns=idf.columns.tolist())
+    # filter df
+    if filters:
+        df = common.filter_dataframe(df, filters)
+        
+    # extract columns
+    df = df[cols]
     
     # Important! for the reduction of memory
     # remove duplicates
-    idf.drop_duplicates(inplace=True)
+    df = df.drop_duplicates()
 
-    return idf
-
+    return df
 
 def extract_and_join_columns(idf, header_inf, header_sup, header_thr, cols_inf, cols_sup, cols_thr):
     # extract the columns. If there are multiple columns, join in one
@@ -224,17 +194,13 @@ def main(args):
     header_inf = args.inf_header
     header_sup = args.sup_header
     header_thr = args.thr_header
-    
-    # HARD-CODE: Filter the GO terms based on the evidence codes:
-    # http://geneontology.org/docs/guide-go-evidence-codes/
-    # IMPORTANT NOTE!! This filter is important because otherwise the memory exploits
-    filters = "cat_GO_*:EXP,IDA,IPI,IMP,IGI,IEP,HTP,HDA,HMP,HGI,HEP,IBA,IBD,IKR,IRD"
-    # filters = None
-    
+    filters    = args.filters
+
+        
     logging.info("read input files of inferior header")
     l = []
     for f in args.inf_infiles.split(";"):
-        d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
+        d = pd.read_csv(f, sep="\t", na_values=['NA'], low_memory=False)
         l.append(d)
     datinf = pd.concat(l)
 
@@ -243,7 +209,7 @@ def main(args):
         logging.info("read input file of superior header")
         l = []
         for f in args.sup_infiles.split(";"):
-            d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
+            d = pd.read_csv(f, sep="\t", na_values=['NA'], low_memory=False)
             l.append(d)
         datsup = pd.concat(l)
 
@@ -252,7 +218,7 @@ def main(args):
         logging.info("read input file of third header")
         l = []
         for f in args.thr_infiles.split(";"):
-            d = pd.read_csv(f, sep="\t", dtype=str, na_values=['NA'], low_memory=False)
+            d = pd.read_csv(f, sep="\t", na_values=['NA'], low_memory=False)
             l.append(d)
         datthr = pd.concat(l)
     
@@ -300,9 +266,9 @@ def main(args):
             intcols2,iscols = replace_by_xrefprotein(intcols, iscols, outdat, cols_datsup)
             
             # extract the inf columns
-            outdat = outdat[iicols]            
+            outdat = extract_and_filter(outdat, iicols, filters)
             # extract the sup columns
-            datsup = datsup[iscols]
+            datsup = extract_and_filter(datsup, iscols, filters)
             
             # merge the inf - sup df's
             outdat = outdat.merge(datsup, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
@@ -321,7 +287,7 @@ def main(args):
             intcols2,itcols = replace_by_xrefprotein(intcols, itcols, outdat, cols_datthr)
             
             # extract the thr columns
-            datthr = datthr[itcols]
+            datthr = extract_and_filter(datthr, itcols, filters)
             
             # merge withe thr df
             outdat = outdat.merge(datthr, left_on=intcols, right_on=intcols2, how='left', suffixes=('', '_old'))
@@ -331,12 +297,6 @@ def main(args):
             outdat = merge_unknown_columns(outdat, datthr)
 
     
-    # FILTER SECTION ---
-    if filters:
-        logging.info("filter the rows")
-        outdat = filter_rows(outdat, filters)
-        
-
     # EXTRACT BASED ON HEADER NAME AND JOIN MULTIPLE COLUMNS IN ONE ---
     logging.info("join the columns and add 1's")
     outdat = extract_and_join_columns(outdat, header_inf, header_sup, header_thr, cols_inf, cols_sup, cols_thr)
@@ -383,6 +343,7 @@ if __name__ == "__main__":
     parser.add_argument('-ji', '--sup_infiles',  help='Input file for the superior header')
     parser.add_argument('-ki', '--thr_infiles',  help='Input file for the third header')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the relationship table')
+    parser.add_argument('-f',  '--filters', help='Filter the rows')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

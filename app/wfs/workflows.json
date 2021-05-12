@@ -1,8 +1,8 @@
 {
   "description": "Long description for iSanXoT.",
   "catdbs": [{
-    "id": "202104.1",
-    "name": "Apr. 2021",
+    "id": "202105",
+    "name": "May. 2021",
     "species": [
       { "name": "Human",     "scientific": "Homo sapiens" },
       { "name": "Mouse",     "scientific": "Mus musculus" },
@@ -50,8 +50,8 @@
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "panels/main_inputs.html",
-    "help_modal": "hmodals/main_inputs.html",
+    "panel": "panels/main_inputs_ptm.html",
+    "help_modal": "hmodals/main_inputs_ptm.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" },
@@ -63,8 +63,8 @@
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "panels/main_inputs_ptm.html",
-    "help_modal": "hmodals/main_inputs_ptm.html",
+    "panel": "panels/main_inputs.html",
+    "help_modal": "hmodals/main_inputs.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" }
@@ -94,13 +94,13 @@
     "help_modal": "hmodals/databases_catdb.html",
     "params": [
       { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-      { "type": "required", "id": "inf_infiles", "name": "Lower infiles" },
-      { "type": "required", "id": "inf_headers", "name": "Lower headers" },
-      { "type": "required", "id": "sup_headers", "name": "Higher headers" },
-      { "type": "required", "id": "thr_headers", "name": "3rd headers" },
+      { "type": "required", "id": "inf_infiles", "name": "Lower infile" },
+      { "type": "required", "id": "inf_headers", "name": "Lower header" },
+      { "type": "required", "id": "sup_headers", "name": "Higher header" },
+      { "type": "required", "id": "thr_headers", "name": "3rd header" },
       { "type": "required", "id": "output", "name": "Output" },
-      { "type": "required", "id": "sup_infiles", "name": "Higher infiles" },
-      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" }
+      { "type": "required", "id": "sup_infiles", "name": "Higher infile" },
+      { "type": "required", "id": "thr_infiles", "name": "3rd infile" }
     ],
     "readonly_rows": []
   },{
@@ -422,7 +422,7 @@
       "cmds": ["CREATE_IDQUANT-JOINER"]
     },{
       "id": "databases",
-      "cmds": ["RELS_TABLE_CATDB", "RELS_TABLE_CATFILE"]
+      "cmds": ["RELS_TABLE_CATDB"]
     },{
       "id": "stats_quantification",
       "cmds": ["RATIOS_WSPP-WSPP_SBT", "RATIOS_WSPP-WSPPG_SBT"]
@@ -447,10 +447,10 @@
     }],
     "works": [{
       "id": "main_inputs",
-      "cmds": ["CREATE_IDQUANT-JOINER"]
+      "cmds": ["CREATE_ID-JOINER"]
     },{
       "id": "databases",
-      "cmds": ["RELS_TABLE_CATDB", "RELS_TABLE_CATFILE"]
+      "cmds": ["RELS_TABLE_CATDB"]
     },{
       "id": "stats_quantification",
       "cmds": ["RATIOS_WSPP-WPP_SBT", "RATIOS_WSPP-WPPG_SBT"]
