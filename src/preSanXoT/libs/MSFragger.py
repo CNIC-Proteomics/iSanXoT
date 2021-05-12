@@ -10,6 +10,15 @@ import itertools
 # Local variables #
 ###################
 COLS_NEEDED = ['scannum','hit_rank','charge','peptide','modification_info','protein']
+COLS_NEEDED_acid = [
+    'Search Engine Rank', # for preProcessing func.
+    'Protein_Accessions', # for tagDecoy func.
+    'massdiff', # for Jump func.
+    'calc_neutral_pep_mass',
+    'Sequence', # for SequenceMod func.
+    'Modifications']
+
+
 
 ###################
 # Local functions #

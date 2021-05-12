@@ -39,58 +39,6 @@ def read_infiles(file):
     indat = pd.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
     return indat
 
-# def read_command_table(ifiles):
-#     '''
-#     read the multiple input files to string and split by command
-#     create a list of tuples (command, dataframe with parameters)
-#     dropping empty rows and empty columns
-#     create a dictionary with the concatenation of dataframes for each command
-#     {command} = concat.dataframes
-#     '''
-#     indata = dict()
-#     idta = ''
-#     # read the multiple input files to string and split by command
-#     for f in ifiles.split(";"):
-#         with open(f, "r") as file:
-#             idta += file.read()
-#     # create a list of tuples (command, dataframe with parameters)
-#     match = re.findall(r'\s*#([^\s]*)\s*([^#]*)', idta, re.I | re.M)
-#     idta = [(c,pd.read_csv(io.StringIO(l), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')) for c,l in match]
-#     # create a dictionary with the concatenation of dataframes for each command
-#     for c, d in idta:
-#         # discard the rows when the first empty columns
-#         if not d.empty:
-#             l = list(d[d.iloc[:,0] == 'nan'].index)
-#             d = d.drop(l)
-#         if c in indata:
-#             indata[c] = pd.concat( [indata[c], d], sort=False)
-#         else:
-#             for c2 in c.split('-'):
-#                 if c2 in indata:
-#                     indata[c2] = pd.concat( [indata[c2], d], sort=False)
-#                 else:
-#                     indata[c2] = d
-#     return indata
-
-def select_search_engines(inpt):
-    # if the input is file, read the first row
-    # otherwise, we get dataframe
-    if isinstance(inpt, str) and os.path.isfile(inpt):
-        d = pd.read_csv(inpt, nrows=0, sep="\t", comment='#', index_col=False)
-    else:
-        d = inpt
-    # determines which kind of searh engines we have.
-    search_engines = ["PD","Comet","MSFragger","MaxQuant"]
-    cond = (
-        all(c in list(d.columns) for c in PD.COLS_NEEDED), # PD
-        len(d.columns) == 4 or all(c in list(d.columns) for c in Comet.COLS_NEEDED), # Comet
-        all(c in list(d.columns) for c in MSFragger.COLS_NEEDED), # MSFragger
-        all(c in list(d.columns) for c in MaxQuant.COLS_NEEDED) # MaxQuant
-    )
-    se = [i for (i, v) in zip(search_engines, cond) if v]
-    se = se[0] if se else None
-    return se
-
 def get_path_file(i, indir):
     '''
     Get the full path
@@ -102,17 +50,6 @@ def get_path_file(i, indir):
     else:
         return None
 
-# def print_outfile(f):
-#     '''
-#     Rename the temporal files deleting the last suffix
-#     '''
-#     # get the output file deleting the last suffix
-#     ofile = os.path.splitext(f)[0]
-#     # remove obsolete output file
-#     if os.path.isfile(ofile):
-#         os.remove(ofile)
-#     # rename the temporal file
-#     os.rename(f, ofile)
 
 ###################
 # Local functions #
@@ -184,7 +121,7 @@ def main(args):
 
 
     logging.info("extract the search engines from the given experiments")
-    ses = [select_search_engines(i) for i in infiles]
+    ses = [common.select_search_engines(i) for i in infiles]
     logging.debug(ses)
     if not all(ses):
         sms = "The search engines has not been recognized"

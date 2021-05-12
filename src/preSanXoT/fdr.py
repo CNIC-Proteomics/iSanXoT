@@ -26,7 +26,7 @@ from itertools import repeat
 # Import local packages #
 #########################
 sys.path.append(f"{os.path.dirname(__file__)}/libs")
-import createID
+import common
 import PD
 import MSFragger
 import Comet
@@ -37,7 +37,7 @@ import Comet
 
 def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
     # read which search engines we have
-    se = createID.select_search_engines(file)
+    se = common.select_search_engines_acid(file)
     # processing the input files depending on
     if se == "PD": df = PD.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
     elif se == "Comet": df = Comet.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
@@ -99,7 +99,7 @@ def SequenceMod(df, mods, file):
     # get the dataframe from the input tuple df=(exp,df)
     df = df[1]
     # read which search engines we have
-    se = createID.select_search_engines(file)
+    se = common.select_search_engines_acid(file)
     # create sequence with modifications depending on
     if se == "PD": df["SequenceMod"] = PD.SequenceMod(df, mods)
     elif se == "Comet": df["SequenceMod"] = Comet.SequenceMod(df)
@@ -152,7 +152,7 @@ def main(args):
     f = f"{args.outfile}.tmp"
     ddf.to_csv(f, sep="\t", index=False)
     # rename tmp file deleting before the original file 
-    createID.print_outfile(f)
+    common.print_outfile(f)
 
 
 

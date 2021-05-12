@@ -9,6 +9,15 @@ import itertools
 # Local variables #
 ###################
 COLS_NEEDED = ['Spectrum File','First Scan','Sequence','Modifications','Protein Accessions','Protein Descriptions']
+COLS_NEEDED_acid = [
+    'Search Engine Rank', # for preProcessing func.
+    'Protein_Accessions', # for tagDecoy func.
+    'DeltaM [ppm]', # for Jump func.
+    'Theo. MH+ [Da]',
+    'MH+ [Da]',
+    'Sequence', # for SequenceMod func.
+    'Modifications']
+
 
 ###################
 # Local functions #
@@ -105,6 +114,7 @@ def SequenceMod(df, mods):
     s = df['Modifications'].fillna('').replace(mods, regex=True)
     # create indexes list
     sn = list( s.replace({
+        '(\S*C-Term\S*)': '',
         '(\S*N-Term\S*)': '',
         '\([^)]*\)': '',
         '(\s)': '',
@@ -115,6 +125,7 @@ def SequenceMod(df, mods):
     [[a.insert(0,0) ] for a in sn]
     # create Modifications list
     sa = list( s.replace({
+        '(\S*C-Term\S*)': '',
         '(\S*N-Term\S*)': '',
         '[^\(\)]*\(([^\)]+)\)': "["+ r"\1];"
     }, regex=True).str.split(";") )

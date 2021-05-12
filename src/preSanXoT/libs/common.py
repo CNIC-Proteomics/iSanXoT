@@ -5,9 +5,58 @@ import io
 import pandas as pd
 import logging
 
+#########################
+# Import local packages #
+#########################
+import PD
+import MSFragger
+import Comet
+import MaxQuant
+
 ####################
 # Common functions #
 ####################
+
+def select_search_engines(inpt):
+    # if the input is file, read the first row
+    # otherwise, we get dataframe
+    if isinstance(inpt, str) and os.path.isfile(inpt):
+        d = pd.read_csv(inpt, nrows=0, sep="\t", comment='#', index_col=False)
+    else:
+        d = inpt
+    # determines which kind of searh engines we have.
+    search_engines = ["PD","Comet","MSFragger","MaxQuant"]
+    cond = (
+        all(c in list(d.columns) for c in PD.COLS_NEEDED), # PD
+        len(d.columns) == 4 or all(c in list(d.columns) for c in Comet.COLS_NEEDED), # Comet
+        all(c in list(d.columns) for c in MSFragger.COLS_NEEDED), # MSFragger
+        all(c in list(d.columns) for c in MaxQuant.COLS_NEEDED) # MaxQuant (from a list)
+    )
+    se = [i for (i, v) in zip(search_engines, cond) if v]
+    se = se[0] if se else None
+    return se
+
+def select_search_engines_acid(inpt):
+    '''
+    Select the search engine After the CreateID
+    '''
+    # if the input is file, read the first row
+    # otherwise, we get dataframe
+    if isinstance(inpt, str) and os.path.isfile(inpt):
+        d = pd.read_csv(inpt, nrows=0, sep="\t", comment='#', index_col=False)
+    else:
+        d = inpt
+    # determines which kind of searh engines we have.
+    search_engines = ["PD","Comet","MSFragger","MaxQuant"]
+    cond = (
+        all(c in list(d.columns) for c in PD.COLS_NEEDED_acid), # PD
+        len(d.columns) == 4 or all(c in list(d.columns) for c in Comet.COLS_NEEDED_acid), # Comet
+        all(c in list(d.columns) for c in MSFragger.COLS_NEEDED_acid), # MSFragger
+        all(c in list(d.columns) for c in MaxQuant.COLS_NEEDED) # MaxQuant (from a list)
+    )
+    se = [i for (i, v) in zip(search_engines, cond) if v]
+    se = se[0] if se else None
+    return se
 
 def read_command_table(ifiles):
     '''
@@ -41,6 +90,7 @@ def read_command_table(ifiles):
                 else:
                     indata[c2] = d
     return indata
+
 
 def filter_dataframe(df, flt):
     '''
@@ -80,6 +130,7 @@ def filter_dataframe(df, flt):
         df_new = df
 
     return df_new
+
 
 def filter_dataframe_multiindex(df, flt):
     '''
@@ -162,6 +213,7 @@ def filter_dataframe_multiindex(df, flt):
         df_new = df
 
     return df_new
+
 
 def print_outfile(f):
     '''
