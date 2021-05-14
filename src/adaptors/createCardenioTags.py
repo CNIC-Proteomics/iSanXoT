@@ -5,9 +5,6 @@ import os
 import sys
 import argparse
 import logging
-import re
-import io
-import pandas as pd
 
 
 # Module metadata variables

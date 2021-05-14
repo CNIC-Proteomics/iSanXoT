@@ -331,7 +331,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Create the relationship tables from several files',
         epilog='''Examples:
-        python  src/preSanXoT/createRelsAlt.py
+        python  src/adaptors/createRelsAlt.py
           -ii TMT1/ID-q.tsv;TMT2/ID-q.tsv
           -o rels_table.tsv
         ''',

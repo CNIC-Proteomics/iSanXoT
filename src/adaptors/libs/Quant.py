@@ -351,4 +351,4 @@ def merge_quantification(ieddf, iqddf):
 
 
 if __name__ == "__main__":
-	print("It is a library used by preSanXoT and its satellite module")
+	print("It is a library used by SanXoT and its adaptor modules")

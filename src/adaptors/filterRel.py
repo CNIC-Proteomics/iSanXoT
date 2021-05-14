@@ -5,9 +5,10 @@ import os
 import sys
 import argparse
 import logging
-import pandas
-import concurrent.futures
 import pandas as pd
+import numpy as np
+import re
+import concurrent.futures
 
 
 # Module metadata variables
@@ -19,55 +20,55 @@ __maintainer__ = "Jose Rodriguez"
 __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
-
+###################
+# Local functions #
+###################
 def read_infiles(file):
-    indat = pandas.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
+    indat = pd.read_csv(file, sep="\t", na_values=['NA'], low_memory=False)
     return indat
 
-def print_outfile(f):
-    '''
-    Rename the temporal files deleting the last suffix
-    '''
-    # get the output file deleting the last suffix
-    ofile = os.path.splitext(f)[0]
-    # remove obsolete output file
-    if os.path.isfile(ofile):
-        os.remove(ofile)
-    # rename the temporal file
-    os.rename(f, ofile)
 
+#################
+# Main function #
+#################
 def main(args):
     '''
     Main function
-    '''
-    logging.info("read files")
+    '''    
+    logging.info("read infiles")
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-        indat = executor.map(read_infiles,args.infiles.split(";"))
+        indat = executor.map( read_infiles,re.split(r'\s*;\s*', args.infiles.strip()) )
     indat = pd.concat(indat)
-    
-    logging.info('print output')
-    # print to tmp file
-    f = f"{args.outfile}.tmp"
-    indat.to_csv(f, sep="\t", index=False)
-    # rename tmp file deleting before the original file 
-    print_outfile(f)
 
+    # discards the tags
+    logging.info("discard the given tags")
+    if args.tags and not args.tags.isspace():
+        for t in re.split(r'\s*&\s*', args.tags.strip()):
+            if t.startswith('!') or t.startswith('\!') or t.startswith('/!'):
+                t = t.replace('!','').replace('\!','').replace('/!','')
+                indat.iloc[:,2].replace(np.nan, '', regex=True, inplace=True)
+                indat = indat[indat.iloc[:,2] != t ]
+    
+    logging.info("print output file without header")
+    indat.to_csv(args.outfile, sep="\t", index=False)
 
 
 
 if __name__ == "__main__":
     # parse arguments
     parser = argparse.ArgumentParser(
-        description='Program that join multiple files in one',
+        description='Filters the third column from the given relationship files',
         epilog='''Examples:
-        python  src/SanXoT/joiner.py
-          -ii TMT1/ID-q.tsv;TMT2/ID-q.tsv
-          -o ID-mq.tsv
+        python  src/SanXoT/createSansonHighLevel.py
+          -ii w1/p2c_tagged.tsv;w2/p2c_tagged.tsv
+          -t '!out'
+          -o p2c_filt.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple input files separated by comma')
-    parser.add_argument('-o',  '--outfile', required=True, help='Output file with the masterQ column')
+    parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple relationship files separated by comma')
+    parser.add_argument('-o',  '--outfile',  required=True, help='Output file with the relationship table')
+    parser.add_argument('-t',  '--tags',     help='Multiple Relationship file separated by comma')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()
 

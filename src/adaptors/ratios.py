@@ -97,7 +97,7 @@ def calculate_ratio(df, ratios):
         if all([True if c in df.columns else False for c in ControlTag+labels]):    
             df = _calc_ratio(df, ControlTag, labels)
         else:
-            sms = "The tags are not available in you data"
+            sms = "The tags are not available in your data"
             logging.error(sms)
             sys.exit(sms)
 

@@ -33,12 +33,19 @@ def get_thumbnail(path):
     i.thumbnail((300, 300), Image.LANCZOS)
     return i
 
-def image_base64(im):
-    if isinstance(im, str):
-        im = get_thumbnail(im)
-    with BytesIO() as buffer:
-        im.save(buffer, 'png')
-        return base64.b64encode(buffer.getvalue()).decode()
+def image_base64(im):    
+    try:
+        if isinstance(im, str):
+            im = get_thumbnail(im)
+        with BytesIO() as buffer:
+            im.save(buffer, 'png')
+            return base64.b64encode(buffer.getvalue()).decode()
+        pass
+    except Exception:
+        sms = f"Unrecognized data stream contents when reading image file: {im}"
+        logging.warning(sms)
+        return ''
+        pass
 
 def image_formatter(im):
     return f'<img src="data:image/png;base64,{image_base64(im)}">'

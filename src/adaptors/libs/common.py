@@ -108,11 +108,13 @@ def filter_dataframe(df, flt):
     -------
     Filtered dataframe.
 
-    '''    
+    '''
+    # flag that controls whether the df was filtered or not.
+    ok = False
     # add the df variable
     flt = flt.replace("[","['").replace("]","']")
     flt = flt.replace('[','df[')
-    flt = f"df[{flt}]"    
+    flt = f"df[{flt}]"
     try:
         # evaluate condition
         idx = pd.eval(flt).any(axis=1)
@@ -120,16 +122,17 @@ def filter_dataframe(df, flt):
         if not idx.empty:
             df_new = df.loc[idx.index]
             df_new = df_new.reset_index()
+            ok = True
         else:
             # not filter
             logging.warning("The filter has not been applied")
             df_new = df
-    except Exception:
+    except Exception as exc:
         # not filter
-        # logging.error(f"It is not filtered. There was a problem evaluating the condition: {flt}\n{exc}")
+        logging.warning(f"The filter has not been applied. There was a problem evaluating the condition: {flt}\n{exc}")
         df_new = df
 
-    return df_new
+    return ok,df_new
 
 
 def filter_dataframe_multiindex(df, flt):
@@ -228,5 +231,48 @@ def print_outfile(f):
     os.rename(f, ofile)
 
 
+# def all_files_ready(files):
+#     def _is_locked(filepath):
+#         """Checks if a file is locked by opening it in append mode.
+#         If no exception thrown, then the file is not locked.
+#         """
+#         locked = None
+#         file_object = None
+#         if os.path.exists(filepath):
+#             try:
+#                 buffer_size = 8
+#                 # Opening file in append mode and read the first 8 characters.
+#                 file_object = open(filepath, 'a', buffer_size)
+#                 if file_object:
+#                     locked = False
+#             except IOError:
+#                 locked = True
+#             finally:
+#                 if file_object:
+#                     file_object.close()
+#         return locked
+    
+#     def _file_ready(f):
+#         if os.path.exists(f):
+#             # path exists
+#             if os.path.isfile(f): # is it a file?
+#                 # also works when file is a link and the target is writable
+#                 if os.access(f, os.W_OK):
+#                     if _is_locked(f):
+#                         return False
+#                     else:
+#                         return True
+#                 else:
+#                     return False
+#                 return os.access(f, os.W_OK)
+#             elif os.path.dirname(f): # is it a dir?
+#                 # target is creatable if parent dir is writable
+#                 return os.access(f, os.W_OK)
+#             else:
+#                 return False # otherwise, is not writable
+
+#     return all([ _file_ready(f) for f in files ])
+
+
 if __name__ == "__main__":
-	print("It is a library used by preSanXoT and its satellite module")
+	print("It is a library used by SanXoT and its adaptor modules")
