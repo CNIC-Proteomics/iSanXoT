@@ -23,7 +23,8 @@ from itertools import repeat
 #########################
 # Import local packages #
 #########################
-import createID
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import common
 
 
 ###################
@@ -92,7 +93,14 @@ def calculate_ratio(df, ratios):
                 labels.append( lb )
             else:
                 labels.append( lbl )
-        df = _calc_ratio(df, ControlTag, labels)
+        # check if all tags are available in the input table
+        if all([True if c in df.columns else False for c in ControlTag+labels]):    
+            df = _calc_ratio(df, ControlTag, labels)
+        else:
+            sms = "The tags are not available in you data"
+            logging.error(sms)
+            sys.exit(sms)
+
     return df
 
 
@@ -106,7 +114,7 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
-    indata = createID.read_command_table(args.intbl)
+    indata = common.read_command_table(args.intbl)
 
     logging.info("read input file")
     ddf = pd.read_csv(args.infile, sep="\t")
@@ -118,10 +126,10 @@ def main(args):
     logging.debug(ratios)
 
     logging.info("calculate the ratios (in parallel by experiment)")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
-    ddf = pd.concat(ddf)
-    # ddf = calculate_ratio(list(ddf.groupby("Experiment")), ratios)
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+    #     ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
+    # ddf = pd.concat(ddf)
+    ddf = calculate_ratio(list(ddf.groupby("Experiment"))[0], ratios)
     
     logging.info('print output')
     # print to tmp file
