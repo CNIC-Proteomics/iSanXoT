@@ -82,7 +82,7 @@ def extract_and_join_columns(idf, header_inf, header_sup, header_thr, cols_inf, 
                 # create a column with the given constant
                 # extract the column with the constant
                 idf[col] = c
-                # idf = idf.reset_index()
+                idf = idf.reset_index()
                 out = idf[col]
             elif col and '{' in col and '}' in col:
                 c = int(re.findall(r'\{([^\}]*)\}', col)[0])
