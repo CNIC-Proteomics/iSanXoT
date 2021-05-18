@@ -3,6 +3,7 @@ import os
 import re
 import io
 import pandas as pd
+import numpy as np
 import logging
 
 #########################
@@ -111,25 +112,32 @@ def filter_dataframe(df, flt):
     '''
     # flag that controls whether the df was filtered or not.
     ok = False
-    # add the df variable
-    flt = flt.replace("[","['").replace("]","']")
-    flt = flt.replace('[','df[')
-    flt = f"df[{flt}]"
-    try:
-        # evaluate condition
-        idx = pd.eval(flt).any(axis=1)
-        # extract the dataframe from the index
-        if not idx.empty:
-            df_new = df.loc[idx.index]
-            df_new = df_new.reset_index()
-            ok = True
-        else:
+    # check if the given filters is applied into given dataframe
+    f_cols = re.findall(r'\[([^\]]*)\]',flt)
+    intcols = np.intersect1d(df.columns,f_cols).tolist() if f_cols else []
+    # the columns in the filters are within df
+    if intcols:    
+        # add the df variable
+        flt = flt.replace("[","['").replace("]","']")
+        flt = flt.replace('[','df[')
+        flt = f"df[{flt}]"
+        try:
+            # evaluate condition
+            idx = pd.eval(flt)
+            # extract the dataframe from the index
+            if not idx.empty:
+                df_new = df.iloc[idx.index.to_list(),:]
+                df_new = df_new.reset_index()
+                ok = True
+            else:
+                # not filter
+                logging.warning("The filter has not been applied")
+                df_new = df
+        except Exception as exc:
             # not filter
-            logging.warning("The filter has not been applied")
+            logging.warning(f"The filter has not been applied. There was a problem evaluating the condition: {flt}\n{exc}")
             df_new = df
-    except Exception as exc:
-        # not filter
-        logging.warning(f"The filter has not been applied. There was a problem evaluating the condition: {flt}\n{exc}")
+    else:
         df_new = df
 
     return ok,df_new
