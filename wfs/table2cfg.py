@@ -40,7 +40,7 @@ RULE_SUFFIX         = None
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/preSanXoT/libs/")
+sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/adaptors/libs/")
 import common
 
 
@@ -396,11 +396,11 @@ def _param_str_to_dict(s):
 def _str_cline(k,v):
     c = ''
     if k.startswith("--"):
-        c = '{}="{}" '.format(k,str(v)) if str(v) != '' else ''
+        c = '{}="{}" '.format(k,str(v).replace('"','\\"')) if str(v) != '' else ''
     elif k == "DEL": # we provide only the value without parameter
-        c = '"{}" '.format(str(v)) if str(v) != '' else ''
+        c = '"{}" '.format(str(v).replace('"','\\"')) if str(v) != '' else ''
     else:
-        c = '{} "{}" '.format(k,str(v)) if str(v) != '' else ''
+        c = '{} "{}" '.format(k,str(v).replace('"','\\"')) if str(v) != '' else ''
     return c
     
 def add_params_cline(cmds):
