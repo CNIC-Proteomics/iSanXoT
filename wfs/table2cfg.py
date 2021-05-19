@@ -153,7 +153,7 @@ def _add_datparams_params(p, trule, dat):
             # Exceptions in the 'Variance' parameters:
             # If the value is not false, apply the new variance
             # Otherwise, by default
-            if p.endswith('Var(x)'):
+            if p.endswith('Var(x)') and dat != 'nan':
                 if dat.upper() != 'FALSE':
                     del trule['infiles']['-V'] # delete the infile with the variance (by default)
                     trule['parameters'][p][k] = dat
@@ -161,15 +161,14 @@ def _add_datparams_params(p, trule, dat):
                     del trule['parameters'][p] # delete the optional parameter of variance
             # Exceptions in the 'Tag' parameters:
             # Update the template values (not overwrite from the given data)
-            elif p.endswith('tag'):
+            elif p.endswith('tag') and dat != 'nan':
                 if trule['parameters'][p][k] == '':
                     trule['parameters'][p][k] = dat
                 else:
                     trule['parameters'][p][k] += ' & '+ dat
             # The rest of kind of parameters
-            else:
-                if dat and dat != 'nan':
-                    trule['parameters'][p][k] = dat
+            elif dat and dat != 'nan':
+                trule['parameters'][p][k] = dat
 
     # add optional parameters into 'infiles' coming from the task-table
     # the tag parameter to the program, it is the same name than the header table
