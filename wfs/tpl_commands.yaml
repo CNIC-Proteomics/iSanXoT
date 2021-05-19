@@ -149,7 +149,7 @@
         -j: ''
       thr_headers:
         -k: ''
-      filters:
+      filter:
         -f: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createRels.py" __WF_VERBOSE__ '
@@ -179,7 +179,7 @@
         -j: ''
       thr_headers:
         -k: ''
-      filters:
+      filter:
         -f: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createRels.py" __WF_VERBOSE__ '
