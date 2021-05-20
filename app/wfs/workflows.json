@@ -33,6 +33,17 @@
       { "type": "required", "id": "experiment", "name": "Experiment" }
     ]
   },{
+    "id": "CREATE_IDQUANT-JOINER",
+    "label": "Input files",
+    "title": "Provide input files",
+    "visible": true,
+    "panel": "panels/main_inputs_noQuant.html",
+    "help_modal": "hmodals/main_inputs.html",
+    "params": [
+      { "type": "required", "id": "infile", "name": "Infile" },
+      { "type": "required", "id": "experiment", "name": "Experiment" }
+    ]    
+  },{
     "id": "CREATE_IDQUANT",
     "label": "Input files",
     "title": "Provide input files",
@@ -50,25 +61,14 @@
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "panels/main_inputs_ptm.html",
-    "help_modal": "hmodals/main_inputs_ptm.html",
+    "panel": "panels/main_inputs.html",
+    "help_modal": "hmodals/main_inputs.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "optional", "id": "mzfile", "name": "mz File" },
       { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]
-  },{
-    "id": "CREATE_ID-JOINER",
-    "label": "Input files",
-    "title": "Provide input files",
-    "visible": true,
-    "panel": "panels/main_inputs.html",
-    "help_modal": "hmodals/main_inputs.html",
-    "params": [
-      { "type": "required", "id": "infile", "name": "Infile" },
-      { "type": "required", "id": "experiment", "name": "Experiment" }
-    ]  
   },{
     "id": "FDR-MASTERQ",
     "label": "FDR",
@@ -100,7 +100,8 @@
       { "type": "required", "id": "thr_headers", "name": "3rd header" },
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "required", "id": "sup_infiles", "name": "Higher infile" },
-      { "type": "required", "id": "thr_infiles", "name": "3rd infile" }
+      { "type": "required", "id": "thr_infiles", "name": "3rd infile" },
+      { "type": "required", "id": "filter", "name": "Filter" }
     ],
     "readonly_rows": []
   },{
@@ -118,7 +119,8 @@
       { "type": "required", "id": "thr_headers", "name": "3rd headers" },
       { "type": "required", "id": "output", "name": "Output" },
       { "type": "required", "id": "sup_infiles", "name": "Higher infiles" },
-      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" }
+      { "type": "required", "id": "thr_infiles", "name": "3rd infiles" },
+      { "type": "required", "id": "filter", "name": "Filter" }
     ],
     "readonly_rows": []
   },{
@@ -447,7 +449,7 @@
     }],
     "works": [{
       "id": "main_inputs",
-      "cmds": ["CREATE_ID-JOINER"]
+      "cmds": ["CREATE_IDQUANT-JOINER"]
     },{
       "id": "databases",
       "cmds": ["RELS_TABLE_CATDB"]
