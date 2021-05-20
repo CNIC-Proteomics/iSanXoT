@@ -79,11 +79,9 @@ def extract_and_join_columns(idf, header_inf, header_sup, header_thr, cols_inf, 
             # otherwise, the col is the list of column names
             if col and '[' in col and ']' in col:
                 c = re.findall(r'\[([^\]]*)\]', col)[0]
-                # create a column with the given constant
-                # extract the column with the constant
-                idf[col] = c
-                idf = idf.reset_index()
-                out = idf[col]
+                # create a list of 'n' elements (the given df) filled by 'c' constant
+                n = len(idf.index.to_list())
+                out = [c] * n
             elif col and '{' in col and '}' in col:
                 c = int(re.findall(r'\{([^\}]*)\}', col)[0])
                 # extract the column by position

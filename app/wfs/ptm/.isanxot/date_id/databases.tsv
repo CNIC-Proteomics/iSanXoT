@@ -1,4 +1,4 @@
-#RELS_TABLE_CATDB							
+#CREATE_RELS							
 force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
 	__PSMFILE__	Scan_Id	SiteSequence		scan2peptide		
 	__PSMFILE__	SiteSequence	Protein_Accession		peptide2protein		
@@ -11,16 +11,3 @@ force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_inf
 	__PDMFILE__	pd	q		pd2proteinpd		
 	__PDMFILE__	pd	qdna		pd2qnda		
 	__CATDB__	cat_*	[1]		category2categoryall		
-							
-#RELS_TABLE_CATFILE							
-force	inf_infiles	inf_headers	sup_headers	thr_headers	output	sup_infiles	thr_infiles
-	__PSMFILE__	Scan_Id	SiteSequence		scan2peptide		
-	__PSMFILE__	SiteSequence	Protein_Accession		peptide2protein		
-	__PSMFILE__	SiteSequence	[1]		peptide2peptideall		
-	__PSMFILE__	Protein_Accession	[1]		protein2proteinall		
-	__PDMFILE__	pdm	StickerLabel		peptide2artefact		
-	__PDMFILE__	pdm	pd		peptide2pd		
-	__PDMFILE__	pd	q		pd2proteinpd		
-	__PDMFILE__	pd	qdna		pd2qnda		
-	__CATFILE__	{1}	{0}		protein2category		
-	__CATFILE__	{0}	[1]		category2categoryall		

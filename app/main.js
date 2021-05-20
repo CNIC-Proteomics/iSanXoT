@@ -19,16 +19,8 @@ let template = [
   ]},
   { label: "Workflows", submenu: [
     { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic`) } },
-    { label: 'PTM', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/ptm`) } }
-    // { label: 'Basic', submenu: [
-    //   { label: 'with UniProt db', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_uniprot`) } },
-    //   { label: 'with Category file', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic/w_catfile`) } },
-    // ]},
-    // { label: 'PTM', submenu: [
-    //   { label: 'from scratch', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/init`) } },
-    //   { label: 'with a sample', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=load&pdir=${__dirname}/wfs/ptm/sample`) } },
-    // ]},
-    // { label: 'Label-Free Mode', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?wfid=lblfree`) } },
+    // { label: 'PTM', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/ptm`) } },
+    { label: 'Label-Free', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/lblfree`) } }
   ]},
   { label: "Processes", submenu: [
     { label: 'Main page', click() { mainWindow.loadFile('processes.html') } }
@@ -41,7 +33,7 @@ let template = [
     { label: 'General', click() { mainWindow.loadURL(`file://${__dirname}/help.html`) } },    
     { label: 'Workflows', submenu: [
       { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
-      { label: 'PTM', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
+      // { label: 'PTM', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_ptm`) } },
       { label: 'Label-Free', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_lblfree`) } },
     ]},
     { label: 'Commands', click() { mainWindow.loadURL(`file://${__dirname}/commands.html`) } },

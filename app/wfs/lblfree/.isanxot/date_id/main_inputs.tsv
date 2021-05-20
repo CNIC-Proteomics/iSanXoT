@@ -1,2 +1,2 @@
 #CREATE_IDQUANT-JOINER			
-infile	experiment	mzfile	type_tmt
+infile	experiment	mzfile	quan_method

@@ -521,8 +521,7 @@ def main(args):
     
     # if the cfg file of workflow has not 'database' information, we remove the indata of dataframes
     if not tpl['databases']:
-        indata['RELS_TABLE_CATDB'].drop(indata['RELS_TABLE_CATDB'].index, inplace=True)
-        indata['RELS_TABLE_CATFILE'].drop(indata['RELS_TABLE_CATFILE'].index, inplace=True)
+        indata['CREATE_RELS'].drop(indata['CREATE_RELS'].index, inplace=True)
 
 
     # assign the global variables
@@ -557,8 +556,6 @@ def main(args):
             '__RSTDIR__':               MAIN_INPUTS_RSTDIR,
             '__LOGDIR__':               MAIN_INPUTS_LOGDIR,
             '__STADIR__':               MAIN_INPUTS_STADIR,
-            # '__SEQFILE__':              '',
-            '__CATFILE__':              '',
             '__CATDB__':                '',
     }
     # add the replacements for the databases

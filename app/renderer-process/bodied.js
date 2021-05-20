@@ -337,9 +337,7 @@ for (var i = 0; i < wf['works'].length; i++) {
 // add values into panels, if apply
 // functions in the corresponding html template
 ehandler.addValuesMainInputsPanel(remote, importer, exceptor);
-ehandler.addValuesPanel_CatDB(importer);
-ehandler.addValuesPanel_CatFile(remote, importer, exceptor);
-
+ehandler.addValuesPanelCatDB(importer);
 
 // check if some data of advanced options is available
 ehandler.checkIfAdvancedOptionsExist(importer, exceptor);

@@ -235,7 +235,7 @@ function toggleAdvParameters() {
 
 /*
  *
- * EVENTS-FUNCTIONS: DATABASES
+ * EVENTS-FUNCTIONS: DATABASES CATDB
  * 
  */
 
@@ -248,9 +248,6 @@ function createObjFromDatabasesPanel() {
   // catdb
   let species = $(`#__SPECIES__  select  option:selected`);
   let db = $(`#__DBID__  select  option:selected`).val();
-  // catfile
-  let seqfile = $(`#__SEQFILE__  input`).val();
-  let cfile = $(`#__CATFILE__  input`).val();
 
   // if all variables are defined and not empty, we take the values for that panel
   // we take the category db by default
@@ -268,28 +265,10 @@ function createObjFromDatabasesPanel() {
       let v = `${process.env.ISANXOT_LIB_HOME}/dbs/${db}/${v2}_${db}.categories.tsv`;
       if (rst['__CATDB__'] != '') { rst['__CATDB__'] += `;${v}` } else { rst['__CATDB__'] += v }
     }
-    // unable table of CatDB and disable table of CatFile
-    $(`#panel-databases-catdb`).next('.disabled_tasktable').toggleClass('disabled_tasktable tasktable');
-    $(`#panel-databases-catfile`).next('.tasktable').toggleClass('tasktable disabled_tasktable');
-
-  }
-  else if ( cfile !== undefined && cfile != '' && seqfile !== undefined && seqfile != '' ) {
-    rst['__SEQFILE__'] = seqfile;
-    rst['__CATFILE__'] = cfile;
-    // unable table of CatFile and disable table of CatDB
-    $(`#panel-databases-catfile`).next('.disabled_tasktable').toggleClass('disabled_tasktable tasktable');
-    $(`#panel-databases-catdb`).next('.tasktable').toggleClass('tasktable disabled_tasktable');
   }
   return rst;
 } // end createObjFromDatabasesPanel
 
-
-
-/*
- *
- * EVENTS-FUNCTIONS: DATABASES CATDB
- * 
- */
 
 // Add species in the select option
 function addSpeciesInSelect(select, catdbs, catid) {
@@ -310,7 +289,7 @@ function addSpeciesInSelect(select, catdbs, catid) {
 }
 
 // Add values into panel, if apply
-function addValuesPanel_CatDB(importer) {
+function addValuesPanelCatDB(importer) {
   // declare variables
   let catdbs  = importer.catdbs;
   let wf_exec  = importer.wf_exec;
@@ -346,10 +325,10 @@ function addValuesPanel_CatDB(importer) {
     });
   });
 
-} // end addValuesPanel_CatDB
+} // end addValuesPanelCatDB
 
 // Show/Hide table
-function toggleTaskTable_CatDB(t) {
+function toggleTaskTableCatDB(t) {
   if ( $(t).prop('checked') ) {
     $(`#panel-databases-catdb`).next('.tasktable').hide();
   }
@@ -358,114 +337,9 @@ function toggleTaskTable_CatDB(t) {
     $(`#panel-databases-catdb`).next('.tasktable').handsontable('render');
 
   }
-} // end toggleTaskTable_CatDB
+} // end toggleTaskTableCatDB
 
 
-/*
- *
- * EVENTS-FUNCTIONS: DATABASES CATFILE
- * 
- */
-
-
-// Add values into panel, if apply
-function addValuesPanel_CatFile(remote, importer, exceptor) {
-  // declare variables
-  let wf_exec  = importer.wf_exec;
-  let mainWindow = remote.getCurrentWindow();
-  let dialog = remote.dialog;
-  
-  // Add values
-  if ( '__CATFILE__' in wf_exec['databases'] && '__SEQFILE__' in wf_exec['databases']) {
-    if ( 'samples' == ptype ) {
-      $(`#panel-databases-catfile`).find(".databases").each(function(){
-        $(this).find("input").val(`${process.env.ISANXOT_LIB_HOME}/${ptype}/${wf_exec['databases'][this.id]}`);
-      });
-
-    }
-    else {
-      $(`#panel-databases-catfile`).find(".databases").each(function(){
-        $(this).find("input").val(`${wf_exec['databases'][this.id]}`);
-      });
-    }
-  }
-
-  // Hide table
-  $(`#panel-databases-catfile`).next('.tasktable').hide();
-
-  /*
-   * Events
-   */
-  // local function for events
-  function extractInputDirectoryFile(inputs, errsms) {
-    let out = undefined;
-    if(inputs === undefined) {
-      console.log(`${errsms}: input is undefined`);
-      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-    }
-    else if (inputs.canceled) {
-      console.log(`${errsms}: canceled operation`);
-    }
-    else if (!('filePaths' in inputs )) {
-      console.log(`${errsms}: filePaths does not defined`);
-      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-    }
-    else {
-      if ( inputs['filePaths'].length == 0 ) {
-        console.log(`${errsms}: filePaths is empty`);
-        exceptor.showErrorMessageBox('Error Message', `${errsms}`);
-      }
-      else {
-        out = inputs['filePaths'][0];
-      }
-    }
-    return out;
-  };
-  // events for the DB file and CATegory file BUTTON
-  $('#__SEQFILE__  button').click(function() {
-    let opts = {
-      properties: ['openFile'],
-      filters :[
-        {name: 'Database', extensions: ['fasta', 'fa', 'faa', 'txt']},
-        {name: 'All Files', extensions: ['*']}
-      ]
-    };
-    dialog.showOpenDialog(mainWindow, opts).then((files) => {
-      let inpt = extractInputDirectoryFile(files, `No database file selected`);
-      if ( inpt !== undefined ) {
-        $(`#__SEQFILE__ input`).val(`${inpt}`);
-      }
-    });
-  });
-  $('#__CATFILE__  button').click(function() {
-    let opts = {
-      properties: ['openFile'],
-      filters :[
-        {name: 'Category', extensions: ['tsv', 'csv', 'txt']},
-        {name: 'All Files', extensions: ['*']}
-      ]
-    };
-    dialog.showOpenDialog(mainWindow, opts).then((files) => {
-      let inpt = extractInputDirectoryFile(files, `No category file seleted`);
-      if ( inpt !== undefined ) {
-        $(`#__CATFILE__ input`).val(`${inpt}`);
-      }
-    });
-  });
-  
-} // end addValuesPanel_CatFile
-
-// Show/Hide table
-function toggleTaskTable_CatFile(t) {
-  if ( $(t).prop('checked') ) {
-    $(`#panel-databases-catfile`).next('.tasktable').hide();
-  }
-  else {
-    $(`#panel-databases-catfile`).next('.tasktable').show();
-    $(`#panel-databases-catfile`).next('.tasktable').handsontable('render');
-
-  }
-} // end toggleTaskTable_CatFile
 
 
 /*
@@ -479,9 +353,7 @@ module.exports = {
   createObjFromMainInputsPanel:   createObjFromMainInputsPanel,
   checkIfAdvancedOptionsExist:    checkIfAdvancedOptionsExist,
   toggleAdvParameters:            toggleAdvParameters,
-  addValuesPanel_CatDB:           addValuesPanel_CatDB,
-  toggleTaskTable_CatDB:          toggleTaskTable_CatDB,
-  addValuesPanel_CatFile:         addValuesPanel_CatFile,
-  toggleTaskTable_CatFile:        toggleTaskTable_CatFile,
+  addValuesPanelCatDB:            addValuesPanelCatDB,
+  toggleTaskTableCatDB:           toggleTaskTableCatDB,
   createObjFromDatabasesPanel:    createObjFromDatabasesPanel
 };
