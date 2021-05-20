@@ -274,6 +274,10 @@ def main(args):
         else:
             logging.info("make cross-reference with the first and second file before merge")
             outdat = merge_unknown_columns(outdat, datsup)
+    # there is only one input file (first)
+    else:
+        # extract the inf columns
+        outdat = extract_and_filter(outdat, iicols, filters)
     
     # second files - third files
     if (datthr is not None and not datthr.empty):
