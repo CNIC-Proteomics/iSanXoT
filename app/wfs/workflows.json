@@ -22,33 +22,11 @@
     "stadir": "stats"
   },
   "commands": [{
-    "id": "CREATE_ID",
-    "label": "Input files",
-    "title": "Provide input files",
-    "visible": true,
-    "panel": "panels/main_inputs_onlyId.html",
-    "help_modal": "hmodals/main_inputs.html",
-    "params": [
-      { "type": "required", "id": "infile", "name": "Infile" },
-      { "type": "required", "id": "experiment", "name": "Experiment" }
-    ]
-  },{
-    "id": "CREATE_IDQUANT-JOINER",
-    "label": "Input files",
-    "title": "Provide input files",
-    "visible": true,
-    "panel": "panels/main_inputs_noQuant.html",
-    "help_modal": "hmodals/main_inputs.html",
-    "params": [
-      { "type": "required", "id": "infile", "name": "Infile" },
-      { "type": "required", "id": "experiment", "name": "Experiment" }
-    ]    
-  },{
     "id": "CREATE_IDQUANT",
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "panels/main_inputs.html",
+    "panel": "panels/main_inputs_noQuant.html",
     "help_modal": "hmodals/main_inputs.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
@@ -61,7 +39,7 @@
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "panels/main_inputs.html",
+    "panel": "panels/main_inputs_noQuant.html",
     "help_modal": "hmodals/main_inputs.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
