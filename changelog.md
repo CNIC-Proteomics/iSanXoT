@@ -1,7 +1,7 @@
 ___
-## 0.2.X
+## 0.2.12
 ```
-DATE: 2021_YY
+DATE: 2021_06
 ```
 
 ### Highlights
@@ -41,7 +41,7 @@ S:\U_Proteomica\LABS\LAB_ARR\MouseLDL-HighFattyDiet\PTMs\iSanXoT_029
 ___
 ## 0.2.11
 ```
-DATE: 2021_04
+DATE: 2021_05
 ```
 
 ### Highlights
@@ -51,11 +51,15 @@ DATE: 2021_04
 
 + The parameters of RATIOS command (Tag, FDR and Var(x)) have been deleted because they weren't needed.
 
-+ The prefix "__MAIN_INPUTS_" has been deleted in the constant names.
++ The prefix '__MAIN_INPUTS_' has been deleted in the constant names.
+
++ Remove the Category file section from 'Databases' tab.
 
 ### Changes in the Code Workflow
 
 + The prefix "__MAIN_INPUTS_" has been deleted in the constant names.
+
++ The folder "preSanXoT" has been renamed to "adaptors".
 
 + REPORT program accepts multiple relationship files. It is only necessary to add the relationship name in the REPORT task-table.
 
@@ -69,26 +73,31 @@ DATE: 2021_04
 
 + STATS programs: Two programs have been included in the workflow. A program which gets the ID statistics, and other that gets the variances with the sigmoide image for each integration.
 
++ SANXOT v2.20: retrieves the error message using the sys.exit().
+
++ SANSON v1.14: retrieves new error message when the higherElement file is empty.
+
++ TABLE2CFG and MYSNAKE: the global variables have been included in a different module.
+
++ RATIOS: Trace log has been added when the tags are not available in the data.
+
++ MYSNAKE: The program, which creates the report of variances, has been added.
+
 + CREATERELS:
 	- Adds new function that replaces the 'Protein' column by the new xref column name, if it is applicable.
 	- New design in the algorithm to reduce the time/memory in the execution.
 	- Filter section has been included.
 
-+ SANXOT v2.20: retrieves the error message using the sys.exit().
-
-+ SANSON v1.14: retrieves new error message when the higherElement file is empty.
-
-TODO!! Aprovecho para contarte que en el Sanson de este ejemplo el número de componentes que aparece en la representación de las categorías es contando los outliers de la integración q2c, cuando debería ser el número sin outliers.
-
-
-
-+ TABLE2CFG and MYSNAKE: the global variables have been included in a different module.
-
-+ MYSNAKE: The program, which creates the report of variances, has been added.
-
-+ Some variances in the WSPPG_SBT have changed.
++ TPL_COMMANDS:
+	- Some variances in the WSPPG_SBT have changed.
+	- The "_outStats" file from sanxot1 has been renamed to distinguish from sanxot2 
 
 + Common library for the scripts has been created.
+
++ SANSON:
+	- New program has been developed that filter the third column.
+	- Joiner program has been added to the command.
+
 
 
 
