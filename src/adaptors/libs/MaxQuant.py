@@ -26,9 +26,9 @@ def processing_infiles(file, Expt):
     s = df['Sequence'] +"_"+ df['Modifications']
     s = s.replace('\_Unmodified$','',regex=True)
     s = s.replace('\s*','', regex=True)
-    df["SequenceMod"] = s
+    df["Peptide"] = s
     # add unique value for sequence
-    idx = df.index.map(str)+"_"+df['SequenceMod']
+    idx = df.index.map(str)+"_"+df['Peptide']
     df["SeqId"] = idx
     # replace 0 to empty in the whole input dataframe
     df.replace('0','', regex=False, inplace=True)

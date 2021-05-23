@@ -1074,7 +1074,7 @@
       -o: __NAMDIR__/__WF_OUTPUT__/u_peptide.tsv
     parameters:
       tags:
-        -i: "[SequenceMod]"
+        -i: "[Peptide]"
         -j: "[Xs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -k: "[Vs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -f: "[Experiment]==__WF_EXPERIMENT__"
@@ -1383,7 +1383,7 @@
       -o: __NAMDIR__/__WF_OUTPUT__/u_peptide.tsv
     parameters:
       tags:
-        -i: "[SequenceMod]"
+        -i: "[Peptide]"
         -j: "[Xs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -k: "[Vs___WF_RATIO_NUM___vs___WF_RATIO_DEN___Mean]"
         -f: "[Experiment]==__WF_EXPERIMENT__"

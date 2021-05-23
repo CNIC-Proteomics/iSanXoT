@@ -325,7 +325,7 @@ def main(args):
         if proc != 0:
             raise Exception("error")
     except Exception as exc:
-        sys.exit("ERROR!! Getting the variance report:\n{}".format(exc))
+        print("ERROR!! Getting the variance report:\n{}".format(exc), flush=True)
 
     # ------
     print(f"MYSNAKE_LOG_FINISHED\t{time.asctime()}", flush=True)

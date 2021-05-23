@@ -101,9 +101,9 @@ def SequenceMod(df, mods, file):
     # read which search engines we have
     se = common.select_search_engines_acid(file)
     # create sequence with modifications depending on
-    if se == "PD": df["SequenceMod"] = PD.SequenceMod(df, mods)
-    elif se == "Comet": df["SequenceMod"] = Comet.SequenceMod(df)
-    elif se == "MSFragger": df["SequenceMod"] = MSFragger.SequenceMod(df)
+    if se == "PD": df["Peptide"] = PD.SequenceMod(df, mods)
+    elif se == "Comet": df["Peptide"] = Comet.SequenceMod(df)
+    elif se == "MSFragger": df["Peptide"] = MSFragger.SequenceMod(df)
     return df
 
 

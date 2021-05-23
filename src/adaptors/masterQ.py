@@ -89,13 +89,13 @@ def get_num_peptides(df):
     # get unique values of proteins
     df1 = df1.apply(lambda x: np.unique(x))
     # concat with sequnce
-    df2 = pd.concat([df['SequenceMod'], df1], axis=1, sort=False)
+    df2 = pd.concat([df['Peptide'], df1], axis=1, sort=False)
     # explode the list
     df2 = df2.explode('Protein_Accessions')
     # group by protein and sum the number of peptides
-    df2 = df2.groupby('Protein_Accessions')['SequenceMod'].count().reset_index()
+    df2 = df2.groupby('Protein_Accessions')['Peptide'].count().reset_index()
     # rename and drop
-    df2.rename(columns={'SequenceMod': 'num_peptides', 'Protein_Accessions': 'Proteins'}, inplace=True)
+    df2.rename(columns={'Peptide': 'num_peptides', 'Protein_Accessions': 'Proteins'}, inplace=True)
     # return
     return df2
 
@@ -178,7 +178,7 @@ def main(args):
 # CONCURRENT FUTURE!!!
             
         logging.info('create the report with the peptides and proteins')
-        npeptides = get_num_peptides( indat[['SequenceMod','Protein_Accessions']] )
+        npeptides = get_num_peptides( indat[['Peptide','Protein_Accessions']] )
 
         logging.info('calculate the masterQ')
         indat["Protein"],indat["Protein_Redundancy"] = get_master_protein(indat['Protein_Accessions'], npeptides)

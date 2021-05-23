@@ -226,7 +226,7 @@ def add_datparams(p, trule, val):
         _replace_datparams(val, trule['infiles'],  l)
         # _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = val.replace(" ", "").replace(",","-")
+            r = re.sub(r"\s+","-",val.replace(",","-")) # replace "," -> "-". replace whitespaces for "-"
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
             
     elif p == 'ratio_denominator':
@@ -234,7 +234,7 @@ def add_datparams(p, trule, val):
         _replace_datparams(val, trule['infiles'],  l)
         # _replace_datparams(val, trule['outfiles'], l)
         if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = val.replace(" ", "").replace(",","-")
+            r = re.sub(r"\s+","-",val.replace(",","-")) # replace "," -> "-". replace whitespaces for "-"
             _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
 
     elif p == 'reported_vars':

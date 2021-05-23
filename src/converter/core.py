@@ -63,11 +63,11 @@ class builder:
         df['Modifications'].replace('Unmodified','', regex=True, inplace=True)
         s = df['Sequence']+"_"+df['Modifications']
         s = s.replace('\_$','',regex=True)
-        df.insert(loc=0, column='SequenceMod', value=s)
+        df.insert(loc=0, column='Peptide', value=s)
         # replace 0 to empty
         df.replace('0','', regex=False, inplace=True)
         # create  unique value for sequence
-        idx = df.index.map(str)+"_"+df['SequenceMod']
+        idx = df.index.map(str)+"_"+df['Peptide']
         df.insert(loc=0, column='SeqId', value=idx)
         # retrieve the first protein of list
         prot  = df['Proteins'].apply( lambda x: sorted(x.split(';'))[0] if isinstance(x, str) and x != '' else '')
