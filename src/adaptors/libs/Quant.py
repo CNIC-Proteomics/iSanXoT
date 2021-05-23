@@ -27,14 +27,16 @@ from scipy.optimize import nnls
 
 ######################## Tags and correction functions ############    
 
-def correcmatrix(tmt, df):
+def correcmatrix(df):
     '''
     Correct and normalize the matrix of isotopic distribution
     '''
     if not df.empty:
         try:
+            # extract the type of TMT. Remove leading and trailing whitespaces. Uppercase
+            tmt = df['type_tmt'].unique()[0].strip().upper()
             ### TMT 10plex reporter isotopic Distributions matrix###
-            if tmt.upper() == 'TMT10':
+            if tmt == 'TMT10':
                 m = df[["-2","-1","1","2"]].values.T
                 isocorrm = np.array([
                     [100    , 0      , m[1][2], 0      , m[0][4], 0      , 0      , 0      , 0      , 0      ],
@@ -51,18 +53,18 @@ def correcmatrix(tmt, df):
             isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
             pass
         except Exception:
-            isocorrm = [None]
+            tmt,isocorrm = None,[None]
             pass
     else:
-        isocorrm = [None] 
-    return isocorrm
+        tmt,isocorrm = None,[None]
+    return tmt,isocorrm
 
-def isobaric_labelling(tmt, df):
+def isobaric_labelling(df):
     '''
     Get the isobaric labels from the matrix of isotopic distribution
     '''    
     try:
-        p = df[df['type_tmt'] == tmt.upper()][['tag','reporter_ion']]
+        p = df[['tag','reporter_ion']]
         p = p.values.T.tolist()
         pass
     except Exception:
@@ -237,7 +239,7 @@ def parser_mz(file, spec_name, label, isotag, isoname, isocorrm, scan_list=None)
 
 ######################## main functions ############
 
-def prepare_params(ieddf, inddf, retbl):
+def prepare_params(ieddf, inddf):
     '''
     Prepare the parameters to get the quantification. It will be a list of spectrum file (for each experiment)
 
@@ -249,9 +251,9 @@ def prepare_params(ieddf, inddf, retbl):
       0 => '{Spectrum File}',
       1 => '{mz file}',
       2 => '{Name of experiment}',
-      3 => '{Type of TMT: TMT10, TMT11, TMT16, etc}',
-      4 => '{scan list for the Spectrum_FILENAME}',
-      5 => '{Dataframe with the Mass Tags for the given type of TMT}',
+      3 => '{Ion distribution file}',
+      4 => '{scan list for the Spectrum_File}',
+      5 => '{Dataframe that reports the Ion Distribution}',
       ]
     ]
     '''
@@ -260,8 +262,8 @@ def prepare_params(ieddf, inddf, retbl):
     indata = inddf[1]
 
     # extract the quantification files and the experiemnt name
-    # q => [['spectrum_file','mzfile','experiment','type_tmt']]
-    q = indata[['mzfile','experiment','type_tmt']]
+    # q => [['spectrum_file','mzfile','experiment','quan_method']]
+    q = indata[['mzfile','experiment','quan_method']]
     s = list(indata['infile'])
     q.insert(0,'Spectrum_File', [os.path.basename(x) for x in s])
     q = q.drop_duplicates().values.tolist()
@@ -273,9 +275,8 @@ def prepare_params(ieddf, inddf, retbl):
     i = i.groupby('Spectrum_File')['Scan'].apply(list).reset_index()
     i = i.values.tolist()
     
-    # add the table of isotopic distrution depending on the type of TMT
-    qff = [ x+[y[1]]+[retbl[retbl['type_tmt'] == x[3].upper()]] for x,y in zip(q,i) if x[0]==y[0] ]
-    qff = [i for s in qff for i in s] # flat list
+    # add the table of isotopic distrution depending from the input file (Ion distribution file)
+    qff = [ x+[y[1]]+[pd.read_csv(x[3], sep="\t", comment='#', na_values=['NA'], low_memory=False)] for x,y in zip(q,i) if x[0]==y[0] ]
     
     return qff
 
@@ -291,9 +292,9 @@ def extract_quantification(params):
       0 => '{Spectrum File}',
       1 => '{mz file}',
       2 => '{Name of experiment}',
-      3 => '{Type of TMT: TMT10, TMT11, TMT16, etc}',
-      4 => '{scan list for the Spectrum_FILENAME}',
-      5 => '{Dataframe with the Mass Tags for the given type of TMT}',
+      3 => '{Ion distribution file}',
+      4 => '{scan list for the Spectrum_File}',
+      5 => '{Dataframe that reports the Ion Distribution}',
       ]
 
     Returns
@@ -301,15 +302,18 @@ def extract_quantification(params):
     quant: quantifications.
 
     '''
+    # get the input parameters based on the list of lists
+    params = params[0]
+    
     # get params values
     spec_basename = params[0]
     mzfile = params[1]
-    type_tmt = params[3]
+    ion_file = params[3]
     scan_list = params[4]
     isom = params[5]
     
-    isocorrm = correcmatrix(type_tmt, isom)
-    isoname, isotag = isobaric_labelling(type_tmt, isom)
+    type_tmt,isocorrm = correcmatrix(isom)
+    isoname, isotag = isobaric_labelling(isom)
     if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
         quant = parser_mz(mzfile, spec_basename, type_tmt, isotag, isoname, isocorrm, scan_list)
     
@@ -328,8 +332,8 @@ def merge_quantification(ieddf, iqddf):
       0 => '{Spectrum File}',
       1 => '{mz file}',
       2 => '{Name of experiment}',
-      3 => '{Type of TMT: TMT10, TMT11, TMT16, etc}',
-      4 => '{scan list for the Spectrum_FILENAME}',
+      3 => '{Ion distribution file}',
+      4 => '{scan list for the Spectrum_File}',
       5 => '{Identification file}',
       6 => '{Dataframe with the Mass Tags for the given type of TMT}',
       ]

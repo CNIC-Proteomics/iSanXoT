@@ -26,7 +26,7 @@
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "panels/main_inputs_noQuant.html",
+    "panel": "panels/main_inputs.html",
     "help_modal": "hmodals/main_inputs.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },

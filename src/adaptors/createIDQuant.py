@@ -145,9 +145,9 @@ def main(args):
 
     # Get QUANTIFICATION from the MZ FILES (if apply) -----
 
-    # check if mzfile and type_tmt columns are fillin. Otherwise, the program does nothing.
+    # check if mzfile and quan_method columns are fillin. Otherwise, the program does nothing.
     c = indata.columns.tolist()
-    if 'mzfile' in c and 'type_tmt' in c and not all(indata['mzfile'].str.isspace()) and not all(indata['type_tmt'].str.isspace()):
+    if 'mzfile' in c and 'quan_method' in c and not all(indata['mzfile'].str.isspace()) and not all(indata['quan_method'].str.isspace()):
         
         logging.info("Get QUANTIFICATION from the MZ FILES -----")
         
@@ -155,22 +155,18 @@ def main(args):
         indata['mzfile'] = [get_path_file(i, args.indir) for i in list(indata['mzfile']) if not pd.isna(i)]
         logging.debug(indata['mzfile'].values.tolist())
 
-        # add the table of isotopic distrution depending on the type of TMT
-        retbl = read_infiles(args.retbl)
-
         logging.info("prepare the parameters for each experiment/spectrum file")
         # one experiment can be multiple spectrum files
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
             params = executor.map( Quant.prepare_params,
                                   list(ddf.groupby("Experiment")),
-                                  list(indata.groupby("experiment")),
-                                  itertools.repeat(retbl) )
+                                  list(indata.groupby("experiment")) )
         params = list(params)
-        # params = Quant.prepare_params(list(ddf.groupby("Experiment"))[0], list(indata.groupby("experiment"))[0], retbl)
+        # params = Quant.prepare_params(list(ddf.groupby("Experiment"))[0], list(indata.groupby("experiment"))[0])
 
         logging.info("extract the quantification")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            quant = executor.map( Quant.extract_quantification, params )
+            quant = executor.map( Quant.extract_quantification, params)
         quant = pd.concat(quant)
         # quant = Quant.extract_quantification(params[0])
 
@@ -207,7 +203,6 @@ if __name__ == '__main__':
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',  '--indir', required=True, help='Input Directory')
     parser.add_argument('-t',  '--intbl', required=True, help='File with the input data: filename, experiments')
-    parser.add_argument('-r',  '--retbl', help='File that reports the ion isotopic distribution')
     parser.add_argument('-o',  '--outdir',  required=True, help='Output directory')
     parser.add_argument('-x',  '--phantom_files',  help='Phantom output files needed for the handle of iSanXoT workflow (snakemake)')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
