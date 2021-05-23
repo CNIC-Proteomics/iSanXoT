@@ -17,6 +17,7 @@ from argparse import RawTextHelpFormatter
 import logging
 import pandas as pd
 import numpy as np
+import re
 import concurrent.futures
 from itertools import repeat
 
@@ -73,21 +74,23 @@ def calculate_ratio(df, ratios):
     '''
     # the input is a tuple
     df = df[1]
+    # remove leading and trailing whitespaces. Replace whitespaces for "-"
+    df.columns = [re.sub(r"\s+","-",c.strip()) for c in df.columns]
     # get the type of ratios we have to do
     for rat in ratios:
         ControlTag = rat[0]
         label = rat[1]
         ControlTag = ControlTag.split(",")
-        # remove spaces from left and right in the list of elements
-        ControlTag = [x.strip() for x in ControlTag]
+        # remove leading and trailing whitespaces. Replace whitespaces for "-"
+        ControlTag = [re.sub(r"\s+","-",c.strip()) for c in ControlTag]
         # create the numerator tags
         labels = []
         for lbl in label:
             # if apply, calculate the mean for the numerator tags (list)
             if ',' in lbl:
                 lbl = lbl.split(",")
-                # remove spaces from left and right in the list of elements
-                lbl = [x.strip() for x in lbl]
+                # remove leading and trailing whitespaces. Replace whitespaces for "-"
+                lbl = [re.sub(r"\s+","-",c.strip()) for c in lbl]
                 lb = "-".join(lbl)+"_Mean"
                 df[lb] = df[lbl].mean(axis=1)
                 labels.append( lb )
@@ -97,7 +100,8 @@ def calculate_ratio(df, ratios):
         if all([True if c in df.columns else False for c in ControlTag+labels]):    
             df = _calc_ratio(df, ControlTag, labels)
         else:
-            sms = "The tags are not available in your data"
+            c = [True if c in df.columns else c for c in ControlTag+labels]
+            sms = f"The tags are not available in your data: {','.join(c)}"
             logging.error(sms)
             sys.exit(sms)
 
@@ -126,10 +130,10 @@ def main(args):
     logging.debug(ratios)
 
     logging.info("calculate the ratios (in parallel by experiment)")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-    #     ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
-    # ddf = pd.concat(ddf)
-    ddf = calculate_ratio(list(ddf.groupby("Experiment"))[0], ratios)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+        ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
+    ddf = pd.concat(ddf)
+    # ddf = calculate_ratio(list(ddf.groupby("Experiment"))[0], ratios)
     
     logging.info('print output')
     # print to tmp file
