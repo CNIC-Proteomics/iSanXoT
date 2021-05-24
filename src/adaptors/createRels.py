@@ -134,8 +134,10 @@ def exploding_columns(idf):
     df = idf
     for x in cols:
         y = [i for i in cols if i != x]
-        # check if ';' exits in column
-        if any(df[x].str.contains(';')): df = _exploding_columns(df, x, y)
+        #  Can only use .str accessor with string values!
+        if df[x].dtype == 'object':
+            # check if ';' exits in column
+            if any(df[x].str.contains(';')): df = _exploding_columns(df, x, y)
     return df
 
 
