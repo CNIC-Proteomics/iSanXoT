@@ -201,7 +201,8 @@ function toggleAdvParameters() {
   // Get the work id and the command id from the given checkbox element (go through DOM)
   let t_parent = $(t).parents(`.tab-pane`);
   let wk_id = $(t_parent).attr('id');
-  let cmd_id = $(t_parent).find('.page-header').attr('name');
+  let cmd_id = $(t).parents(`[id^=page-tasktable]`).attr('id').replace('page-tasktable-','');
+  
 
   // Get work attributes from the id
   let wk = importer.getObjectFromID(wf['works'], wk_id);
@@ -224,10 +225,10 @@ function toggleAdvParameters() {
   }
 
   // Show/Hide 'hiddenColumns'
-  if ( $(t).prop('checked') ) {
+  if ( $(t).prop('checked') ) { // Hide 'hiddenColumns'
     $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': opt, 'indicators': false } });
   }
-  else {
+  else { // Show 'hiddenColumns'
     $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).handsontable('updateSettings',{'hiddenColumns': {'columns': [], 'indicators': false } });
   }
 }
