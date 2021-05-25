@@ -74,23 +74,26 @@ def calculate_ratio(df, ratios):
     '''
     # the input is a tuple
     df = df[1]
-    # remove leading and trailing whitespaces. Replace whitespaces for "-"
-    df.columns = [re.sub(r"\s+","-",c.strip()) for c in df.columns]
+    # remove leading and trailing whitespaces. Remove whitespaces
+    # df.columns = [re.sub(r"\s+","",c.strip()) for c in df.columns]
+    df.columns = [c.strip() for c in df.columns]
     # get the type of ratios we have to do
     for rat in ratios:
         ControlTag = rat[0]
         label = rat[1]
         ControlTag = ControlTag.split(",")
-        # remove leading and trailing whitespaces. Replace whitespaces for "-"
-        ControlTag = [re.sub(r"\s+","-",c.strip()) for c in ControlTag]
+        # remove leading and trailing whitespaces. Remove whitespaces
+        # ControlTag = [re.sub(r"\s+","",c.strip()) for c in ControlTag]
+        ControlTag = [c.strip() for c in ControlTag]
         # create the numerator tags
         labels = []
         for lbl in label:
             # if apply, calculate the mean for the numerator tags (list)
             if ',' in lbl:
                 lbl = lbl.split(",")
-                # remove leading and trailing whitespaces. Replace whitespaces for "-"
-                lbl = [re.sub(r"\s+","-",c.strip()) for c in lbl]
+                # remove leading and trailing whitespaces. Remove whitespaces
+                # lbl = [re.sub(r"\s+","",c.strip()) for c in lbl]
+                lbl = [c.strip() for c in lbl]
                 lb = "-".join(lbl)+"_Mean"
                 df[lb] = df[lbl].mean(axis=1)
                 labels.append( lb )
