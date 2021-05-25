@@ -33,7 +33,6 @@
     infiles:
       -i: __INDIR__
       -t: __DATFILE_MAIN_INPUTS__
-      -r: __ISANXOT_SRC_HOME__/src/adaptors/reporter_ion_isotopic.tsv
     outfiles:        
       -x: __EXPDIR__/__WF_EXPERIMENT__/ID.tsv
     parameters:
