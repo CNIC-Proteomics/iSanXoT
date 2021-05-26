@@ -1,5 +1,5 @@
 ___
-## 0.2.12
+## 0.2.13
 ```
 DATE: 2021_06
 ```
@@ -9,33 +9,58 @@ DATE: 2021_06
 
 ### Changes in the Graphical User Interface
 
+- MEJORAR EL CONTROL DE PROCESOS (LOG TABLES):
+	- QUE SE PERMITA CARGAR LOS LOG'S CUANDO CARGAS UN PROYECTO
+	- Arreglar el refresco de la página y los logs.
+	- Debe aparecer la carpeta de salida de cada trabajo.
+	- Esto último de ayudará a mostrar/visualizar resultados, por ejemplo la de sanson, y las sigmoides!!
+	- Piensa como reportar varios mensajes de error en forma de ventana (o no)
+
+
+### Changes in the Code Workflow
+
++ TODO!! Panel MAIN_INPUTS que añada variaos ficheros con etiquetas.
+
++ TODO!! Label-Free workflow.
+
++ TODO!! Documentation. PONER LOS NOMBRES DE LOS BUSCADORES EN LA DOCUMENTACIÓN Y EN LA INTERFAZ!!
+
+
 + TODO!! We have included more worked-out examples from MSFragger result and Comet.
 
 + TODO!!! Include the column "output" in the workflow log table.
 
+
+___
+## 0.2.12
+```
+DATE: 2021_05
+```
+
+### Highlights
+
+
+### Changes in the Graphical User Interface
+
++ Fixed bug. The optional columns for the commands don't appears when they are fill it.
+
++ Fixed bug: Loading a project from the "processes" page.
+
+
 ### Changes in the Code Workflow
 
-+ TODO!! ARREGLAR CUANDO NO ABRE UN PROYECTO SI ESTAMOS EN LA PARTE DE LOGS"!!"
++ WSPP_SBT: The "key-words:" Scan, Peptide, Protein, and Category have been established. The key-word "SequenceMod" has changed to "Peptide"
 
-+ TODO!! ARREGLAR EL ERROR QUE CUANDO ESCRIBES UN OUTPUT DEL TIPO "Control_1_cArt/cQ" (subcarpeta), que se creen bien los "OUTPUTFILES" y no HAYA UN ERROR DE "output cyclic". Ejemplo con 
-S:\U_Proteomica\LABS\LAB_ARR\MouseLDL-HighFattyDiet\PTMs\iSanXoT_029
++ The quantification program (createIDQuant) accepts files with the "Ion Distribution".
 
++ RATIOS:
+  - Remove leading and trailing whitespaces.
+  - Remove whitespaces.
 
-+ TODO!! Label-Free workflow.
++ TABLE2CFG:
+  - Removes whitespaces before/after comma
+  - Replace "," to "-"
 
-+ iSanXoT accepts identifications from the search engines: PD, Comet and MSFragger. TODO!!! Debe incluir la table de "Reporter ion Distribution"
-
-+ We have joined in a program the identification and quantification programs (createIDQuant). Important note! 
-
-+ TODO!! TABLA de cuantificacione por separado!!! por experimento.
-
-
-+ TODO!! CREART CADA "PESTAÑA" COMO UNA PLUGIN INDEPENDIENTE. EN UN DIRECTORIO CON LOS FICHEROS HTML, TABLAS Y COMANDOS NECESARIOS.
-+ TODO!! INSTALACIÓN PARA LINUX Y MAC!!
-
-+ TODO!! Documentation. PONER LOS NOMBRES DE LOS BUSCADORES EN LA DOCUMENTACIÓN Y EN LA INTERFAZ!!
-
-+ TODO!! No aparecen las columnas opcionales de INTEGRAGTE, ¡SBT, etc cuando está activado el botón.
 
 
 ___
