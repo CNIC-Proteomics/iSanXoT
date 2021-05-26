@@ -95,7 +95,11 @@ function addInputsFileDirectoy(inputs, errsms) {
       }
       else {
         let file = inputs['filePaths'][0];
-        if(!mainWindow) { mainWindow = this.BrowserWindow }; // needed to load the project when comers from processes frontpage
+        // required to load the project when comers from processes frontpage
+        if(!mainWindow) {
+            const { BrowserWindow } = require('electron').remote
+            const mainWindow = BrowserWindow.getFocusedWindow();
+        }
         mainWindow.loadURL(`file://${__dirname}/../wf.html?ptype=load&pdir=${file}`);
       }
     }
