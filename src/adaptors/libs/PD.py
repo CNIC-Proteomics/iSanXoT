@@ -37,7 +37,7 @@ def processing_infiles(file, Expt):
     - add needed columns
     '''    
     # read input file
-    df = pd.read_csv(file, sep="\t")
+    df = pd.read_csv(file, sep="\t", comment='#')
     # add Experiment column
     df["Experiment"] = Expt
     # rename columns

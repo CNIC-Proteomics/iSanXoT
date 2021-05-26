@@ -35,9 +35,9 @@ import Quant
 # Common functions #
 ####################
 
-def read_infiles(file):
-    indat = pd.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
-    return indat
+# def read_infiles(file):
+#     indat = pd.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
+#     return indat
 
 def get_path_file(i, indir):
     '''
