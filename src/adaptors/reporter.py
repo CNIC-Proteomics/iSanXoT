@@ -38,7 +38,7 @@ COL_VARS = {
     'vinf':   'Vinf'
 }
 
-
+ROOT_FOLDER = '/jobs/'
 
 #########################
 # Import local packages #
@@ -53,9 +53,21 @@ def read_infiles(file):
     # read file
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
-    # get the name of 'experiment' using the folder name
+    # # get the name of 'experiment' using the folder name
+    # fpath = os.path.dirname(file)
+    # name = os.path.basename(fpath)
+    # df[COL_EXP] = name
+
+    # get the name of 'experiment' until the root folder
+    # By default, we get the last folder name of path
     fpath = os.path.dirname(file)
     name = os.path.basename(fpath)
+    # split until the root folder
+    if ROOT_FOLDER in fpath:
+        s = fpath.split(ROOT_FOLDER)
+        if len(s) > 1:
+            s = s[1]
+            name = re.sub(r'[/|\\]+', '/', s) # replace
     df[COL_EXP] = name
 
     return df
