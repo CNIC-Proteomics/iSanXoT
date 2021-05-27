@@ -1849,7 +1849,7 @@
     infiles:
       -ii: __NAMDIR__/__WF_INPUT__/**/__WF_LEVEL__2__WF_NORM___lowerNormV.tsv
     outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tags.tsv
+      -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tags.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createCardenioTags.py" '
@@ -1857,14 +1857,14 @@
   # Rule: cardenio ---
   - name: cardenio
     infiles:
-      -t: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tags.tsv
+      -t: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tags.tsv
     outfiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combRels.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combLog.txt
+      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Data.tsv
+      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Rels.tsv
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Log.txt
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_NORM__
+        -a: __WF_LEVEL__2comb__WF_NORM__
       outdir:
         -p: __NAMDIR__/__WF_OUTPUT__
     more_params: ''
@@ -1873,14 +1873,14 @@
     # Rule: sanxot integration: obtaining integrated X and V values ---
   - name: comb_sanxot1
     infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combRels.tsv
+      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Data.tsv
+      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Rels.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___outStats0.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___variance.txt
+      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats0.tsv
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_NORM__
+        -a: __WF_LEVEL__2comb__WF_NORM__
       maxiterations:
         -m: 600
       tag:
@@ -1889,15 +1889,15 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: comb_sanxotsieve
     infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combRels.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___variance.txt
+      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Data.tsv
+      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Rels.tsv
+      -V: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
     outfiles:
-      -n: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___infoFile.txt
+      -n: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tagged.tsv
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___infoFile.txt
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_NORM__
+        -a: __WF_LEVEL__2comb__WF_NORM__
       fdr:
         -f: 0.01
       var(x):
@@ -1908,17 +1908,17 @@
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: comb_sanxot2
     infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___combData.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___variance.txt
+      -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Data.tsv
+      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tagged.tsv
+      -V: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
-      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___outStats.tsv
-      -u: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___lowerNormW.tsv
-      -U: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2__WF_NORM___lowerNormV.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats.tsv
+      -u: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___lowerNormW.tsv
+      -U: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___lowerNormV.tsv
     parameters:
       anal:
-        -a: __WF_LEVEL__2__WF_NORM__
+        -a: __WF_LEVEL__2comb__WF_NORM__
       var(x):
         -v: ''
       tag:
