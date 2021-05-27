@@ -66,29 +66,33 @@ def extract_and_join_columns(idf, header_inf, header_sup, header_thr, cols_inf, 
     # extract the columns. If there are multiple columns, join in one
     def _extract_and_join_columns(idf, cols, header):
         out = []
-        if len(cols) > 1:
-            if ':' in header:
-                out = [":".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
-            else:
-                out = [";".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
-        elif len(cols) == 1:
-            # get the column
-            col = cols[0]
-            # check if the col is a constant value: [X]
-            # check if the col is a the order of column: {1}
-            # otherwise, the col is the list of column names
-            if col and '[' in col and ']' in col:
-                c = re.findall(r'\[([^\]]*)\]', col)[0]
-                # create a list of 'n' elements (the given df) filled by 'c' constant
-                n = len(idf.index.to_list())
-                out = [c] * n
-            elif col and '{' in col and '}' in col:
-                c = int(re.findall(r'\{([^\}]*)\}', col)[0])
-                # extract the column by position
-                out = idf[idf.columns[c]]
-            elif col:
-                # extract the column
-                out = idf[col]
+        try:            
+            if len(cols) > 1:
+                if ':' in header:
+                    out = [":".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
+                else:
+                    out = [";".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
+            elif len(cols) == 1:
+                # get the column
+                col = cols[0]
+                # check if the col is a constant value: [X]
+                # check if the col is a the order of column: {1}
+                # otherwise, the col is the list of column names
+                if col and '[' in col and ']' in col:
+                    c = re.findall(r'\[([^\]]*)\]', col)[0]
+                    # create a list of 'n' elements (the given df) filled by 'c' constant
+                    n = len(idf.index.to_list())
+                    out = [c] * n
+                elif col and '{' in col and '}' in col:
+                    c = int(re.findall(r'\{([^\}]*)\}', col)[0])
+                    # extract the column by position
+                    out = idf[idf.columns[c]]
+                elif col:
+                    # extract the column
+                    out = idf[col]
+            pass
+        except Exception as exc:
+            sys.exit("ERROR!! Extracting the columns [{}]:\n{}".format(",".join(cols),exc))
         return out
 
     # create a list of tuple with the (input columns and the output heaers)
