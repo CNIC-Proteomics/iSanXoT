@@ -17,7 +17,7 @@ let executor = undefined;
 let wf_date_id = undefined;
 
 const { ipcRenderer } = require('electron');
-const { BrowserWindow, dialog } = require('electron').remote
+const { BrowserWindow, dialog } = require('electron').remote;
 const mainWindow = BrowserWindow.getFocusedWindow();
 
 
@@ -97,8 +97,8 @@ function addInputsFileDirectoy(inputs, errsms) {
         let file = inputs['filePaths'][0];
         // required to load the project when comers from processes frontpage
         if(!mainWindow) {
-            const { BrowserWindow } = require('electron').remote
-            const mainWindow = BrowserWindow.getFocusedWindow();
+            var BrowserWindow = require('electron').remote;
+            mainWindow = BrowserWindow.getFocusedWindow();
         }
         mainWindow.loadURL(`file://${__dirname}/../wf.html?ptype=load&pdir=${file}`);
       }
