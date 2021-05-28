@@ -102,6 +102,12 @@ function extract_list_cmds(wk, itbl) {
 $(`#bodied h3.text-center`).html(`${wf['label']}`);
 $(`#bodied h3.text-center`).attr('name', `${wf['id']}`);
 
+// Add information from loading proyect
+if ( wf_exec ) {
+  // add number of threads
+  if ( "ncpu" in wf_exec ) $('#nthreads').val(wf_exec["ncpu"]);
+}
+
 
 // Go through the works of the workflow
 for (var i = 0; i < wf['works'].length; i++) {

@@ -1,5 +1,5 @@
 name: lblfree
-version: 0.2.11
+version:
 date: 'date_id'
 ncpu: '4'
 verbose: '-vv'
