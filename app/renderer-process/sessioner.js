@@ -53,7 +53,14 @@ function addProcessesToSession(pid, cfg, log, wfname, page=false) {
     addProcesses(pid, cfg, log, page, jumpToPage);
 };
 
+// Save the project info into the session storage
+function addProjectToSession(outdir) {
+    // save the output directory of the current project
+    window.sessionStorage.setItem("outdir", outdir);
+};
+
 // We exports the modules
 module.exports = {
+    addProjectToSession: addProjectToSession,
     addProcessesToSession: addProcessesToSession
 };

@@ -1,12 +1,15 @@
 /*
  * Import libraries
  */
+
+let fs = require('fs');
+let cProcess = require('child_process');
+
 let exceptor = require('./exceptor');
 let importer = require('./imports');
 let ehandler = require('./ehandler');
 let sessioner = require('./sessioner');
-let fs = require('fs');
-let cProcess = require('child_process');
+
 var proc = null;
 
 

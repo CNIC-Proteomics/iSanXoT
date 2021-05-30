@@ -1,19 +1,23 @@
 /*
  * Import libraries
  */
+
 let fs = require('fs');
 let remote = require('electron').remote;
+
 let exceptor = require('./exceptor');
 let importer = require('./imports');
 let ehandler = require('./ehandler');
+let sessioner = require('./sessioner');
 
 /*
- * Import varialbles
+ * Import variables
  */
 
 let wf       = importer.wf;
+let odir     = importer.outdir;
 let cdir     = importer.cdir;
-console.log(cdir);
+console.log(odir);
 
 
 /*
@@ -97,6 +101,9 @@ function extract_list_cmds(wk, itbl) {
 /*
  * Main
  */
+
+// Save the project info into the session storage
+sessioner.addProjectToSession(odir);
 
 // Add title to workflow
 $(`#bodied h3.text-center`).html(`${wf['label']}`);

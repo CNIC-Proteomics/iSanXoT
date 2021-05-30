@@ -1,15 +1,23 @@
 /*
-  Global variables
-*/
-let importer = require('./imports');
-let exceptor = require('./exceptor');
-let sessioner = require('./sessioner');
-const { ipcRenderer } = require('electron');
+ * Import libraries
+ */
+
 let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`);
 let fs = require('fs');
-let path = require('path');
-let logObject = undefined;
+const { ipcRenderer } = require('electron');
 const { dialog } = require('electron').remote
+
+let importer = require('./imports');
+let exceptor = require('./exceptor');
+let logger = require('./logger');
+
+let logObject = undefined;
+let timeOut = undefined;
+
+
+/*
+ * Main
+ */
 
 
 window.onload = function(e) {
@@ -19,11 +27,12 @@ window.onload = function(e) {
     // send the new Child Process to IPC Render and save into Session calling callback function
     sendChildProcesses();
 
-    // extract the session info
-    let pids = JSON.parse( window.sessionStorage.getItem("pids") );
+    // create the list of log data based on the session info: pids and current outdir
     let status = 1; // init the status
-    // refresh the ids of child process from the pids
-    let ldata = [];
+    let ldata = []; // refresh the ids of child process from the pids
+
+    // get the list of PIDs running
+    let pids = JSON.parse( window.sessionStorage.getItem("pids") );
     if ( pids !== null ) {
         for (var i = 0; i < pids.length; i++) {
             let cfgfile = pids[i][0];
@@ -40,7 +49,35 @@ window.onload = function(e) {
         }
     }
 
-    // create logger object
+    // get the outdir of the current project
+    let outdir = window.sessionStorage.getItem("outdir");
+    if ( outdir !== null ) {
+        // get the files/dirs in directory sorted by name
+        let logdirs = importer.getDirectories(`${outdir}/logs`);
+        let cfgdirs = importer.getDirectories(`${outdir}/.isanxot`);
+        // get the intersection of two list. We need both files (logfile and config file)
+        let comdirs = logdirs.filter(x => cfgdirs.indexOf(x) !== -1)
+        // add only the files (logfile and config file) that have not already in the log-data
+        for (let i = 0; i < comdirs.length; i++) {
+            let cfgfile = `${outdir}/.isanxot/${comdirs[i]}/config.yaml`;
+            let logfile = `${outdir}/logs/${comdirs[i]}/isanxot.log`;
+            // get the list of index with the given attribute value to know if the files are in the log-data list
+            let isinCfg = importer.getIndexParamsWithAttr(ldata, 'cfgfile', cfgfile);
+            let isinLog = importer.getIndexParamsWithAttr(ldata, 'logfile', logfile);
+            // if both files are not in log-data, we included.
+            if ( isinCfg === undefined && isinLog === undefined ) {
+                ldata.push({
+                    'pid': '-',
+                    'c_pids': '-',
+                    'status': status,
+                    'cfgfile': cfgfile,
+                    'logfile': logfile,
+                });    
+            }
+        }
+    }
+
+    // create logger object with the list of logdata
     logObject = new logger(ldata);
 
     // Add looping function
@@ -56,369 +93,6 @@ $(window).on('beforeunload',function() {
     // send the new Child Process to IPC Render and save into Session
     // sendChildProcesses();
 });
-
-
-/* LOGGER SECTION */
-
-// make Promise version of fs.readFile()
-fs.readFileAsync = function(filename, enc) {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(filename, enc, function(err, data){
-            if (err) 
-                reject(err); 
-            else
-                resolve(data);
-        });
-    });
-};
-
-class logger {
-    constructor(logs) {
-        // accepts the init structure
-        //     [{
-        //     'pid': 'integer',
-        //     'c_pids': 'list of intergers',
-        //     'name': 'string',
-        //     'status': 'integer',
-        //     'cfgfile': 'file',
-        //     'logfile': 'file',        
-        //     }]
-        // init log structure
-        // get the list of pids and files
-        this.data = logs;
-        // reassign 'this' class for the following functions
-        let that = this;
-        // read all the files using Promise.all to time when all async readFiles has completed.
-        Promise.all(this.data.map(a => this._getFile(a.cfgfile))).then(function(conts) {
-            // go throught the list of PIDs objects
-            let pids = that.data.map(a => a.pid);            
-            for (var i = 0; i < pids.length; i++) {
-                // extract the config structure for each project
-                let cfg = jsyaml.load(conts[i]);
-                let cfg_cmds = cfg['commands'];
-                let cmds = [];
-                // get the list of commands and the execution label
-                for (var j = 0; j < cfg_cmds.length; j++) {
-                    let c = cfg_cmds[j].map(a => ({
-                        command: a.name,
-                        execution_label: 'exec',
-                        status: 'waiting',
-                        perc: '0%',
-                        stime: '-',
-                        etime: '-'
-        
-                    }));
-                    cmds.push(c);
-                }
-                // convert list of lists to list
-                if (cmds) {
-                    cmds = cmds.flat();
-                }
-                that.data[i].cmds = cmds;
-            }
-            that.createProjectLogsTable();
-        });
-
-    }
-    // utility function, return Promise
-    _getFile(filename) {
-        return fs.readFileAsync(filename, 'utf8');
-    }
-    _parseDate(date) {
-        let d  = new Date( date.toString().replace(/\[|\]/g,'') );
-        let d2 = `${d.getFullYear()}-${(d.getMonth()+1)}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-        return d2;
-    }
-    // parse the log file
-    updateLogDataFromLogFile(data, cont) {
-        // don't update date if project has been stopped
-        if ( data.status == 'stopped' ) return 
-        // get the log content
-        let lines = cont.match(/(.*)/mg);
-        // remove empty values
-        lines = lines.filter(function (el) {
-            return (el != null) && (el != '');
-        });
-        // get log variables for the root process
-        if ( lines.length >= 1 ) { data.status = 'preparing' }
-        data.perc   = '0%';
-        data.message    = '';
-        data.stime  = '-';
-        data.etime  = '-';
-        data.path  = path.dirname(data.logfile);
-        // get log variables for the sub-processes
-        let num_cmds = 0;
-        let total_cmds = 0;
-        for (var i = 0; i < lines.length; i++) {
-            let line = lines[i];
-            if ( line != "" ) {
-                // parse log file for the project table ----
-                // parse the error messages
-                if (line.startsWith('ERROR')) {
-                    data.status = 'error';
-                    data.perc = '-';
-                    data.message = `${lines.slice(i+1).join('\n')}`;
-                }
-                // save the intermediante steps
-                else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
-                    let l = line.split('\t');
-                    let time = l[1];
-                    data.status = 'preparing';
-                    data.stime = this._parseDate(time)
-                }
-                else if (line.startsWith('MYSNAKE_LOG_VALIDATING')) {
-                    data.status = 'validating';
-                }
-                else if (line.startsWith('MYSNAKE_LOG_STARTING')) {
-                    data.status = 'starting';
-                }
-                // parse for the project log table
-                else if (line.startsWith('MYSNAKE_LOG_EXECUTING')) {
-                    let l = line.split('\t');
-                    total_cmds = l[2];
-                    data.status = 'running';
-                }
-                else if (line.startsWith('MYSNAKE_LOG_FINISHED')) {
-                    let l = line.split('\t');
-                    let time = l[1];
-                    data.status = 'finished';
-                    data.perc   = '100%';
-                    data.etime = this._parseDate(time)
-                }
-                // parse log file for the workflow table (commands) ----
-                // parse the start log
-                else if (line.startsWith('MYSNAKE_LOG_START_RULE_EXEC')) {
-                    let l = line.split('\t');
-                    let time = l[1];
-                    let cmd = l[2];
-                    let cmd_exec = l[3];
-                    let rule_name = l[4];
-                    let rule_perc = l[5];
-                    // get the index from the name
-                    let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
-                    // update data
-                    data.cmds[cmd_index].status = 'running';
-                    data.cmds[cmd_index].stime = time;
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
-                    if ( perc == '100%' ) {
-                        data.cmds[cmd_index].perc = '50%';
-                    }
-                    else {
-                        data.cmds[cmd_index].perc = perc;
-                    }
-                }
-                else if (line.startsWith('MYSNAKE_LOG_END_RULE_EXEC')) {
-                    let l = line.split('\t');
-                    let time = l[1];
-                    let cmd = l[2];
-                    let cmd_exec = l[3];
-                    let rule_name = l[4];
-                    let rule_perc = l[5];
-                    let status = l[6];
-                    // get the index from the name
-                    let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
-                    // update data
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
-                    if ( perc == '100%' ) {
-                        data.cmds[cmd_index].status = 'finished';
-                        data.cmds[cmd_index].etime = time;
-                        data.cmds[cmd_index].perc = perc;
-                    }
-                    else {
-                        data.cmds[cmd_index].perc = perc;
-                    }
-                    if ( status == 'error' ) {
-                        data.cmds[cmd_index].status = status;
-                    }
-                    else {
-                        data.cmds[cmd_index].status = 'running';
-                    }
-                }
-                else if (line.startsWith('MYSNAKE_LOG_END_CMD_EXEC')) {
-                    let l = line.split('\t');
-                    let time = l[1];
-                    let cmd = l[2];
-                    let cmd_exec = l[3];
-                    let rule_name = l[4];
-                    let rule_perc = l[5];
-                    let status = l[6];
-                    // get the index from the name
-                    let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
-                    // update data only when all processes of command have already finished (100%)
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
-                    if ( perc == '100%' ) {
-                        // update cached data
-                        if ( status == 'cached' ) {
-                            data.cmds[cmd_index].status = status;
-                            data.cmds[cmd_index].stime = time;
-                            data.cmds[cmd_index].etime = time;
-                            data.cmds[cmd_index].perc = perc;
-                        }
-                        else if ( status == 'error' ) {
-                            data.cmds[cmd_index].status = status;
-                            data.cmds[cmd_index].perc = '-';
-                        }
-                        else {
-                            data.cmds[cmd_index].status = 'finished';
-                            data.cmds[cmd_index].perc = perc;
-                        }
-                        // calculate the percentage for the statistic of project log table
-                        num_cmds += 1;
-                        let proj_perc = ((num_cmds/total_cmds)*100).toFixed(2)+'%';
-                        data.perc = proj_perc    
-                    }
-                }
-
-            }
-        }
-    }
-
-    // create project logs table
-    createProjectLogsTable() {
-        // reassign 'this' class for the following functions
-        let that = this;
-        // read all the files using Promise.all to time when all async readFiles has completed.
-        Promise.all(this.data.map(a => this._getFile(a.logfile))).then(function(conts) {
-            let pids = that.data.map(a => a.pid);
-            // read athe log file and update the log data
-            for (var i = 0; i < pids.length; i++) {
-                that.updateLogDataFromLogFile(that.data[i], conts[i]);
-            }
-            // create log table
-            $(`#projectlogs .logtable`).handsontable({
-                data: that.data,
-                colHeaders: ['PID', 'Status', '%', 'Start time', 'End time', 'Path', 'Message', 'Cmds'],
-                currentRowClassName: 'currentRow',
-                selectionMode: 'single',
-                rowHeaders: false,
-                outsideClickDeselects: false,
-                afterSelection: function(r,c) {
-                    // create the commands logs for the selected project
-                    let data = this.getDataAtRow(r);
-                    that.createWorkflowLogsTable(data);
-                },
-                columns: [{            
-                    data: 'pid',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'status',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'perc',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'stime',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'etime',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'path',
-                    readOnly: true,
-                },{
-                    data: 'message',
-                    readOnly: true,
-                },{
-                    data: 'cmds',
-                    readOnly: true,
-                }],
-                hiddenColumns: {
-                    columns: [6,7],
-                    indicators: false
-                },
-                width: '100%',
-                height: 'auto',
-                licenseKey: 'non-commercial-and-evaluation'
-            });
-        });
-    }
-
-    // create workflow logs table
-    createWorkflowLogsTable(logData) {
-        // get values
-        let status = logData[1] || logData['status'];
-        let message = logData[6] || logData['message'];
-        let cmds = logData[7] || logData['cmds'];
-        // init panels
-        $(`#workflowlogs .message`).html(``);
-        $(`#workflowlogs .table`).html(`<div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>`);
-        // check if project has an error
-        if ( status == 'error' ) {
-            // remove old message/table
-            $(`#workflowlogs .logtable`).html(``);
-            // add the new log message
-            message = message.replace(/(?:\r\n|\r|\n)/g, '<br/>');
-            $(`#workflowlogs .message`).html(`<div class="alert alert-danger" role="alert"><strong>${status.toUpperCase()}</strong><br/>${message}</div>`);
-        // otherwise, it prints the logs of commands
-        } else {
-            $(`#workflowlogs .logtable`).handsontable({
-                data: cmds,
-                colHeaders: ['Command', 'Exec', 'Status', '%', 'Start time', 'End time'],
-                disableVisualSelection: true,
-                columns: [{
-                    data: 'command',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'execution_label',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'status',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'perc',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'stime',
-                    readOnly: true,
-                    className: "htCenter",
-                },{
-                    data: 'etime',
-                    readOnly: true,
-                    className: "htCenter",
-                }],
-                hiddenColumns: {
-                    columns: [1],
-                    indicators: false
-                },
-                width: '100%',
-                height: 'auto',
-                licenseKey: 'non-commercial-and-evaluation'
-            });
-            importer.doneResizing();
-            $(`#projectlogs .logtable`).handsontable('render');
-            // $(`#workflowlogs .logtable`).handsontable('render');
-        }
-    }
-   
-    // render log tables
-    renderLogTables(data) {
-        // update log tables (if apply)
-        let wktable = $("#workflowlogs .logtable").data('handsontable');
-        if ( wktable !== undefined ) {
-            if ( data !== undefined && 'cmds' in data ) {
-                $(`#workflowlogs .logtable`).handsontable({ data: data.cmds });
-                $(`#workflowlogs .logtable`).handsontable('render');    
-            }
-        }
-        let prjtable = $("#projectlogs .logtable").data('handsontable');
-        if ( prjtable !== undefined ) {
-            if ( data !== undefined ) {
-                $(`#projectlogs .logtable`).handsontable({ data: data });
-                $(`#projectlogs .logtable`).handsontable('render');
-            }
-        }
-    }
-
-};
 
 function sendChildProcesses() {
     // send the new Child Process to IPC Render and save into Session
@@ -514,11 +188,27 @@ function refreshLogger() {
                 logObject.renderLogTables(logObject.data)
             }
         }
+        // if all project's in the table has finished...
+        // then stop the setTimeout
+        // otherwise, set the time out
+        let stopTimeOut = true;
+        let statusProj = logtable.getDataAtCol(1);
+        for (let i = 0; i < statusProj.length; i++) {
+            if ( statusProj[i] != 'finished' ) {
+                stopTimeOut = false;
+                break;
+            }
+        }
+        // then stop the setTimeout
+        if ( stopTimeOut ) {
+            clearTimeout(timeOut);
+        // otherwise, set the time out
+        } else {
+            timeOut = setTimeout(refreshLogger, 10000);
+        }
     }
-
-    // refresh log panel
-    setTimeout(refreshLogger, 10000);
 }
+
 
 /*
  * Events

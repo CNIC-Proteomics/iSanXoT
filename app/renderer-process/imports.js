@@ -156,16 +156,24 @@ function importHTMLtemplate(wfhref, tid, before) {
     }
 };
 
+// Get the files/dirs in directory sorted by name
+function getDirectories(source) {
+    let files = [];
+    try {
+        files = fs.readdirSync(source, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => dirent.name)
+            .reverse();
+    } catch (e) {
+        console.log(`getting the files in directory: ${e}`);
+    }
+    return files;
+};
+
 // Get the most recent execution directory
 // the files has to be sorted by name
 function getMostRecentDir(dir) {
-    var getDirectories = source =>
-    fs.readdirSync(source, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name)
-        .reverse();
-    // the files has to be sorted by name
-    // let files = fs.readdirSync(dir).reverse();
+    // the files/dirs has to be sorted by name
     let files = getDirectories(dir);
     return (files.length > 0)? files[0] : undefined;
 }
@@ -344,7 +352,7 @@ function extractWorkflowAttributes() {
     let catdbs = wfs['catdbs'];
 
     // return [ptype, indir, pdir, wf_id, wf, catdbs, cdir, cfg];
-    return [ptype, wf_id, wf, catdbs, cdir, cfg];
+    return [ptype, pdir, wf_id, wf, catdbs, cdir, cfg];
 }
 
 // Check if two arrays are equal
@@ -387,24 +395,13 @@ function removeListIndexes(arr, rem) {
     }
     return arr;
 }
-
-// Open Help Modals
-function openHelpModal(t) {
-    console.log("openHelpModal");
-    let t_parent = $(t).parents(`.tab-pane`);
-    let wk_id = $(t_parent).attr('id');
-    let cmd_id = $(t_parent).find('.page-header').attr('name');
-    console.log(`WK_ID: ${wk_id} > CMD: ${cmd_id}`);
-
-
-    $(`#${wk_id} #page-tasktable-${cmd_id} .modal`).modal();
-}
   
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {
     doneResizing:               doneResizing,
     importHTMLtemplate:         importHTMLtemplate,
+    getDirectories:             getDirectories,
     getWorkflowIDFromElements:  getWorkflowIDFromElements,
     getWorkIDFromElements:      getWorkIDFromElements,
     getCmdIDFromElements:       getCmdIDFromElements,
@@ -414,8 +411,7 @@ module.exports = {
     isEqual:                    isEqual,
     allBlanks:                  allBlanks,
     getAllIndexes:              getAllIndexes,
-    removeListIndexes:          removeListIndexes,
-    openHelpModal:              openHelpModal
+    removeListIndexes:          removeListIndexes
 };
 
 
@@ -444,7 +440,7 @@ if ( filename == "wf" ) {
     [
         ptype,
         // indir,
-        // outdir,
+        outdir,
         wf_id,
         wf,
         catdbs,
@@ -454,7 +450,7 @@ if ( filename == "wf" ) {
     wf_date_id = getWFDate();
     module.exports.ptype = ptype;
     // module.exports.indir = indir;
-    // module.exports.outdir = outdir;
+    module.exports.outdir = outdir;
     module.exports.wf_date_id = wf_date_id;
     module.exports.wf_id = wf_id;
     module.exports.wf = wf;
