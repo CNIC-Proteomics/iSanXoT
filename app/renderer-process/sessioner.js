@@ -59,8 +59,15 @@ function addProjectToSession(outdir) {
     window.sessionStorage.setItem("outdir", outdir);
 };
 
+// Remove the project info into the session storage
+function removeProjectToSession() {
+    // save the output directory of the current project
+    window.sessionStorage.removeItem("outdir");
+};
+
 // We exports the modules
 module.exports = {
-    addProjectToSession: addProjectToSession,
-    addProcessesToSession: addProcessesToSession
+    addProjectToSession:    addProjectToSession,
+    addProcessesToSession:  addProcessesToSession,
+    removeProjectToSession: removeProjectToSession
 };

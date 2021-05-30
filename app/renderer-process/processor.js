@@ -85,13 +85,9 @@ window.onload = function(e) {
 };
 
 // Before close the windows, send the processes ids
-$(window).on('beforeunload',function() {
-
-    // TODO!!!
-    // THIS NOT WORKING BECAUSE THE ASYNC FUNCTION DOES NOT FINISH.
-    // We have to convert this function to SYNC
-    // send the new Child Process to IPC Render and save into Session
-    // sendChildProcesses();
+$(window).on('beforeunload',function() {    
+    // remove the outdir of the current project
+    window.sessionStorage.removeItem("outdir");
 });
 
 function sendChildProcesses() {
