@@ -222,6 +222,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outGraph0.png
     parameters:
       anal:
         -a: scan2peptide
@@ -254,6 +255,7 @@
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outGraph.png
     parameters:
       anal:
         -a: scan2peptide
@@ -272,6 +274,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph0.png
     parameters:
       anal:
         -a: peptide2protein
@@ -310,6 +313,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
     parameters:
       anal:
         -a: peptide2protein
@@ -328,6 +332,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph0.png
     parameters:
       anal:
         -a: protein2category
@@ -362,6 +367,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph.png
     parameters:
       anal:
         -a: protein2category
@@ -381,6 +387,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph0.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -417,6 +424,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -434,6 +442,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph0.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -466,6 +475,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -483,6 +493,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph0.png
     parameters:
       anal:
         -a: category2categoryall
@@ -519,6 +530,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
     parameters:
       anal:
         -a: category2categoryall
@@ -577,6 +589,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outGraph0.png
     parameters:
       anal:
         -a: scan2peptide
@@ -609,6 +622,7 @@
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outGraph.png
     parameters:
       anal:
         -a: scan2peptide
@@ -627,6 +641,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph0.png
     parameters:
       anal:
         -a: peptide2protein
@@ -665,6 +680,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
     parameters:
       anal:
         -a: peptide2protein
@@ -683,6 +699,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph0.png
     parameters:
       anal:
         -a: peptide2gene
@@ -721,6 +738,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2gene_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2gene_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph.png
     parameters:
       anal:
         -a: peptide2gene
@@ -740,6 +758,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph0.png
     parameters:
       anal:
         -a: protein2gene
@@ -776,6 +795,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph.png
     parameters:
       anal:
         -a: protein2gene
@@ -795,6 +815,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph0.png
     parameters:
       anal:
         -a: gene2category
@@ -829,6 +850,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/gene2category_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/gene2category_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph.png
     parameters:
       anal:
         -a: gene2category
@@ -848,6 +870,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph0.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -884,6 +907,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -901,6 +925,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph0.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -937,6 +962,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -954,6 +980,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph0.png
     parameters:
       anal:
         -a: gene2geneall
@@ -990,6 +1017,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph.png
     parameters:
       anal:
         -a: gene2geneall
@@ -1007,6 +1035,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph0.png
     parameters:
       anal:
         -a: category2categoryall
@@ -1043,6 +1072,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
     parameters:
       anal:
         -a: category2categoryall
@@ -1101,6 +1131,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph0.png
     parameters:
       anal:
         -a: peptide2protein
@@ -1139,6 +1170,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
     parameters:
       anal:
         -a: peptide2protein
@@ -1157,6 +1189,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph0.png
     parameters:
       anal:
         -a: protein2category
@@ -1191,6 +1224,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph.png
     parameters:
       anal:
         -a: protein2category
@@ -1210,6 +1244,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph0.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -1246,6 +1281,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -1263,6 +1299,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph0.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -1299,6 +1336,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -1316,6 +1354,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph0.png
     parameters:
       anal:
         -a: category2categoryall
@@ -1352,6 +1391,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
     parameters:
       anal:
         -a: category2categoryall
@@ -1410,6 +1450,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph0.png
     parameters:
       anal:
         -a: peptide2protein
@@ -1448,6 +1489,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
     parameters:
       anal:
         -a: peptide2protein
@@ -1466,6 +1508,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph0.png
     parameters:
       anal:
         -a: peptide2gene
@@ -1504,6 +1547,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2gene_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2gene_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph.png
     parameters:
       anal:
         -a: peptide2gene
@@ -1523,6 +1567,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph0.png
     parameters:
       anal:
         -a: protein2gene
@@ -1559,6 +1604,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph.png
     parameters:
       anal:
         -a: protein2gene
@@ -1578,6 +1624,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph0.png
     parameters:
       anal:
         -a: gene2category
@@ -1612,6 +1659,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/gene2category_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/gene2category_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph.png
     parameters:
       anal:
         -a: gene2category
@@ -1631,6 +1679,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph0.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -1667,6 +1716,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -1684,6 +1734,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph0.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -1720,6 +1771,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -1737,6 +1789,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph0.png
     parameters:
       anal:
         -a: gene2geneall
@@ -1769,6 +1822,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph.png
     parameters:
       anal:
         -a: gene2geneall
@@ -1786,6 +1840,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph0.png
     parameters:
       anal:
         -a: category2categoryall
@@ -1822,6 +1877,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
     parameters:
       anal:
         -a: category2categoryall
@@ -1878,6 +1934,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outGraph0.png
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__
@@ -1916,6 +1973,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outGraph.png
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__
@@ -1973,6 +2031,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph0.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
@@ -2015,6 +2074,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
@@ -2048,6 +2108,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___outGraph0.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
@@ -2090,6 +2151,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___outGraph.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_INT_LEVEL__
@@ -2111,6 +2173,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outGraph0.png
     parameters:
       anal:
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
@@ -2151,6 +2214,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___outGraph.png
     parameters:
       anal:
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
@@ -2172,6 +2236,7 @@
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___outStats0.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___variance.txt
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___outGraph0.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
@@ -2212,6 +2277,7 @@
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___outStats.tsv
       -u: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___lowerNormV.tsv
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___outGraph.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__
