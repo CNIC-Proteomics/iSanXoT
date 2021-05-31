@@ -78,8 +78,8 @@ def main(args):
         v = re.findall("Variance = (.*)", fh)
         v = v[0] if v else np.nan
         
-        # get the link to sigmoide
-        sname = os.path.join(dname, f"{fname}_outGraph.png")
+        # get the link to sigmoide... Important: The sigmoide with outliers (first sanxot)
+        sname = os.path.join(dname, f"{fname}_outGraph0.png")
         sname = sname if os.path.isfile(sname) else np.nan
         
         # append data
