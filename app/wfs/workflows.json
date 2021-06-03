@@ -23,11 +23,11 @@
   },
   "commands": [{
     "id": "CREATE_IDQUANT",
-    "label": "Input files",
-    "title": "Provide input files",
+    "label": "Files from search engines",
+    "title": "Provide input files from search engines",
     "visible": true,
-    "panel": "panels/main_inputs.html",
-    "help_modal": "hmodals/main_inputs.html",
+    "panel": "panels/main_inputs_searches.html",
+    "help_modal": "hmodals/main_inputs_searches.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" },
@@ -36,17 +36,28 @@
     ]
   },{
     "id": "CREATE_IDQUANT-JOINER",
-    "label": "Input files",
-    "title": "Provide input files",
+    "label": "Files from search engines",
+    "title": "Provide input files from search engines",
     "visible": true,
-    "panel": "panels/main_inputs_noQuant.html",
-    "help_modal": "hmodals/main_inputs.html",
+    "panel": "panels/main_inputs_searches_noQuant.html",
+    "help_modal": "hmodals/main_inputs_searches.html",
     "params": [
       { "type": "required", "id": "infile", "name": "Infile" },
       { "type": "required", "id": "experiment", "name": "Experiment" },
       { "type": "optional", "id": "mzfile", "name": "mz File" },
       { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]
+  },{
+    "id": "COPY_INPUTS",
+    "label": "Input files",
+    "title": "Provide input files",
+    "visible": true,
+    "panel": "panels/main_inputs_keyfiles.html",
+    "help_modal": "hmodals/main_inputs_keyfiles.html",
+    "params": [
+      { "type": "required", "id": "keyinput", "name": "Key input", "dropdown": ["exps/ID-mq.tsv", "exps/ID-q.tsv"] },
+      { "type": "required", "id": "infile", "name": "Infile" }
+    ]  
   },{
     "id": "FDR-MASTERQ",
     "label": "FDR",
@@ -346,7 +357,7 @@
     }],
     "works": [{
       "id": "main_inputs",
-      "cmds": ["CREATE_IDQUANT"]
+      "cmds": ["CREATE_IDQUANT","COPY_INPUTS"]
     },{
       "id": "fdr",
       "cmds": ["FDR-MASTERQ"]
@@ -377,7 +388,7 @@
     }],
     "works": [{
       "id": "main_inputs",
-      "cmds": ["CREATE_IDQUANT-JOINER"]
+      "cmds": ["CREATE_IDQUANT","COPY_INPUTS"]
     },{
       "id": "databases",
       "cmds": ["CREATE_RELS"]

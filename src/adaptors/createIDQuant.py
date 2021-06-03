@@ -14,11 +14,10 @@ import os
 import sys
 import argparse
 import logging
-# import re
-# import io
 import pandas as pd
 import concurrent.futures
 import itertools
+
 
 #########################
 # Import local packages #
@@ -30,25 +29,6 @@ import MSFragger
 import Comet
 import MaxQuant
 import Quant
-
-####################
-# Common functions #
-####################
-
-# def read_infiles(file):
-#     indat = pd.read_csv(file, sep="\t", comment='#', na_values=['NA'], low_memory=False)
-#     return indat
-
-def get_path_file(i, indir):
-    '''
-    Get the full path
-    '''
-    if os.path.isfile(i):
-        return i        
-    elif os.path.isfile(f"{indir}/{i}"):
-        return f"{indir}/{i}"
-    else:
-        return None
 
 
 ###################
@@ -112,7 +92,7 @@ def main(args):
     logging.info("Get IDENTIFICATION from the search engine results -----")
 
     logging.info("extract the list of files from the given experiments")
-    infiles = [get_path_file(i, args.indir) for i in list(indata['infile']) if not pd.isna(i)] # if apply, append input directory to file list
+    infiles = [common.get_path_file(i, args.indir) for i in list(indata['infile']) if not pd.isna(i)] # if apply, append input directory to file list
     logging.debug(infiles)
     if not all(infiles):
         sms = "At least, one of input files is wrong"
@@ -152,7 +132,7 @@ def main(args):
         logging.info("Get QUANTIFICATION from the MZ FILES -----")
         
         # if apply, append input directory to file list
-        indata['mzfile'] = [get_path_file(i, args.indir) for i in list(indata['mzfile']) if not pd.isna(i)]
+        indata['mzfile'] = [common.get_path_file(i, args.indir) for i in list(indata['mzfile']) if not pd.isna(i)]
         logging.debug(indata['mzfile'].values.tolist())
 
         logging.info("prepare the parameters for each experiment/spectrum file")

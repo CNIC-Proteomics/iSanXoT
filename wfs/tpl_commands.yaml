@@ -3,28 +3,6 @@
 ###################
 # COMMAND TEMPLATE 
 # Description: 
-- name: CREATE_ID
-  description: Create the structure of ID for iSanXoT
-  force: 0
-  rules:
-  - name: createID
-    infiles:
-      -i: __INDIR__
-      -t: __DATFILE_MAIN_INPUTS__
-    outfiles:        
-      -x: __EXPDIR__/__WF_EXPERIMENT__/ID.tsv
-    parameters:
-      outdir:
-        -o: __EXPDIR__
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createID.py" -w __NCPU__ __WF_VERBOSE__ '
-###################
-
-
-
-###################
-# COMMAND TEMPLATE 
-# Description: 
 - name: CREATE_IDQUANT
   description: Create a file with the identifications and if apply, the quantification
   force: 0
@@ -40,6 +18,29 @@
         -o: __EXPDIR__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createIDQuant.py" -w __NCPU__ __WF_VERBOSE__ '
+###################
+
+
+
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
+- name: COPY_INPUTS
+  description: Copy a file into project results based on the key file
+  force: 0
+  rules:
+  - name: copyFiles
+    infiles:
+      -i: __INDIR__
+      -t: __DATFILE_MAIN_INPUTS__
+    outfiles:        
+      -x: __OUTDIR__/__WF_KEYINPUT__
+    parameters:
+      outdir:
+        -o: __OUTDIR__
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/copyFiles.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################
 
 

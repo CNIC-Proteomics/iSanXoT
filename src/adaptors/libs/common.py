@@ -18,6 +18,17 @@ import MaxQuant
 # Common functions #
 ####################
 
+def get_path_file(i, indir):
+    '''
+    Get the full path
+    '''
+    if os.path.isfile(i):
+        return i        
+    elif os.path.isfile(f"{indir}/{i}"):
+        return f"{indir}/{i}"
+    else:
+        return None
+
 def select_search_engines(inpt):
     # if the input is file, read the first row
     # otherwise, we get dataframe

@@ -362,7 +362,16 @@ def add_unique_cmd_from_table(df, icmd):
     cmd = copy.deepcopy(icmd)
     
     # get the list of unique experiments (in string)
-    exps = ",".join(df['experiment'].unique()).replace(" ", "")
+    if 'experiment' in df.columns:
+        exps = ",".join(df['experiment'].unique()).replace(" ", "")
+    else:
+        exps = ''
+    # get the list of keyinputs (in string)
+    if 'keyinput' in df.columns:
+        keyin = ",".join(df['keyinput'].unique()).replace(" ", "")
+    else:
+        keyin = ''
+    # get the decoy label
     if 'lab_decoy' in df.columns:
         ldecoy = df['lab_decoy'].values[0]
     else:
@@ -377,6 +386,7 @@ def add_unique_cmd_from_table(df, icmd):
         trule = cmd['rules'][i]
         # add only the given parameters for each rule
         add_datparams('experiment', trule, exps)
+        add_datparams('keyinput', trule, keyin)
         add_datparams('lab_decoy', trule, ldecoy)
     return [cmd]
     
@@ -579,7 +589,7 @@ def main(args):
     logging.info("create a command for each table row")
     tpl['commands'] = []
     for cmd,df in indata.items():
-        if cmd == 'CREATE_IDQUANT' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ' or cmd == 'JOINER':
+        if cmd == 'CREATE_IDQUANT' or cmd == 'COPY_INPUTS' or cmd == 'JOINER' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ':
             icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
             if icmd and not df.empty:
                 i = icmd[0]
