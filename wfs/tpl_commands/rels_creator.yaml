@@ -1,0 +1,29 @@
+---
+
+# ###################
+# COMMAND TEMPLATE 
+# Description:
+- name: RELS_CREATOR
+  description: Command that creates relationship tables from category DB
+  force: 0
+  rules:
+  - name: rels_creator_createrels
+    infiles:
+      -ii: __WF_INF_INFILES__
+      # optional input files
+      --sup_infiles: ''
+      --thr_infiles: ''
+    outfiles:
+      -o: __RELDIR__/__WF_OUTPUT__.tsv
+    parameters:
+      inf_headers:
+        -i: ''
+      sup_headers:
+        -j: ''
+      thr_headers:
+        -k: ''
+      filter:
+        -f: ''
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createRels.py" __WF_VERBOSE__ '
+###################

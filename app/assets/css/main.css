@@ -50,6 +50,14 @@ footer {
 input:disabled, button:disabled {
     cursor: not-allowed;
 }
+/* [type=button],[role=button] {
+    color: #fff;
+    background-color: slategray;
+    border-color: black;
+}
+[type=button]:hover,[role=button]:hover {
+    background-color: #5a6268;
+} */
 
 /* ---------------------------------------------------
     INIT PAGE
@@ -61,15 +69,14 @@ input:disabled, button:disabled {
     text-decoration: none;
     color: goldenrod;
 }
-#accordion a.btn-primary {
+/* #accordion a.btn-primary, #page-new-project a.btn-primary {
     color: #fff;
     background-color: slategray;
     border-color: black;
-    /* margin-left: 0.3em; */
 }
-#accordion a.btn-primary:hover {
+#accordion a.btn-primary:hover, #page-new-project a.btn-primary:hover {
     background-color: #5a6268;
-}
+} */
 
 
 
@@ -377,7 +384,7 @@ fieldset[disabled] .btn-selectpicker.focus {
  *   PANEL-SECTION: ADVANCED PARAMETERS
  * -----------------------------------------------------
  */
-#panel-advance {
+#panel-simple {
     margin-top: .6em;
     margin-bottom: .6em;
     height: 30px;
@@ -424,4 +431,15 @@ fieldset[disabled] .btn-selectpicker.focus {
 #help .footnote {
     margin-top: 40px;
     margin-bottom: 20px;
+}
+
+/*
+* ---------------------------------------------------
+*   NEW PROJECT
+* -----------------------------------------------------
+*/
+
+
+#page-new-project {
+    padding: 1rem;
 }

@@ -1,6 +1,6 @@
 {
   "name": "iSanXoT",
-  "version": "0.2.13",
+  "version": "0.3.0",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
@@ -12,6 +12,6 @@
   "author": "CNIC-Proteomics-Unit",
   "license": "Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
   "devDependencies": {
-    "electron": "2.0.8"
+    "electron": "13.1.2"
   }
 }

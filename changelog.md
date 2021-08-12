@@ -1,34 +1,55 @@
 ___
-## 0.2.13
+## 0.3.0
 ```
 DATE: 2021_06
 ```
 
 ### Highlights
 
++ Basic workflow.
+
++ New design for the projects and workflows.
 
 ### Changes in the Graphical User Interface
 
-- MEJORAR EL CONTROL DE PROCESOS (LOG TABLES):
-	- QUE SE PERMITA CARGAR LOS LOG'S CUANDO CARGAS UN PROYECTO
-	- Arreglar el refresco de la página y los logs.
-	- Debe aparecer la carpeta de salida de cada trabajo.
-	- Esto último de ayudará a mostrar/visualizar resultados, por ejemplo la de sanson, y las sigmoides!!
-	- Piensa como reportar varios mensajes de error en forma de ventana (o no)
++ Add number of threads from the loading proyects.
 
++ It is not requiered the version in the .cfg files.
+
++ The logs for each command processes is shown in a modal window.
+
++ The process panel also shows the logs of opened project.
+
++ New panel of inputs that allows to insert any file into iSanXoT.
+
++ TODO!!! ARREGLAR LOS PORCENTAJES DE LOS LOGS.
+
++ TODO!! PONER EL AVERAGE EN LOS RATIOS.
 
 ### Changes in the Code Workflow
 
-+ TODO!! Panel MAIN_INPUTS que añada variaos ficheros con etiquetas.
++ NodeJs updated to version.
 
-+ TODO!! Label-Free workflow.
++ ElectroJs updated to 13.1.2 version.
 
-+ TODO!! Documentation. PONER LOS NOMBRES DE LOS BUSCADORES EN LA DOCUMENTACIÓN Y EN LA INTERFAZ!!
++ CREATEIDQUANT: Discards the comment lines starting with '#'.
+
++ REPORTER:
+	- Gets the name of 'experiment' until the root folder.
+	- Bug fixed: The NaN values are taked into account in the output converting into empty values.
+
++ NORCOMBINE: The analysis name has changed. It includes the 'comb' prefix.
+
++ The sigmoides are distinguished from the first sanxot and the second sanxot in an integration.
+
++ STATS: get the link to sigmoide... Important: The sigmoide with outliers (first sanxot).
 
 
-+ TODO!! We have included more worked-out examples from MSFragger result and Comet.
 
-+ TODO!!! Include the column "output" in the workflow log table.
++ TODO!! Documentatio:
+- PONER LOS NOMBRES DE LOS BUSCADORES EN LA DOCUMENTACIÓN Y EN LA INTERFAZ!!
+- Ver las descripciones escritas por Jesús para los módulos (ver email Subject: Re:PDMTable)
+
 
 
 ___

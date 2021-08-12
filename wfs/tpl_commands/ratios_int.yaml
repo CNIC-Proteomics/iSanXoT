@@ -1,0 +1,23 @@
+---
+
+###################
+# COMMAND TEMPLATE 
+# Description:
+- name: RATIOS_INT
+  description: Calculate the ratios and integrate
+  force: 0
+  rules:
+
+    # Rule: calcultate ratios ---
+  - name: calculate_ratios
+    infiles:
+      -ii: __NAMDIR__/__WF_RATIO_NUMERATOR__/**/__WF_LEVEL__.tsv
+      -dd: __NAMDIR__/__WF_RATIO_DENOMINATOR__/**/__WF_LEVEL__.tsv
+    outfiles:
+      -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
+    parameters:
+      v_method:
+        -v: 'max'
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/calculateRatios.py" -w __NCPU__ __WF_VERBOSE__'
+###################

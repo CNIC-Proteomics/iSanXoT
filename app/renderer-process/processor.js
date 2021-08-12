@@ -5,14 +5,17 @@
 let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`);
 let fs = require('fs');
 const { ipcRenderer } = require('electron');
-const { dialog } = require('electron').remote
+const { dialog } = require('electron').remote;
 
 let importer = require('./imports');
+let commoner = require('./common');
 let exceptor = require('./exceptor');
 let logger = require('./logger');
 
 let logObject = undefined;
 let timeOut = undefined;
+let stopTimeOut = false;
+
 
 
 /*
@@ -152,7 +155,7 @@ function refreshLogger() {
         if ( selRow !== undefined ) {
             // get data from selected selected row (PID project)
             let pid = selRow[0];
-            let log_index = importer.getIndexParamsWithAttr(logObject.data, 'pid', pid);
+            let log_index = commoner.getIndexParamsWithAttr(logObject.data, 'pid', pid);
             let logData = logObject.data[log_index];
             let logfile = logData.logfile;
             // get the log content
@@ -187,7 +190,7 @@ function refreshLogger() {
         // if all project's in the table has finished...
         // then stop the setTimeout
         // otherwise, set the time out
-        let stopTimeOut = true;
+        stopTimeOut = true;
         let statusProj = logtable.getDataAtCol(1);
         for (let i = 0; i < statusProj.length; i++) {
             if ( statusProj[i] != 'finished' ) {
@@ -195,13 +198,13 @@ function refreshLogger() {
                 break;
             }
         }
-        // then stop the setTimeout
-        if ( stopTimeOut ) {
-            clearTimeout(timeOut);
-        // otherwise, set the time out
-        } else {
-            timeOut = setTimeout(refreshLogger, 10000);
-        }
+    }
+    // then stop the setTimeout
+    if ( stopTimeOut ) {
+        clearTimeout(timeOut);
+    // otherwise, set the time out
+    } else {
+        timeOut = setTimeout(refreshLogger, 10000);
     }
 }
 

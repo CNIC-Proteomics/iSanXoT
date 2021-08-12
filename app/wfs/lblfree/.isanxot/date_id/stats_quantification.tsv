@@ -1,5 +1,0 @@
-#RATIOS_WSPP-WSPP_SBT																		
-force	experiment	ratio_numerator	ratio_denominator	output	p>q_tag	p>a_tag	c>a_tag	s>p_fdr	p>q_fdr	q>c_fdr	s>p_var(x)	p>q_var(x)	q>c_var(x)	more_params				
-																		
-#RATIOS_WSPP-WSPPG_SBT																		
-force	experiment	ratio_numerator	ratio_denominator	output	p>q_tag	q>g_tag	p>a_tag	q>a_tag	c>a_tag	s>p_fdr	p>q_fdr	q>g_fdr	g>c_fdr	s>p_var(x)	p>q_var(x)	q>g_var(x)	g>c_var(x)	more_params

@@ -6,6 +6,7 @@ let fs = require('fs');
 let path = require('path');
 
 let importer = require('./imports');
+let commoner = require('./common');
 
 /*
  * Local functions
@@ -24,10 +25,7 @@ fs.readFileAsync = function(filename, enc) {
 };
 
 // Open Help Modals
-function openHelpModal(dat) {
-    // get variables
-    let path = dat[6];
-    let prefix = `${dat[0]}#`;
+function openHelpModal(path, prefix) {
     // get all log files that start with the command name
     let lfiles = fs.readdirSync(path).filter(fn => fn.startsWith(prefix));
     // read all the log files
@@ -171,7 +169,7 @@ class logger {
                     let rule_name = l[4];
                     let rule_perc = l[5];
                     // get the index from the name
-                    let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
+                    let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data
                     data.cmds[cmd_index].status = 'running';
                     data.cmds[cmd_index].stime = time;
@@ -193,7 +191,7 @@ class logger {
                     let rule_perc = l[5];
                     let status = l[6];
                     // get the index from the name
-                    let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
+                    let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data
                     let perc = eval(rule_perc).toFixed(2)*100+'%';
                     if ( perc == '100%' ) {
@@ -220,7 +218,7 @@ class logger {
                     let rule_perc = l[5];
                     let status = l[6];
                     // get the index from the name
-                    let cmd_index = importer.getIndexParamsWithAttr(data.cmds, 'command', cmd);
+                    let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data only when all processes of command have already finished (100%)
                     let perc = eval(rule_perc).toFixed(2)*100+'%';
                     if ( perc == '100%' ) {
@@ -335,12 +333,16 @@ class logger {
         } else {
             $(`#workflowlogs .logtable`).handsontable({
                 data: cmds,
-                colHeaders: ['Command', 'Exec', 'Status', '%', 'Start time', 'End time'],
+                colHeaders: ['Command', 'Exec', 'Status', '%', 'Start time', 'End time', 'Path'],
                 disableVisualSelection: true,
                 afterSelection: function(r,c) {
-                    // open Modal window with the current command log
+                    // open Modal window of the current command reading the logs
                     let data = this.getDataAtRow(r);
-                    openHelpModal(data);
+                    let path = data[6];
+                    let cmd_name = data[0];
+                    if ( path !== null && path !== undefined && cmd_name !== null && cmd_name !== undefined ) {
+                        openHelpModal(path, cmd_name);                        
+                    }
                 },
                 columns: [{
                     data: 'command',

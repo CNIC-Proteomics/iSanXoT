@@ -3,21 +3,23 @@
  */
 
 let fs = require('fs');
-let remote = require('electron').remote;
+// let remote = require('electron').remote;
 
 let exceptor = require('./exceptor');
-let importer = require('./imports');
+var importer = module.parent.exports; // avoiding circular dependencies with Node require()
+let commoner = require('./common');
 let ehandler = require('./ehandler');
-let sessioner = require('./sessioner');
+// let sessioner = require('./sessioner');
 
 /*
- * Import variables
+ * Import variables and Variables
  */
 
-let wf       = importer.wf;
-let odir     = importer.outdir;
-let cdir     = importer.cdir;
-console.log(odir);
+// get imported variables
+let prj_dir = importer.prj_dir;
+let wkf_dir  = importer.wkf_dir;
+let prj_cfg  = importer.prj_cfg;
+let wf  = importer.wf;
 
 
 /*
@@ -25,7 +27,7 @@ console.log(odir);
  */
 
 // create hash report of commands from a file
-function extract_list_cmds(wk, itbl) {
+function extract_tasktable_info(cmd, itbl) {
   // Extract the info from tables
   let tbls = {};
   let order = 1;
@@ -33,15 +35,15 @@ function extract_list_cmds(wk, itbl) {
   let cols_empty = [];
   for (var i = 0; i < itbl.length; i++) {
     let l = itbl[i];
-    if ( l && l.length > 0 && l != '' && !(importer.allBlanks(l))) {
+    if ( l && l.length > 0 && l != '' && !(commoner.allBlanks(l))) {
       if ( l[0] !== undefined && l[0].startsWith('#') ) {
         id = l[0];
         id = id.replace('#','');
         let cols = itbl[i+1];
         // get all indexes of empty elements
         // remove all empty elements in column headers
-        cols_empty = importer.getAllIndexes(cols,"");
-        cols = importer.removeListIndexes(cols, cols_empty);
+        cols_empty = commoner.getAllIndexes(cols,"");
+        cols = commoner.removeListIndexes(cols, cols_empty);
         // save
         tbls[id] = {
           'order': order,
@@ -54,47 +56,28 @@ function extract_list_cmds(wk, itbl) {
       else {
         // remove all empty elements of header in the data
         if (cols_empty.length > 0) {
-          l = importer.removeListIndexes(l, cols_empty);
+          l = commoner.removeListIndexes(l, cols_empty);
         }
         // save 
         tbls[id]['table'].push(l);
       }
     }
   }
-  // Extract the cmds from 'workflow' file
-  let cmds = [];
-  for (var i = 0; i < wk.length; i++) {
-    let l = wk[i];
-    let id = l['id'];
-    let cols = [];
-    let header = [];
-    if ( 'params' in l && l['params'].length > 0) {
-      cols = l['params'].map(a => a.id);
-      header = l['params'].map(a => a.name);
-    }
-    cmds.push({
-      'id': id,
-      'cols': cols,
-      'header': header,
-      'table': []
-    });
-  }
-  // Iterate over all commands
-  // get the attributes of command from the local file (workflow.JSON)
-  // get the data of table from the external files (TSV)
-  // extract the info for the tasktable ONLY when the columns between the 'workflow' and the external table are equal
-  for (var i = 0; i < cmds.length; i++) {
-    let cmd = cmds[i];
-    let cmd_id = cmd['id'];
-    if ( cmd_id in tbls ) {
-      let tbl = tbls[cmd_id];
-      // check if the column names are equal
-      if ( importer.isEqual(cmd['cols'], tbl['cols']) ) {
-        cmd['table'] = tbls[cmd_id]['table'];
-      }
+  // Get only the tasktable for the given cmd
+  // Extract the info for the tasktable ONLY when the columns between the 'workflow' and the external table are equal
+  let tt_cmd = {};
+  let cmd_id = cmd['id'];
+  if ( cmd_id in tbls ) {
+    let tbl = tbls[cmd_id];
+    let cmd_cols = cmd['tasktable']['params'].map(a => a.id);
+    let cmd_header = cmd['tasktable']['params'].map(a => a.name);
+    // check if the column names are equal
+    if ( commoner.isEqual(cmd_cols, tbl['cols']) ) {
+      tt_cmd['data'] = tbls[cmd_id]['table'];
+      tt_cmd['header'] = cmd_header;
     }
   }
-  return cmds;  
+  return tt_cmd;
 };
 
 
@@ -102,53 +85,12 @@ function extract_list_cmds(wk, itbl) {
  * Main
  */
 
-// Save the project info into the session storage
-sessioner.addProjectToSession(odir);
-
-// Add title to workflow
-$(`#bodied h3.text-center`).html(`${wf['label']}`);
-$(`#bodied h3.text-center`).attr('name', `${wf['id']}`);
-
-// Add information from loading proyect
-if ( wf_exec ) {
-  // add number of threads
-  if ( "ncpu" in wf_exec ) $('#nthreads').val(wf_exec["ncpu"]);
-}
-
-
-// Go through the works of the workflow
+// Add the body info with the workflow structure ---
 for (var i = 0; i < wf['works'].length; i++) {
   // get variables
   let wk = wf['works'][i];
   let wk_id = wk['id'];
   let wk_label = wk['label'];
-  let wk_file = `${cdir}/${wk['file']}`;
-
-  // Extract the table of commands
-  // Split the lines and tabular lines
-  // Then, for each cell, it replaces the "{2,} and " at the begining and the end.
-  // convert command file into a dictionary
-  let tbl_cmds = [];
-  let cmds = {};
-  try {
-    if (fs.existsSync(`${wk_file}`)) {
-      let s = fs.readFileSync(`${wk_file}`).toString();
-      tbl_cmds = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
-      if ( !tbl_cmds ) {
-        console.log(tbl_cmds);
-        exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
-      }
-    }
-  } catch (ex) {
-    console.log(wk_file);
-    exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
-  }
-  try {
-    cmds = extract_list_cmds(wk['cmds'], tbl_cmds);
-  } catch (ex) {
-    console.log(wk_file);
-    exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands individually`, end=true);
-  }
   
   // add the tabs and content
   // add html template of sidebars and content (import html template)
@@ -162,74 +104,93 @@ for (var i = 0; i < wf['works'].length; i++) {
 
   // Iterate over all commands
   // create html sidebar and the tasktable
-  for (var j = 0; j < cmds.length; j++) {
-    // get variables
-    // get the attributes of command from the local file (JSON)
-    // get the data of table from the external files (TSV)
-    let cmd = cmds[j];
+  for (var j = 0; j < wk['cmds'].length; j++) {
+    let cmd = wk['cmds'][j];
     let cmd_id = cmd['id'];
-    let cmd_header = cmd['header'];
-    let cmd_table = cmd['table'];
-    let cmd_attr = importer.getObjectFromID(wk['cmds'], cmd_id);
-    if ( cmd_attr === undefined ) {
-      console.log(cmd_id);
-      exceptor.showErrorMessageBox('Error Message', `Getting the 'cmd' attributes from the id`, end=true);
-    }
-    let cmd_label = cmd_attr['label'];
-    let cmd_title = cmd_attr['title'];
+    let cmd_label = cmd['label'];
+    let cmd_title = cmd['title'];
 
-    // create html sidebar
+    // Create html sidebar ---
     // If the command is not visible, we don't show the sidebar menu
-    if ( cmd_attr['visible'] ) {
+    if ( cmd['visible'] ) {
       $(`#${wk_id} #sidebar .cmds`).append(`<li><a id="${cmd_id}" title="${cmd_title}">${cmd_label}</a></li>`);
     }
     // create main div for the tasktable frames
     $(`#${wk_id} #page-content`).append(`<div id="page-tasktable-${cmd_id}"></div>`);
     // add create tasktable panel
-    if ( cmd_attr['panel'] ) {
-      importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
+    if ( cmd['panel'] ) {
+      importer.importHTMLtemplate(`${__dirname}/../${cmd['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
     }
     // add the help modal of the tasktable/command
-    if ( cmd_attr['help_modal'] ) {
-      importer.importHTMLtemplate(`${__dirname}/../sections/${cmd_attr['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
+    if ( cmd['help_modal'] ) {
+      importer.importHTMLtemplate(`${__dirname}/../${cmd['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
     }
 
-    // Create the tasktable
-    if (cmd_header && cmd_header.length > 0 && 'params' in cmd_attr && cmd_attr['params'].length > 0) {
+    // Extract the task-table of command ---
+    if ( 'tasktable' in cmd ) {
+      let cmd_ttable = cmd['tasktable'];
+
+      let ttable_file = `${wkf_dir}/${cmd_ttable['file']}`;
+      let ttable = {};
+      if ( ttable_file !== undefined && fs.existsSync(`${ttable_file}`) ) {
+        let ttable_raw = [];
+        try {
+        // Split the lines and tabular lines
+        // Then, for each cell, it replaces the "{2,} and " at the begining and the end.
+        // convert command file into a dictionary
+          let s = fs.readFileSync(`${ttable_file}`).toString();
+          ttable_raw = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+          if ( !ttable_raw ) {
+            console.log(ttable_raw);
+            exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
+          }
+        } catch (ex) {
+          console.log(ttable_file);
+          exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
+        }
+        try {
+          ttable = extract_tasktable_info(cmd, ttable_raw);
+        } catch (ex) {
+          console.log(ttable_file);
+          exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands individually`, end=true);
+        }
+      }
+      else {
+        let cmd_header = cmd_ttable['params'].map(a => a.name);
+        ttable['header'] = cmd_header;  
+        ttable['data'] = [];
+      }
 
       // get the index of optional parameters
-      let cmd_params_opt_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'type', 'optional');
+      let cmd_params_opt_index = commoner.getIndexParamsWithAttr(cmd_ttable['params'], 'type', 'optional');
 
       // get the index of Columns with readOnly parameter
-      let cmd_params_readonlycol_index = importer.getIndexParamsWithAttr(cmd_attr['params'], 'readOnly', true);
+      let cmd_params_readonlycol_index = commoner.getIndexParamsWithAttr(cmd_ttable['params'], 'readOnly', true);
 
-      // get the index of Rows with readOnly parameter
-      let cmd_params_readonlyrow_index = cmd_attr['readonly_rows'];
-      
       // get the index of DropDown parameters
-      let [cmd_params_hottable_index, cmd_params_hottable] = importer.getIndexParamsWithKey(cmd_attr['params'], 'hottable');
+      let [cmd_params_hottable_index, cmd_params_hottable] = commoner.getIndexParamsWithKey(cmd_ttable['params'], 'hottable');
 
       // get the index of select parameters
-      let [cmd_params_select_index, cmd_params_select] = importer.getIndexParamsWithKey(cmd_attr['params'], 'select');
+      let [cmd_params_select_index, cmd_params_select] = commoner.getIndexParamsWithKey(cmd_ttable['params'], 'select');
       
       // get the index of dropdown parameters
-      let [cmd_params_dropdown_index, cmd_params_dropdown] = importer.getIndexParamsWithKey(cmd_attr['params'], 'dropdown');
+      let [cmd_params_dropdown_index, cmd_params_dropdown] = commoner.getIndexParamsWithKey(cmd_ttable['params'], 'dropdown');
 
       // get the index of checkbox parameters
-      let [cmd_params_checkbox_index, cmd_params_checkbox] = importer.getIndexParamsWithKey(cmd_attr['params'], 'checkbox');
+      let [cmd_params_checkbox_index, cmd_params_checkbox] = commoner.getIndexParamsWithKey(cmd_ttable['params'], 'checkbox');
 
       // create html tasktable
       $(`#${wk_id} #page-tasktable-${cmd_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
-      if (!cmd_table || cmd_table.length == 0) cmd_table = [[]]; // if the data table is empty, we init
+      if (!ttable['data'] || ttable['data'].length == 0) ttable['data'] = [[]]; // if the data table is empty, we init
       $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable({
-          data: cmd_table,
+          data: ttable['data'],
           width: '100%',
           height: 'auto',
           rowHeights: 23,
           rowHeaders: true,
-          colHeaders: cmd_header,
+          colHeaders: ttable['header'],
           minRows: 2,
-          minCols: cmd_header.length,
+          minCols: ttable['header'].length,
           minSpareRows: 1,
           contextMenu: true,
           manualColumnResize: true,
@@ -240,10 +201,6 @@ for (var i = 0; i < wf['works'].length; i++) {
           },
           cells: function (row, col) {
             var cellProperties = {};
-            // readOnly row (coming from the wortkflow.json config file)
-            if (cmd_params_readonlyrow_index && cmd_params_readonlyrow_index.length > 0 && cmd_params_readonlyrow_index.includes(row)) {
-              cellProperties.readOnly = true;
-            }
             // readOnly column (coming from the wortkflow.json config file)
             if (cmd_params_readonlycol_index && cmd_params_readonlycol_index.length > 0 && cmd_params_readonlycol_index.includes(col)) {
               cellProperties.readOnly = true;
@@ -290,7 +247,9 @@ for (var i = 0; i < wf['works'].length; i++) {
           },
           licenseKey: 'non-commercial-and-evaluation'    
       });
-    }
+
+    } // end tasktable in cmd
+
   } // end loop of commands
 
 
@@ -342,6 +301,33 @@ for (var i = 0; i < wf['works'].length; i++) {
 
 } // end loop of works (tabs)
 
+// Add title to workflow ---
+$(`#bodied h3.text-center`).html(`${wf['label']}`);
+$(`#bodied h3.text-center`).attr('name', `${wf['id']}`);
+
+// Add information from loading proyect ---
+if ( prj_dir && prj_dir != '') {
+  $(`#__OUTDIR__ input`).val(`${prj_dir}`);
+}
+if ( prj_cfg ) {
+  // add number of threads
+  if ( "ncpu" in prj_cfg ) $('#nthreads').val(prj_cfg["ncpu"]);
+
+  // add values of all paneladaptors
+  $(`[id^=paneladaptor-]`).find(".adaptor_inputs").each(function(){
+    if ( 'adaptor_inputs' in prj_cfg && this.id in prj_cfg['adaptor_inputs'] ) {
+      let v = prj_cfg['adaptor_inputs'][this.id];
+      $(this).find("input").val(`${v}`);
+    }
+  });
+}
+
+
+// Save the project info into the session storage
+// sessioner.addProjectToSession(odir);
+
+
+
 
 /*
  * Activate the events
@@ -349,9 +335,8 @@ for (var i = 0; i < wf['works'].length; i++) {
 
 // add values into panels, if apply
 // functions in the corresponding html template
-ehandler.addValuesMainInputsPanel(remote, importer, exceptor);
-ehandler.addValuesPanelCatDB(importer);
+// ehandler.addValuesMainInputsPanel(remote, importer, exceptor);
+// ehandler.addValuesPanelCatDB(importer);
 
-// check if some data of advanced options is available
-ehandler.checkIfAdvancedOptionsExist(importer, exceptor);
-
+// Active the advanced options if apply
+ehandler.activeAdvancedEvents(importer);

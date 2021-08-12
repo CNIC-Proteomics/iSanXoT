@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create new project</title>
+    <!-- Imports CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Imports JS -->
+    <script>
+      if (typeof module === 'object') {window.module = module; module = undefined;}
+    </script>
+    <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div id="page-new-project">
+    <div class="form-group">
+      <h6>Name the project</h6>
+      <div class="input-group col-sm-5" id="projectname">
+        <input type="text" class="form-control">
+      </div>
+    </div>
+    <div class="form-group">
+      <h6>Select folder</h6>
+      <div class="input-group col-sm" id="projectfolder">
+        <input type="text" class="form-control">
+        <div class="input-group-append">
+          <button type="button" class="btn btn-outline-secondary btn-sm">Choose folder</button>
+        </div>
+      </div>  
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-secondary" id="projectsubmit">Submit</button>
+    </div>
+  </div>
+<script>
+
+// Import libraries
+let exceptor = require('./renderer-process/exceptor');
+const { BrowserWindow, dialog, getCurrentWindow } = require('electron').remote;
+const { ipcRenderer } = require('electron');
+
+
+// Click event in Submit button
+$('#projectsubmit').on('click', function() {
+  let projectname = $('#projectname > input').val();
+  let projectfolder = $('#projectfolder > input').val();
+  if ( projectname == "" || projectname === undefined) {
+    exceptor.showMessageBox('error',`The project name is required`, title='Creating a new project', end=true);
+  }
+  if ( projectfolder == "" || projectfolder === undefined) {
+    exceptor.showMessageBox('error',`The project folder is required`, title='Creating a new project', end=true);
+  }
+  // Everything all right, send the variables
+  // win.webContents.send('message', 'Hello second window!');
+  ipcRenderer.send('newprojectsubmit', {
+    name: projectname,
+    folder: projectfolder
+  });
+  // close window
+  let window = getCurrentWindow();
+  window.close();
+});
+
+// OpenDialog for folder
+$('#projectfolder button').click(function() {
+  let dir = dialog.showOpenDialogSync({ properties: ["openDirectory"] });
+  if ( dir !== undefined ) {
+    $(`#projectfolder > input`).val(dir);
+  } else {
+    exceptor.showMessageBox('error',`The project folder is not defined`, title='Creating a new project', end=true);
+  }
+});
+
+</script>
+</body>
+</html>
+

@@ -22,6 +22,7 @@ import re
 import json
 import yaml
 import shlex
+import pandas as pd
 
 ####################
 # Global variables #
@@ -72,17 +73,26 @@ def check_command_parameters(indata):
     outputs_cmd = {}
     # iterate over all commands
     for cmd,df in indata.items():
-        # discard RATIOS_WSPP command because the tasktable is duplicated with WSPP_SBT
-        if cmd != 'RATIOS_WSPP':
-            outs = []
-            if 'output' in df.columns and 'level' in df.columns:
-                outs = list((df['output']+'/'+df['level']).values)
-            if 'output' in df.columns and 'sup_level' in df.columns:
-                outs = list((df['output']+'/'+df['sup_level']).values)
-            if outs:
-                outdirs.extend(outs)
-                for o in outs:
-                    outputs_cmd[o] = cmd
+        # # discard RATIOS_WSPP command because the tasktable is duplicated with WSPP_SBT
+        # if cmd != 'RATIOS_WSPP':
+        #     outs = []
+        #     if 'output' in df.columns and 'level' in df.columns:
+        #         outs = list((df['output']+'/'+df['level']).values)
+        #     if 'output' in df.columns and 'sup_level' in df.columns:
+        #         outs = list((df['output']+'/'+df['sup_level']).values)
+        #     if outs:
+        #         outdirs.extend(outs)
+        #         for o in outs:
+        #             outputs_cmd[o] = cmd
+        outs = []
+        if 'output' in df.columns and 'level' in df.columns:
+            outs = list((df['output']+'/'+df['level']).values)
+        if 'output' in df.columns and 'sup_level' in df.columns:
+            outs = list((df['output']+'/'+df['sup_level']).values)
+        if outs:
+            outdirs.extend(outs)
+            for o in outs:
+                outputs_cmd[o] = cmd
 
     # check if there are duplicates in the output directories
     if outdirs:
@@ -94,7 +104,23 @@ def check_command_parameters(indata):
     
     # return the output for each command
     return outputs_cmd
-    
+
+def read_tpl_command(path, cmd_id):
+    cmd_tpl = None
+    # get the file with the template of commands
+    file = f"{path}/{cmd_id.lower()}.yaml"
+    if os.path.isfile(file):
+        # read the templates of commands
+        with open(file, 'r') as stream:
+            try:
+                cmd_tpl = yaml.safe_load(stream)
+                cmd_tpl = cmd_tpl[0]
+            except yaml.YAMLError as exc:
+                sms = "ERROR!! Reading the template of commands: {}".format(exc)
+                print(sms) # message to stdout with logging output
+                sys.exit(sms)
+    return cmd_tpl
+
 def replace_val_rec(data, repl):
     '''
     Replace substring from the list of dictionary, recursively
@@ -220,28 +246,30 @@ def _transform_relationship_path(vals):
 def add_datparams(p, trule, val):
     # remove all the leading and trailing whitespace characters
     val = val.strip()
+    
     # Replace the label for the value for each section: infiles, outfiles, and parameters
-    if p == 'ratio_numerator':
-        l = '__WF_RATIO_NUM__'
-        _replace_datparams(val, trule['infiles'],  l)
-        # _replace_datparams(val, trule['outfiles'], l)
-        if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = re.sub(r"\s*,\s*",",", val) # removes whitespaces before/after comma
-            r = r.replace(",","-") # replace "," -> "-".
-            # r = re.sub(r"\s+","",r) # remove whitespaces
-            _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
+    # if p == 'ratio_numerator':
+    #     l = '__WF_RATIO_NUM__'
+    #     _replace_datparams(val, trule['infiles'],  l)
+    #     # _replace_datparams(val, trule['outfiles'], l)
+    #     if trule['parameters'] is not None and 'tags' in trule['parameters']:
+    #         r = re.sub(r"\s*,\s*",",", val) # removes whitespaces before/after comma
+    #         r = r.replace(",","-") # replace "," -> "-".
+    #         # r = re.sub(r"\s+","",r) # remove whitespaces
+    #         _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
             
-    elif p == 'ratio_denominator':
-        l = '__WF_RATIO_DEN__'
-        _replace_datparams(val, trule['infiles'],  l)
-        # _replace_datparams(val, trule['outfiles'], l)
-        if trule['parameters'] is not None and 'tags' in trule['parameters']:
-            r = re.sub(r"\s*,\s*",",", val) # removes whitespaces before/after comma
-            r = r.replace(",","-") # replace "," -> "-".
-            # r = re.sub(r"\s+","",r) # remove whitespaces
-            _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
+    # elif p == 'ratio_denominator':
+    #     l = '__WF_RATIO_DEN__'
+    #     _replace_datparams(val, trule['infiles'],  l)
+    #     # _replace_datparams(val, trule['outfiles'], l)
+    #     if trule['parameters'] is not None and 'tags' in trule['parameters']:
+    #         r = re.sub(r"\s*,\s*",",", val) # removes whitespaces before/after comma
+    #         r = r.replace(",","-") # replace "," -> "-".
+    #         # r = re.sub(r"\s+","",r) # remove whitespaces
+    #         _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
 
-    elif p == 'reported_vars':
+    # elif p == 'reported_vars':
+    if p == 'reported_vars':
         l = '__WF_'+p.upper()+'__'
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
 
@@ -264,14 +292,14 @@ def add_datparams(p, trule, val):
     # p == 'experiment','input','output','level','norm','low_level', 'int_level','hig_level','lowhig_level','inthig_level','inf_infiles'
     else:
         l = '__WF_'+p.upper()+'__'
+        # removes whitespaces before/after comma. removes end commas
+        val = re.sub(r"\s*,\s*",",", val)
+        val = re.sub(r",+$","", val)
+        # replace the constant to the given value
         _replace_datparams(val, trule['infiles'],  l)
         _replace_datparams(val, trule['outfiles'], l)
         _add_datparams_params(p, trule, val)
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
-
-    # # handle the parameters not required
-    # if trule['parameters'] is not None and p in trule['parameters']:
-    #     _add_datparams_params(p, trule, val)
 
 
 
@@ -361,33 +389,49 @@ def add_unique_cmd_from_table(df, icmd):
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
     
-    # get the list of unique experiments (in string)
-    if 'experiment' in df.columns:
-        exps = ",".join(df['experiment'].unique()).replace(" ", "")
-    else:
-        exps = ''
-    # get the list of keyinputs (in string)
-    if 'keyinput' in df.columns:
-        keyin = ",".join(df['keyinput'].unique()).replace(" ", "")
-    else:
-        keyin = ''
-    # get the decoy label
-    if 'lab_decoy' in df.columns:
-        ldecoy = df['lab_decoy'].values[0]
-    else:
-        ldecoy = ''
-        
+    # # get the list of unique experiments (in string)
+    # if 'experiment' in df.columns:
+    #     exps = ",".join(df['experiment'].unique()).replace(" ", "")
+    # else:
+    #     exps = ''
+    # # get the list of keyinputs (in string)
+    # if 'keyinput' in df.columns:
+    #     keyin = ",".join(df['keyinput'].unique()).replace(" ", "")
+    # else:
+    #     keyin = ''
+    # # get the decoy label
+    # if 'lab_decoy' in df.columns:
+    #     ldecoy = df['lab_decoy'].values[0]
+    # else:
+    #     ldecoy = ''
+    
+    # # Add the label of forced execution
+    # if 'force' in df:
+    #     cmd['force'] = int(df['force'].any(skipna=False))
+
+    # # go through the rules of cmd
+    # for i in range(len(cmd['rules'])):
+    #     trule = cmd['rules'][i]
+    #     # add only the given parameters for each rule
+    #     add_datparams('experiment', trule, exps)
+    #     add_datparams('keyinput', trule, keyin)
+    #     add_datparams('lab_decoy', trule, ldecoy)
+    
+    
+    # lookthrough all columns and add the parameters
+    for col in df.columns:
+        # join the unique values
+        vals = ",".join(df[col].unique()).replace(" ", "")
+        # go through the rules of cmd
+        for i in range(len(cmd['rules'])):
+            trule = cmd['rules'][i]
+            # add only the given parameters for each rule
+            add_datparams(col, trule, vals)
+
     # Add the label of forced execution
     if 'force' in df:
         cmd['force'] = int(df['force'].any(skipna=False))
 
-    # go through the rules of cmd
-    for i in range(len(cmd['rules'])):
-        trule = cmd['rules'][i]
-        # add only the given parameters for each rule
-        add_datparams('experiment', trule, exps)
-        add_datparams('keyinput', trule, keyin)
-        add_datparams('lab_decoy', trule, ldecoy)
     return [cmd]
     
 def _param_str_to_dict(s):
@@ -488,15 +532,20 @@ def main(args):
             sys.exit(sms)
 
 
-    # extract the list of task-tables (datafiles)
+    # extract the list of task-tables (ttablefiles)
     # split by command
     # create a list of tuples (command, dataframe with parameters)
     # dropping empty rows and empty columns
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
-    infiles = ";".join([d['file'] for d in tpl['datfiles']])
+    infiles = ";".join([d['file'] for d in tpl['ttablefiles']])
     indata = common.read_command_table(infiles)
+    
+    # return a variable with the outputs for each command    
+    logging.info("check the tasktable parameters for each command")
+    global OUTPUTS_FOR_CMD
+    OUTPUTS_FOR_CMD = check_command_parameters(indata)
     
     
     # check the tasktable parameters for each command:
@@ -507,37 +556,27 @@ def main(args):
 
 # TODO!!! 4. Check the columns: level, inf_level and sup_level are not empty
     
-    # return a variable with the outputs for each command    
-    logging.info("check the tasktable parameters for each command")
-    global OUTPUTS_FOR_CMD
-    OUTPUTS_FOR_CMD = check_command_parameters(indata)
-    
     
 
-    # read the templates of commands
-    logging.info("read the template of commands")
-    with open(args.intpl, 'r') as stream:
-        try:
-            tpl_cmds = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            sms = "ERROR!! Reading the template of commands: {}".format(exc)
-            print(sms) # message to stdout with logging output
-            sys.exit(sms)
+    # # read the templates of commands
+    # logging.info("read the template of commands")
+    # with open(args.intpl, 'r') as stream:
+    #     try:
+    #         cmd_tpls = yaml.safe_load(stream)
+    #     except yaml.YAMLError as exc:
+    #         sms = "ERROR!! Reading the template of commands: {}".format(exc)
+    #         print(sms) # message to stdout with logging output
+    #         sys.exit(sms)
 
     
-    # get the unique commands from the input table
-    logging.info("get the unique commands from the input table")
-    cmds = list(indata.keys())
-    dels = [i for i in tpl_cmds if not (i['name'] in cmds)]
-    for c in dels:
-        del tpl_cmds[ tpl_cmds.index(c) ]
+    # # get the unique commands from the input table
+    # logging.info("get the unique commands from the input table")
+    # cmds = list(indata.keys())
+    # dels = [i for i in cmd_tpls if not (i['name'] in cmds)]
+    # for c in dels:
+    #     del cmd_tpls[ cmd_tpls.index(c) ]
 
     
-    # if the cfg file of workflow has not 'database' information, we remove the indata of dataframes
-    if not tpl['databases']:
-        indata['CREATE_RELS'].drop(indata['CREATE_RELS'].index, inplace=True)
-
-
     # assign the global variables
     global MAIN_INPUTS_EXPDIR
     global MAIN_INPUTS_JOBDIR
@@ -572,38 +611,44 @@ def main(args):
             '__STADIR__':               MAIN_INPUTS_STADIR,
             '__CATDB__':                '',
     }
-    # add the replacements for the databases
-    for k_id in tpl['databases'].keys():
-        repl[k_id] = tpl['databases'][k_id]
     # add the replacements for the main_inputs
-    for k_id in tpl['main_inputs'].keys():
-        repl[k_id] = tpl['main_inputs'][k_id]
+    for k_id in tpl['adaptor_inputs'].keys():
+        repl[k_id] = tpl['adaptor_inputs'][k_id]
     # add the replacements for the data files of tasktable commands
-    for datfile in tpl['datfiles']:
-        l = "__DATFILE_{}__".format(datfile['type'].upper())
+    for datfile in tpl['ttablefiles']:
+        l = "__TTABLEFILE_{}__".format(datfile['type'].upper())
         repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
-    tpl_cmds = replace_val_rec(tpl_cmds, repl)
 
 
-    logging.info("create a command for each table row")
+
+    logging.info("create a command for each adaptor with cmd program")
     tpl['commands'] = []
+    if 'adaptor_cmds' in tpl:
+        for cmd in tpl['adaptor_cmds']:
+            # read the templates of commands
+            cmd_tpl = read_tpl_command(args.intpl, cmd)
+            # replace constant within command tpls
+            cmd_tpl = replace_val_rec(cmd_tpl, repl)
+            if cmd_tpl:
+                tpl['commands'].append([cmd_tpl])
+
+    logging.info("create a command for each tasktable row")
     for cmd,df in indata.items():
-        if cmd == 'CREATE_IDQUANT' or cmd == 'COPY_INPUTS' or cmd == 'JOINER' or cmd == 'RATIOS_WSPP' or cmd == 'MASTERQ':
-            icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
-            if icmd and not df.empty:
-                i = icmd[0]
+        # read the templates of commands
+        cmd_tpl = read_tpl_command(args.intpl, cmd)
+        # replace constant within command tpls
+        cmd_tpl = replace_val_rec(cmd_tpl, repl)
+        if cmd_tpl:
+            if cmd == 'CREATE_IDQUANT' or cmd == 'COPY_INPUTS' or cmd == 'JOINER' or cmd == 'MASTERQ':
                 # add the parameters into each rule
-                tpl['commands'].append(add_unique_cmd_from_table(df, tpl_cmds[i]))
+                tpl['commands'].append(add_unique_cmd_from_table(df, cmd_tpl))
                 # replace constants
                 tpl['commands'] = replace_val_rec(tpl['commands'], repl)
-        else: # the rest of commands
-            icmd = [i for i,c in enumerate(tpl_cmds) if c['name'] == cmd]
-            if icmd and not df.empty:
-                i = icmd[0]
+            else: # the rest of commands
                 # create a command for each row
                 # add the parameters for each rule
-                tpl['commands'].append( list(df.apply( add_cmd, args=(tpl_cmds[i], ), axis=1)) )
+                tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
                 # replace constants
                 tpl['commands'] = replace_val_rec(tpl['commands'], repl)
 

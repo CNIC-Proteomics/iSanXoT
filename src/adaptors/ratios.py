@@ -103,7 +103,7 @@ def calculate_ratio(df, ratios):
         if all([True if c in df.columns else False for c in ControlTag+labels]):    
             df = _calc_ratio(df, ControlTag, labels)
         else:
-            c = [True if c in df.columns else c for c in ControlTag+labels]
+            c = [c for c in ControlTag+labels if not c in df.columns]
             sms = f"The tags are not available in your data: {','.join(c)}"
             logging.error(sms)
             sys.exit(sms)
@@ -133,10 +133,10 @@ def main(args):
     logging.debug(ratios)
 
     logging.info("calculate the ratios (in parallel by experiment)")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
-    ddf = pd.concat(ddf)
-    # ddf = calculate_ratio(list(ddf.groupby("Experiment"))[0], ratios)
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+    #     ddf = executor.map(calculate_ratio, list(ddf.groupby("Experiment")), repeat(ratios))
+    # ddf = pd.concat(ddf)
+    ddf = calculate_ratio(list(ddf.groupby("Experiment"))[0], ratios)
     
     logging.info('print output')
     # print to tmp file

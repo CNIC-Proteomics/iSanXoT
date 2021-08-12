@@ -15,10 +15,10 @@ for (var i = 0; i < wfs['workflows'].length; i++) {
   let wf_id = wf['id'];
   let wf_label = wf['label'];
   let wf_sdesc = wf['sdesc'];
-  let wf_samples = wf['samples'];
   // create the html button with the samples
   let tpl_samples = '';
-  if ( wf_samples.length > 0 ) {
+  if ( 'samples' in wf && wf['samples'].length > 0 ) {
+    let wf_samples = wf['samples'];
     let t_samples = '';
     for (var j = 0; j < wf_samples.length; j++) {
       let wf_s = wf_samples[j];
@@ -42,7 +42,7 @@ for (var i = 0; i < wfs['workflows'].length; i++) {
         <div class="row">
           <div class="btn-group col-md-2 ml-md-auto">
             ${tpl_samples}
-            <a href="wf.html?ptype=load&pdir=${__dirname}/../wfs/${wf_id}" class="btn btn-primary active" role="button" aria-pressed="true">Go to workflow</a>
+            <a href="wf.html?wdir=${__dirname}/../wfs/${wf_id}" class="btn btn-secondary" role="button" aria-pressed="true">Create New Workflow</a>
           </div>
         </div>
     </div>

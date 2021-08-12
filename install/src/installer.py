@@ -30,7 +30,7 @@ lib_home = os.path.dirname(requirement_loc_file)
 
 python_exec = sys.executable
 
-node_url = 'https://nodejs.org/dist/v10.14.2/node-v10.14.2-win-x64.zip'
+node_url = 'https://nodejs.org/dist/v14.16.0/node-v14.16.0-win-x64.zip'
 node_home = f"{lib_home}/node"
 
 tmpdir = f"{lib_home}/tmp"

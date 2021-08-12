@@ -1,0 +1,21 @@
+{
+  "id": "main_input",
+  "label": "Main adaptor",
+  "sdesc": "<p><i>Basic Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
+  "description": "Long description for iSanXoT.",
+  "works": [{
+    "id": "main_inputs",
+    "label": "Inputs",
+    "description": "Short description for the current work (tab)",  
+    "cmds": ["MAIN_INPUTS"]
+  }],
+  "commands": [{
+    "id": "MAIN_INPUTS",
+    "label": "Input files",
+    "title": "Provide input files",
+    "visible": true,
+    "panel": "adaptors/00_main_input/panels/main_inputs.html",
+    "help_modal": "adaptors/00_main_input/hmodals/main_inputs.html",
+    "adaptor_cmd": true
+  }]
+}

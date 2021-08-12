@@ -1,3 +1,6 @@
+# Python 3.6.7
+# Node.js 14.16.0
+
 # $EXEC=jdk-15.0.2_windows-x64_bin.zip java
 $EXEC=stable_windows_10_msbuild_Release_Win32_graphviz-2.46.1-win32.zip graphviz
 $MANAGER=python/tools/Scripts/pip
@@ -15,12 +18,11 @@ install --no-warn-script-location	scikit-learn==0.24.1
 install --no-warn-script-location	Pillow==8.2.0
 $MANAGER=node/npm
 config set			scripts-prepend-node-path true
-install --save-dev --save-exact --global	electron@^7.x.x
+# install --save-dev --save-exact --global	electron@^7.x.x
+install --save-dev --save-exact --global	electron@13.1.2
 install --global	ps-tree
 install --global	xlsx
 install --global	js-yaml
 install --global	fs-extra
 $DATABASES=202105
-$SAMPLES=basic.5
-$SAMPLES=ptm.5
-$SAMPLES=lblfree.5
+# $SAMPLES=basic.6 # TODO: Create a new repository of workflows

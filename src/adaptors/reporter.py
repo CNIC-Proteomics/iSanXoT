@@ -111,6 +111,11 @@ def create_report(ifiles, prefix, col_values):
     logging.debug(f"{prefix}: rename inf,sup columns")
     df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
 
+    logging.debug("replace NaN table")
+    # important!! NaN values is important for the statistics
+    # We have to do the replace; otherwise, with the ption dropnan=False in the pivot_table takes a lot of time
+    df = df.replace(np.nan, '')
+    
     logging.debug("pivot table")
     # get the columns that are LEVELS (from the prefixes)
     cols_idx = [prefix_i] + [prefix_s]
