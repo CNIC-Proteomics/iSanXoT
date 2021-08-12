@@ -13,7 +13,7 @@
   },
   "works": [{
     "id": "rels_creator",
-    "label": "Relationships",
+    "label": "Relation tables",
     "description": "Short description for the current work (tab)",  
     "cmds": ["RELS_CREATOR"]
   },{
@@ -34,8 +34,9 @@
   }],
   "commands": [{
     "id": "RELS_CREATOR",
-    "label": "Prepare relationship files",
-    "title": "Prepare relationship files",
+    "label": "RELATION TABLES",
+    "title": "RELATION TABLES",
+    "sdesc": "This module creates relation tables from any tsv file. Please indicate what are the headers from the tsv table that contain the elements to create the lower and upper columns of the relation table (and of the 3rd column if required).",
     "visible": true,
     "panel": "sections/panels/simple.html",
     "help_modal": "sections/hmodals/rels_creator.html",
@@ -56,6 +57,7 @@
     "id": "LEVEL_CREATOR",
     "label": "Level Creator",
     "title": "Log2-ratios & set the first level",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple.html",
     "help_modal": "sections/hmodals/level_creator.html",
@@ -72,8 +74,9 @@
     ]}
   },{
     "id": "KLIBRATE",
-    "label": "Klibrate",
+    "label": "KLIBRATE",
     "title": "Calibration of level",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple.html",
     "help_modal": "sections/hmodals/klibrate.html",
@@ -89,8 +92,9 @@
     ]}
   },{
     "id": "NORCOMBINE",
-    "label": "NorCombine",
+    "label": "NORCOMBINE",
     "title": "Sample/experiment combination",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/norcombine.html",
@@ -110,8 +114,9 @@
     ]}
   },{
     "id": "RATIOS_INT",
-    "label": "Ratios",
+    "label": "RATIOS",
     "title": "Calculate ratios",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple.html",
     "help_modal": "sections/hmodals/ratios.html",
@@ -127,8 +132,9 @@
     ]}
   },{
     "id": "INTEGRATE",
-    "label": "Integrate",
+    "label": "INTEGRATE",
     "title": "Integrate",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/integrate.html",
@@ -149,6 +155,7 @@
     "id": "SBT",
     "label": "SBT",
     "title": "System Biology Triangle",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/sbt.html",
@@ -174,8 +181,9 @@
     ]}
   },{
     "id": "SANSON",
-    "label": "Sanson",
+    "label": "SANSON",
     "title": "Create similarity graph",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/system.html",
@@ -194,8 +202,9 @@
     ]}
   },{
     "id": "REPORT",
-    "label": "Report",
+    "label": "REPORTS",
     "title": "Extract reports",
+    "sdesc": "This module creates tsv tables containing the desired quantitative results from several samples obtained in one or more integrations. Each command takes the data from one integration at a time: Xl and Vl from the lower level, Xu and Vu from the upper level, or n, Z and FDR from the integration. The data may be merged with any tsv table provided by the user. The provided tsv table must contain a column whose header has the same name than the lower level of the integration.",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/reports.html",
@@ -217,6 +226,7 @@
     "id": "WSPP_SBT",
     "label": "WSPP - SBT",
     "title": "Log2-ratios & WSPP - SBT calculations",
+    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2proteinall, protein2category and category2categoryall following the SBT algorithm to analyze coordinated protein changes; it also integrates peptide2peptideall. The six relation tables must have been defined in the RELATION TABLES module",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/wspp_sbt.html",
@@ -243,6 +253,7 @@
     "id": "WSPPG_SBT",
     "label": "WSPPG - SBT",
     "title": "Log2-ratios & WSPPG - SBT calculations",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/wsppg_sbt.html",
@@ -273,6 +284,7 @@
     "id": "WPP_SBT",
     "label": "WPP - SBT",
     "title": "Log2-ratios & WPP - SBT calculations",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/wspp_sbt.html",
@@ -297,6 +309,7 @@
     "id": "WPPG_SBT",
     "label": "WPPG - SBT",
     "title": "Log2-ratios & WPPG - SBT calculations",
+    "sdesc": "",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/wsppg_sbt.html",

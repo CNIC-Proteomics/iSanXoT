@@ -125,6 +125,8 @@ for (var i = 0; i < wf['works'].length; i++) {
     if ( cmd['help_modal'] ) {
       importer.importHTMLtemplate(`${__dirname}/../${cmd['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
     }
+    // add the short description
+    $(`#${wk_id} #page-tasktable-${cmd_id} .sdesc p`).html(cmd['sdesc']);
 
     // Extract the task-table of command ---
     if ( 'tasktable' in cmd ) {

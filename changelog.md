@@ -22,6 +22,8 @@ DATE: 2021_06
 
 + New panel of inputs that allows to insert any file into iSanXoT.
 
++ Add short description for the modules.
+
 + TODO!!! ARREGLAR LOS PORCENTAJES DE LOS LOGS.
 
 + TODO!! PONER EL AVERAGE EN LOS RATIOS.
