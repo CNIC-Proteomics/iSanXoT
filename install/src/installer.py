@@ -219,41 +219,42 @@ def create_str_requirements(req):
     return cont
 
 def install_report(trep, req_new, req_loc):
-    # look through the new requirements
-    for manager,packages in req_new[trep].items():
-        # extract the optional parameter
-        man = re.split(r'[\s|\t]+', manager)
-        if man:
-            manager = man[0]
-            # check if the new package manager is already installed
-            if (not trep in req_loc) or (not manager in req_loc[trep]):
-                if trep == 'EXEC':
-                    print("-- install executors")
-                    man_dir = man[1] if len(man) > 1 else manager # get the name of output dir. By default, the given file
-                    iok = install_exec_manager(manager, f"{exec_url}/{manager}", f"{execdir}/{man_dir}")
-                if trep == 'MANAGER':
-                    print("** install packages")
-                    iok = install_pkg_manager(manager)
-                elif trep == 'DATABASES':
-                    print("** install databases")
-                    iok = download_databases(manager)
-                elif trep == 'SAMPLES':
-                    print("** install samples")
-                    iok = download_samples(manager)
-                # save modules in the req local
-                if iok:
-                    if not trep in req_loc:
-                        req_loc[trep] = {}
-                    if not manager in req_loc[trep]:
-                        req_loc[trep][manager] = []
-            # install package's
-            for pkg in packages:
-                # check if the new package is already installed
-                if not pkg in req_loc[trep][manager]:
-                    iok = install_package(manager, pkg)
-                    # save the new module
+    # if apply, look through the new requirements
+    if trep in req_new:
+        for manager,packages in req_new[trep].items():
+            # extract the optional parameter
+            man = re.split(r'[\s|\t]+', manager)
+            if man:
+                manager = man[0]
+                # check if the new package manager is already installed
+                if (not trep in req_loc) or (not manager in req_loc[trep]):
+                    if trep == 'EXEC':
+                        print("-- install executors")
+                        man_dir = man[1] if len(man) > 1 else manager # get the name of output dir. By default, the given file
+                        iok = install_exec_manager(manager, f"{exec_url}/{manager}", f"{execdir}/{man_dir}")
+                    if trep == 'MANAGER':
+                        print("** install packages")
+                        iok = install_pkg_manager(manager)
+                    elif trep == 'DATABASES':
+                        print("** install databases")
+                        iok = download_databases(manager)
+                    elif trep == 'SAMPLES':
+                        print("** install samples")
+                        iok = download_samples(manager)
+                    # save modules in the req local
                     if iok:
-                        req_loc[trep][manager].append(pkg)
+                        if not trep in req_loc:
+                            req_loc[trep] = {}
+                        if not manager in req_loc[trep]:
+                            req_loc[trep][manager] = []
+                # install package's
+                for pkg in packages:
+                    # check if the new package is already installed
+                    if not pkg in req_loc[trep][manager]:
+                        iok = install_package(manager, pkg)
+                        # save the new module
+                        if iok:
+                            req_loc[trep][manager].append(pkg)
     return req_loc
 
 

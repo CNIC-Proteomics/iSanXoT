@@ -74,7 +74,7 @@ else {
 
 
 // Add 'debugging' menu
-if (process.env.ISANXOT_MODE != "production") {
+if (process.env.ISANXOT_MODE == "debug") {
   template.push({ label: "Debug", submenu: [
     { label: 'Reload', accelerator: 'Ctrl+R', click() { mainWindow.reload() } },
     { label: 'Toggle Developer Tools', accelerator: 'Ctrl+D', click() { mainWindow.webContents.openDevTools() } }
@@ -107,12 +107,12 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
-  // Remove console log in production mode
-  if (process.env.ISANXOT_MODE == "production") {
-    console.log = function() {};
-  }
-  else { // Debug mode    
+  // Debug mode
+  if (process.env.ISANXOT_MODE == "debug") {
     mainWindow.webContents.openDevTools();
+  }
+  else { // Remove console log in production mode
+    console.log = function() {};
   }
 
   mainWindow.focus()

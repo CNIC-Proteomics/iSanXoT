@@ -1,5 +1,5 @@
 // Remove console log in production mode
-if (process.env.ISANXOT_MODE == "production") {
+if (process.env.ISANXOT_MODE != "debug") {
     console.log = function() {};
 }
 
