@@ -15,46 +15,13 @@ import os
 import subprocess
 import re
 
-
-
-####################
-# Global variables #
-####################
-
-# get input arguments
-requirement_new_file = "{}/{}".format(sys.argv[1],'requirements.txt')
-requirement_loc_file = "{}/{}".format(sys.argv[2],'requirements.txt')
-
-dirname = os.path.dirname(__file__)
-lib_home = os.path.dirname(requirement_loc_file)
-
-python_exec = sys.executable
-
-node_url = 'https://nodejs.org/dist/v14.16.0/node-v14.16.0-win-x64.zip'
-node_home = f"{lib_home}/node"
-
-tmpdir = f"{lib_home}/tmp"
-cloud_url = 'https://www.cnic.es/nextcloud/s/cmWA4xZEBk2mjMZ/download?path=%2F'
-exec_url = f"{cloud_url}install%2Fwindows%2F"
-execdir = f"{lib_home}/exec"
-dbs_url = f"{cloud_url}dbs%2F"
-dbsdir = f"{lib_home}/dbs"
-samples_url = f"{cloud_url}samples%2F"
-spdir = f"{lib_home}/samples"
-
+# local library
+import core
 
 
 ###################
 # Local functions #
 ###################
-
-# Create directories recursively, if they don't exist
-def prepare_workspace(dirs):
-    if not os.path.exists(dirs):
-        try:
-            os.makedirs(dirs)
-        except:
-            sys.exit("ERROR!! preparing the workspace")
 
 def exec_command(cmd):
     try:
@@ -67,47 +34,27 @@ def exec_command(cmd):
     except Exception as exc:
         sys.exit(f"ERROR!! executing the command line: {cmd}\n{exc}")
 
-def install_exec_manager(manager, url, odir):
+def install_exec_manager(url, odir):
     try:
         # local library
-        import core
+        # import core
         print("-- create builder")
         c = core.builder(tmpdir)
         print("-- download files: "+url+" > "+tmpdir)
         file = c.download_url(url, outdir=tmpdir)
         print("-- unzip files: "+file+" > "+tmpdir)
         c.unzip_file(file,  tmpdir)
-        print("-- move files to outdir")
+        print("-- move files to "+odir)
         c.move_files(tmpdir, odir)
-        print("-- remove tmpdir")
+        print("-- remove tmpdir: "+tmpdir)
         c.remove_dir(tmpdir)
         # if everything was fine
         return True
-
     except Exception as exc:
-        sys.exit(f"ERROR!! downloading exec program: {manager}\n{exc}")
+        sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
 
 def install_pkg_manager_pip():
-    exec_command(f'{python_exec} {dirname}/get-pip.py --no-warn-script-location')
-
-def install_pkg_manager_npm(manager):
-    try:
-        # local library
-        import core
-        # print("-- create builder")
-        c = core.builder(tmpdir)
-        # print("-- download files: "+node_url+" > "+tmpdir)
-        file = c.download_url(node_url, outdir=tmpdir)
-        # print("-- unzip files: "+file+" > "+tmpdir)
-        c.unzip_file(file,  tmpdir)
-        # print("-- move files to node_home")
-        c.move_files(tmpdir, node_home)
-        # print("-- remove tmpdir")
-        c.remove_dir(tmpdir)
-        # if everything was fine
-        return True
-    except Exception as exc:
-        sys.exit(f"ERROR!! installing manager: {manager}\n{exc}")
+    exec_command(f'{python_exec} {local_dir}/get-pip.py --no-warn-script-location')
 
 def install_pkg_manager(manager):
     try:
@@ -117,10 +64,7 @@ def install_pkg_manager(manager):
         if not (os.path.isfile(manager) or os.path.isfile(manager+'.exe')):
             if 'pip' in manager:
                 print(f"-- install package manager {manager}")
-                install_pkg_manager_pip()
-            elif 'npm' in manager:
-                print(f"-- install package manager {manager}")
-                install_pkg_manager_npm(manager)
+                install_pkg_manager_pip()            
         # if everything was fine
         return True
     except Exception as exc:
@@ -142,44 +86,21 @@ def install_package(manager, pkg):
     except Exception as exc:
         sys.exit(f"ERROR!! installing the package: {cmd}\n{exc}")
 
-def download_databases(manager):
+def download_data(url, odir):
     try:
-        # local library
-        import core
-        # handle manager file
-        version = manager
         print("-- create builder")
-        c = core.builder(dbsdir)
-        print("-- create url")
-        db_url = dbs_url + version
-        print("-- download files: "+db_url+" > "+dbsdir)
-        file = c.download_url(db_url, outdir=dbsdir)
-        print("-- unzip files: "+file+" > "+dbsdir)
-        c.unzip_file(file,  dbsdir)
+        c = core.builder(odir)
+        print("-- download files: "+url+" > "+odir)
+        file = c.download_url(url, outdir=odir)
+        print("-- unzip files: "+file+" > "+odir)
+        c.unzip_file(file,  odir)
+        f = f"{odir}/download"
+        print("-- remove tmp file: "+f)
+        c.remove_file(f)
         # if everything was fine
         return True
     except Exception as exc:
-        sys.exit(f"ERROR!! downloading databases: {manager}\n{exc}")
-
-def download_samples(manager):
-    try:
-        # local library
-        import core
-        # handle manager file
-        # discard the version of sample to download
-        version = re.sub(r'\.\d*$','', manager)
-        print("-- create builder")
-        c = core.builder(spdir)
-        print("-- create url")
-        sp_url = samples_url + version
-        print("-- download files: "+sp_url+" > "+spdir)
-        file = c.download_url(sp_url, outdir=spdir)
-        print("-- unzip files: "+file+" > "+spdir)
-        c.unzip_file(file,  spdir)
-        # if everything was fine
-        return True
-    except Exception as exc:
-        sys.exit(f"ERROR!! downloading samples: {manager}\n{exc}")
+        sys.exit(f"ERROR!! downloading databases: {url}\n{exc}")
 
 def create_report_requirements(file):
     '''
@@ -225,22 +146,27 @@ def install_report(trep, req_new, req_loc):
             # extract the optional parameter
             man = re.split(r'[\s|\t]+', manager)
             if man:
+                # get the manager
                 manager = man[0]
+                # get the name of output dir and create it
+                if len(man) > 1:
+                    man_dir = f"{lib_home}/{man[1]}"
+                    c = core.builder()
+                    c.prepare_workspace(man_dir)
                 # check if the new package manager is already installed
                 if (not trep in req_loc) or (not manager in req_loc[trep]):
                     if trep == 'EXEC':
                         print("-- install executors")
-                        man_dir = man[1] if len(man) > 1 else manager # get the name of output dir. By default, the given file
-                        iok = install_exec_manager(manager, f"{exec_url}/{manager}", f"{execdir}/{man_dir}")
+                        iok = install_exec_manager(manager, man_dir)
                     if trep == 'MANAGER':
                         print("** install packages")
                         iok = install_pkg_manager(manager)
                     elif trep == 'DATABASES':
                         print("** install databases")
-                        iok = download_databases(manager)
+                        iok = download_data(manager, man_dir)
                     elif trep == 'SAMPLES':
                         print("** install samples")
-                        iok = download_samples(manager)
+                        iok = download_data(manager, man_dir)
                     # save modules in the req local
                     if iok:
                         if not trep in req_loc:
@@ -266,18 +192,11 @@ def main():
     '''
     Main function
     '''
-    # preapare workspace
-    prepare_workspace(node_home)
-    prepare_workspace(execdir)
-    prepare_workspace(dbsdir)
-    prepare_workspace(spdir)
-    
     # create a dictionary with the package manager and its required packages
     # for the source (new) packages and for destinity (local) packages
     req_new = create_report_requirements(requirement_new_file)
     req_loc = create_report_requirements(requirement_loc_file)
-
-
+    
     # look through the new requirements for the excutor ---
     req_loc = install_report('EXEC', req_new, req_loc)
 
@@ -299,5 +218,50 @@ def main():
 
      
     
-if __name__ == '__main__':
+if __name__ == "__main__":
+    
+    ############################
+    # Global variables/methods #
+    ############################
+    
+    # get the executable file and folder
+    python_exec = sys.executable
+    
+    # get local directory
+    local_dir = '.' if os.path.dirname(__file__) == '' else os.path.dirname(__file__)
+    
+    # get input parameters
+    if len(sys.argv) == 3:
+        requirement_new_file = sys.argv[1]
+        lib_home = sys.argv[2]
+    # provide only the requierement file, then the lib to install is the executable python
+    elif len(sys.argv) == 2:
+        requirement_new_file = sys.argv[1]
+        lib_home = os.path.dirname(python_exec)
+    else:
+        sys.exit('''
+     Installs the package, modules and executable programas that are described in a requirment file
+     Example:
+         python installer.py "c:\\tmp\\requirements.txt"      "c:\\python\\"
+    
+     arguments:
+         - requirement file (required)
+         - directory where everything will be installed (optional). By default, it is the directory of executable python.
+         
+     error: the first argument is required
+    
+    ''')
+    
+    # get the local requirement file
+    requirement_loc_file = "{}/{}".format(lib_home,'requirements.txt')
+    
+    # create temporal directory
+    tmpdir = f"{lib_home}/tmp"
+    c = core.builder()
+    c.prepare_workspace(tmpdir)
+    
+    # main function    
     main()
+    
+    # remove temporal directory
+    c.remove_dir(tmpdir)

@@ -1,4 +1,3 @@
-import sys
 import os
 import urllib.request, urllib.parse, urllib.error
 import urllib.parse
@@ -16,14 +15,17 @@ class builder:
         '''
         Workflow builder
         '''
-        self.outdir = outdir if outdir else None
-        self.prepare_workspace( self.outdir )        
+        if outdir:
+            self.outdir = outdir
+            self.prepare_workspace( self.outdir )
+        else:
+            None
 
     def prepare_workspace(self, dirs):
         '''
         Create directories recursively, if they don't exist
         '''
-        if dirs:
+        if not os.path.exists(dirs):
             try:
                 os.makedirs(dirs)
             except:

@@ -67,7 +67,7 @@ GOTO :updatePackages
 :: execute application in background
     ECHO ** execute iSanXoT
     SET  ISANXOT_LIB_HOME=%ISANXOT_LIB_HOME:"=%
-    START "iSanXoT" "%ISANXOT_LIB_HOME%/node/node_modules/electron/dist/electron.exe" --trace-warnings "%SRC_HOME%/app"
+    START "iSanXoT" "%ISANXOT_LIB_HOME%/exec/node/node_modules/electron/dist/electron.exe" --trace-warnings "%SRC_HOME%/app"
     :: if everything was fine or not
     IF NOT "%ERRORLEVEL%"=="0" GOTO :wrongProcess
     :: everything was fine

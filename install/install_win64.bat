@@ -76,7 +76,7 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
     SET  PYTHON3x_HOME=%PYTHON3x_HOME:"=%
 
     :: install the 'python' executable if it does not exist
-    SET PYTHON3x_SCRIPT=%PYTHON3x_HOME%/tools/python.exe
+    SET PYTHON3x_SCRIPT=%PYTHON3x_HOME%/python.exe
     IF NOT EXIST "%PYTHON3x_SCRIPT%" (
         ECHO **
         ECHO ** install the 'python'
@@ -85,7 +85,12 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
         IF %ERRORLEVEL% GTR 1 GOTO :wrongProcess
         ECHO **
         ECHO ** move the 'python' folder
-        CMD /C " ROBOCOPY "%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%" "%ISANXOT_LIB_HOME%/python" /NFL /NDL /NJH /NJS /NC /NS /NP /E /MOVE "
+        CMD /C " ROBOCOPY "%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%/tools" "%ISANXOT_LIB_HOME%/python" /NFL /NDL /NJH /NJS /NC /NS /NP /E /MOVE "
+        :: if everything was fine or not (error => 1 or more)
+        IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
+        ECHO **
+        ECHO ** remove the 'build python' folder
+        CMD /C " RMDIR /S /Q "%ISANXOT_LIB_HOME%/python.%PYTHON3x_VERSION%" "
         :: if everything was fine or not (error => 1 or more)
         IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
     )
@@ -94,7 +99,7 @@ IF "%TYPE_INSTALLER%"=="updateInstallation"   GOTO :updateInstallation
     :: install/upgrade libraries
     ECHO **
     ECHO ** install/upgrade libraries
-    CMD /C " "%PYTHON3x_HOME%/tools/python" "%INSTALL_HOME%/src/installer.py" "%INSTALL_HOME%"  "%ISANXOT_LIB_HOME%" "
+    CMD /C " "%PYTHON3x_SCRIPT%" "%INSTALL_HOME%/src/installer.py" "%INSTALL_HOME%/src/requirements.txt"  "%ISANXOT_LIB_HOME%" "
     :: if everything was fine or not (error => 1 or more)
     IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 

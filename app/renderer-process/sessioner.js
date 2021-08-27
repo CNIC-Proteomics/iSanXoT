@@ -2,7 +2,7 @@
   Global variables
 */
 const { ipcRenderer } = require('electron');
-let psTree = require(`${process.env.ISANXOT_LIB_HOME}/node/node_modules/ps-tree`);
+let psTree = require(`${process.env.ISANXOT_LIB_HOME}/exec/node/node_modules/ps-tree`);
 
 // Add the list of processes into the list session
 function addProcToSession(a_pids, wf) {
