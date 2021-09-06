@@ -23,8 +23,8 @@ plat = platform.system()
 
 if plat == 'Windows':
     ISANXOT_LIB_HOME          = os.environ['ISANXOT_LIB_HOME']
-    ISANXOT_SNAKEMAKE_EXEC    = f"{ISANXOT_LIB_HOME}/python/tools/Scripts/snakemake.exe"
-    ISANXOT_PYTHON_EXEC       = f"{ISANXOT_LIB_HOME}/python/tools/python.exe"
+    ISANXOT_SNAKEMAKE_EXEC    = f"{ISANXOT_LIB_HOME}/python/Scripts/snakemake.exe"
+    ISANXOT_PYTHON_EXEC       = f"{ISANXOT_LIB_HOME}/python/python.exe"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_LIB_HOME}/exec/java/bin/java.exe"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_LIB_HOME}/exec/graphviz/bin/dot.exe"
     
