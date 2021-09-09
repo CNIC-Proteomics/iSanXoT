@@ -54,7 +54,7 @@ def install_exec_manager(url, odir):
         sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
 
 def install_pkg_manager_pip():
-    exec_command(f'{python_exec} {local_dir}/get-pip.py --no-warn-script-location')
+    exec_command(f'"{python_exec}"  "{local_dir}/get-pip.py"  --no-warn-script-location')
 
 def install_pkg_manager(manager):
     try:
