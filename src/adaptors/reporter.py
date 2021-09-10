@@ -178,7 +178,7 @@ def add_relation(idf, file):
     
     # get the characters of inferior and superior level from the file name
     prefix = os.path.splitext(os.path.basename(file))[0].lower()
-    (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', prefix)[0]
+    (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
 
     # Just in case, add the prefix in the filename into the first columns and add multiindex
     # Remember, it is reverse!!
