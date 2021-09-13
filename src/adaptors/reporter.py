@@ -168,9 +168,10 @@ def merge_intermediate(file, df):
         # outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
         cols_12_idx = [(c,'LEVEL') for c in cols_12_idx]
         df3 = pd.merge(df2,df, on=cols_12_idx, how='outer')
-        
         return df3
-        
+    else:
+        return df
+                
 def add_relation(idf, file):
     
     # read relationship file
