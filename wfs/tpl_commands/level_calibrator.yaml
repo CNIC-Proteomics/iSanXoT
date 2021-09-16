@@ -3,18 +3,18 @@
 ###################
 # COMMAND TEMPLATE 
 # Description: 
-- name: KLIBRATE
+- name: LEVEL_CALIBRATOR
   description: Calibrate level
   force: 0
   rules:
 
-  - name: klibrate#klibrate
+  - name: level_calibrator#klibrate
     infiles:
-      -d: __NAMDIR__/__WF_INPUT__/__WF_LEVEL__.tsv
+      -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
     outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL___variance.txt
+      -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL___variance.txt
     parameters:
       anal:
         -a: __WF_LEVEL__
