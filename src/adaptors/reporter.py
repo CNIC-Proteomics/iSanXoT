@@ -116,15 +116,25 @@ def create_report(ifiles, prefix, col_values):
     # We have to do the replace; otherwise, with the ption dropnan=False in the pivot_table takes a lot of time
     df = df.replace(np.nan, '')
     
+    logging.debug("get the given sorted columns")
+    cols_exp_sorted = ['LEVEL'] + list(pd.unique(df['NAME']))
+
     logging.debug("pivot table")
     # get the columns that are LEVELS (from the prefixes)
     cols_idx = [prefix_i] + [prefix_s]
+    # pivot
     df = pd.pivot_table(df, index=cols_idx, columns=[COL_EXP], aggfunc='first')
     df = df.reset_index()
     
     logging.debug("add  'LEVEL' label")
     cols_name = [(c[0],'LEVEL') if c[1] == '' else c for c in df.columns]
     df.columns = pd.MultiIndex.from_tuples(cols_name)
+
+    logging.debug("sort colums based on the initial columns")
+    # map elements to indexes
+    s = {v: i for i, v in enumerate(cols_exp_sorted)}
+    # sort based on the index
+    df.columns = sorted(df.columns, key=lambda x: s[x[1]])
 
     logging.debug("discard the columns with 1's (all)")
     df = df[[col for col in df.columns if not df[col].nunique()==1]]
