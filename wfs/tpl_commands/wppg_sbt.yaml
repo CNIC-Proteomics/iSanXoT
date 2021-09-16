@@ -13,7 +13,7 @@
     infiles:
       -i: __EXPDIR__/ID-q.tsv
     outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/u_peptide.tsv
+      -o: __NAMDIR__/__WF_OUTPUT__/upeptide.tsv
     parameters:
       experiment:
         -e: __WF_EXPERIMENT__
@@ -29,14 +29,14 @@
   # Rule: calibrates the level
   - name: wsppg_sbt#klibrate
     infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/u_peptide.tsv
-      -r: __RELDIR__/peptide2protein.tsv
+      -d: __NAMDIR__/__WF_OUTPUT__/upeptide.tsv
+      -r: __RELDIR__/upeptide2protein.tsv
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide_variance.txt
     parameters:
       anal:
-        -a: u_peptide
+        -a: upeptide
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/klibrate.py" -g '
 
@@ -44,16 +44,18 @@
   - name: wsppg_sbt#p2q_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __RELDIR__/peptide2protein.tsv
+      -r: __RELDIR__/upeptide2protein.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph1.png
     parameters:
       anal:
         -a: peptide2protein
       maxiterations:
         -m: 600
+      p>q_var(x):
+        -v: ''
       p>q_tag:
         --tags: ''
     more_params: ''
@@ -61,7 +63,7 @@
   - name: wsppg_sbt#p2q_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __RELDIR__/peptide2protein.tsv
+      -r: __RELDIR__/upeptide2protein.tsv
       -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
@@ -91,8 +93,6 @@
     parameters:
       anal:
         -a: peptide2protein
-      p>q_var(x):
-        -v: ''
       p>q_tag:
         --tags: '!out'
     more_params: ''
@@ -104,14 +104,16 @@
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2gene.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph1.png
     parameters:
       anal:
         -a: peptide2gene
       maxiterations:
         -m: 600
+      p>g_var(x):
+        -v: ''
       p>g_tag:
         --tags: ''
     more_params: ''
@@ -149,8 +151,6 @@
     parameters:
       anal:
         -a: peptide2gene
-      p>g_var(x):
-        -v: ''
       p>g_tag:
         --tags: '!out'
     more_params: ''
@@ -163,14 +163,16 @@
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2gene.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph1.png
     parameters:
       anal:
         -a: protein2gene
       maxiterations:
         -m: 600
+      q>g_var(x):
+        -v: 0
       q>g_tag:
         --tags: ''
     more_params: ''
@@ -206,8 +208,6 @@
     parameters:
       anal:
         -a: protein2gene
-      q>g_var(x):
-        -v: 0
       q>g_tag:
         --tags: '!out'
     more_params: ''
@@ -220,14 +220,16 @@
       -d: __NAMDIR__/__WF_OUTPUT__/gene.tsv
       -r: __RELDIR__/gene2category.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph1.png
     parameters:
       anal:
         -a: gene2category
       maxiterations:
         -m: 600
+      g>c_var(x):
+        -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_sbt#g2c_sanxotsieve
@@ -261,8 +263,6 @@
     parameters:
       anal:
         -a: gene2category
-      g>c_var(x):
-        -v: ''
       g>c_tag:
         --tags: '!out'
     more_params: ''
@@ -275,9 +275,9 @@
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph1.png
     parameters:
       anal:
         -a: peptide2peptideall
@@ -330,9 +330,9 @@
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2proteinall.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph1.png
     parameters:
       anal:
         -a: protein2proteinall
@@ -385,9 +385,9 @@
       -d: __NAMDIR__/__WF_OUTPUT__/gene.tsv
       -r: __RELDIR__/gene2geneall.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph1.png
     parameters:
       anal:
         -a: gene2geneall
@@ -436,14 +436,16 @@
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
       -r: __RELDIR__/category2categoryall.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph1.png
     parameters:
       anal:
         -a: category2categoryall
       maxiterations:
         -m: 600
+      c>a_var(x):
+        -v: 0
       c>a_tag:
         --tags: ''
     more_params: ''
@@ -479,8 +481,6 @@
     parameters:
       anal:
         -a: category2categoryall
-      c>a_var(x):
-        -v: 0
       c>a_tag:
         --tags: ''
     more_params: ''

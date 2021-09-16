@@ -14,14 +14,16 @@
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph1.png
     parameters:
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       place:
         -p: __NAMDIR__/__WF_OUTPUT__
+      var(x):
+        -v: ''
       maxiterations:
         -m: 600
       tag:
@@ -65,8 +67,6 @@
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
       place:
         -p: __NAMDIR__/__WF_OUTPUT__
-      var(x):
-        -v: ''
       tag:
         --tags: '!out'
     more_params: ''

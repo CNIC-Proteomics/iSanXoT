@@ -40,14 +40,16 @@
       -d: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Data.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Rels.tsv
     outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats0.tsv
+      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
-      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outGraph0.png
+      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outGraph1.png
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__
       maxiterations:
         -m: 600
+      var(x):
+        -v: ''
       tag:
         --tags: ''
     more_params: ''
@@ -85,8 +87,6 @@
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__
-      var(x):
-        -v: ''
       tag:
         --tags: '!out'
     more_params: ''
