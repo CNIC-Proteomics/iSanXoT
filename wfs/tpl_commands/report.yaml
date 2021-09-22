@@ -9,7 +9,7 @@
   rules:
   - name: report
     infiles:
-      -ii: __NAMDIR__/__WF_INPUT__/**/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
+      -ii: __NAMDIR__/__WF_INPUT_GROUP__/**/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
       # Optional input files but it is necesary check if exits to run the program
       --rep_file: ''
       --rel_file: ''
