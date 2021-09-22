@@ -309,6 +309,12 @@ def main(args):
     logging.info("join the columns and add 1's")
     outdat = extract_and_join_columns(outdat, header_inf, header_sup, header_thr, cols_inf, cols_sup, cols_thr)
     
+
+    logging.info("rename the columns headers based on the outfile")
+    outfname = os.path.splitext(os.path.basename(args.outfile))[0]
+    (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', outfname)[0]
+    outdat.rename(columns={outdat.columns[0]: prefix_i, outdat.columns[1]: prefix_s}, inplace=True)
+    
     
     logging.info("change the order of columns")
     cols = outdat.columns.to_list()
