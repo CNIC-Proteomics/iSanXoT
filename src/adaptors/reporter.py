@@ -26,7 +26,7 @@ import re
 ####################
 INFILE_SUFFIX = 'outStats.tsv'
 COL_EXP  = 'NAME'
-COL_IDS_VARS = ['idinf','idsup']
+COL_IDS_LEVEL = ['idinf','idsup']
 COL_VARS = {
     'n':      'n',
     'tags':   'tags',
@@ -72,7 +72,7 @@ def read_infiles(file):
 
     return df
 
-def create_report(ifiles, prefix, col_values):
+def create_report(ifiles, prefix, param_vars):
     '''
     Create report from list of input files
 
@@ -93,20 +93,20 @@ def create_report(ifiles, prefix, col_values):
     '''
     logging.debug("compile the level files...")
     # get the characters of inferior and superior level
-    (prefix_i,prefix_s) = re.findall(r'^(\w+)2(\w+)', prefix)[0]
+    (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
+    col_levels = [prefix_i] + [prefix_s]
+
     
     logging.debug(f"{prefix}: read and concat files")
     l = []
     for ifile in ifiles:
-        l.append( read_infiles(ifile) )
+        l.append( read_infiles(ifile) ) # also add column EXP
     df = pd.concat(l)
 
+    # get only the columns with the lower+higher+Name_Exp+Reported_Vars
+    col_values = COL_IDS_LEVEL + [COL_EXP] + param_vars
     logging.debug(f"{prefix}: remove columns excepts: ["+','.join(col_values)+"]")
     df.drop(df.columns.difference(col_values), 1, inplace=True)
-    
-    logging.debug(f"{prefix}: add prefix to all columns except some")  
-    keep_same = COL_IDS_VARS + [COL_EXP]    
-    df.columns = ['{}{}'.format(c, '' if c in keep_same else f"_{prefix}") for c in df.columns]
     
     logging.debug(f"{prefix}: rename inf,sup columns")
     df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
@@ -115,31 +115,49 @@ def create_report(ifiles, prefix, col_values):
     # important!! NaN values is important for the statistics
     # We have to do the replace; otherwise, with the ption dropnan=False in the pivot_table takes a lot of time
     df = df.replace(np.nan, '')
-    
-    logging.debug("get the given sorted columns")
-    cols_exp_sorted = ['LEVEL'] + list(pd.unique(df['NAME']))
 
-    logging.debug("pivot table")
-    # get the columns that are LEVELS (from the prefixes)
-    cols_idx = [prefix_i] + [prefix_s]
-    # pivot
-    df = pd.pivot_table(df, index=cols_idx, columns=[COL_EXP], aggfunc='first')
-    df = df.reset_index()
-    
-    logging.debug("add  'LEVEL' label")
-    cols_name = [(c[0],'LEVEL') if c[1] == '' else c for c in df.columns]
-    df.columns = pd.MultiIndex.from_tuples(cols_name)
-
-    logging.debug("sort colums based on the initial columns")
-    # map elements to indexes
-    s = {v: i for i, v in enumerate(cols_exp_sorted)}
-    # sort based on the index
-    df.columns = sorted(df.columns, key=lambda x: s[x[1]])
-
-    logging.debug("discard the columns with 1's (all)")
-    df = df[[col for col in df.columns if not df[col].nunique()==1]]
-
+    # if there are not reported variables
+    # report only the level columns
+    if len(param_vars) == 0:
         
+        logging.debug("get only the level columns")
+        df = df[col_levels]
+
+        logging.debug("remove duplicates")
+        df.drop_duplicates(inplace=True)
+
+        logging.debug("add 'LEVEL' label only for the level columns")
+        cols_name = [(c,'LEVEL') for c in df.columns]
+        df.columns = pd.MultiIndex.from_tuples(cols_name)
+        
+    # create the report for the reported variables
+    else:
+        
+        logging.debug(f"{prefix}: add prefix to all columns except the level columns and the nema_exp column")
+        keep_same = col_levels + [COL_EXP]
+        df.columns = ['{}{}'.format(c, '' if c in keep_same else f"_{prefix}") for c in df.columns]
+        
+        logging.debug("get the given sorted columns")
+        cols_exp_sorted = ['LEVEL'] + list(pd.unique(df['NAME']))
+    
+        logging.debug("pivot table")
+        # get the columns that are LEVELS (from the prefixes)
+        df = pd.pivot_table(df, index=col_levels, columns=[COL_EXP], aggfunc='first') # pivot
+        df = df.reset_index()
+        
+        logging.debug("add  'LEVEL' label")
+        cols_name = [(c[0],'LEVEL') if c[1] == '' else c for c in df.columns]
+        df.columns = pd.MultiIndex.from_tuples(cols_name)
+    
+        logging.debug("sort colums based on the initial columns")
+        # map elements to indexes
+        s = {v: i for i, v in enumerate(cols_exp_sorted)}
+        # sort based on the index
+        df.columns = pd.MultiIndex.from_tuples( sorted(df.columns, key=lambda x: s[x[1]]) )
+    
+        logging.debug("discard the columns with 1's (all)")
+        df = df[[col for col in df.columns if not df[col].nunique()==1]]
+    
     return df
 
 def merge_intermediate(file, df):
@@ -182,21 +200,16 @@ def merge_intermediate(file, df):
     else:
         return df
                 
-def add_relation(idf, file):
+def add_relation(idf, file, prefix):
     
     # read relationship file
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
-    # get the characters of inferior and superior level from the file name
-    prefix = os.path.splitext(os.path.basename(file))[0].lower()
+    # get the lower and higher levels
     (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
 
-    # Just in case, add the prefix in the filename into the first columns and add multiindex
-    # Remember, it is reverse!!
-    # df.columns.values[0] = prefix_s
-    df.columns.values[1] = prefix_i
     # create multiindex for the merge.
-    # add the 'LEVEL' label for the indicated column (prefix_i)
+    # add the 'LEVEL' label for the indicated column (prefix_i => lower_level)
     df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == prefix_i else (c,'REL') for c in df.columns])
     
     # check how many columns are available in the givn df
@@ -238,14 +251,16 @@ def main(args):
 
 
     logging.info("extract the list of given variables")
-    param_vars = [COL_VARS[v.lower()] for v in re.split(r'\s*,\s*', args.vars.strip()) if v.lower() in COL_VARS]
-    param_values = [COL_EXP] + COL_IDS_VARS + param_vars
+    param_vars = []
+    if args.vars:
+        param_vars = [COL_VARS[v.lower()] for v in re.split(r'\s*,\s*', args.vars.strip()) if v.lower() in COL_VARS]
+    # param_values = [COL_EXP] + COL_IDS_LEVEL + param_vars
 
 
     # START with the work ----
 
     logging.info("create report from list of input files")
-    df = create_report(listfiles, prefix, param_values)
+    df = create_report(listfiles, prefix, param_vars)
     
 
     # if apply and there is a relationship, we add an intermediate report
@@ -264,7 +279,7 @@ def main(args):
         logging.info(f"add the relationship values {args.rel_files}")
         for file in re.split(r'\s*;\s*', args.rel_files.strip()):
             if os.path.isfile(file):
-                df = add_relation(df, file)
+                df = add_relation(df, file, prefix)
 
 
     if args.filter:
@@ -326,9 +341,9 @@ if __name__ == "__main__":
     parser.add_argument('-ii',  '--infiles',       required=True, help='Multiple input files separated by semicolon')
     parser.add_argument('-o',   '--outfile',       required=True, help='Output file with the reports')
     parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
-    parser.add_argument('-v',   '--vars',          required=True, help='List of reported variables separated by comma')
+    parser.add_argument('-v',   '--vars',          help='List of reported variables separated by comma')
     parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
-    parser.add_argument('-rl',  '--rel_files',      help='Multiple relationship files separated by semicolon')
+    parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
     parser.add_argument('-s',   '--show_cols',     help='Which columns do you want to show in the output')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
