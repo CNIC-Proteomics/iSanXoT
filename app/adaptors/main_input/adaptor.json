@@ -14,8 +14,7 @@
     "label": "Input files",
     "title": "Provide input files",
     "visible": true,
-    "panel": "adaptors/00_main_input/panels/main_inputs.html",
-    "help_modal": "adaptors/00_main_input/hmodals/main_inputs.html",
-    "adaptor_cmd": true
+    "panel": "adaptors/main_input/panels/main_inputs.html",
+    "help_modal": "adaptors/main_input/hmodals/main_inputs.html"
   }]
 }

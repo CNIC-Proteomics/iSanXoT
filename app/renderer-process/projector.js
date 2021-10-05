@@ -108,19 +108,16 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
     for (let ws in wfs['prj_workspace']) {
         cfg['prj_workspace'][ws] = `${prj_dir}/${wfs['prj_workspace'][ws]}`;
     }
+    // Add the adaptor id
+    cfg['adaptor_id'] = wf['adaptor_id'];
     // Add the values of all adaptors
-    $(`[id^=paneladaptor-]`).each(function() {
-        // extract the adaptor id from the paneladaptor
+    if ( !('adaptor_inputs' in cfg) ) { cfg['adaptor_inputs'] = {}; }
+    $(`[id^=paneladaptor-]`).find(".adaptor_inputs").each(function() {
         let k = this.id;
-        let kk = k.split('paneladaptor-')
-        let adap_id = kk[1];
-        if ( !('adaptor_inputs' in cfg) ) { cfg['adaptor_inputs'] = {}; }
-        $(`[id=${adap_id}]`).find(".adaptor_inputs").each(function() {
-          let k = this.id;
-          let v = $(this).find("input").val();
-          cfg['adaptor_inputs'][`${k}`] = v;
-        });
+        let v = $(this).find("input").val();
+        cfg['adaptor_inputs'][`${k}`] = v;
     });
+
     // Iterate over all the works of the workflow
     for (var i = 0; i < wf['works'].length; i++) {
         let wk = wf['works'][i];    
@@ -128,22 +125,27 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
         for (var j = 0; j < wk['cmds'].length; j++) {
             let cmd = wk['cmds'][j];
             let cmd_id = cmd['id'];
-            // determines which adaptor is executed without tasktable ---
-            if ( 'adaptor_cmd' in cmd ) {
-                if ( !('adaptor_cmd' in cfg) ) { cfg['adaptor_cmds'] = []; }
-                cfg['adaptor_cmds'].push(cmd_id);
-            }
             // create a tasktable for every command
+            if ( !('ttablefiles' in cfg) ) { cfg['ttablefiles'] = []; }
             if ( 'tasktable' in cmd && 'file' in cmd['tasktable'] ) {
                 let ttable_file = `${cfg_dir}/${cmd['tasktable']['file']}`;
                 if ( fs.existsSync(ttable_file) ) {
-                    // add the files into config file
-                    if ( !('ttablefiles' in cfg) ) { cfg['ttablefiles'] = []; }
-                    cfg['ttablefiles'].push({
+                    // add the info into config file
+                    let c = {
                         'type': cmd_id,
                         'file': ttable_file
-                    });
+                    };
+                    if ( 'unique_exec' in cmd['tasktable'] ) c['unique_exec'] = true;
+                    cfg['ttablefiles'].push(c);
                 }
+            }
+            // command without tasktable
+            else {
+                // add the info into config file
+                let c = {
+                    'type': cmd_id
+                };
+                cfg['ttablefiles'].push(c);
             }
         }
     }
@@ -195,15 +197,17 @@ function newProject() {
 }
 
 // Open project folder (sync). Assign the folder with the project samples by default.
-function openProject() {
-    let prj_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"] });
-    if ( prj_dir !== undefined ) {
-        // assgin the first value
-        if ( prj_dir.length > 0 ) prj_dir = prj_dir[0];
-        // create new project id
-        let prj_id = getWFDate();
-        // get the workflow directory (the most recent). By default, init workflow
-        let wkf_dir = workflower.getWorkflowDir(prj_dir);
+function openProject(prj_dir) {
+    // assgin the first value
+    if ( prj_dir.length > 0 ) prj_dir = prj_dir[0];
+    // create new project id
+    let prj_id = getWFDate();
+    // get the workflow directory (the most recent).
+    let wkf_dir = workflower.getWorkflowDir(prj_dir);
+    if ( wkf_dir === undefined ) {
+        exceptor.showMessageBox('error',`The workflow directory is not defined`, title='Opening project', end=false);
+    }
+    else {
         // get the adaptor directory from the workflow dir. By default, it is the basic adaptor
         let adp_dir = workflower.getAdaptorDir(wkf_dir);
         // check if the workflow folder is 'date_id'. This means, the given directory comes from workflow folder.
@@ -237,10 +241,8 @@ function saveProject() {
     let wf_cfgfile = exportProjectCfg(prj_id, prj_dir, cfg_dir, wf);
     // create the root folder of project. Here, the variable contains completed path.
     projectfolder = preparePrjDir('', prj_dir);
-
-    // // add the module to execute the jobs
-    // require('./executor');
-
+    // check adaptor inputs
+    checkAdaptorInputs(exceptor);
     // Exec: create config file for the execution of workflow
     executor.execTable2Cfg({
         'indir': cfg_dir,

@@ -40,7 +40,7 @@ def main(args):
 if __name__ == "__main__":
     # parse arguments
     parser = argparse.ArgumentParser(
-        description='Join files',
+        description='Concatenate the input files in the output file',
         epilog='''
         Example:
             python concatenate.py -ii ~/indir/file1.txt ~/indir/indir2/file2.txt -o ~/outdir/outfile.txt

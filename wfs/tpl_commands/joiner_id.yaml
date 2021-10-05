@@ -3,15 +3,16 @@
 ###################
 # COMMAND TEMPLATE 
 # Description: 
-- name: JOINER
+- name: JOINER_ID
   description: Join the multiple experiment input-files in one unique file
   force: 0
+  rule_infiles: multiple
   rules:
-  - name: joiner
+  - name: joiner#joiner
     infiles:
-      -ii: __EXPDIR__/__WF_EXPERIMENT__/ID.tsv
+      -ii: __EXPDIR__/*/ID.tsv
     outfiles:
-      -o: __EXPDIR__/ID-mq.tsv
+      -o: __EXPDIR__/ID-q.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/joiner.py" -w __NCPU__ __WF_VERBOSE__ '

@@ -64,6 +64,8 @@ $(document).ready(function() {
     }
     // resize panels
     doneResizing();
+    // stop any loading panel
+    exceptor.stopLoadingWorkflow();
 });
 
 /*
@@ -74,14 +76,18 @@ ipcRenderer.on('newProject',  function() {
     projector.newProject();
 });
 ipcRenderer.on('openProject',  function() {
-    projector.openProject();
+    let prj_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"] });
+    if ( prj_dir !== undefined ) {
+        exceptor.loadingWorkflow(); // loading...
+        projector.openProject(prj_dir);
+        // stopLoadingWorkflow function done when the page is loaded
+    }
 });
 ipcRenderer.on('saveProject', function() {
     // loading...
     exceptor.loadingWorkflow();
     setTimeout(function() {
         let [prj_id,prj_dir,dte_dir] = projector.saveProject();
-        // let [prj_id,prj_dir,dte_dir] = executor.saveProject();
         // everything was alright
         exceptor.stopLoadingWorkflow();
         exceptor.showMessageBox('info', "Your project has been saved successfully", title='Save project');
@@ -89,8 +95,10 @@ ipcRenderer.on('saveProject', function() {
 });
 ipcRenderer.on('importWorkflow', function() {
     let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: workflower.samplesWkfDir });
-    if ( wkf_dir !== undefined ) {  
+    if ( wkf_dir !== undefined ) {
+        exceptor.loadingWorkflow(); // loading...
         workflower.importWorkflow(wkf_dir);
+        // stopLoadingWorkflow function done when the page is loaded
     }
 });
 ipcRenderer.on('exportWorkflow', function() {
@@ -107,8 +115,11 @@ ipcRenderer.on('exportWorkflow', function() {
     }
 });
 ipcRenderer.on('importAdaptor', (event, data) => {
+    // loading...
+    exceptor.loadingWorkflow();
     let adaptor_dir = data.dir;
     workflower.importAdaptor(adaptor_dir);
+    // stopLoadingWorkflow function done when the page is loaded
 });
 
 
@@ -140,11 +151,9 @@ function setEnableMenuItem(val) {
     let dirs = fs.readdirSync(`${__dirname}/../adaptors`, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
     for (let i=0; i<dirs.length; i++) {
         let adaptor_dir = dirs[i];
-        if ( !adaptor_dir.includes('separator') ) {
-            let adaptor_wf = JSON.parse(fs.readFileSync(`${__dirname}/../adaptors/${adaptor_dir}/adaptor.json`));
-            let adaptor_id = adaptor_wf['id'];
-            mainMenu.getMenuItemById(adaptor_id).enabled = val;
-        }
+        let adaptor_wf = JSON.parse(fs.readFileSync(`${__dirname}/../adaptors/${adaptor_dir}/adaptor.json`));
+        let adaptor_id = adaptor_wf['id'];
+        if ( mainMenu.getMenuItemById(adaptor_id) ) mainMenu.getMenuItemById(adaptor_id).enabled = val;
     }
     // enable/disable proccesses
     mainMenu.getMenuItemById('processes').enabled = val;

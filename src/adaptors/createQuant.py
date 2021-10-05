@@ -418,13 +418,12 @@ def main(args):
     Main function
     '''
     logging.info("read the quantification table")
-    indata = createID.read_command_table(args.intbl)
-    if not 'CREATE_ID_QUANTIFICATION' in indata:
-        sms = "there is not 'CREATE_ID_QUANTIFICATION' task-table"
+    indata = createID.read_task_table(args.intbl)
+    if indata.empty:
+        sms = "There is not task-table"
         logging.error(sms)
         sys.exit(sms)
-    else:    
-        indata = indata['CREATE_ID_QUANTIFICATION']
+
     
 
     # check if mzfile and type_tmt columns are fillin. Otherwise, the program does nothing.

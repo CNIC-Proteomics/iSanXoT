@@ -123,6 +123,10 @@ function removeListIndexes(arr, rem) {
     return arr;
 }
   
+/*
+ * Functions for the Main Menu of app (main.js)
+ */
+
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {

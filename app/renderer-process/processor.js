@@ -56,8 +56,8 @@ window.onload = function(e) {
     let outdir = window.sessionStorage.getItem("outdir");
     if ( outdir !== null ) {
         // get the files/dirs in directory sorted by name
-        let logdirs = importer.getDirectories(`${outdir}/logs`);
-        let cfgdirs = importer.getDirectories(`${outdir}/.isanxot`);
+        let logdirs = commoner.getDirectories(`${outdir}/logs`);
+        let cfgdirs = commoner.getDirectories(`${outdir}/.isanxot`);
         // get the intersection of two list. We need both files (logfile and config file)
         let comdirs = logdirs.filter(x => cfgdirs.indexOf(x) !== -1)
         // add only the files (logfile and config file) that have not already in the log-data
@@ -65,8 +65,8 @@ window.onload = function(e) {
             let cfgfile = `${outdir}/.isanxot/${comdirs[i]}/config.yaml`;
             let logfile = `${outdir}/logs/${comdirs[i]}/isanxot.log`;
             // get the list of index with the given attribute value to know if the files are in the log-data list
-            let isinCfg = importer.getIndexParamsWithAttr(ldata, 'cfgfile', cfgfile);
-            let isinLog = importer.getIndexParamsWithAttr(ldata, 'logfile', logfile);
+            let isinCfg = commoner.getIndexParamsWithAttr(ldata, 'cfgfile', cfgfile);
+            let isinLog = commoner.getIndexParamsWithAttr(ldata, 'logfile', logfile);
             // if both files are not in log-data, we included.
             if ( isinCfg === undefined && isinLog === undefined ) {
                 ldata.push({

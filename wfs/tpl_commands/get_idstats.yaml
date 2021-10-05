@@ -1,0 +1,18 @@
+---
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
+- name: GET_IDSTATS
+  description: Get the statistics of ID table
+  force: 0
+  rules:
+  - name: getidstats#getidstats
+    infiles:
+      -i: __EXPDIR__/ID-q.tsv
+    outfiles:        
+      -o: __STADIR__/ID-stats.tsv
+    parameters:
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/stats/getIDstats.py" __WF_VERBOSE__ '
+###################

@@ -81,13 +81,12 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
-    indata = common.read_command_table(args.intbl)
-    if not 'CREATE_IDQUANT' in indata:
-        sms = "There is not 'CREATE_IDQUANT' task-table"
+    indata = common.read_task_table(args.intbl)
+    if indata.empty:
+        sms = "There is not task-table"
         logging.error(sms)
         sys.exit(sms)
-    else:    
-        indata = indata['CREATE_IDQUANT']
+
 
     logging.info("Get IDENTIFICATION from the search engine results -----")
 

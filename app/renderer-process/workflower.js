@@ -11,10 +11,11 @@ var mainWindow = BrowserWindow.getFocusedWindow();
  */
 
 // Init workflow directory (with empty tables)
-let initWkfDir = `${process.env.ISANXOT_SRC_HOME}/app/wfs/init`;
+// let initWkfDir = `${process.env.ISANXOT_SRC_HOME}/app/wfs/init`;
 
-// Basic input adaptor (00_main_inputs)
-let initAdpDir = `${process.env.ISANXOT_SRC_HOME}/app/adaptors/00_main_input`;
+// Basic input adaptor (main_inputs)
+let adpDir = `${process.env.ISANXOT_SRC_HOME}/app/adaptors`;
+let initAdpDir = `${adpDir}/main_input`;
 
 // Assign the folder with the project samples by default. Mandatory double slashes!!
 let samplesWkfDir = `${process.env.ISANXOT_LIB_HOME}/samples`;
@@ -33,41 +34,53 @@ function getWorkflowCfg(wkf_dir) {
   return wf_cfg;
 }
 
-// // Get the workflow name
-// function getWorkflowName(wkf_dir) {
-//   // get the workflow config if exits.
-//   let wf_cfgfile = `${wkf_dir}/.cfg.yaml`;
-//   let wf_cfg = ( fs.existsSync(wf_cfgfile) ) ? jsyaml.safeLoad( fs.readFileSync(`${wf_cfgfile}`, 'utf-8')) : undefined;
-//   // get the workflow structure. By default we use basic workflow
-//   let wf_name = (wf_cfg !== undefined && 'name' in wf_cfg) ? wf_cfg['name'] : 'basic';
-//   return wf_name;
+// // Get the workflow directory (the most recent). By default, init workflow
+// function getWorkflowDir(dir) {
+//   let wkf_dir = undefined;
+//   dir = `${dir}/.isanxot`;
+//   if (!fs.existsSync(dir) ) dir = `${initWkfDir}/.isanxot`;
+//   // get most recent dir
+//   let id = commoner.getMostRecentDir(dir);
+//   wkf_dir = (id) ? `${dir}/${id}` : getWorkflowDir(initWkfDir);
+//   return wkf_dir;
 // }
 
-
-// Get the workflow directory (the most recent). By default, init workflow
+// Get the workflow directory (the most recent).
 function getWorkflowDir(dir) {
   let wkf_dir = undefined;
   dir = `${dir}/.isanxot`;
-  if (!fs.existsSync(dir) ) dir = `${initWkfDir}/.isanxot`;
+  if (!fs.existsSync(dir) ) return wkf_dir;
   // get most recent dir
   let id = commoner.getMostRecentDir(dir);
-  wkf_dir = (id) ? `${dir}/${id}` : getWorkflowDir(initWkfDir);
+  if (id) wkf_dir = `${dir}/${id}`;
   return wkf_dir;
 }
 
-// Get the adaptor directory. By default, it is the basic adaptor (00_main_input)
+// Get the adaptor directory. By default, it is the basic adaptor (main_input)
 function getAdaptorDir(wkf_dir) {
-  // let adp_dir = undefined;
-  // // if exists the adaptor config file,
-  // // then get the adaptor id and report the adaptor folder
-  // if ( fs.existsSync(`${wkf_dir}/adaptor.json`) ) {
-    
-  // }
-  // // otherwise, reports the basic adaptor folder
-  // else {
-  //   adp_dir = initAdpDir;
-  // }
-  let adp_dir = (fs.existsSync(`${wkf_dir}/adaptor.json`)) ? wkf_dir : initAdpDir;
+  let adp_dir = undefined;
+  // if exists the adaptor config file, comes from empty adaptor folder
+  if ( fs.existsSync(`${wkf_dir}/adaptor.json`) ) {
+    adp_dir = wkf_dir;
+  }
+  // then, check if adaptor_id is on the workflow folder
+  else {
+    let cfg = getWorkflowCfg(wkf_dir);
+    if ( cfg !== undefined && 'adaptor_id' in cfg ) {
+      let adp_id = cfg['adaptor_id'];
+      let adp_name = '';
+      let adpdirs = commoner.getDirectories(adpDir);
+      for (let i = 0; i < adpdirs.length; i++) {
+        if ( adpdirs[i].endsWith(adp_id) ) {
+          adp_name = adpdirs[i];
+            break;
+        }
+      }
+      if ( adp_name != '' ) adp_dir = `${adpDir}/${adp_name}`;
+    }
+  }
+  // otherwise, reports the basic adaptor folder
+  if ( adp_dir === undefined ) adp_dir = initAdpDir;
   return adp_dir;
 }
 
@@ -109,9 +122,10 @@ function extractAdaptorStr(adp_dir) {
   return adp;
 }
 
-// Join the adaptor strcuture and workflow structure
+// Join the adaptor structure and workflow structure
 function joinWorkflowAdaptorStr(adp, wkf) {
   let wf = wkf;
+  wf['adaptor_id'] = adp['id'];
   for (let i = adp['works'].length -1; i >= 0; i--) {
     wf['works'].unshift(adp['works'][i]);
   }
@@ -204,20 +218,27 @@ function exportWorkflowCmds(cfg_dir, wf) {
               let cont = '';
               try {
                 if ( $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).length ) {
-                    let c = exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`, header_ids, header_names);
-                    if ( c != '' ) { cont += `\n#${cmd_id}\n${c}`; }
+                    cont = exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`, header_ids, header_names);
                 }
               } catch (err) {
                   exceptor.showErrorMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
               }
               // if not empty write tasktable file sync
+              let ttable_file = `${cfg_dir}/${cmd['tasktable']['file']}`;
               if ( cont != '' ) {
                   try {
-                      let ttable_file = `${cfg_dir}/${cmd['tasktable']['file']}`;
                       fs.writeFileSync(ttable_file, cont, 'utf-8');
                   } catch (err) {    
-                      exceptor.showErrorMessageBox('Error Message', `Writing the tasktable file ${ttable_file}: ${err}`, end=true);    
-                  }    
+                      exceptor.showErrorMessageBox('Error Message', `Writing the tasktable file: ${err}`, end=true);    
+                  }
+              }
+              // if empty table, remove file sync if exists
+              else {
+                try {
+                  if ( fs.existsSync(ttable_file) ) fs.unlinkSync(ttable_file, cont, 'utf-8');
+                } catch (err) {    
+                    exceptor.showErrorMessageBox('Error Message', `Updating the tasktable file: ${err}`, end=true);    
+                }
               }
           }
       }
@@ -231,7 +252,7 @@ function loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir) {
   // project folder is required
   if (prj_dir === undefined || prj_dir == '') exceptor.showErrorMessageBox('Error Message', `The project folder is not defined`, end=true);
   // workflow folder. By default, a folder with empty tables
-  wkf_dir = (wkf_dir !== undefined && wkf_dir != '')? wkf_dir : initWkfDir;
+  // wkf_dir = (wkf_dir !== undefined && wkf_dir != '')? wkf_dir : initWkfDir;
   // adaptor folder. By default, the main_input adaptor
   adp_dir = (adp_dir !== undefined && adp_dir != '')? adp_dir : initAdpDir;
   // required to load the project when comers from processes frontpage
@@ -241,6 +262,7 @@ function loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir) {
     mainWindow = BrowserWindow.getCurrentWindow();
   }
   // load workflow
+  console.log(`${__dirname}/../wf.html?pid=${prj_id}&pdir=${prj_dir}&wdir=${wkf_dir}&adir=${adp_dir}`);
   mainWindow.loadURL(`${__dirname}/../wf.html?pid=${prj_id}&pdir=${prj_dir}&wdir=${wkf_dir}&adir=${adp_dir}`);
 }
 
@@ -260,18 +282,23 @@ function exportWorkflow(wkf_dir) {
 function importWorkflow(wkf_dir) {
   // assgin the first value
   if ( wkf_dir.length > 0 ) wkf_dir = wkf_dir[0];
-  // get the workflow directory (the most recent). By default, init workflow
+  // get the workflow directory (the most recent).
   wkf_dir = getWorkflowDir(wkf_dir);
-  // get input parameters (from URL)
-  let url_params = new URLSearchParams(window.location.search);
-  let prj_id = url_params.get('pid');
-  let prj_dir = url_params.get('pdir');
-  let adp_dir = url_params.get('adir');
-  // add workflow workspace
-  loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir);
+  if ( wkf_dir === undefined ) {
+    exceptor.showMessageBox('error',`The workflow directory is not defined`, title='Importing workflow', end=false);
+  }
+  else {
+    // get input parameters (from URL)
+    let url_params = new URLSearchParams(window.location.search);
+    let prj_id = url_params.get('pid');
+    let prj_dir = url_params.get('pdir');
+    let adp_dir = url_params.get('adir');
+    // add workflow workspace
+    loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir);
+  }
 }
 
-// Import adaptor from folder (sync). By default open the basic adaptor (00_main_input)
+// Import adaptor from folder (sync). By default open the basic adaptor (main_input)
 function importAdaptor(adp_dir) {
   // get input parameters (from URL)
   let url_params = new URLSearchParams(window.location.search);
@@ -279,7 +306,7 @@ function importAdaptor(adp_dir) {
   let prj_dir = url_params.get('pdir');
   let wkf_dir = url_params.get('wdir');
   // add the absolute path to adaptor folder
-  adp_dir = `${process.env.ISANXOT_SRC_HOME}/app/adaptors/${adp_dir}`;
+  adp_dir = `${process.env.ISANXOT_SRC_HOME}/app/${adp_dir}`;
   // add workflow workspace
   loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir);
 }

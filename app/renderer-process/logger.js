@@ -7,6 +7,7 @@ let path = require('path');
 
 let importer = require('./imports');
 let commoner = require('./common');
+const { waitForDebugger } = require('inspector');
 
 /*
  * Local functions
@@ -79,7 +80,9 @@ class logger {
                         status: 'waiting',
                         perc: '0%',
                         stime: '-',
-                        etime: '-'
+                        etime: '-',
+                        nrule: 0,
+                        nrules: 0
         
                     }));
                     cmds.push(c);
@@ -119,6 +122,12 @@ class logger {
         data.message    = '';
         data.stime  = '-';
         data.etime  = '-';
+        for (var i = 0; i < data.cmds.length; i++) {
+            data.cmds[i].stime = '-';
+            data.cmds[i].etime = '-';
+            data.cmds[i].nrule = 0;
+            data.cmds[i].nrules = 0;
+        }
         data.path  = path.dirname(data.logfile);
         // get log variables for the sub-processes
         let num_cmds = 0;
@@ -129,9 +138,9 @@ class logger {
                 // parse log file for the project table ----
                 // parse the error messages
                 if (line.startsWith('ERROR')) {
-                    data.status = 'error';
+                    data.status = 'wf error';
                     data.perc = '-';
-                    data.message = `${lines.slice(i+1).join('\n')}`;
+                    data.message = `${lines.slice(i).join('\n')}`;
                 }
                 // save the intermediante steps
                 else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
@@ -168,18 +177,18 @@ class logger {
                     let cmd_exec = l[3];
                     let rule_name = l[4];
                     let rule_perc = l[5];
+                    // get the number of rule and the total of rules
+                    // count the number of rules
+                    let r = rule_perc.split('/');
+                    let rule_num = r[0];
+                    let rule_ntotal = r[1];
                     // get the index from the name
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
-                    // update data
+                    // update data: get the first values from the the first started rule
                     data.cmds[cmd_index].status = 'running';
-                    data.cmds[cmd_index].stime = time;
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
-                    if ( perc == '100%' ) {
-                        data.cmds[cmd_index].perc = '50%';
-                    }
-                    else {
-                        data.cmds[cmd_index].perc = perc;
-                    }
+                    data.cmds[cmd_index].perc = '50%';
+                    if ( data.cmds[cmd_index].stime == '-') data.cmds[cmd_index].stime = time;
+                    if ( data.cmds[cmd_index].nrules == 0 ) data.cmds[cmd_index].nrules = rule_ntotal;
                     data.cmds[cmd_index].path = data.path;
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_RULE_EXEC')) {
@@ -192,21 +201,21 @@ class logger {
                     let status = l[6];
                     // get the index from the name
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
-                    // update data
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
-                    if ( perc == '100%' ) {
-                        data.cmds[cmd_index].status = 'finished';
-                        data.cmds[cmd_index].etime = time;
-                        data.cmds[cmd_index].perc = perc;
-                    }
-                    else {
-                        data.cmds[cmd_index].perc = perc;
-                    }
-                    if ( status == 'error' ) {
+                    // update the data
+                    data.cmds[cmd_index].nrule += 1; // count the number of rules
+                    if ( status == 'error' ) { // prority the error status
                         data.cmds[cmd_index].status = status;
+                        data.cmds[cmd_index].perc = '-';
+                        data.cmds[cmd_index].etime = time;
+                        data.status = 'cmd error'; // for the project table
                     }
-                    else {
-                        data.cmds[cmd_index].status = 'running';
+                    else { // then, the rest of status
+                        let perc = (data.cmds[cmd_index].nrule / data.cmds[cmd_index].nrules).toFixed(2)*100+'%';
+                        if ( perc == '100%' ) {
+                            data.cmds[cmd_index].status = 'finished';
+                            data.cmds[cmd_index].perc = perc;
+                        }
+                        data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
                     }
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_CMD_EXEC')) {
@@ -229,21 +238,12 @@ class logger {
                             data.cmds[cmd_index].etime = time;
                             data.cmds[cmd_index].perc = perc;
                         }
-                        else if ( status == 'error' ) {
-                            data.cmds[cmd_index].status = status;
-                            data.cmds[cmd_index].perc = '-';
-                        }
-                        else {
-                            data.cmds[cmd_index].status = 'finished';
-                            data.cmds[cmd_index].perc = perc;
-                        }
                         // calculate the percentage for the statistic of project log table
                         num_cmds += 1;
                         let proj_perc = ((num_cmds/total_cmds)*100).toFixed(2)+'%';
                         data.perc = proj_perc    
                     }
                 }
-
             }
         }
     }
@@ -323,7 +323,7 @@ class logger {
         $(`#workflowlogs .message`).html(``);
         $(`#workflowlogs .table`).html(`<div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>`);
         // check if project has an error
-        if ( status == 'error' ) {
+        if ( status == 'wf error' ) {
             // remove old message/table
             $(`#workflowlogs .logtable`).html(``);
             // add the new log message

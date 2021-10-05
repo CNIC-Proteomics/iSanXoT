@@ -11,8 +11,8 @@
     # Rule: calcultate ratios ---
   - name: calculate_ratios
     infiles:
-      -ii: __NAMDIR__/__WF_RATIO_NUMERATOR__/**/__WF_LEVEL__.tsv
-      -dd: __NAMDIR__/__WF_RATIO_DENOMINATOR__/**/__WF_LEVEL__.tsv
+      -ii: __NAMDIR__/__WF_RATIO_NUMERATOR__/__WF_LEVEL__.tsv
+      -dd: __NAMDIR__/__WF_RATIO_DENOMINATOR__/__WF_LEVEL__.tsv
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
     parameters:

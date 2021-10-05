@@ -204,12 +204,12 @@ if __name__ == "__main__":
         python  src/SanXoT/rels2pq_unique.py
           -ii TMT1/ID-q.tsv;TMT2/ID-q.tsv
           -l "_INV_"
-          -o ID-mq.tsv
+          -o ID-q.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple input files separated by comma')
-    parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
+    parser.add_argument('-l',  '--lab_decoy', help='Label of decoy sequences in the db file')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the masterQ column')
     # parser.add_argument('-d',  '--indb',    help='in the case of a tie, we apply the sorted protein sequence using the given FASTA file')
     parser.add_argument('-m',  '--masterq', default=False, action='store_true', help="Flag to determines if we get the masterQ or not")

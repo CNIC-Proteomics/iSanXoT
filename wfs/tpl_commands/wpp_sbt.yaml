@@ -18,7 +18,7 @@
       experiment:
         -e: __WF_EXPERIMENT__
       feat_col:
-        -f: Peptide
+        -f: __WF_FEAT_COL__
       ratio_numerator:
         -n: __WF_RATIO_NUMERATOR__
       ratio_denominator:

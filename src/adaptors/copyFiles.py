@@ -71,22 +71,11 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the input file with the commands")
-    indata = common.read_command_table(args.intbl)
-    if not 'COPY_INPUTS' in indata:
-        sms = "There is not 'COPY_INPUTS' task-table"
+    indata = common.read_task_table(args.intbl)
+    if indata.empty:
+        sms = "There is not task-table"
         logging.error(sms)
         sys.exit(sms)
-    else:    
-        indata = indata['COPY_INPUTS']
-
-    # logging.info("add the full path into infile column")
-    # infiles = [common.get_path_file(i, args.indir) for i in list(indata['infile']) if not pd.isna(i)] # if apply, append input directory to file list
-    # logging.debug(infiles)
-    # if not all(infiles):
-    #     sms = "At least, one of input files is wrong"
-    #     logging.error(sms)
-    #     sys.exit(sms)
-    # indata['infile'] = infiles
 
 
     logging.info("read the input file")

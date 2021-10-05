@@ -14,7 +14,7 @@ __status__ = "Development"
 #########################
 import os
 import sys
-import glob
+# import glob
 import argparse
 import logging
 import copy
@@ -22,21 +22,28 @@ import re
 import json
 import yaml
 import shlex
+import numpy as np
 import pandas as pd
+import itertools
 
 ####################
 # Global variables #
 ####################
 import gvars
 
+__EXPDIR__  = None
+__JOBDIR__  = None
+__RELDIR__  = None
+__RSTDIR__  = None
+__LOGDIR__  = None
+__STADIR__  = None
+__IDQFIL__  = None
+
 OUTPUTS_FOR_CMD     = None
 TPL_DATE            = None
-MAIN_INPUTS_JOBDIR  = None
-MAIN_INPUTS_RELDIR  = None
-MAIN_INPUTS_RSTDIR  = None
-MAIN_INPUTS_LOGDIR  = None
-MAIN_INPUTS_STADIR  = None
 RULE_SUFFIX         = None
+
+OUTFILES = []
 
 #########################
 # Import local packages #
@@ -52,7 +59,11 @@ def check_command_parameters(indata):
     '''
     check the tasktable parameters for each command:
         1. check whether there are duplicates in the output directories
-        2. check whether the values of '* Var(x)' are False or a float    
+        2. check whether the values of '* Var(x)' are False or a float (deprecated)??
+        3. NOT WORK HERE because the input file does not exist yet!!! For Level_Creator: check if the column headers are in the input files and there are not repeated.
+        4. NOT WORK HERE because the input file does not exist yet!!! For Rels_Creator: check if the column headers are in the input files and there are not repeated.
+        # -que ya existen las tablas de relaciones que necesitamos para todas las integraciones ???
+
     '''
     # local functions
     def get_set_unique_list(list):
@@ -66,35 +77,77 @@ def check_command_parameters(indata):
             else:
                 dup_list.append(item)
         return [uniq_list, dup_list]
-
+    def check_headers(file, headers):
+        '''
+        get the list of elements that are not included in the cols and if there are duplicated
+        '''
+        cols = pd.read_csv(file, nrows=0, sep="\t", comment='#', index_col=False).columns.tolist()
+        # remove cases with [] and {}
+        headers = [h for h in headers if not ('[' in h and ']' in h) and not ('{' in h and '}' in h)]
+        return [e for e in headers if e not in cols or cols.count(e) > 1]
+    
     # create a list with all output directories for each command
     # create a dictionary with the output for each command
     outdirs = []
-    outputs_cmd = {}
+    outfiles = {}
     # iterate over all commands
-    for cmd,df in indata.items():
-        # # discard RATIOS_WSPP command because the tasktable is duplicated with WSPP_SBT
-        # if cmd != 'RATIOS_WSPP':
-        #     outs = []
-        #     if 'output' in df.columns and 'level' in df.columns:
-        #         outs = list((df['output']+'/'+df['level']).values)
-        #     if 'output' in df.columns and 'sup_level' in df.columns:
-        #         outs = list((df['output']+'/'+df['sup_level']).values)
-        #     if outs:
-        #         outdirs.extend(outs)
-        #         for o in outs:
-        #             outputs_cmd[o] = cmd
-        outs = []
-        if 'output' in df.columns and 'level' in df.columns:
-            outs = list((df['output']+'/'+df['level']).values)
-        if 'output' in df.columns and 'sup_level' in df.columns:
-            outs = list((df['output']+'/'+df['sup_level']).values)
-        if outs:
-            outdirs.extend(outs)
-            for o in outs:
-                outputs_cmd[o] = cmd
+    for cmd,indat in indata.items():
+        if 'table' in indat:
+            df = indat['table']
+            outs = []
+            if 'output' in df.columns and 'level' in df.columns:
+                outs = list((df['output']+'/'+df['level']).values)
+            if 'output' in df.columns and 'sup_level' in df.columns:
+                outs = list((df['output']+'/'+df['sup_level']).values)
+            if outs:
+                outdirs.extend(outs)
+                for o in outs:
+                    outfiles[o] = cmd
+        
+        #  BEGIN:  NOT WORK HERE because the input file does not exist yet!!!
+        
+        # # 3. For Level_Creator: check if the column headers are in the input files and there are not repeated.
+        # if cmd == 'LEVEL_CREATOR':
+        #     # create the headers
+        #     # extract the unique values that below to specific columns
+        #     h = list(df.groupby(['feat_col','ratio_numerator','ratio_denominator']).groups.keys())
+        #     h = [re.split(r'\s*,\s*',x) for x in list(itertools.chain(*h))]
+        #     h = np.unique([i for sublist in h for i in sublist])
+        #     # 'Experiment' column is mandatory
+        #     headers = np.concatenate( (['Experiment'], h) )
+        #     # check if headears are included in the input file
+        #     if os.path.isfile(__IDQFIL__):
+        #         elems_not_included = check_headers(__IDQFIL__, headers)
+        #         if len(elems_not_included) > 0:
+        #             sms = "ERROR!! These headers {} are not included in the file {}".format(elems_not_included, __IDQFIL__)
+        #             print(sms) # message to stdout with logging output
+        #             sys.exit(sms)
+        #     else:
+        #         sms = "ERROR!! The input file {} does not exist".format(__IDQFIL__)
+        #         print(sms) # message to stdout with logging output
+        #         sys.exit(sms)
 
-    # check if there are duplicates in the output directories
+        # # 4. For Rels_Creator: check if the column headers are in the input files and there are not repeated.
+        # elif cmd == 'RELS_CREATOR':
+        #     # check if headers are in the input file
+        #     cols = ['inf_infiles'] + [c for c in df.columns if c in ['inf_headers', 'sup_headers', 'thr_headers']]
+        #     sms = ''
+        #     for x in df[cols].itertuples(index=False, name=None):
+        #         file = x[0]
+        #         h = x[1:]
+        #         if os.path.isfile(file):
+        #             elems_not_included = check_headers(file, h)
+        #             if len(elems_not_included) > 0:
+        #                 sms += "ERROR!! These headers {} are not included in the file {}\n".format(elems_not_included, file)
+        #         else:
+        #             sms += "ERROR!! The input file {} does not exist\n".format(file)
+        #     if sms != '':
+        #         print(sms) # message to stdout with logging output
+        #         sys.exit(sms)
+        
+        #  END:  NOT WORK HERE because the input file does not exist yet!!!
+
+    # 2. check if there are duplicates in the output directories
     if outdirs:
         if len(outdirs) != len(set(outdirs)):
             uniq_list, dup_list = get_set_unique_list(outdirs)
@@ -102,8 +155,8 @@ def check_command_parameters(indata):
             print(sms) # message to stdout with logging output
             sys.exit(sms)
     
-    # return the output for each command
-    return outputs_cmd
+    # return all outfiles
+    return outfiles.keys()
 
 def read_tpl_command(path, cmd_id):
     cmd_tpl = None
@@ -221,23 +274,36 @@ def _replace_datparams_params(dat, trule, label):
             trule[k] = tr.replace(label, dat)
 
 # Transform the "input file" (report file)
-def _transform_report_path(val):
-    # the intermediate report file is with in Result WORKSPACE
-    if val != 'nan' and val != '':
-        # here it is important to use the "/" slash with format because if you use os.path.join snakemae does not recognize the path
-        return "{}/{}".format(MAIN_INPUTS_RSTDIR, f"{val}.tsv")
+def _transform_report_path(vals):
+    l = []
+    # for each input file
+    for val in vals.split(','):
+        # remove all the leading and trailing whitespace characters
+        val = val.strip()
+        # the relate table could be a full path or only a name of RT in the rels directory
+        if val != 'nan' and val != '':
+            if os.path.isfile(val):
+                l.append(val)
+            else:
+                l.append( "{}/{}".format(__RSTDIR__, f"{val}.tsv") )
+    if len(l) > 0:
+        return ";".join(l)
     else:
         return ''
 
 # return the list of relationship files separated by semicolon
 def _transform_relationship_path(vals):
-    # for each relationship name
     l = []
+    # for each input file
     for val in vals.split(','):
-        # the intermediate report file is with in Result WORKSPACE
+        # remove all the leading and trailing whitespace characters
+        val = val.strip()
+        # the relate table could be a full path or only a name of RT in the rels directory
         if val != 'nan' and val != '':
-            val = val.strip() # remove all the leading and trailing whitespace characters
-            l.append( "{}/{}".format(MAIN_INPUTS_RELDIR, f"{val}.tsv") )
+            if os.path.isfile(val):
+                l.append(val)
+            else:
+                l.append( "{}/{}".format(__RELDIR__, f"{val}.tsv") )
     if len(l) > 0:
         return ";".join(l)
     else:
@@ -248,27 +314,6 @@ def add_datparams(p, trule, val):
     val = val.strip()
     
     # Replace the label for the value for each section: infiles, outfiles, and parameters
-    # if p == 'ratio_numerator':
-    #     l = '__WF_RATIO_NUM__'
-    #     _replace_datparams(val, trule['infiles'],  l)
-    #     # _replace_datparams(val, trule['outfiles'], l)
-    #     if trule['parameters'] is not None and 'tags' in trule['parameters']:
-    #         r = re.sub(r"\s*,\s*",",", val) # removes whitespaces before/after comma
-    #         r = r.replace(",","-") # replace "," -> "-".
-    #         # r = re.sub(r"\s+","",r) # remove whitespaces
-    #         _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_NUM__')
-            
-    # elif p == 'ratio_denominator':
-    #     l = '__WF_RATIO_DEN__'
-    #     _replace_datparams(val, trule['infiles'],  l)
-    #     # _replace_datparams(val, trule['outfiles'], l)
-    #     if trule['parameters'] is not None and 'tags' in trule['parameters']:
-    #         r = re.sub(r"\s*,\s*",",", val) # removes whitespaces before/after comma
-    #         r = r.replace(",","-") # replace "," -> "-".
-    #         # r = re.sub(r"\s+","",r) # remove whitespaces
-    #         _replace_datparams_params(r, trule['parameters']['tags'], '__WF_RATIO_DEN__')
-
-    # elif p == 'reported_vars':
     if p == 'reported_vars':
         l = '__WF_'+p.upper()+'__'
         trule['parameters'] = replace_val_rec(trule['parameters'], {l: val})
@@ -303,45 +348,13 @@ def add_datparams(p, trule, val):
 
 
 
-def _add_corrected_files(trule):
+def _add_rules(row, irules):
     '''
-    add the correct files if '*' asterisk is in the path
-    '''
-    for k,files in trule.items():
-        if '*' in files:
-            l = []
-            for file in files.split(";"):
-                l += [f for f in glob.glob(file, recursive=True)]
-            if len(l) > 0:
-                trule[k] = ";".join(l)
-    return trule
-
-def add_corrected_files_intrinsic(trule, outfiles):
-    '''
-    add the correct files if '*' asterisk is in the path from the given list of outputs
-    '''
-    for k,files in trule.items():
-        if '*' in files:
-            l = []
-            for file in files.split(";"):
-                sf = re.split(r'\*+', file)
-                if len(sf) > 1:
-                    b = sf[0] if sf[0] != '' else sf[1]
-                    e = sf[len(sf)-1]
-                    for outfile in outfiles:
-                        if b in outfile and outfile.endswith(e):
-                            l += [outfile]
-            if len(l) > 0:
-                trule[k] = ";".join(l)
-    return trule
-    
-def add_cmd(row, icmd):
-    '''
-    Create rule list for each command
+    add rules
     '''
     # deep copy the input cmd
-    cmd = copy.deepcopy(icmd)
-    
+    rules = copy.deepcopy(irules)
+
     # if 'output' folder does not exits, then we copy the value of 'input' folder
     if 'output' in row:
         if 'input' in row:
@@ -349,20 +362,16 @@ def add_cmd(row, icmd):
     else:
         if 'input' in row:
             row['output'] = row['input']
-    
-    # Add the label of forced execution
-    if 'force' in row:
-        cmd['force'] = int(row['force'])
             
     # Exception in SBT command!!
-    # if "lowhig_level" and "inthig_level" don't exit, Then, we include the "low_level"ALL and "int_level"ALL, respectivelly.
+    # if "lowhig_level" and "inthig_level" don't exit, Then, we include the "low_level"ALL and "int_level"ALL, respectively.
     if not 'lowhig_level' in row and 'low_level' in row:
         row['lowhig_level'] = row['low_level']+'all'
     if not 'inthig_level' in row and 'int_level' in row:
         row['inthig_level'] = row['int_level']+'all'
-
+    
     # Exception in SANSON command!!
-    # if "low_norm" and "hig_norm" don't exit, Then, we include the "low_level"ALL and "hig_level"ALL, respectivelly.
+    # if "low_norm" and "hig_norm" don't exit, Then, we include the "low_level"ALL and "hig_level"ALL, respectively.
     if not 'low_norm' in row and 'low_level' in row:
         row['low_norm'] = row['low_level']+'all'
     if not 'hig_norm' in row and 'hig_level' in row:
@@ -370,16 +379,52 @@ def add_cmd(row, icmd):
 
     # extract the list of columns
     data_params = list(row.index.values)
+
     # go through the rules of cmd
-    for i in range(len(cmd['rules'])):
-        trule = cmd['rules'][i]
+    for i in range(len(rules)):
+        trule = rules[i]
+        # add data parameters in the inpfiles/outfiles
+        # add data_parameters into the parameters section for each rule
         for p in data_params:
-            # add data parameters in the infiles/outfiles
-            # add data_parameters into the parameters section for each rule
             add_datparams(p, trule, row.loc[p])
-        # add the correct files if '*' asterisk is in the path
-        # at the moment, only for 'infiles'
-        trule['infiles'] = _add_corrected_files(trule['infiles'])
+            
+    return rules
+
+def add_rules(row, cmd_rules):
+    '''
+    add rules
+    '''
+    # if theres is a list of inputs...
+    if 'input' in row:
+        # exlode the rows based the list of inputs
+        row['input'] = re.split(r'\s*,\s*', row['input'])
+        row_df = pd.DataFrame(row)
+        row_df = row_df.transpose().explode('input').reset_index(drop=True).transpose()
+        # create a list of rules for each input
+        rules = []
+        for row in row_df.to_dict(orient='series').values():
+            rule = _add_rules(row, cmd_rules)
+            rules.append(rule)
+        rules = [i for sublist in rules for i in sublist]
+    else:
+        rules = _add_rules(row, cmd_rules)
+    return rules
+
+
+def add_cmd(row, icmd):
+    '''
+    Create rule list for each command
+    '''
+    # deep copy the input cmd
+    cmd = copy.deepcopy(icmd)
+    
+    # Add the label of forced execution
+    if 'force' in row:
+        cmd['force'] = int(row['force'])
+
+    # add rules
+    cmd['rules'] = add_rules(row, cmd['rules'])
+    
     return cmd
 
 def add_unique_cmd_from_table(df, icmd):
@@ -388,36 +433,7 @@ def add_unique_cmd_from_table(df, icmd):
     '''
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
-    
-    # # get the list of unique experiments (in string)
-    # if 'experiment' in df.columns:
-    #     exps = ",".join(df['experiment'].unique()).replace(" ", "")
-    # else:
-    #     exps = ''
-    # # get the list of keyinputs (in string)
-    # if 'keyinput' in df.columns:
-    #     keyin = ",".join(df['keyinput'].unique()).replace(" ", "")
-    # else:
-    #     keyin = ''
-    # # get the decoy label
-    # if 'lab_decoy' in df.columns:
-    #     ldecoy = df['lab_decoy'].values[0]
-    # else:
-    #     ldecoy = ''
-    
-    # # Add the label of forced execution
-    # if 'force' in df:
-    #     cmd['force'] = int(df['force'].any(skipna=False))
-
-    # # go through the rules of cmd
-    # for i in range(len(cmd['rules'])):
-    #     trule = cmd['rules'][i]
-    #     # add only the given parameters for each rule
-    #     add_datparams('experiment', trule, exps)
-    #     add_datparams('keyinput', trule, keyin)
-    #     add_datparams('lab_decoy', trule, ldecoy)
-    
-    
+        
     # lookthrough all columns and add the parameters
     for col in df.columns:
         # join the unique values
@@ -484,7 +500,7 @@ def add_params_cline(cmds):
             rule['name'] = rname
             RULE_SUFFIX += 1
             # Add the log file
-            rule['logfile'] = "{}/{}/{}".format(MAIN_INPUTS_LOGDIR, TPL_DATE, f"{lname}.log")
+            rule['logfile'] = "{}/{}/{}".format(__LOGDIR__, TPL_DATE, f"{lname}.log")
             # Create command line with the input, output files and the parameters
             for p in ['infiles','outfiles','parameters']:
                 if rule[p] is not None:
@@ -512,7 +528,99 @@ def add_params_cline(cmds):
             # add the command line
             rule['cline'] += " "+cparams
         
-    
+# def _add_corrected_files(trule):
+#     '''
+#     add the correct files if '*' asterisk is in the path
+#     '''
+#     for k,files in trule.items():
+#         if '*' in files:
+#             l = []
+#             for file in files.split(";"):
+#                 l += [f for f in glob.glob(file, recursive=True)]
+#             if len(l) > 0:
+#                 trule[k] = ";".join(l)
+#     return trule
+
+def _get_unmatch_folder(file, outfiles):
+    '''
+    if the file matches, then get the folder that is not equal
+    '''
+    l = []
+    sf = re.split(r'\*{1,}', file)
+    if len(sf) > 1:
+        b = sf[0] if sf[0] != '' else sf[1]
+        e = sf[len(sf)-1]
+        for outfile in outfiles:
+            if outfile.startswith(b) and outfile.endswith(e):
+                d = outfile.replace(b,'')
+                d = d.replace(e,'')
+                l += [d]
+    return l
+
+def _get_match_files(file, outfiles):
+    '''
+    get the matched files
+    '''
+    l = []
+    sf = re.split(r'\*{1,}', file)
+    if len(sf) > 1:
+        b = sf[0] if sf[0] != '' else sf[1]
+        e = sf[len(sf)-1]
+        for outfile in outfiles:
+            if b in outfile and outfile.endswith(e):
+                l += [outfile]
+    return l
+
+def add_recursive_files(trule, outfiles):
+    '''
+    if '*' is in the path, add the correct files based on the outputs that are intrinsic of workflow.
+    These files are added into the same command
+    '''
+    for k,files in trule.items():
+        if '*' in files:
+            l = []
+            for file in files.split(";"):
+                l += _get_match_files(file, outfiles)
+            if len(l) > 0:
+                trule[k] = ";".join(l)
+    return trule
+
+def add_recursive_cmds(cmd):
+    '''
+    if '*' is in the path, add multiple commands based on the outputs that are intrinsic of workflow.
+    '''
+    if 'rule_infiles' not in cmd:
+        trules = cmd['rules']
+        global OUTFILES
+        # get the files with '*'
+        files_ast = [file for trule in trules for file in trule['infiles'].values() if '/*/' in file]
+        if len(files_ast) > 0:
+            # for each file, if the file matches, then get the folder that is not equal
+            folders_exp = []
+            for file in files_ast:
+                folders_exp += _get_unmatch_folder(file, OUTFILES)
+            # for each unmatched folder, create a list of rules and replace the '*' to unmatched folder
+            rules_new = []
+            for folder_exp in np.unique(folders_exp):
+                rules_new.append( replace_val_rec(trules, {'\*': folder_exp}) )
+            # assign the new rules to the command
+            # update the output files
+            if len(rules_new) > 0:
+                rules_new = [i for sublist in rules_new for i in sublist]
+                of = np.array([ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()])
+                OUTFILES = np.unique( np.concatenate((OUTFILES, of)) )
+                cmd['rules'] = rules_new
+    elif cmd['rule_infiles'] == 'multiple':
+        # replace the input files that contains the "multiple infiles" (except its own outfiles)
+        for k in range(len(cmd['rules'])):
+            trule = cmd['rules'][k]
+            ofiles =  [i for i in OUTFILES if i not in trule['outfiles'].values()]
+            trule['infiles'] = add_recursive_files(trule['infiles'], ofiles)
+
+    return cmd
+
+
+
 #################
 # Main function #
 #################
@@ -531,7 +639,24 @@ def main(args):
             print(sms) # message to stdout with logging output
             sys.exit(sms)
 
-
+    # assign the global variables
+    global __EXPDIR__
+    global __JOBDIR__
+    global __RELDIR__
+    global __RSTDIR__
+    global __LOGDIR__
+    global __STADIR__
+    global __IDQFIL__
+    global TPL_DATE
+    __EXPDIR__ = tpl['prj_workspace']['expdir'].replace('\\','/')
+    __JOBDIR__ = tpl['prj_workspace']['jobdir'].replace('\\','/')
+    __RELDIR__ = tpl['prj_workspace']['reldir'].replace('\\','/')
+    __RSTDIR__ = tpl['prj_workspace']['rstdir'].replace('\\','/')
+    __LOGDIR__ = tpl['prj_workspace']['logdir'].replace('\\','/')
+    __STADIR__ = tpl['prj_workspace']['stadir'].replace('\\','/')
+    __IDQFIL__ = __EXPDIR__ + '/ID-q.tsv'
+    TPL_DATE   = tpl['date']
+    
     # extract the list of task-tables (ttablefiles)
     # split by command
     # create a list of tuples (command, dataframe with parameters)
@@ -539,59 +664,21 @@ def main(args):
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
-    infiles = ";".join([d['file'] for d in tpl['ttablefiles']])
-    indata = common.read_command_table(infiles)
+    indata = common.read_commands_from_tables(tpl['ttablefiles'])
     
+
+    # check the tasktable parameters for each command:
     # return a variable with the outputs for each command    
+    # 1. check whether there are duplicates in the output directories
+    # 2. check whether the values of '* Var(x)' are False or a float (deprecated)??
+    # 3. For Level_Creator: check if the column headers are in the input files and there are not repeated.
+    # 4. For Rels_Creator: check if the column headers are in the input files and there are not repeated.
+    # # -que ya existen las tablas de relaciones que necesitamos para todas las integraciones ???
+# TODO!!!!! 3. Check the MAIN_INPUTS table is full. All the files have one experiment name
+# TODO!!! 4. Check the columns: level, inf_level and sup_level are not empty    
     logging.info("check the tasktable parameters for each command")
     global OUTPUTS_FOR_CMD
     OUTPUTS_FOR_CMD = check_command_parameters(indata)
-    
-    
-    # check the tasktable parameters for each command:
-    # 1. check whether there are duplicates in the output directories
-    # 2. check whether the values of '* Var(x)' are False or a float
-
-# TODO!!!!! 3. Check the MAIN_INPUTS table is full. All the files have one experiment name
-
-# TODO!!! 4. Check the columns: level, inf_level and sup_level are not empty
-    
-    
-
-    # # read the templates of commands
-    # logging.info("read the template of commands")
-    # with open(args.intpl, 'r') as stream:
-    #     try:
-    #         cmd_tpls = yaml.safe_load(stream)
-    #     except yaml.YAMLError as exc:
-    #         sms = "ERROR!! Reading the template of commands: {}".format(exc)
-    #         print(sms) # message to stdout with logging output
-    #         sys.exit(sms)
-
-    
-    # # get the unique commands from the input table
-    # logging.info("get the unique commands from the input table")
-    # cmds = list(indata.keys())
-    # dels = [i for i in cmd_tpls if not (i['name'] in cmds)]
-    # for c in dels:
-    #     del cmd_tpls[ cmd_tpls.index(c) ]
-
-    
-    # assign the global variables
-    global MAIN_INPUTS_EXPDIR
-    global MAIN_INPUTS_JOBDIR
-    global MAIN_INPUTS_RELDIR
-    global MAIN_INPUTS_RSTDIR
-    global MAIN_INPUTS_LOGDIR
-    global MAIN_INPUTS_STADIR
-    global TPL_DATE
-    MAIN_INPUTS_EXPDIR = tpl['prj_workspace']['expdir']
-    MAIN_INPUTS_JOBDIR = tpl['prj_workspace']['jobdir']
-    MAIN_INPUTS_RELDIR = tpl['prj_workspace']['reldir']
-    MAIN_INPUTS_RSTDIR = tpl['prj_workspace']['rstdir']
-    MAIN_INPUTS_LOGDIR = tpl['prj_workspace']['logdir']
-    MAIN_INPUTS_STADIR = tpl['prj_workspace']['stadir']
-    TPL_DATE           = tpl['date']
     
     
     # replace the constants for the config template and the command templates
@@ -603,29 +690,55 @@ def main(args):
             '__ISANXOT_DOT_EXEC__':     gvars.ISANXOT_DOT_EXEC,
             '__NCPU__':                 str(tpl['ncpu']),
             '__WF_VERBOSE__':           str(tpl['verbose']),
-            '__EXPDIR__':               MAIN_INPUTS_EXPDIR,
-            '__NAMDIR__':               MAIN_INPUTS_JOBDIR,
-            '__RELDIR__':               MAIN_INPUTS_RELDIR,
-            '__RSTDIR__':               MAIN_INPUTS_RSTDIR,
-            '__LOGDIR__':               MAIN_INPUTS_LOGDIR,
-            '__STADIR__':               MAIN_INPUTS_STADIR,
+            '__EXPDIR__':               __EXPDIR__,
+            '__NAMDIR__':               __JOBDIR__,
+            '__RELDIR__':               __RELDIR__,
+            '__RSTDIR__':               __RSTDIR__,
+            '__LOGDIR__':               __LOGDIR__,
+            '__STADIR__':               __STADIR__,
+            '__IDQFIL__':               __IDQFIL__,
             '__CATDB__':                '',
     }
     # add the replacements for the main_inputs
     for k_id in tpl['adaptor_inputs'].keys():
         repl[k_id] = tpl['adaptor_inputs'][k_id]
+        
     # add the replacements for the data files of tasktable commands
     for datfile in tpl['ttablefiles']:
-        l = "__TTABLEFILE_{}__".format(datfile['type'].upper())
-        repl[l] = datfile['file']    
+        if 'file' in datfile:
+            l = "__TTABLEFILE_{}__".format(datfile['type'].upper())
+            repl[l] = datfile['file']    
     tpl = replace_val_rec(tpl, repl)
 
 
 
-    logging.info("create a command for each adaptor with cmd program")
+    logging.info("create a command for each tasktable row")
     tpl['commands'] = []
-    if 'adaptor_cmds' in tpl:
-        for cmd in tpl['adaptor_cmds']:
+    for cmd,indat in indata.items():
+        # commands with ttable
+        if 'table' in indat:
+            uniq_exec = indat['unique_exec']
+            df = indat['table']
+            # read the templates of commands
+            cmd_tpl = read_tpl_command(args.intpl, cmd)
+            # replace constant within command tpls
+            cmd_tpl = replace_val_rec(cmd_tpl, repl)
+            if cmd_tpl:
+                if uniq_exec:
+                    # add the parameters into each rule
+                    tpl['commands'].append(add_unique_cmd_from_table(df, cmd_tpl))
+                    # # replace constants
+                    # tpl['commands'] = replace_val_rec(tpl['commands'], repl)
+                else: # the rest of commands
+                    # create a command for each row
+                    # add the parameters for each rule
+                    tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
+                    # # replace constants
+                    # tpl['commands'] = replace_val_rec(tpl['commands'], repl)
+                # replace constants
+                tpl['commands'] = replace_val_rec(tpl['commands'], repl)
+        # commands without ttable
+        else:
             # read the templates of commands
             cmd_tpl = read_tpl_command(args.intpl, cmd)
             # replace constant within command tpls
@@ -633,42 +746,37 @@ def main(args):
             if cmd_tpl:
                 tpl['commands'].append([cmd_tpl])
 
-    logging.info("create a command for each tasktable row")
-    for cmd,df in indata.items():
-        # read the templates of commands
-        cmd_tpl = read_tpl_command(args.intpl, cmd)
-        # replace constant within command tpls
-        cmd_tpl = replace_val_rec(cmd_tpl, repl)
-        if cmd_tpl:
-            if cmd == 'CREATE_IDQUANT' or cmd == 'COPY_INPUTS' or cmd == 'JOINER' or cmd == 'MASTERQ':
-                # add the parameters into each rule
-                tpl['commands'].append(add_unique_cmd_from_table(df, cmd_tpl))
-                # replace constants
-                tpl['commands'] = replace_val_rec(tpl['commands'], repl)
-            else: # the rest of commands
-                # create a command for each row
-                # add the parameters for each rule
-                tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
-                # replace constants
-                tpl['commands'] = replace_val_rec(tpl['commands'], repl)
+
+
+
+    logging.info("get the list of outfiles")
+    global OUTFILES
+    for i in range(len(tpl['commands'])):
+        for j in range(len(tpl['commands'][i])):
+            for k in range(len(tpl['commands'][i][j]['rules'])):
+                trule = tpl['commands'][i][j]['rules'][k]
+                OUTFILES += [ofile for ofile in trule['outfiles'].values() if '*' not in ofile]
+    OUTFILES = np.array(OUTFILES)
 
     
-    logging.info("fill the parameters with intrinsic files in the commands")
-    # get the list of output files
-    outfiles = []
+    logging.info("add the commands based on the '*' input files")
     for i in range(len(tpl['commands'])):
         for j in range(len(tpl['commands'][i])):
-            for k in range(len(tpl['commands'][i][j]['rules'])):
-                trule = tpl['commands'][i][j]['rules'][k]
-                outfiles += trule['outfiles'].values()
-    # replace the input files that contains the "recursive value" (**)
-    # except its own outfiles
-    for i in range(len(tpl['commands'])):
-        for j in range(len(tpl['commands'][i])):
-            for k in range(len(tpl['commands'][i][j]['rules'])):
-                trule = tpl['commands'][i][j]['rules'][k]
-                ofiles =  [i for i in outfiles if i not in trule['outfiles'].values()]
-                trule['infiles'] = add_corrected_files_intrinsic(trule['infiles'], ofiles)
+            cmd = tpl['commands'][i][j]
+            cmd = add_recursive_cmds(cmd) # and also update the OUTFILES
+
+
+
+    # logging.info("fill the '**' input_group files for each command")
+    # # replace the input files that contains the "recursive value" (**)
+    # # except its own outfiles
+    # for i in range(len(tpl['commands'])):
+    #     for j in range(len(tpl['commands'][i])):
+    #         for k in range(len(tpl['commands'][i][j]['rules'])):
+    #             trule = tpl['commands'][i][j]['rules'][k]
+    #             if 'type_infiles' in trule and trule['type_infiles'] == 'multiple':
+    #                 ofiles =  [i for i in OUTFILES if i not in trule['outfiles'].values()]
+    #                 trule['infiles'] = add_recursive_files(trule['infiles'], ofiles)
 
     
 

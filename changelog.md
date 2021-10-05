@@ -1,7 +1,79 @@
 ___
+## 0.3.2
+```
+DATE: 2021_09
+```
+
+### Highlights
+
+
+### Changes in the Graphical User Interface
+
++ INSTALL: The "installer" program has been modified to fix the problem with spaces in the path.
+
++ Update of column names and the description of modules.
+
++ Rename KLIBRATE to LEVEL_CALIBRATOR. Modify this task-table.
+
++ If the task-table is empty and the task-table file exists, now it deletes the task-table file for the updating.
+
++ Update the sidebar of commands when the task-table is full.
+
++ The commands: LEVEL_CALIBRATOR, INTEGRATE, SBT, SANSON accept a list of inputs. In that case, the cmds REPORT and NORCOMBINE have changed the input column.
+
++ RELS_CREATOR: The columns 'sup_infiles', 'thr_infiles', and 'filter' have been discarded for the momment.
+
++ WSPP_SBT, WSPPG_SBT, WPP_SBT, WPPG_SBT accept the "Identifier column header".
+
++ Fixing the project-workflow log table.
+
+### Changes in the Code Workflow
+
++ REPORTER:
+	- Fixing bug: Now, it extracts the low level matching the first number 2 from the name file of relation table.
+	- It retreives the current report table altought the merge with another report tables doesn't work.
+	- Sort the columns from the given sample list.
+	- The Relation Table could be external of project.
+	- The reported_variables is optional and it create a report only with levels.
+
++ RELS_CREATOR:
+	- Rename the column headers based on the name of output file.
+
++ TABLE2CFG:
+	- Fixed a bug: Now, the "merge with report table" parameter accepts external files.
+	- The "Merge relate table" in REPORT cmd accepts a full path of RT file and a RT name that is in the rels folder of project.
+
++ TPL_COMMANDS:
+	- Fixed a bug in the variant assignation. The variants have to be assigned in the sanxot1 and sanxotsieve.
+
+
+
+___
+## 0.3.1
+```
+DATE: 2021_09
+```
+
+### Highlights
+
++ Some "bugs"has been fixed for the WF-PTM
+
+### Changes in the Graphical User Interface
+
++ INSTALL: The "installer" program has been modified to be more general.
+
++ The number of columns in the task-tables are always equal than the expected.
+
++ TABLE2CFG: Fixing a bug when there is '**' in the path. We have to disable a function that sustitutes the '**' by the current files (with glob) because otherwise the last part of program that replaces the '**' with the outputs, doesn't work.
+
+### Changes in the Code Workflow
+
++ CREATERELS: The delimiter that divides the categories of a protein, has changed from ";" to "||" (iSanXot-dbscripts v2.5). For this reason, this program has been updated.
+
+___
 ## 0.3.0
 ```
-DATE: 2021_06
+DATE: 2021_08
 ```
 
 ### Highlights
@@ -45,14 +117,6 @@ DATE: 2021_06
 + The sigmoides are distinguished from the first sanxot and the second sanxot in an integration.
 
 + STATS: get the link to sigmoide... Important: The sigmoide with outliers (first sanxot).
-
-
-
-+ TODO!! Documentatio:
-- PONER LOS NOMBRES DE LOS BUSCADORES EN LA DOCUMENTACIÓN Y EN LA INTERFAZ!!
-- Ver las descripciones escritas por Jesús para los módulos (ver email Subject: Re:PDMTable)
-
-
 
 ___
 ## 0.2.12

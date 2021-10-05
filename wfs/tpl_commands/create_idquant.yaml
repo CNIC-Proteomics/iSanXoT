@@ -7,10 +7,10 @@
   description: Create a file with the identifications and if apply, the quantification
   force: 0
   rules:
-  - name: createIDQuant
+  - name: create_idquant#createidquant
     infiles:
       -i: __INDIR__
-      -t: __TTABLEFILE_MAIN_INPUTS__
+      -t: __TTABLEFILE_CREATE_IDQUANT__
     outfiles:        
       -x: __EXPDIR__/__WF_EXPERIMENT__/ID.tsv
     parameters:

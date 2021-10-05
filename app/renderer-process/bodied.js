@@ -29,37 +29,34 @@ let wf  = importer.wf;
 // create hash report of commands from a file
 function extract_tasktable_info(cmd, itbl) {
   // Extract the info from tables
-  let tbls = {};
+  let tbl = {};
   let order = 1;
   let id = null;
   let cols_empty = [];
   for (var i = 0; i < itbl.length; i++) {
     let l = itbl[i];
-    if ( l && l.length > 0 && l != '' && !(commoner.allBlanks(l))) {
-      if ( l[0] !== undefined && l[0].startsWith('#') ) {
-        id = l[0];
-        id = id.replace('#','');
+    if ( l && l.length > 0 && l != '' && l !== undefined && !(commoner.allBlanks(l))) {
+      // add the header of table
+      if ( i === 0 ) {
         let cols = itbl[i+1];
         // get all indexes of empty elements
         // remove all empty elements in column headers
-        cols_empty = commoner.getAllIndexes(cols,"");
-        cols = commoner.removeListIndexes(cols, cols_empty);
+        cols_empty = commoner.getAllIndexes(l,"");
+        cols = commoner.removeListIndexes(l, cols_empty);
         // save
-        tbls[id] = {
-          'order': order,
+        tbl = {
           'cols': cols,
           'table': []
         }
-        order += 1 // increase the position of commands
-        i = i+1; // increase index after header of command
       }
+      // add the data of table
       else {
         // remove all empty elements of header in the data
         if (cols_empty.length > 0) {
           l = commoner.removeListIndexes(l, cols_empty);
         }
-        // save 
-        tbls[id]['table'].push(l);
+        // save line
+        tbl['table'].push(l);
       }
     }
   }
@@ -67,17 +64,24 @@ function extract_tasktable_info(cmd, itbl) {
   // Extract the info for the tasktable ONLY when the columns between the 'workflow' and the external table are equal
   let tt_cmd = {};
   let cmd_id = cmd['id'];
-  if ( cmd_id in tbls ) {
-    let tbl = tbls[cmd_id];
-    let cmd_cols = cmd['tasktable']['params'].map(a => a.id);
-    let cmd_header = cmd['tasktable']['params'].map(a => a.name);
-    // check if the column names are equal
-    if ( commoner.isEqual(cmd_cols, tbl['cols']) ) {
-      tt_cmd['data'] = tbls[cmd_id]['table'];
-      tt_cmd['header'] = cmd_header;
-    }
+  let cmd_cols = cmd['tasktable']['params'].map(a => a.id);
+  let cmd_header = cmd['tasktable']['params'].map(a => a.name);
+  // check if the column names are equal
+  if ( commoner.isEqual(cmd_cols, tbl['cols']) ) {
+    tt_cmd['data'] = tbl['table'];
+    tt_cmd['header'] = cmd_header;
   }
   return tt_cmd;
+};
+
+// return empty task-table
+function return_empty_tttable(cmd_ttable) {
+  let cmd_header = cmd_ttable['params'].map(a => a.name);
+  let ttable = {
+    'header': cmd_header,
+    'data': []
+  };
+  return ttable;
 };
 
 
@@ -110,9 +114,8 @@ for (var i = 0; i < wf['works'].length; i++) {
     let cmd_label = cmd['label'];
     let cmd_title = cmd['title'];
 
-    // Create html sidebar ---
-    // If the command is not visible, we don't show the sidebar menu
-    if ( cmd['visible'] ) {
+    // create html sidebar
+    if ( cmd['visible'] ) { // If the command is not visible, we don't show the sidebar menu
       $(`#${wk_id} #sidebar .cmds`).append(`<li><a id="${cmd_id}" title="${cmd_title}">${cmd_label}</a></li>`);
     }
     // create main div for the tasktable frames
@@ -129,7 +132,7 @@ for (var i = 0; i < wf['works'].length; i++) {
     $(`#${wk_id} #page-tasktable-${cmd_id} .sdesc p`).html(cmd['sdesc']);
 
     // Extract the task-table of command ---
-    if ( 'tasktable' in cmd ) {
+    if ( 'tasktable' in cmd && cmd['visible'] ) {
       let cmd_ttable = cmd['tasktable'];
 
       let ttable_file = `${wkf_dir}/${cmd_ttable['file']}`;
@@ -142,27 +145,39 @@ for (var i = 0; i < wf['works'].length; i++) {
         // convert command file into a dictionary
           let s = fs.readFileSync(`${ttable_file}`).toString();
           ttable_raw = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
-          if ( !ttable_raw ) {
-            console.log(ttable_raw);
-            exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands`, end=true);
+          if ( !ttable_raw || ttable_raw === undefined || ttable.length === 0 ) {
+            exceptor.showErrorMessageBox('Error Message', `Reading the task-table file: ${ttable_file}`, end=false);
+            ttable = return_empty_tttable(cmd_ttable);
           }
         } catch (ex) {
-          console.log(ttable_file);
-          exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands from the files`, end=true);
+          exceptor.showErrorMessageBox('Error Message', `Reading the task-table: ${ttable_file}`, end=false);
+          ttable = return_empty_tttable(cmd_ttable);
         }
         try {
           ttable = extract_tasktable_info(cmd, ttable_raw);
+          if ( !ttable || ttable === undefined || Object.keys(ttable).length === 0 ) {
+            exceptor.showErrorMessageBox('Error Message', `Extracting the data of task-table: ${ttable_file}`, end=false);
+            ttable = return_empty_tttable(cmd_ttable);
+          }
         } catch (ex) {
-          console.log(ttable_file);
-          exceptor.showErrorMessageBox('Error Message', `Extracting the tables of commands individually`, end=true);
+          exceptor.showErrorMessageBox('Error Message', `Extracting the data of task-table: ${ttable_file}`, end=false);
+          ttable = return_empty_tttable(cmd_ttable);
         }
       }
       else {
-        let cmd_header = cmd_ttable['params'].map(a => a.name);
-        ttable['header'] = cmd_header;  
-        ttable['data'] = [];
+        // create empty table
+        ttable = return_empty_tttable(cmd_ttable);
       }
 
+      // if the data table is empty or not
+      if (!ttable['data'] || ttable['data'].length == 0) {
+        ttable['data'] = [[]]; // init the data table
+      }
+      else {
+        // update the sidebar
+        $(`#sidebar #${cmd_id}`).text(`${cmd_label}*`);
+      }
+            
       // get the index of optional parameters
       let cmd_params_opt_index = commoner.getIndexParamsWithAttr(cmd_ttable['params'], 'type', 'optional');
 
@@ -183,7 +198,6 @@ for (var i = 0; i < wf['works'].length; i++) {
 
       // create html tasktable
       $(`#${wk_id} #page-tasktable-${cmd_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
-      if (!ttable['data'] || ttable['data'].length == 0) ttable['data'] = [[]]; // if the data table is empty, we init
       $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable({
           data: ttable['data'],
           width: '100%',
@@ -193,6 +207,7 @@ for (var i = 0; i < wf['works'].length; i++) {
           colHeaders: ttable['header'],
           minRows: 2,
           minCols: ttable['header'].length,
+          maxCols: ttable['header'].length,
           minSpareRows: 1,
           contextMenu: true,
           manualColumnResize: true,

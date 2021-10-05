@@ -149,6 +149,10 @@ input:disabled, button:disabled {
 
 
 /* sidebar */
+#page .col-1 {
+    min-width: 100px;
+}
+
 #sidebar .sidebar-header {
     font-size: 1.8em;
     padding: .3em;

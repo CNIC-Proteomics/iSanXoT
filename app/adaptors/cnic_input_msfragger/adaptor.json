@@ -1,0 +1,74 @@
+{
+  "id": "cnic_input_msfragger",
+  "label": "CNIC - Input from MSFragger",
+  "sdesc": "<p><i>Input from MSF</i>.</p>",
+  "description": "Long description for the adaptor.",
+  "works": [{
+    "id": "inputs",
+    "label": "Inputs",
+    "description": "Short description for the current work (tab)",
+    "cmds": ["CREATE_IDQUANT", "FDR_Q", "JOINER_FDR", "GET_IDSTATS"]
+  }],
+  "commands": [{
+    "id": "CREATE_IDQUANT",
+    "label": "Files from MSFragger",
+    "title": "Provide input files from MSFragger",
+    "visible": true,
+    "panel": "adaptors/cnic_input_msfragger/panels/inputs.html",
+    "help_modal": "adaptors/cnic_input_msfragger/hmodals/inputs.html",
+    "tasktable": {
+      "file": "create_idquant.tsv",
+      "unique_exec": true,
+      "params": [
+        { "type": "required", "id": "infile", "name": "Identification file" },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "optional", "id": "mzfile", "name": "Quantification File (in mzML format)" },
+        { "type": "optional", "id": "quan_method", "name": "Quan Method" }
+    ]}
+  },{
+    "id": "CREATE_IDQUANT_JOINER",
+    "label": "Files from MSFragger",
+    "title": "Provide input files from MSFragger",
+    "visible": true,
+    "panel": "adaptors/cnic_input_msfragger/panels/inputs.html",
+    "help_modal": "adaptors/cnic_input_msfragger/hmodals/inputs.html",
+    "tasktable": {
+      "file": "create_idquant_joiner.tsv",
+      "unique_exec": true,
+      "params": [
+        { "type": "required", "id": "infile", "name": "Infile" },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "optional", "id": "mzfile", "name": "mz File" },
+        { "type": "optional", "id": "quan_method", "name": "Quan Method" }
+    ]}
+  },{
+    "id": "FDR_Q",
+    "label": "FDR",
+    "title": "FDR calculation",
+    "sdesc": "Calculation of FDR and get the first protein selected alphabetically.",
+    "visible": true,
+    "panel": "adaptors/cnic_input_pd/panels/simple.html",
+    "help_modal": "adaptors/cnic_input_pd/hmodals/fdr.html",
+    "tasktable": {
+      "file": "fdr_q.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
+        { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
+        { "type": "required", "id": "fdr", "name": "FDR cutoff" },
+        { "type": "required", "id": "type_xcorr", "name": "Score" },
+        { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
+    ]}
+  },{
+    "id": "JOINER_FDR",
+    "label": "JOINER",
+    "sdesc": "Concatenate all fdr tables in one",
+    "visible": false
+  },{
+    "id": "GET_IDSTATS",
+    "label": "GET_IDSTATS",
+    "sdesc": "Get the statistics of ID table",
+    "visible": false
+  }]
+}

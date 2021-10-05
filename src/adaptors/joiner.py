@@ -62,7 +62,7 @@ if __name__ == "__main__":
         epilog='''Examples:
         python  src/SanXoT/joiner.py
           -ii TMT1/ID-q.tsv;TMT2/ID-q.tsv
-          -o ID-mq.tsv
+          -o ID-q.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')

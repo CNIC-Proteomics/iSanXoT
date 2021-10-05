@@ -1,6 +1,13 @@
+/*
+ * Import libraries and create Variables
+ */
+
 // Modules to control application life and create native browser window
 const { app, Menu, BrowserWindow, ipcMain, dialog } = require('electron');
 const fs = require('fs');
+
+// Local module
+// const commoner = require('./renderer-process/common');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -39,37 +46,25 @@ let template = [
     { label: 'Commands', click() { mainWindow.loadURL(`file://${__dirname}/commands.html`) } },
   ]},
 ]
-// Add the adatpors submenus
-// get the files/dirs in directory sorted by name
-let dirs = fs.readdirSync(`${__dirname}/adaptors`, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
-if ( dirs.length > 0 ) {
-  // for each adaptor dir...
-  for (let i=0; i<dirs.length; i++) {
-    let adaptor_dir = dirs[i];
-    // add separator if the folder name contains separator
-    if ( adaptor_dir.includes('separator') ) {
-      template[1]['submenu'].push({type: 'separator'});
+
+// Add Adaptor menus
+// This function handles arrays and objects recursively
+function addClickFuncRecursively(obj) {
+  for (var k in obj) {
+    if ( obj[k] !== null && typeof obj[k] == "object" && !('clicked' in obj[k]) ) {
+      addClickFuncRecursively(obj[k]);
     }
-    // it reads the label that is saved in adaptor.json
-    // discard the basic adaptor (00_main_input)
-    // else if (adaptor_dir !== '00_main_input' ) {
-    else {
-      let adaptor_wf = JSON.parse(fs.readFileSync(`${__dirname}/adaptors/${adaptor_dir}/adaptor.json`));
-      let adaptor_id = adaptor_wf['id'];
-      let adaptor_label = adaptor_wf['label'];
-      template[1]['submenu'].push({
-        id: `${adaptor_id}`, label: `${adaptor_label}`, enabled: false, click() { mainWindow.webContents.send('importAdaptor', {
-          dir: `${adaptor_dir}`,
-          id:  `${adaptor_id}`})
-        }
-      });  
+    else if ( obj[k] !== null && typeof obj[k] == "object" && 'clicked' in obj[k] ) {
+      // add the function for click event
+      obj[k].click = function(menu) {
+        mainWindow.webContents.send('importAdaptor', menu.clicked) };
     }
   }
 }
-else {
-  // remove Adaptors menu
-  template.splice(1,1);
-}
+let adaptor_menu = JSON.parse(fs.readFileSync(`${__dirname}/adaptors/menu.json`));
+addClickFuncRecursively(adaptor_menu);
+template[1]['submenu'] = adaptor_menu;
+// console.log(JSON.stringify(adaptor_menu, null, 4));
 
 
 
@@ -84,7 +79,7 @@ if (process.env.ISANXOT_MODE == "debug") {
 const menu = Menu.buildFromTemplate(template)
 
 /*
-Local functions
+ * Local functions
 */
 
 // Create the main Window

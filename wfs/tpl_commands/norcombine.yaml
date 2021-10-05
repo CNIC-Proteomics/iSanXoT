@@ -6,12 +6,13 @@
 - name: NORCOMBINE
   description: Combine experiments
   force: 0
+  rule_infiles: multiple
   rules:
 
   # Rule: create a file with the list of experiments/tags ---
   - name: create_exp_tags
     infiles:
-      -ii: __NAMDIR__/__WF_INPUT_GROUP__/**/__WF_LEVEL__2__WF_NORM_____WF_LOWERNORM__.tsv
+      -ii: __NAMDIR__/__WF_INPUT_GROUP__/__WF_LEVEL__2__WF_NORM_____WF_LOWERNORM__.tsv
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tags.tsv
     parameters:
