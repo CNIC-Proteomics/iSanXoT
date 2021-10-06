@@ -17,7 +17,7 @@
       -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tags.tsv
     parameters:
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/adaptors/createCardenioTags.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/src/cmds/createCardenioTags.py" '
 
   # Rule: cardenio ---
   - name: cardenio

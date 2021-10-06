@@ -48,7 +48,7 @@ OUTFILES = []
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/adaptors/libs/")
+sys.path.append(f"{gvars.ISANXOT_SRC_HOME}/src/cmds/libs/")
 import common
 
 
