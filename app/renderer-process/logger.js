@@ -213,12 +213,14 @@ class logger {
                     }
                     else { // then, the rest of status
                         let perc = ( (data.cmds[cmd_index].nrule / (data.cmds[cmd_index].nrules*2))*100 ).toFixed(2)+'%';
-                        if ( perc == '100%' ) {
+                        if ( perc == '100.00%' ) {
                             data.cmds[cmd_index].status = 'finished';
+                            data.cmds[cmd_index].perc = '100%';
+                            data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
+                        }
+                        else {
                             data.cmds[cmd_index].perc = perc;
                         }
-                        data.cmds[cmd_index].perc = perc;
-                        data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
                     }
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_CMD_EXEC')) {
