@@ -186,9 +186,11 @@ class logger {
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data: get the first values from the the first started rule
                     data.cmds[cmd_index].status = 'running';
-                    data.cmds[cmd_index].perc = '50%';
                     if ( data.cmds[cmd_index].stime == '-') data.cmds[cmd_index].stime = time;
                     if ( data.cmds[cmd_index].nrules == 0 ) data.cmds[cmd_index].nrules = rule_ntotal;
+                    data.cmds[cmd_index].nrule += 1; // count the number of rules
+                    let perc = ( (data.cmds[cmd_index].nrule / (data.cmds[cmd_index].nrules*2))*100 ).toFixed(2)+'%';
+                    data.cmds[cmd_index].perc = perc;
                     data.cmds[cmd_index].path = data.path;
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_RULE_EXEC')) {
@@ -210,11 +212,12 @@ class logger {
                         data.status = 'cmd error'; // for the project table
                     }
                     else { // then, the rest of status
-                        let perc = (data.cmds[cmd_index].nrule / data.cmds[cmd_index].nrules).toFixed(2)*100+'%';
+                        let perc = ( (data.cmds[cmd_index].nrule / (data.cmds[cmd_index].nrules*2))*100 ).toFixed(2)+'%';
                         if ( perc == '100%' ) {
                             data.cmds[cmd_index].status = 'finished';
                             data.cmds[cmd_index].perc = perc;
                         }
+                        data.cmds[cmd_index].perc = perc;
                         data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
                     }
                 }
