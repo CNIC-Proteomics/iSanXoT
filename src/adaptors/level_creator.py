@@ -90,7 +90,7 @@ def main(args):
     Main function
     '''
     logging.info("read input file")
-    df = pd.read_csv(args.infile, sep="\t")
+    df = pd.read_csv(args.infile, sep="\t", low_memory=False)
     
     logging.info("check if all tags are available in the input table")
     rnum,rden = chech_tags_available(df, args.rnum, args.rden)

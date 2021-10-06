@@ -18,6 +18,11 @@ __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
 
 
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import common
 
 #################
 # Main function #
@@ -28,7 +33,11 @@ def main(args):
     '''
     logging.info("copy the content of source to destination")
     try:
-        shutil.copyfile(args.infile, args.outfile)
+        # print to tmp file
+        f = f"{args.outfile}.tmp"
+        shutil.copyfile(args.infile, f)
+        # rename tmp file deleting before the original file 
+        common.print_outfile(f)        
     except Exception as exc:
         sms = "ERROR!! Copying file: {}".format(exc)
         print(sms) # message to stdout with logging output
