@@ -51,6 +51,9 @@ DATE: 2021_10
 + TPL_COMMANDS:
 	- Fixed a bug in the variant assignation. The variants have to be assigned in the sanxot1 and sanxotsieve.
 
++ FDR and MASTERQ (FDR_Q):
+	- The masterq function (retrieves the first sorted protein alphanumerically) has been included in the FDR program.
+
 
 
 ___
