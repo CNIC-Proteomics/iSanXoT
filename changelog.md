@@ -1,11 +1,14 @@
 ___
 ## 0.3.2
 ```
-DATE: 2021_09
+DATE: 2021_10
 ```
 
 ### Highlights
 
++ CNIC Adaptors in Close search have been included.
+
++ Bug fixed and more improvementshave been implemented.
 
 ### Changes in the Graphical User Interface
 
@@ -26,6 +29,8 @@ DATE: 2021_09
 + WSPP_SBT, WSPPG_SBT, WPP_SBT, WPPG_SBT accept the "Identifier column header".
 
 + Fixing the project-workflow log table.
+
++ Problems with the Force execution have been fixed.
 
 ### Changes in the Code Workflow
 
