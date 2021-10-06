@@ -6,7 +6,11 @@ DATE: 2021_10
 
 ### Highlights
 
-+ CNIC Adaptors in Close search have been included.
++ CNIC Adaptors in Close search for PD and MSF have been included.
+
++ The RELS_CREATOR command retrieves the column names of Relation Tables (RT) with the same names that the levels indicated by the user.
+
++ The REPORT command merge the Report Table (RPT) with multiple external tables. The only condition is the external tables have to contain a unique column name like the lower level of RPT.
 
 + Bug fixed and more improvementshave been implemented.
 
