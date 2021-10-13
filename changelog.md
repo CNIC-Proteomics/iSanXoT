@@ -1,4 +1,37 @@
 ___
+## 0.3.4
+```
+DATE: 2021_10
+```
+
+### Highlights
+
+TODO!!! + REPORT: Bug fixed sorting the columns.
+
+### Changes in the Graphical User Interface
+
+### Changes in the Code Workflow
+
+TODO!!! + REPORT: Bug fixed sorting the columns.
+
+
+___
+## 0.3.3
+```
+DATE: 2021_10
+```
+
+### Highlights
+
++ REPORT: Comment the code lines that sort the columns because it is not working correctly.
+
+### Changes in the Graphical User Interface
+
+### Changes in the Code Workflow
+
++ REPORT: Comment the code lines that sort the columns because it is not working correctly.
+
+___
 ## 0.3.2
 ```
 DATE: 2021_10
