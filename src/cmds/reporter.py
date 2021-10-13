@@ -149,11 +149,11 @@ def create_report(ifiles, prefix, param_vars):
         cols_name = [(c[0],'LEVEL') if c[1] == '' else c for c in df.columns]
         df.columns = pd.MultiIndex.from_tuples(cols_name)
     
-        logging.debug("sort colums based on the initial columns")
-        # map elements to indexes
-        s = {v: i for i, v in enumerate(cols_exp_sorted)}
-        # sort based on the index
-        df.columns = pd.MultiIndex.from_tuples( sorted(df.columns, key=lambda x: s[x[1]]) )
+        # logging.debug("sort colums based on the initial columns")
+        # # map elements to indexes
+        # s = {v: i for i, v in enumerate(cols_exp_sorted)}
+        # # sort based on the index
+        # df.columns = pd.MultiIndex.from_tuples( sorted(df.columns, key=lambda x: s[x[1]]) )
     
         logging.debug("discard the columns with 1's (all)")
         df = df[[col for col in df.columns if not df[col].nunique()==1]]
