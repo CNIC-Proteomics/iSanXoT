@@ -37,8 +37,8 @@ COL_VARS = {
     'xinf':   'Xinf',
     'vinf':   'Vinf'
 }
-
 ROOT_FOLDER = '/jobs/'
+SORTED_EXP_COLS = []
 
 #########################
 # Import local packages #
@@ -138,7 +138,8 @@ def create_report(ifiles, prefix, param_vars):
         df.columns = ['{}{}'.format(c, '' if c in keep_same else f"_{prefix}") for c in df.columns]
         
         logging.debug("get the given sorted columns")
-        cols_exp_sorted = ['LEVEL'] + list(pd.unique(df['NAME']))
+        global SORTED_EXP_COLS
+        SORTED_EXP_COLS = list(pd.unique(df['NAME']))
     
         logging.debug("pivot table")
         # get the columns that are LEVELS (from the prefixes)
@@ -148,12 +149,6 @@ def create_report(ifiles, prefix, param_vars):
         logging.debug("add  'LEVEL' label")
         cols_name = [(c[0],'LEVEL') if c[1] == '' else c for c in df.columns]
         df.columns = pd.MultiIndex.from_tuples(cols_name)
-    
-        # logging.debug("sort colums based on the initial columns")
-        # # map elements to indexes
-        # s = {v: i for i, v in enumerate(cols_exp_sorted)}
-        # # sort based on the index
-        # df.columns = pd.MultiIndex.from_tuples( sorted(df.columns, key=lambda x: s[x[1]]) )
     
         logging.debug("discard the columns with 1's (all)")
         df = df[[col for col in df.columns if not df[col].nunique()==1]]
@@ -297,11 +292,17 @@ def main(args):
         cols_level = [(c,'LEVEL') for c in show_cols]
     else:
         cols_level = [c for c in df.columns if c[1] == 'LEVEL']
-    # sort the VARS columns from the given parameter
-    cols_vars = sorted([c for c in df.columns if c[1] != 'LEVEL' and c[1] != 'REL'])
+    # sort VARS based on inputs. if var does not exist, then goes to the end of columns
+    cols_vars = [c for c in df.columns if c[1] != 'LEVEL' and c[1] != 'REL']
+    try:
+        s = {v: i for i, v in enumerate(SORTED_EXP_COLS)} # first!! map sorted columns to indexes
+        cols_vars_sorted = sorted(cols_vars, key=lambda x: s[x[1]] if x[1] in s else float('inf'))
+    except:
+        cols_vars_sorted = sorted(cols_vars)
     # the rest of columns (REL)
     cols_rel = [c for c in df.columns if c[1] == 'REL']
-    cols = cols_level + cols_vars + cols_rel
+    # reindex based on the new order of columns
+    cols = cols_level + cols_vars_sorted + cols_rel
     df = df.reindex(columns=cols)
         
     # Exception: if all column with variables are 'n_'
