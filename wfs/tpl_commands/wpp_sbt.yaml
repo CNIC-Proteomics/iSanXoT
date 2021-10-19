@@ -44,7 +44,7 @@
   - name: wpp_sbt#p2q_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __RELDIR__/upeptide2protein.tsv
+      -r: __RELDIR__/peptide2protein.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
@@ -63,7 +63,7 @@
   - name: wpp_sbt#p2q_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __RELDIR__/upeptide2protein.tsv
+      -r: __RELDIR__/peptide2protein.tsv
       -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv

@@ -44,7 +44,7 @@
   - name: wspp_sbt#s2p_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/scan.tsv
-      -r: __RELDIR__/uscan2peptide.tsv
+      -r: __RELDIR__/scan2peptide.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats1.tsv
       -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
@@ -61,7 +61,7 @@
   - name: wspp_sbt#s2p_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/scan.tsv
-      -r: __RELDIR__/uscan2peptide.tsv
+      -r: __RELDIR__/scan2peptide.tsv
       -V: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/scan2peptide_tagged.tsv
