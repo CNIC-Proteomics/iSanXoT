@@ -119,7 +119,6 @@ if __name__ == "__main__":
         Example:
             python ratios.py
         ''', formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',  '--infile', required=True, help='Input file with Identification')
     parser.add_argument('-e',  '--exp', required=True, help='Filter given table by experiment')
     parser.add_argument('-f',  '--feat', required=True, help='Column that identify the feature')
