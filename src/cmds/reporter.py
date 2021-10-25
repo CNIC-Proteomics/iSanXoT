@@ -213,7 +213,7 @@ def add_relation(idf, file, prefix):
     # to add the relationship
     if len(ints) == 1:
         r = ints[0]
-        idf = pd.merge(idf, df, on=[r], how='outer')
+        idf = pd.merge(idf, df, on=[r], how='left')
     return idf
 
 #################
