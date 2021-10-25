@@ -73,9 +73,16 @@ function extractInputDirectoryFile(inputs, errsms) {
 $('#__OUTDIR__  button').click(function() {
   dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
     let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
-    console.log( "OUTDIR");
     if ( inpt !== undefined ) {
       $(`#__OUTDIR__ input`).val(`${inpt}`);
+    }
+  });
+});
+$('#__INDIR__  button').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
+    if ( inpt !== undefined ) {
+      $(`#__INDIR__ input`).val(`${inpt}`);
     }
   });
 });
