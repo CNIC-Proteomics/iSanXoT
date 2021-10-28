@@ -48,7 +48,7 @@ def processing_infiles(file, Expt, FirstComm):
     '''    
     # read input file
     if FirstComm:
-        df = pd.read_csv(file, sep="\t", comment='#', skiprows=1)
+        df = pd.read_csv(file, sep="\t", comment='#', skiprows=1, index_col=False)
     else:
         df = pd.read_csv(file, sep="\t", comment='#')
     # add Experiment column

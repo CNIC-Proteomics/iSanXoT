@@ -37,11 +37,11 @@ def select_search_engines(inpt):
     else:
         d = inpt
     # determines which kind of searh engines we have.
-    search_engines = ["PD","Comet","Comet-with-comm","MSFragger","MaxQuant"]
+    search_engines = ["PD","Comet-with-comm","Comet","MSFragger","MaxQuant"]
     cond = (
         all(c in list(d.columns) for c in PD.COLS_NEEDED), # PD
-        len(d.columns) == 4, # Comet
-        all(c in list(d.columns) for c in Comet.COLS_NEEDED), # Comet-with-comm
+        len(d.columns) == 4, # Comet-with-comm (the first row is a comment)
+        all(c in list(d.columns) for c in Comet.COLS_NEEDED), # Comet without the comment line
         all(c in list(d.columns) for c in MSFragger.COLS_NEEDED), # MSFragger
         all(c in list(d.columns) for c in MaxQuant.COLS_NEEDED) # MaxQuant (from a list)
     )
