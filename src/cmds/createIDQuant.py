@@ -41,7 +41,9 @@ def processing_infiles(file, Expt, se):
     if se == "PD":
         df = PD.processing_infiles(file, Expt)
     elif se == "Comet":
-        df = Comet.processing_infiles(file, Expt)
+        df = Comet.processing_infiles(file, Expt, False)
+    elif se == "Comet-with-comm":
+        df = Comet.processing_infiles(file, Expt, True)
     elif se == "MSFragger":
         df = MSFragger.processing_infiles(file, Expt)
     elif se == "MaxQuant":

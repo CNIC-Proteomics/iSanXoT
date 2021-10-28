@@ -40,14 +40,17 @@ def parser_protein_acessions(prot):
     p = [";".join([ re.sub(r".*(\|(.*?)\|).*", r'\2', i) if re.match(r'^[sp|tr]', i) else i for i in x]) for x in p]
     return p
 
-def processing_infiles(file, Expt):
+def processing_infiles(file, Expt, FirstComm):
     '''
     Pre-processing the data:
     - rename columns
     - add needed columns
     '''    
     # read input file
-    df = pd.read_csv(file, sep="\t", comment='#')
+    if FirstComm:
+        df = pd.read_csv(file, sep="\t", comment='#', skiprows=1)
+    else:
+        df = pd.read_csv(file, sep="\t", comment='#')
     # add Experiment column
     df["Experiment"] = Expt
     # rename columns
