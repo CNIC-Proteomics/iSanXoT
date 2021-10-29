@@ -7,7 +7,7 @@
         { "id": "close_input_comet", "label": "CNIC - Input from Comet", "enabled": false, "clicked": { "dir": "adaptors/close_input_comet" } },
         { "id": "close_input_maxquant", "label": "CNIC - Input from MaxQuant", "enabled": false, "clicked": { "dir": "adaptors/close_input_maxquant" } }
     ]},
-    { "label": "CNIC - Open Search (Under Construction)", "submenu": [
+    { "label": "CNIC - Open Search", "submenu": [
         { "id": "open_input_msfragger", "label": "CNIC - Input from MSFragger", "enabled": false, "clicked": { "dir": "adaptors/open_input_msfragger" } },
         { "id": "open_input_cometptm", "label": "CNIC - Input from Comet-PTM", "enabled": false, "clicked": { "dir": "adaptors/open_input_cometptm" } }
     ]}
