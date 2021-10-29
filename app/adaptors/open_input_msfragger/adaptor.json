@@ -1,21 +1,21 @@
 {
-  "id": "cnic_input_pd",
-  "label": "CNIC - Input from PD",
-  "sdesc": "<p><i>Input from PD</i>.</p>",
+  "id": "open_input_msfragger",
+  "label": "CNIC - Input from MSFragger",
+  "sdesc": "<p><i>Input from MSF</i>.</p>",
   "description": "Long description for the adaptor.",
   "works": [{
     "id": "inputs",
     "label": "Inputs",
     "description": "Short description for the current work (tab)",
-    "cmds": ["CREATE_IDQUANT", "FDR_Q", "JOINER_FDR", "GET_IDSTATS"]
+    "cmds": ["CREATE_IDQUANT", "JOINER_ID", "GET_IDSTATS"]
   }],
   "commands": [{
     "id": "CREATE_IDQUANT",
-    "label": "Files from Proteome Discoverer",
-    "title": "Provide input files from Proteome Discoverer",
+    "label": "Files from MSFragger",
+    "title": "Provide input files from MSFragger",
     "visible": true,
-    "panel": "adaptors/cnic_input_pd/panels/inputs.html",
-    "help_modal": "adaptors/cnic_input_pd/hmodals/inputs.html",
+    "panel": "adaptors/open_input_msfragger/panels/inputs.html",
+    "help_modal": "adaptors/open_input_msfragger/hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant.tsv",
       "unique_exec": true,
@@ -26,13 +26,29 @@
         { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]}
   },{
+    "id": "CREATE_IDQUANT_JOINER",
+    "label": "Files from MSFragger",
+    "title": "Provide input files from MSFragger",
+    "visible": true,
+    "panel": "adaptors/open_input_msfragger/panels/inputs.html",
+    "help_modal": "adaptors/open_input_msfragger/hmodals/inputs.html",
+    "tasktable": {
+      "file": "create_idquant_joiner.tsv",
+      "unique_exec": true,
+      "params": [
+        { "type": "required", "id": "infile", "name": "Infile" },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "optional", "id": "mzfile", "name": "mz File" },
+        { "type": "optional", "id": "quan_method", "name": "Quan Method" }
+    ]}
+  },{
     "id": "FDR_Q",
     "label": "FDR",
     "title": "FDR calculation",
     "sdesc": "Calculation of FDR and get the first protein selected alphabetically.",
     "visible": true,
-    "panel": "adaptors/cnic_input_pd/panels/simple.html",
-    "help_modal": "adaptors/cnic_input_pd/hmodals/fdr.html",
+    "panel": "adaptors/open_input_msfragger/panels/simple.html",
+    "help_modal": "adaptors/open_input_msfragger/hmodals/fdr.html",
     "tasktable": {
       "file": "fdr_q.tsv",
       "params": [
@@ -45,9 +61,9 @@
         { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
     ]}
   },{
-    "id": "JOINER_FDR",
+    "id": "JOINER_ID",
     "label": "JOINER",
-    "sdesc": "Concatenate all fdr tables in one",
+    "sdesc": "Concatenate all ID tables in one",
     "visible": false
   },{
     "id": "GET_IDSTATS",

@@ -1,32 +1,37 @@
-<template class="task-template" id="panel-main_inputs">
-  
+<template class="task-template" id="panel-input_comet">
+
 <div id="panel-simple">
-  <div class="helpadv">
+  <div class="helpadv" onclick="ehandler.openHelpModal(this)">
     <svg class="bi text-info" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#info-square-fill" /></svg>
   </div>
   <div class="help_modal"></div>
 </div>
 
-<div id="paneladaptor-main_inputs">
+<div id="paneladaptor-input_comet">
 
   <div class="form-group">
-    <h6>Project folder</h6>
+    <h6>Output folder</h6>
     <div class="input-group col-sm  adaptor_inputs" id="__OUTDIR__">
       <input type="text" class="form-control" placeholder=""  value="">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary btn-sm" type="button">Choose folder</button>
       </div>
-    </div>  
+    </div>
   </div>
 
   <div class="form-group">
-    <h6>Identification file</h6>
-    <div class="input-group col-sm  adaptor_inputs" id="__IDQ_FILE__">
+    <h6>Default Input folder</h6>  
+    <div class="input-group col-sm  adaptor_inputs" id="__INDIR__">
       <input type="text" class="form-control" placeholder=""  value="">
       <div class="input-group-append">
-        <button class="btn btn-outline-secondary btn-sm" type="button">Choose file</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button">Choose folder</button>
       </div>
     </div>
+  </div>
+
+  <div class="form-group">
+    <h6>Input files</h6>
+    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show advanced options" data-off="Hide advanced options" data-onstyle="light" data-offstyle="dark" data-width="150px" data-height="30px" data-size="sm" checked>
   </div>
   
 </div>
@@ -68,17 +73,16 @@ function extractInputDirectoryFile(inputs, errsms) {
 $('#__OUTDIR__  button').click(function() {
   dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
     let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
-    console.log( "OUTDIR");
     if ( inpt !== undefined ) {
       $(`#__OUTDIR__ input`).val(`${inpt}`);
     }
   });
 });
-$('#__IDQ_FILE__  button').click(function() {
-  dialog.showOpenDialog(mainWindow, { properties: ['openFile'] }).then((dirs) => {
-    let inpt = extractInputDirectoryFile(dirs, `No input file selected`);
+$('#__INDIR__  button').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
     if ( inpt !== undefined ) {
-      $(`#__IDQ_FILE__ input`).val(`${inpt}`);
+      $(`#__INDIR__ input`).val(`${inpt}`);
     }
   });
 });
@@ -88,24 +92,24 @@ function checkInputFile(input, errsms, exceptor) {
   let fs = require('fs');
   if ( $(`${input}`).val() === undefined || $(`${input}`).val() === '' ) {
       console.log(`${errsms}: input is undefined`);
-      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
     }
     else {
       try {
         if ( !fs.existsSync($(`${input}`).val()) ) {
           console.log(`${errsms}: input is undefined`);
-          exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+          exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
         }
       } catch(err) {
         console.log(`${errsms}: input is undefined`);
-        exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+        exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
       }
     }
     return;
 };
 /* The name and the parameters of this function has to be the same in the adaptors */
 function checkAdaptorInputs(exceptor) {
-  checkInputFile(`#__IDQ_FILE__ input`, `Input file has not been included`, exceptor);
+  checkInputFile(`#__INDIR__ input`, `Input folder has not been included`, exceptor);
   checkInputFile(`#__OUTDIR__ input`, `Output folder has not been included`, exceptor);
 };
 

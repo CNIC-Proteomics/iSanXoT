@@ -350,10 +350,5 @@ if ( prj_cfg ) {
  * Activate the events
  */
 
-// add values into panels, if apply
-// functions in the corresponding html template
-// ehandler.addValuesMainInputsPanel(remote, importer, exceptor);
-// ehandler.addValuesPanelCatDB(importer);
-
 // Active the advanced options if apply
 ehandler.activeAdvancedEvents(importer);

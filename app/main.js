@@ -19,13 +19,8 @@ let all_pids = { 'pids':[], 'c_pids':[] };
 // Menu
 let template = [
   { label: "Menu", submenu: [    
-    { label: 'Main Page', click() { mainWindow.loadFile('index.html') } },
-    // { label: "Open Model Project", submenu: [
-    //   { label: 'Integration WT/KO - iTRAQ Reagent 8 plex kit', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=samples&pdir=${process.env.ISANXOT_LIB_HOME}/samples/basic.wt_ko`) } },
-    //   { label: 'Label-Free - MaxQuant', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=samples&pdir=${process.env.ISANXOT_LIB_HOME}/samples/basic.lblfree`) } },
-    //   { label: 'New Project', accelerator: 'Ctrl+N', click() { mainWindow.loadURL(`file://${__dirname}/wf.html?ptype=load&pdir=${__dirname}/wfs/basic`) } },
-    // ]},  
-    { id: 'new-project', label: 'New Project...', accelerator: 'Ctrl+N', click() { mainWindow.webContents.send('newProject') } },
+    { id: 'main-page',    label: 'Main Page', click() { mainWindow.loadFile('index.html') } },
+    { id: 'new-project',  label: 'New Project...', accelerator: 'Ctrl+N', click() { mainWindow.webContents.send('newProject') } },
     { id: 'open-project', label: 'Open Project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
     { id: 'save-project', label: 'Save Project', accelerator: 'Ctrl+S', enabled: false, click() { mainWindow.webContents.send('saveProject') } },
     { type: 'separator' },
@@ -39,11 +34,12 @@ let template = [
     { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile('processes.html') } }
   ]},
   { label: "Help", submenu: [
-    { label: 'General', click() { mainWindow.loadURL(`file://${__dirname}/help.html`) } },    
+    { id: 'help-intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'help_intro') } },
+    { id: 'help-cmds', label: 'Commands', click() { mainWindow.webContents.send('openHelper', 'help_cmds') } },
     { label: 'Workflows', submenu: [
-      { label: 'Basic', click() { mainWindow.loadURL(`file://${__dirname}/help.html#help_basic`) } },
-    ]},
-    { label: 'Commands', click() { mainWindow.loadURL(`file://${__dirname}/commands.html`) } },
+      { id: 'help-wf_basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
+      { id: 'help-wf_ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
+    ]}
   ]},
 ]
 
@@ -96,7 +92,7 @@ function createWindow () {
       enableRemoteModule: true
     },
     // resizable: false,
-    'icon': __dirname + '/assets/icons/molecule.png',
+    'icon': `${__dirname}/assets/icons/molecule.png`,
   })
 
   // and load the index.html of the app.

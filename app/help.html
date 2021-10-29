@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>iSanXoT!</title>
+    <title>iSanXoT! Help</title>
     <!-- Imports CSS -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
@@ -24,11 +24,15 @@
     <h1>iSanXoT</h1>
     <p style="color: red;">MAIN DESCRIPTION OF iSanXoT</p>
     
-    <div id="help_basic"></div>
+    <div id="help_intro"></div>
+
+    <div id="help_cmds"></div>
+
+    <div id="help_wf-basic"></div>
   
-    <!-- <div id="help_ptm"></div>
+    <div id="help_wf-ptm"></div>
     
-    <div id="help_lblfree"></div> -->
+    <div id="help_wf-lblfree"></div>
     
   </div>
   <footer><div class="footer" id="footer"></div></footer>
@@ -36,6 +40,7 @@
   <script>
     // Import the templates and global processes
     require('./renderer-process/imports');
+    require('./renderer-process/exceptor');
     // Print the version
     document.querySelector('#footer span.version').innerHTML = require('electron').remote.app.getVersion();
   </script>

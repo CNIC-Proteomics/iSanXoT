@@ -79,32 +79,41 @@
       }
     });
   });
+  $('#__INDIR__  button').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
+    if ( inpt !== undefined ) {
+      $(`#__INDIR__ input`).val(`${inpt}`);
+    }
+  });
+});
+
   
-  /* Functions that chech the inputs */
-  function checkInputFile(input, errsms, exceptor) {
-    let fs = require('fs');
-    if ( $(`${input}`).val() === undefined || $(`${input}`).val() === '' ) {
-        console.log(`${errsms}: input is undefined`);
-        exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
-      }
-      else {
-        try {
-          if ( !fs.existsSync($(`${input}`).val()) ) {
-            console.log(`${errsms}: input is undefined`);
-            exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
-          }
-        } catch(err) {
+/* Functions that chech the inputs */
+function checkInputFile(input, errsms, exceptor) {
+  let fs = require('fs');
+  if ( $(`${input}`).val() === undefined || $(`${input}`).val() === '' ) {
+      console.log(`${errsms}: input is undefined`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+    }
+    else {
+      try {
+        if ( !fs.existsSync($(`${input}`).val()) ) {
           console.log(`${errsms}: input is undefined`);
           exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
         }
+      } catch(err) {
+        console.log(`${errsms}: input is undefined`);
+        exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
       }
-      return;
-  };
-  /* The name and the parameters of this function has to be the same in the adaptors */
-  function checkAdaptorInputs(exceptor) {
-    checkInputFile(`#__INDIR__ input`, `Input folder has not been included`, exceptor);
-    checkInputFile(`#__OUTDIR__ input`, `Output folder has not been included`, exceptor);
-  };
+    }
+    return;
+};
+/* The name and the parameters of this function has to be the same in the adaptors */
+function checkAdaptorInputs(exceptor) {
+  checkInputFile(`#__INDIR__ input`, `Input folder has not been included`, exceptor);
+  checkInputFile(`#__OUTDIR__ input`, `Output folder has not been included`, exceptor);
+};
   
   </script>
   </template>

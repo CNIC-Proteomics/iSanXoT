@@ -1,4 +1,4 @@
-<template class="task-template" id="panel-input_pd">
+<template class="task-template" id="panel-input_maxquant">
 
 <div id="panel-simple">
   <div class="helpadv" onclick="ehandler.openHelpModal(this)">
@@ -7,7 +7,7 @@
   <div class="help_modal"></div>
 </div>
 
-<div id="paneladaptor-input_pd">
+<div id="paneladaptor-input_maxquant">
 
   <div class="form-group">
     <h6>Output folder</h6>
@@ -80,7 +80,7 @@ $('#__OUTDIR__  button').click(function() {
 });
 $('#__INDIR__  button').click(function() {
   dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
-    let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
+    let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
     if ( inpt !== undefined ) {
       $(`#__INDIR__ input`).val(`${inpt}`);
     }

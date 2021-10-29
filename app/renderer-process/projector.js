@@ -174,7 +174,7 @@ function newProject() {
         },      
         minimizable: false,
         resizable: false,
-        'icon': `${__dirname}/../assets/icons/molecule.png`,
+        'icon': process.env.ISANXOT_ICON,
         parent: mainWindow
     });
     win.setMenu(null);

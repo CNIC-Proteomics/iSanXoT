@@ -15,9 +15,9 @@ body {
     background: #fafafa;
     font-size: .97rem;
 }
-p {
-    font-size: 1.1em;
-    font-weight: 300;
+p, ul, li {
+    /* font-size: 1.1em;
+    font-weight: 300; */
     line-height: 1.7em;
     color: #999;
 }
@@ -59,9 +59,11 @@ input:disabled, button:disabled {
     background-color: #5a6268;
 } */
 
-/* ---------------------------------------------------
-    INIT PAGE
------------------------------------------------------ */
+/*
+ * ---------------------------------------------------
+ *   INIT PAGE
+ * ---------------------------------------------------
+ */
 #accordion {
     margin: 20px 10px 0 10px;
 }
@@ -69,17 +71,6 @@ input:disabled, button:disabled {
     text-decoration: none;
     color: goldenrod;
 }
-/* #accordion a.btn-primary, #page-new-project a.btn-primary {
-    color: #fff;
-    background-color: slategray;
-    border-color: black;
-}
-#accordion a.btn-primary:hover, #page-new-project a.btn-primary:hover {
-    background-color: #5a6268;
-} */
-
-
-
 #accordion button.dropdown-toggle {
     color: #fff;
 }
@@ -96,9 +87,12 @@ input:disabled, button:disabled {
     float: right;
 }
 
-/* ---------------------------------------------------
-    WORKFLOW PAGE
------------------------------------------------------ */
+
+/*
+ * ---------------------------------------------------
+ *   WORKFLOW PAGE
+ * ---------------------------------------------------
+ */
 
 /* Tab settings */
 .tab-content {
@@ -147,17 +141,14 @@ input:disabled, button:disabled {
     padding-bottom: 1em;
 }
 
-
 /* sidebar */
 #page .col-1 {
     min-width: 100px;
 }
-
 #sidebar .sidebar-header {
     font-size: 1.8em;
     padding: .3em;
 }
-
 #sidebar {
     background: #7386D5;
     color: #fff;
@@ -168,14 +159,13 @@ input:disabled, button:disabled {
     padding: 20px 0;
     border-bottom: 1px solid #47748b;
 }
-
 #sidebar ul li a {
     cursor: pointer;
     padding: 10px;
     font-size: 1.1em;
     display: block;
+    color: #e9ecef;
 }
-
 #sidebar ul li a.active {
     color: #7386D5;
     background: #e9ecef;
@@ -185,10 +175,11 @@ input:disabled, button:disabled {
     background: #6d7fcc; */
 }
 
-
-/* ---------------------------------------------------
-    EXECUTOR
------------------------------------------------------ */
+/*
+ * ---------------------------------------------------
+ *   EXECUTOR
+ * ---------------------------------------------------
+ */
 #executor button#start {
     color: #fff;
     background-color: slategray;
@@ -199,9 +190,11 @@ input:disabled, button:disabled {
     margin-left: 0.1em;
 }
 
-/* ---------------------------------------------------
-    PROCESSORS/LOGGER
------------------------------------------------------ */
+/*
+ * ---------------------------------------------------
+ *   PROCESSORS/LOGGER
+ * ---------------------------------------------------
+ */
 #panel-logger {
     margin: 10px 10px 10px 20px;
     overflow-y: auto !important;
@@ -222,10 +215,11 @@ input:disabled, button:disabled {
     cursor: pointer;
 }
 
-
-/* ---------------------------------------------------
-    LOADER
------------------------------------------------------ */
+/*
+ * ---------------------------------------------------
+ *   LOADER
+ * ---------------------------------------------------
+ */
 #loader {
     display: none;
 }
@@ -270,12 +264,10 @@ input:disabled, button:disabled {
     animation-name: animatebottom;
     animation-duration: 1s
 }
-
 @-webkit-keyframes animatebottom {
     from { bottom:-100px; opacity:0 } 
     to { bottom:0px; opacity:1 }
 }
-
 @keyframes animatebottom { 
     from{ bottom:-100px; opacity:0 } 
     to{ bottom:0; opacity:1 }
@@ -284,7 +276,7 @@ input:disabled, button:disabled {
 /*
  * ---------------------------------------------------
  *   PANEL-SECTION: MAIN_INPUTS
- * -----------------------------------------------------
+ * ---------------------------------------------------
  */
     div[id^="panel-"] {
         margin-top: .6em;
@@ -293,7 +285,7 @@ input:disabled, button:disabled {
 /*
  * ---------------------------------------------------
  *   PANEL-SECTION: MAIN_INPUTS
- * -----------------------------------------------------
+ * ---------------------------------------------------
  */
 .form-inline.row {
     margin-right: 0;
@@ -382,11 +374,10 @@ fieldset[disabled] .btn-selectpicker.focus {
     background-color: #333;
 }
   
-
 /*
  * ---------------------------------------------------
  *   PANEL-SECTION: ADVANCED PARAMETERS
- * -----------------------------------------------------
+ * ---------------------------------------------------
  */
 #panel-simple {
     margin-top: .6em;
@@ -410,9 +401,8 @@ fieldset[disabled] .btn-selectpicker.focus {
 /*
 * ---------------------------------------------------
 *   HELP PAGES
-* -----------------------------------------------------
+* ---------------------------------------------------
 */
-
 #help {
     padding: 20px;
     background-color: white;
@@ -438,12 +428,19 @@ fieldset[disabled] .btn-selectpicker.focus {
 }
 
 /*
+ * ---------------------------------------------------
+ *   HMODALS
+ * ---------------------------------------------------
+ */
+#hmodal * {
+    /* font-size: 1.rem; */
+}
+
+/*
 * ---------------------------------------------------
 *   NEW PROJECT
-* -----------------------------------------------------
+* ---------------------------------------------------
 */
-
-
 #page-new-project {
     padding: 1rem;
 }

@@ -5,6 +5,7 @@ if (process.env.ISANXOT_MODE != "debug") {
 
 // Set the local directory
 process.env.ISANXOT_SRC_HOME = process.cwd();
+process.env.ISANXOT_ICON = `${process.env.ISANXOT_SRC_HOME}/app/assets/icons/molecule.png`;
 
 
 /*
@@ -121,6 +122,9 @@ ipcRenderer.on('importAdaptor', (event, data) => {
     workflower.importAdaptor(adaptor_dir);
     // stopLoadingWorkflow function done when the page is loaded
 });
+ipcRenderer.on('openHelper',  (event, data) => {
+    helper.openHelper(data);
+});
 
 
 /*
@@ -214,20 +218,15 @@ importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/help_basic.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/help_ptm.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/help_lblfree.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_intro.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_cmds.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-basic.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-ptm.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-lblfree.html`);
 
 // Import scripts
-// // var commoner = require('./common');
-// // var ehandler = require('./ehandler');
-// var exceptor = require('./exceptor');
-// var projector = require('./projector');
-// var workflower = require('./workflower');
-// // var executor = require('./executor');
-
 let exceptor = require('./exceptor');
-// let executor = require('./executor');
+let helper = require('./helper');
 let projector = require('./projector');
 let workflower = require('./workflower');
 
@@ -245,8 +244,6 @@ if ( filename == "wf" ) {
 
     // add full-body
     require(`./bodied`);
-    // // add the module to execute the jobs
-    // require('./executor');
 
     // enable menu items related with workflow
     setEnableMenuItem(true);
