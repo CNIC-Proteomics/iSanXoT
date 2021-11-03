@@ -31,32 +31,32 @@ def correcmatrix(df):
     '''
     Correct and normalize the matrix of isotopic distribution
     '''
-    if not df.empty:
-        try:
+    try:
+        tmt,isocorrm = None,[None]
+        if df is not None and not df.empty and 'type_tmt' in df.columns:
             # extract the type of TMT. Remove leading and trailing whitespaces. Uppercase
             tmt = df['type_tmt'].unique()[0].strip().upper()
             ### TMT 10plex reporter isotopic Distributions matrix###
             if tmt == 'TMT10':
-                m = df[["-2","-1","1","2"]].values.T
-                isocorrm = np.array([
-                    [100    , 0      , m[1][2], 0      , m[0][4], 0      , 0      , 0      , 0      , 0      ],
-                    [0      , 100    , 0      , m[1][3], 0      , m[0][5], 0      , 0      , 0      , 0      ],
-                    [m[2][0], 0      , 100    , 0      , m[1][4], 0      , m[0][6], 0      , 0      , 0      ],
-                    [0      , m[2][1], 0      , 100    , 0      , m[1][5], 0      , m[0][7], 0      , 0      ],
-                    [m[3][0], 0      , m[2][2], 0      , 100    , 0      , m[1][6], 0      , m[0][8], 0      ],
-                    [0      , m[3][1], 0      , m[2][3], 0      , 100    , 0      , m[1][7], 0      , m[0][9]],
-                    [0      , 0      , m[3][2], 0      , m[2][4], 0      , 100    , 0      , m[1][8], 0      ],
-                    [0      , 0      , 0      , m[3][3], 0      , m[2][5], 0      , 100    , 0      , m[1][9]],
-                    [0      , 0      , 0      , 0      , m[3][4], 0      , m[2][6], 0      , 100    , 0      ],
-                    [0      , 0      , 0      , 0      , 0      , m[3][5], 0      , m[2][7], 0      , 100    ]
-                ])/100
-            isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
-            pass
-        except Exception:
-            tmt,isocorrm = None,[None]
-            pass
-    else:
+                if all(e in df.columns  for e in ["-2","-1","1","2"]):
+                    m = df[["-2","-1","1","2"]].values.T
+                    isocorrm = np.array([
+                        [100    , 0      , m[1][2], 0      , m[0][4], 0      , 0      , 0      , 0      , 0      ],
+                        [0      , 100    , 0      , m[1][3], 0      , m[0][5], 0      , 0      , 0      , 0      ],
+                        [m[2][0], 0      , 100    , 0      , m[1][4], 0      , m[0][6], 0      , 0      , 0      ],
+                        [0      , m[2][1], 0      , 100    , 0      , m[1][5], 0      , m[0][7], 0      , 0      ],
+                        [m[3][0], 0      , m[2][2], 0      , 100    , 0      , m[1][6], 0      , m[0][8], 0      ],
+                        [0      , m[3][1], 0      , m[2][3], 0      , 100    , 0      , m[1][7], 0      , m[0][9]],
+                        [0      , 0      , m[3][2], 0      , m[2][4], 0      , 100    , 0      , m[1][8], 0      ],
+                        [0      , 0      , 0      , m[3][3], 0      , m[2][5], 0      , 100    , 0      , m[1][9]],
+                        [0      , 0      , 0      , 0      , m[3][4], 0      , m[2][6], 0      , 100    , 0      ],
+                        [0      , 0      , 0      , 0      , 0      , m[3][5], 0      , m[2][7], 0      , 100    ]
+                    ])/100
+                    isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
+        pass
+    except Exception:
         tmt,isocorrm = None,[None]
+        pass
     return tmt,isocorrm
 
 def isobaric_labelling(df):
@@ -64,12 +64,15 @@ def isobaric_labelling(df):
     Get the isobaric labels from the matrix of isotopic distribution
     '''    
     try:
-        p = df[['tag','reporter_ion']]
-        p = p.values.T.tolist()
+        p = [[None],[None]]
+        if df is not None and not df.empty:
+            if all(e in df.columns  for e in ['tag','reporter_ion']):
+                p = df[['tag','reporter_ion']]
+                p = p.values.T.tolist()
         pass
     except Exception:
-        pass
         p = [[None],[None]]
+        pass
         
     return p
 
@@ -78,7 +81,7 @@ def monoisocorrec(b1, isocorrm):
     TMT 10plex reporter isotopic Distributions correction
     '''
     b1 = np.array(b1)
-    b1 = nnls(isocorrm, b1.astype("float32"))[0]   
+    b1 = nnls(isocorrm, b1.astype("float32"))[0]
     return b1
 
 def get_quant(spec_mz, spec_int, label, isotag, isocorrm):
@@ -105,7 +108,7 @@ def get_quant(spec_mz, spec_int, label, isotag, isocorrm):
         else:
             b1.append(b2[0])
     
-    if label == "TMT10":
+    if isocorrm is not None and isinstance(isocorrm,np.ndarray) and label == "TMT10":
         b1 = monoisocorrec(b1, isocorrm)
     
     return b1
@@ -262,21 +265,25 @@ def prepare_params(ieddf, inddf):
     indata = inddf[1]
 
     # extract the quantification files and the experiemnt name
-    # q => [['spectrum_file','mzfile','experiment','quan_method']]
-    q = indata[['mzfile','experiment','quan_method']]
+    # q = indata[['mzfile','experiment','quan_method']] 
+    q = indata[['mzfile','experiment']].copy()
+    # optional Quant_Method (Ion distribution file)
+    if 'quan_method' in indata.columns:
+        q.loc[:,'quan_method'] = indata['quan_method']
+    else:
+        q.loc[:,'quan_method'] = ''
     s = list(indata['infile'])
     q.insert(0,'Spectrum_File', [os.path.basename(x) for x in s])
-    q = q.drop_duplicates().values.tolist()
+    q = sorted(q.drop_duplicates().values.tolist(), key=lambda x: x[0]) # sort by the Spectrum_File
 
     # get the list of scans (for each Spectrum file)
-    # a => [['spectrum_file','scan_list']]
     i = idedf[['Scan','Spectrum_File']]
     i = i.drop_duplicates()
     i = i.groupby('Spectrum_File')['Scan'].apply(list).reset_index()
-    i = i.values.tolist()
+    i = sorted(i.values.tolist(), key=lambda x: x[0]) # sort by the Spectrum_File
     
     # add the table of isotopic distrution depending from the input file (Ion distribution file)
-    qff = [ x+[y[1]]+[pd.read_csv(x[3], sep="\t", comment='#', na_values=['NA'], low_memory=False)] for x,y in zip(q,i) if x[0]==y[0] ]
+    qff = [ x+[y[1]]+[pd.read_csv(x[3], sep="\t", comment='#', na_values=['NA'], low_memory=False) if x[3] != '' and os.path.isfile(x[3]) else None] for x,y in zip(q,i) if x[0]==y[0] ]
     
     return qff
 
@@ -302,9 +309,6 @@ def extract_quantification(params):
     quant: quantifications.
 
     '''
-    # get the input parameters based on the list of lists
-    params = params[0]
-    
     # get params values
     spec_basename = params[0]
     mzfile = params[1]
@@ -314,7 +318,8 @@ def extract_quantification(params):
     
     type_tmt,isocorrm = correcmatrix(isom)
     isoname, isotag = isobaric_labelling(isom)
-    if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
+    # if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
+    if isoname != [None] and isotag != [None]:
         quant = parser_mz(mzfile, spec_basename, type_tmt, isotag, isoname, isocorrm, scan_list)
     
     return quant

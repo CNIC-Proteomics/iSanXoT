@@ -1,19 +1,34 @@
 ___
 ## 0.3.4
 ```
-DATE: 2021_10
+DATE: 2021_11
 ```
 
 ### Highlights
 
-TODO!!! + REPORT: Bug fixed sorting the columns.
++ Create a windows for the documentation.
+
++ REPORT: Bug fixed sorting the columns.
 
 ### Changes in the Graphical User Interface
 
++ Adaptor Input PD: The button of Input folder has been fixed.
+
++ The following adaptors have been included:
+	- Adaptor for Comet Input (Close search).
+	- Adaptor for Comet-PTM Input (Close search).
+
 ### Changes in the Code Workflow
 
-TODO!!! + REPORT: Bug fixed sorting the columns.
++ REPORT:
+	- Bug fixed sorting the columns.
+	- It doesn't increase the rows when we add information from Relation Table. It uses only the keys from the Report table.
 
++ TPL_COMMANDS:
+	- Correct the relate tables in the compounds commands.
+
++ TABLE2CFG:
+	- Replace "\" to "/" to accepts paths within "More_params"; otherwise the JSON crashes.
 
 ___
 ## 0.3.3

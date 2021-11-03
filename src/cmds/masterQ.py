@@ -59,7 +59,8 @@ def extract_proteins2(df, tagDecoy):
     ps = list(df['Protein_Accessions'].str.split("\s*;\s*"))
     ds = list(df['Protein_Descriptions'].str.split("\s*;\s*"))
     # remove DECOY from the list of tuples (protein,description)
-    da = [ [(i,j) for i,j in zip(p,d) if i and not (tagDecoy in i)] for p,d in zip(ps,ds) ]
+    #da = [ [(i,j) for i,j in zip(p,d) if i and not (tagDecoy in i)] for p,d in zip(ps,ds) ]
+    da = [ [(i,j) for i,j in zip(p,d) if i ] for p,d in zip(ps,ds) ]
     # get the first (protein,description)
     pm,dm = zip(*[ s[0] for s in da ])
     # create the list of proteins of redundancy (the rest of proteins)

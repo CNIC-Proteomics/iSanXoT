@@ -120,7 +120,9 @@ def main(args):
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
         ddf = executor.map( processing_infiles, infiles, Expt, ses )
     ddf = pd.concat(ddf)
+    # begin: for debugging in Spyder
     # ddf = processing_infiles(infiles[0], Expt[0], ses[0])
+    # end: for debugging in Spyder
 
 
 
@@ -128,7 +130,8 @@ def main(args):
 
     # check if mzfile and quan_method columns are fillin. Otherwise, the program does nothing.
     c = indata.columns.tolist()
-    if 'mzfile' in c and 'quan_method' in c and not all(indata['mzfile'].str.isspace()) and not all(indata['quan_method'].str.isspace()):
+    # if 'mzfile' in c and 'quan_method' in c and not all(indata['mzfile'].str.isspace()) and not all(indata['quan_method'].str.isspace()):
+    if 'mzfile' in c and not all(indata['mzfile'].str.isspace()):
         
         logging.info("Get QUANTIFICATION from the MZ FILES -----")
         
@@ -142,14 +145,19 @@ def main(args):
             params = executor.map( Quant.prepare_params,
                                   list(ddf.groupby("Experiment")),
                                   list(indata.groupby("experiment")) )
-        params = list(params)
+        params = [i for s in list(params) for i in s]
+        # begin: for debugging in Spyder
         # params = Quant.prepare_params(list(ddf.groupby("Experiment"))[0], list(indata.groupby("experiment"))[0])
+        # params = Quant.prepare_params(list(ddf.groupby("Experiment"))[7], list(indata.groupby("experiment"))[7])
+        # end: for debugging in Spyder
 
         logging.info("extract the quantification")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            quant = executor.map( Quant.extract_quantification, params)
+            quant = executor.map( Quant.extract_quantification, params )
         quant = pd.concat(quant)
+        # begin: for debugging in Spyder
         # quant = Quant.extract_quantification(params[0])
+        # end: for debugging in Spyder
 
 
         logging.info("merge the quantification")
@@ -158,7 +166,9 @@ def main(args):
                                     list(ddf.groupby("Spectrum_File")),
                                     list(quant.groupby("Spectrum_File")) )
         ddf = pd.concat(ddf)
+        # begin: for debugging in Spyder
         # ddf = Quant.merge_quantification( list(ddf.groupby("Spectrum_File"))[0], list(quant.groupby("Spectrum_File"))[0] )
+        # end: for debugging in Spyder
 
 
     logging.info("print the ID files by experiments")
