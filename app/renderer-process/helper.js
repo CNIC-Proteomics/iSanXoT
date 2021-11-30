@@ -2,7 +2,9 @@
  * Import libraries
  */
 let fs = require('fs');
-const { BrowserWindow, dialog } = require('electron').remote;
+let path = require('path');
+let url = require('url');
+const { BrowserWindow } = require('electron').remote;
 const mainWindow = BrowserWindow.getFocusedWindow();
 
 /*
@@ -19,8 +21,8 @@ var helpWindow = undefined;
 function openHelper(type) {
     if ( helpWindow === undefined || helpWindow.isDestroyed() ) {
         helpWindow = new BrowserWindow({
-            title: 'iSanXoT! Help',
-            width: 600,
+            title: 'iSanXoT Help',
+            width: 900,
             height: 800,
             webPreferences: {
                 nodeIntegration: true,
@@ -34,14 +36,18 @@ function openHelper(type) {
             show: false
         });
         helpWindow.setMenu(null);
-        // helpWindow.webContents.openDevTools();
-        // helpWindow.once('ready-to-show', () => {
-        //     helpWindow.show();
-        // });
         helpWindow.show();
     }
-    helpWindow.loadURL(`${__dirname}/../help.html#${type}`).catch( (error) => {
-        // console.log(error);
+    // helpWindow.webContents.openDevTools();
+    helpWindow.loadURL(
+        url.format({
+            protocol: 'file',
+            slashes: true,
+            pathname: path.join(__dirname, `../help.html`),
+            hash: type
+        })
+    ).catch( (error) => {
+        console.log(error);
     });
 }
 

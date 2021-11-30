@@ -1,4 +1,57 @@
 ___
+## 0.4.1
+```
+DATE: 2021_12
+```
+
+### Highlights
+
+
+### Changes in the Code Workflow
+
++ TODO!! DOCUMENTACIÓN!!
+
++ TODO!! CAMBIAR EL LEVEL_CREATOR PARA QUE ADMITA EL ID-q y LEA EN UN PASO. DESPUÉS, GENERA LOS "uncalibrate_level" por CADA FILA.!!
+
++ TODO!! RREPORT Pero estaba pensando que quizás se debería permitir que se pueda hacer “merge” del “high_level”. Es decir, primero mira si se puede hacer “merge” del “low_level”, si no es así, probar con el “high_level”.
+Os parece bien?
+
+
++ TODO!! INCLUIR EL PROGRAMA DE RAFA COMO MASTERQ.
+
++ TODO!! CUANDO FUERZAS UNA EJECUCCIÓN, NO TE SUSTITUYE LOS "*" EN LOS PATHS DE LOS INFILES
+
++ TODO!! SIMPLFY THE NAMES OF RULES FOR THE USE IN "More_params"
+
++ TODO!! Check why is wrong SANSON:
+S:\U_Proteomica\UNIDAD\DatosCrudos\___JAL\GSB_LiverTMTp_202103\PD25_WAT\iSanXoT_033_testJMR/logs/20211022124919
+
++ TODO!! Poner un nombre de fichero de create_idquant.tsv diferente para cada adaptador!!!
+
+
+___
+## 0.4.0
+```
+DATE: 2021_11
+```
+
+### Highlights
+
++ iSanXoT distribution for Windows, Mac, and Linux in x64.
+
++ More documentation.
+
+### Changes in the Graphical User Interface
+
++ Adaptor Open MSF:
+	- Bug fixed: it needs the masterq process.
+
+### Changes in the Code Workflow
+
++ LEVEL_CREATOR: fix a problem with "-w" parameter.
+
+
+___
 ## 0.3.4
 ```
 DATE: 2021_11

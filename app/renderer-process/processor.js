@@ -2,8 +2,9 @@
  * Import libraries
  */
 
-let psTree = require(`${process.env.ISANXOT_LIB_HOME}/exec/node/node_modules/ps-tree`);
 let fs = require('fs');
+let path = require('path');
+let psTree = require( path.join(process.env.ISANXOT_NODE_MODULES, 'ps-tree') );
 const { ipcRenderer } = require('electron');
 const { dialog } = require('electron').remote;
 

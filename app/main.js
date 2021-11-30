@@ -5,13 +5,15 @@
 // Modules to control application life and create native browser window
 const { app, Menu, BrowserWindow, ipcMain, dialog } = require('electron');
 const fs = require('fs');
-
-// Local module
-// const commoner = require('./renderer-process/common');
+const path = require("path");
+const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+
+// Keep a global varible for the installation
+let installation = undefined;
 
 // Variables with the processes IDs
 let all_pids = { 'pids':[], 'c_pids':[] };
@@ -19,7 +21,6 @@ let all_pids = { 'pids':[], 'c_pids':[] };
 // Menu
 let template = [
   { label: "Menu", submenu: [    
-    { id: 'main-page',    label: 'Main Page', click() { mainWindow.loadFile('index.html') } },
     { id: 'new-project',  label: 'New Project...', accelerator: 'Ctrl+N', click() { mainWindow.webContents.send('newProject') } },
     { id: 'open-project', label: 'Open Project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
     { id: 'save-project', label: 'Save Project', accelerator: 'Ctrl+S', enabled: false, click() { mainWindow.webContents.send('saveProject') } },
@@ -29,16 +30,28 @@ let template = [
     { type: 'separator' },
     { id: 'exit', label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
-  { id: "adaptors", label: "Adaptors", enabled: false, submenu: []},
-  { id: "processes", label: "Processes", enabled: false, submenu: [
-    { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile('processes.html') } }
+  { id: "adaptors", label: "Adaptors", submenu: []},
+  { id: "processes", label: "Processes", submenu: [
+    { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile(path.join(__dirname, 'processes.html')) } }
   ]},
   { label: "Help", submenu: [
-    { id: 'help-intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'help_intro') } },
-    { id: 'help-cmds', label: 'Commands', click() { mainWindow.webContents.send('openHelper', 'help_cmds') } },
+    { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'help_intro') } },
+    { label: 'Commands', submenu: [
+      { id: 'help_cmd-rel-creator', label: 'RELS CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-rel-creator') } },
+      { id: 'help_cmd-level-creator', label: 'LEVEL CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-creator') } },
+      { id: 'help_cmd-level-calibrator', label: 'LEVEL CALIBRATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-calibrator') } },
+      { id: 'help_cmd-integrate', label: 'INTEGRATE', click() { mainWindow.webContents.send('openHelper', 'help_cmd-integrate') } },
+      { id: 'help_cmd-norcombine', label: 'NORCOMBINE', click() { mainWindow.webContents.send('openHelper', 'help_cmd-norcombine') } },
+      { id: 'help_cmd-ratios', label: 'RATIOS', click() { mainWindow.webContents.send('openHelper', 'help_cmd-ratios') } },
+      { id: 'help_cmd-sbt', label: 'SBT', click() { mainWindow.webContents.send('openHelper', 'help_cmd-sbt') } }
+    ]},
     { label: 'Workflows', submenu: [
-      { id: 'help-wf_basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
-      { id: 'help-wf_ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
+      { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
+      { id: 'help_wf-ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
+    ]},
+    { label: 'Adaptors', submenu: [
+      { id: 'help_adap-main', label: 'Main Input', click() { mainWindow.webContents.send('openHelper', 'help_adap-main') } },
+      { id: 'help_adap-close-pd', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_adap-close-pd') } }
     ]}
   ]},
 ]
@@ -57,11 +70,10 @@ function addClickFuncRecursively(obj) {
     }
   }
 }
-let adaptor_menu = JSON.parse(fs.readFileSync(`${__dirname}/adaptors/menu.json`));
+let adaptor_menu = JSON.parse(fs.readFileSync( path.join(__dirname, '/../resources/adaptors/adaptors.json') ));
 addClickFuncRecursively(adaptor_menu);
 template[1]['submenu'] = adaptor_menu;
 // console.log(JSON.stringify(adaptor_menu, null, 4));
-
 
 
 // Add 'debugging' menu
@@ -79,10 +91,10 @@ const menu = Menu.buildFromTemplate(template)
 */
 
 // Create the main Window
-function createWindow () {
-  // Create the browser window.
+function createMainWindow () {
+  // create the browser window.
   mainWindow = new BrowserWindow({
-    minWidth: 1074,
+    minWidth: 1250,
     minHeight: 850,
     width: 1250,
     height: 850,
@@ -92,20 +104,21 @@ function createWindow () {
       enableRemoteModule: true
     },
     // resizable: false,
-    'icon': `${__dirname}/assets/icons/molecule.png`,
-  })
+    'icon': path.join(__dirname, 'assets/images/isanxot.png')
+  });
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  // Set application menu
+  Menu.setApplicationMenu(menu);
 
-  // Debug mode
+  // debug mode
   if (process.env.ISANXOT_MODE == "debug") {
     mainWindow.webContents.openDevTools();
   }
-  else { // Remove console log in production mode
+  else { // remove console log in production mode
     console.log = function() {};
   }
 
+  // give the focus
   mainWindow.focus()
 
   // Emitted when the window is starting to be close.
@@ -113,23 +126,13 @@ function createWindow () {
     console.log("** close windows");
     let choice = reallyWantToClose();
     console.log("   event prevent");
-    if (choice === 1) event.preventDefault();  
-  })
+    if (choice === 1) event.preventDefault();
+  });
 
-  // // Emitted when the window is closed.
-  // mainWindow.on('closed', function(e) {
-  //   console.log("** closed windows");
-  //   // Dereference the window object, usually you would store windows
-  //   // in an array if your app supports multi windows, this is the time
-  //   // when you should delete the corresponding element.
-  //   mainWindow = null;
-  //   app.quit();  
-  // })
-  
-  // Set application menu
-  Menu.setApplicationMenu(menu)
+  // load the main html
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
-}; // end createWindow
+}; // end createMainWindow
 
 // Prevent the close of app
 function reallyWantToClose() {
@@ -171,6 +174,44 @@ function KillProcceses(all_pids) {
   });
 };
 
+// Create frameless window
+const framelessWindow = () => {
+  const mainWindow = new BrowserWindow({
+      width: 700,
+      height: 460,
+      resizable: false,
+      transparent: true,
+      frame: false,
+      webPreferences: {
+          nodeIntegration: true,
+          contextIsolation: false,
+          enableRemoteModule: true
+      },
+      'icon': path.join(__dirname, 'assets/images/isanxot.png')
+  });
+
+  // give the focus
+  mainWindow.focus()
+
+  // debug mode
+  if (process.env.ISANXOT_MODE == "debug") {
+    mainWindow.webContents.openDevTools();
+  }
+
+  // Emitted when the window is starting to be close.
+  mainWindow.on('close', function() {
+    console.log("** close frameless");
+    for (var i in installation) console.log(`${i}=${installation[i]}`);
+    if (installation !== undefined) {
+      if (installation.code === 0) createMainWindow();
+    }
+  });
+
+  // load the main html
+  mainWindow.loadFile(path.join(__dirname, "frameless.html"));
+  
+}; // end framelessWindow
+
 
 /*
 App functions
@@ -179,16 +220,10 @@ App functions
 // This method will be called when Electron has finished initialization 
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-// app.on('ready', createWindow);
-app.on('ready', function (event) {
+// app.on('ready', createMainWindow);
+app.on('ready', function () {
   console.log("** ready");
-  createWindow();
-  // app on top
-  mainWindow.setAlwaysOnTop(true);
-  // once a time, we get off the top
-  setTimeout(function() {
-    mainWindow.setAlwaysOnTop(false);
-  },1000);
+  framelessWindow();
 });
 
 app.on('activate', function () {
@@ -196,7 +231,7 @@ app.on('activate', function () {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow();
+    createMainWindow();
   }
 });
 
@@ -215,7 +250,9 @@ app.on('window-all-closed', function () {
   console.log("   kill all processes");
   KillProcceses(all_pids);
   console.log("   app quit");
-  app.quit();
+  // if (process.platform !== "darwin") {
+    app.quit();
+  // }
 });
 
 
@@ -224,9 +261,37 @@ app.on('window-all-closed', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+// Get the result of installation
+ipcMain.on('log', function(event, arg) {
+  console.log(arg);
+});
+
+// Get the result of installation
+ipcMain.on('get-install', function(event, arg) {
+  installation = arg;
+});
+
+// Get the result of installation
+ipcMain.on('send-env', function(event, arg) {
+  // update values
+  for (var key in arg) {
+    // env[key] = arg[key];
+    console.log(`${key}=${arg[key]}`);
+    process.env[key] = arg[key];
+  }
+});
+
 // Load the new URL
 ipcMain.on('load-page', function(event, arg) {
-  mainWindow.loadURL(arg);
+  mainWindow.loadURL(
+    url.format({
+        protocol: 'file',
+        slashes: true,
+        pathname: arg,
+    })
+  ).catch( (error) => {
+          console.log(error);
+  });
 });
 
 // Get the PIDs

@@ -3,6 +3,7 @@
  */
 let commoner = require('./common');
 
+
 // check if some data of advanced options is available
 function activeAdvancedEvents(importer) {
   // declare variables
@@ -19,7 +20,9 @@ function activeAdvancedEvents(importer) {
       let cmd_id = cmd['id'];
 
       // add the event help_modals
-      if ('help_modal' in cmd) {
+      if ('help_adp' in cmd) {
+        $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .helpadv`).click(openHelpModal);
+      } else if ('help_modal' in cmd) {
         $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .helpadv`).click(openHelpModal);
       }
 

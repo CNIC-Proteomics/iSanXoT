@@ -3,6 +3,7 @@
  */
 
 let fs = require('fs');
+let path = require('path');
 let cProcess = require('child_process');
 
 let exceptor = require('./exceptor');
@@ -54,8 +55,8 @@ function execProcess(script, cmd, cfg, log, wfname) {
 };
 
 function execTable2Cfg(params) {
-    let intpl = `${process.env.ISANXOT_SRC_HOME}/wfs/tpl_commands`;
-    let cmd = `"${process.env.ISANXOT_LIB_HOME}/python/python" "${process.env.ISANXOT_SRC_HOME}/wfs/table2cfg.py" \
+    let intpl = `${path.join(process.env.ISANXOT_RESOURCES, 'wfs/tpl_commands')}`;
+    let cmd = `"${process.env.ISANXOT_PYTHON}" "${path.join(process.env.ISANXOT_RESOURCES, 'wfs/table2cfg.py')}" \
     --attfile "${params.attfile}" \
     --indir "${params.indir}" \
     --intpl "${intpl}" \
@@ -64,8 +65,8 @@ function execTable2Cfg(params) {
 };
 
 function execSnakeMake(params) {
-    let smkfile = `${process.env.ISANXOT_SRC_HOME}/wfs/wf_sanxot.smk`;
-    let cmd_smk = `"${process.env.ISANXOT_LIB_HOME}/python/python" "${process.env.ISANXOT_SRC_HOME}/wfs/mysnake.py" \
+    let smkfile = `${path.join(process.env.ISANXOT_RESOURCES, 'wfs/wf_sanxot.smk')}`;
+    let cmd_smk = `"${process.env.ISANXOT_PYTHON}" "${path.join(process.env.ISANXOT_RESOURCES, 'wfs/mysnake.py')}" \
     --configfile "${params.configfile}" \
     --snakefile "${smkfile}" \
     --cores ${params.nthreads} \

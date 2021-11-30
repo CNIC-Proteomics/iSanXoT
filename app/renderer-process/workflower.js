@@ -3,24 +3,10 @@
  */
 
 let fs = require('fs');
+let path = require('path');
+let url = require('url');
 const { BrowserWindow } = require('electron').remote;
 var mainWindow = BrowserWindow.getFocusedWindow();
-
-/*
- * Variables
- */
-
-// Init workflow directory (with empty tables)
-// let initWkfDir = `${process.env.ISANXOT_SRC_HOME}/app/wfs/init`;
-
-// Basic input adaptor (main_inputs)
-let adpDir = `${process.env.ISANXOT_SRC_HOME}/app/adaptors`;
-let initAdpDir = `${adpDir}/main_input`;
-
-// Assign the folder with the project samples by default. Mandatory double slashes!!
-let samplesWkfDir = `${process.env.ISANXOT_LIB_HOME}/samples`;
-samplesWkfDir = samplesWkfDir.replace(/\//g, "\\");
-
 
 /*
  * Local functions
@@ -33,17 +19,6 @@ function getWorkflowCfg(wkf_dir) {
   let wf_cfg = ( fs.existsSync(wf_cfgfile) ) ? jsyaml.safeLoad( fs.readFileSync(`${wf_cfgfile}`, 'utf-8')) : undefined;
   return wf_cfg;
 }
-
-// // Get the workflow directory (the most recent). By default, init workflow
-// function getWorkflowDir(dir) {
-//   let wkf_dir = undefined;
-//   dir = `${dir}/.isanxot`;
-//   if (!fs.existsSync(dir) ) dir = `${initWkfDir}/.isanxot`;
-//   // get most recent dir
-//   let id = commoner.getMostRecentDir(dir);
-//   wkf_dir = (id) ? `${dir}/${id}` : getWorkflowDir(initWkfDir);
-//   return wkf_dir;
-// }
 
 // Get the workflow directory (the most recent).
 function getWorkflowDir(dir) {
@@ -69,18 +44,18 @@ function getAdaptorDir(wkf_dir) {
     if ( cfg !== undefined && 'adaptor_id' in cfg ) {
       let adp_id = cfg['adaptor_id'];
       let adp_name = '';
-      let adpdirs = commoner.getDirectories(adpDir);
+      let adpdirs = commoner.getDirectories(process.env.ISANXOT_ADAPTOR_HOME);
       for (let i = 0; i < adpdirs.length; i++) {
         if ( adpdirs[i].endsWith(adp_id) ) {
           adp_name = adpdirs[i];
             break;
         }
       }
-      if ( adp_name != '' ) adp_dir = `${adpDir}/${adp_name}`;
+      if ( adp_name != '' ) adp_dir = `${process.env.ISANXOT_ADAPTOR_HOME}/${adp_name}`;
     }
   }
   // otherwise, reports the basic adaptor folder
-  if ( adp_dir === undefined ) adp_dir = initAdpDir;
+  if ( adp_dir === undefined ) adp_dir = process.env.ISANXOT_ADAPTOR_INIT;
   return adp_dir;
 }
 
@@ -88,7 +63,7 @@ function getAdaptorDir(wkf_dir) {
 // Go through the works of the workflow and fill the information of work and commands
 function extractWorkflowStr() {
   // extract the project attributes
-  let wkf = JSON.parse(fs.readFileSync(`${__dirname}/../wfs/workflow.json`));
+  let wkf = JSON.parse(fs.readFileSync( path.join(process.env.ISANXOT_WFS_HOME, 'commands.json') ));
   // create the information of works for the workflow
   for (var i = 0; i < wkf['works'].length; i++) {
       // extract the information of commands for each work
@@ -131,7 +106,6 @@ function joinWorkflowAdaptorStr(adp, wkf) {
   }
   return wf;
 }
-
 
 // Prepare the config folder for workflow-project
 function prepareWfWorkspace(date_id, outdir) {
@@ -194,7 +168,7 @@ function exportWorkflowCmds(cfg_dir, wf) {
           let cmd_id = cmd['id'];
           // create a tasktable for every command
           if ( 'tasktable' in cmd && 'params' in cmd['tasktable'] ) {
-              // get the id header based on 'workflow.json'
+              // get the id header based on 'commands.json'
               let header_ids = [];
               let header_names = [];
               try {
@@ -205,7 +179,7 @@ function exportWorkflowCmds(cfg_dir, wf) {
               } catch (err) {
                 exceptor.showErrorMessageBox('Error Message', `Extracting the id headers of ${cmd_id}: ${err}`, end=true);
               }
-              // get the header names based on 'workflow.json'
+              // get the header names based on 'commands.json'
               try {
                 header_names = cmd['tasktable']['params'].map(a => a.name);
                 if (header_names.includes(undefined)) {
@@ -251,10 +225,8 @@ function loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir) {
   if (prj_id === undefined || prj_id == '') exceptor.showErrorMessageBox('Error Message', `The project id is not defined`, end=true);
   // project folder is required
   if (prj_dir === undefined || prj_dir == '') exceptor.showErrorMessageBox('Error Message', `The project folder is not defined`, end=true);
-  // workflow folder. By default, a folder with empty tables
-  // wkf_dir = (wkf_dir !== undefined && wkf_dir != '')? wkf_dir : initWkfDir;
   // adaptor folder. By default, the main_input adaptor
-  adp_dir = (adp_dir !== undefined && adp_dir != '')? adp_dir : initAdpDir;
+  adp_dir = (adp_dir !== undefined && adp_dir != '')? adp_dir : process.env.ISANXOT_ADAPTOR_INIT;
   // required to load the project when comers from processes frontpage
   if(!mainWindow) {
     var BrowserWindow = require('electron').remote;
@@ -263,7 +235,16 @@ function loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir) {
   }
   // load workflow
   console.log(`${__dirname}/../wf.html?pid=${prj_id}&pdir=${prj_dir}&wdir=${wkf_dir}&adir=${adp_dir}`);
-  mainWindow.loadURL(`${__dirname}/../wf.html?pid=${prj_id}&pdir=${prj_dir}&wdir=${wkf_dir}&adir=${adp_dir}`);
+  mainWindow.loadURL(
+    url.format({
+        protocol: 'file',
+        slashes: true,
+        pathname: path.join(__dirname, `../wf.html`),
+        query: { "pid": prj_id, "pdir": prj_dir, "wdir": wkf_dir, "adir": adp_dir }
+    })
+  ).catch( (error) => {
+        console.log(error);
+  });
 }
 
 // Export only the task-tables of workflow
@@ -306,7 +287,7 @@ function importAdaptor(adp_dir) {
   let prj_dir = url_params.get('pdir');
   let wkf_dir = url_params.get('wdir');
   // add the absolute path to adaptor folder
-  adp_dir = `${process.env.ISANXOT_SRC_HOME}/app/${adp_dir}`;
+  adp_dir = path.join(process.env.ISANXOT_ADAPTOR_HOME, adp_dir);
   // add workflow workspace
   loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir);
 }
@@ -317,7 +298,6 @@ function importAdaptor(adp_dir) {
  */
 
 module.exports = {
-  samplesWkfDir: samplesWkfDir,
   getWorkflowCfg: getWorkflowCfg,
   getWorkflowDir: getWorkflowDir,
   getAdaptorDir: getAdaptorDir,

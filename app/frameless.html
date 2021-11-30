@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>iSanX!</title>
+  <style>
+  body {
+    font-family: system, -apple-system, '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+    font-size: 40px;
+    padding: 0;
+    margin: 0;
+  }
+  #frameless-body {
+    border-radius: 25px;
+    background-color: black;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+  #frameless-desc {
+    position: relative;
+  }
+  #pac-man {
+    width: 7%;
+    position: absolute;
+    left: 10px;
+  }
+  #frameless-desc-title {
+    color: white;
+    font-size: 20px;
+    position: relative;
+    left: 75px;
+    bottom: 0.6em;
+  }
+  #close {
+    color: white;
+    position: absolute;
+    bottom: 20px;
+    right: 5px;
+    font-size: 12px;
+  }
+  #frameless-detail > textarea {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 694px;
+    height: 150px;
+    resize: none;
+    overflow-y: auto;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
+  #frameless-detail>textarea::-webkit-scrollbar {
+    border-radius: 25px;
+  }
+  </style>
+  <!-- Imports JS -->
+  <script>
+    if (typeof module === 'object') {window.module = module; module = undefined;}
+  </script>
+  <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+  <script>
+    if (window.module) module = window.module;
+  </script>
+</head>
+<body>
+  <div id='frameless-body'>    
+    <img src="assets/images/isanxot_logo_text.png" class="center"></img>
+    <div id="frameless-desc">
+      <img id="pac-man" src="assets/images/loadin_coco.gif" class="center"></img>
+      <span id="frameless-desc-title"></span>
+      <!-- <a id="frmeless-desc-area">More details</a> -->
+    </div>
+    <div id="frameless-detail">
+      <textarea readonly style="display: none;"></textarea>
+    </div>
+  </div>
+<script>
+  // Prepare the backend environment
+  require(`./renderer-process/env`);
+</script>
+</body>
+</html>

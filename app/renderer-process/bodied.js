@@ -3,6 +3,7 @@
  */
 
 let fs = require('fs');
+let path = require('path');
 // let remote = require('electron').remote;
 
 let exceptor = require('./exceptor');
@@ -21,6 +22,8 @@ let wkf_dir  = importer.wkf_dir;
 let prj_cfg  = importer.prj_cfg;
 let wf  = importer.wf;
 
+// get env variables
+let adpDir = process.env.ISANXOT_ADAPTOR_HOME;
 
 /*
  * Local functions
@@ -121,11 +124,15 @@ for (var i = 0; i < wf['works'].length; i++) {
     // create main div for the tasktable frames
     $(`#${wk_id} #page-content`).append(`<div id="page-tasktable-${cmd_id}"></div>`);
     // add create tasktable panel
-    if ( cmd['panel'] ) {
+    if ( 'panel_adp' in cmd && cmd['panel_adp'] ) {
+      importer.importHTMLtemplate(path.join(adpDir, cmd['panel_adp']), `#${wk_id} #page-tasktable-${cmd_id}`);
+    } else if ( 'panel' in cmd && cmd['panel'] ) {
       importer.importHTMLtemplate(`${__dirname}/../${cmd['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
     }
     // add the help modal of the tasktable/command
-    if ( cmd['help_modal'] ) {
+    if ( 'help_adp' in cmd && cmd['help_adp'] ) {
+      importer.importHTMLtemplate(path.join(adpDir, cmd['help_adp']), `#${wk_id} #page-tasktable-${cmd_id} .help_adp`);
+    } else if ( 'help_modal' in cmd && cmd['help_modal'] ) {
       importer.importHTMLtemplate(`${__dirname}/../${cmd['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
     }
     // add the short description

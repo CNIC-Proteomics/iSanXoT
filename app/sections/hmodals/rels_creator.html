@@ -3,13 +3,20 @@
       <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="hmodalTitle">Create Rels (relationsip files)</h5>
+            <h5 class="modal-title" id="hmodalTitle">RELS CREATOR</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <svg class="bi" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#x" /></svg>
             </button>
           </div>
           <div class="modal-body">
-            ...
+            <p>
+              This module creates 'Relation Tables' (RT) from any tabular file (tsv). Indicate which are the headers from the tsv table that contain the elements to create the lower and upper columns of the relation table (and of the 3rd column if required).
+            </p>
+            <p><blockquote>Important: for consistency and to minimize errors, the name of the relation table must match the names of the lower and upper levels (e.g. to integrate the level 'scan' to the level 'peptide' the relation table must be called 'scan2peptide').</blockquote>
+            </p>
+            <p>
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', 'help_cmd-rel-creator')">Commands > RELS CREATOR</a>.
+            </p>
           </div>
         </div>
       </div>

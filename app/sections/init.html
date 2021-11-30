@@ -1,4 +1,71 @@
 <template class="task-template" id="init">
-  <center><h2>Main page under construction</h2></center>
-  <p> Short description of this tool with general picture</p>
+<div class="container">
+
+<div class="row-head-page">
+<div class="row">
+  <div class="col-9 text-justify">
+    <h1>iSanXoT</h1>
+    <p class="lead">
+      Graphical User Interface application that executes workflows for quantitative high-throughput proteomics, systems biology and the statistical analysis, integration and comparison of experiments, based on SanXoT<sup>(*)</sup> integrations.
+    </p>
+    <div class="">
+      <a class="btn btn-lg btn-outline-secondary mb-3" onclick="mainWindow.webContents.send('openHelper', 'help_intro')">Get started</a>
+    </div>
+  </div>
+  <div class="col-3">
+    <img src="assets/images/isanxot.png" width="275"></img>
+  </div>
+</div>
+</div>
+
+
+<div class="row-head-page">
+<div class="row">
+  <div class="col text-justify">
+    <h2 class="text-center">Workflows composed by multiple modules</h2>
+    <p class="p">
+      The workflows developed with iSanXoT follow a modular structure, where the main modules are: INTEGRATE, NORCOMBINE, SBT, RATIOS, LEVEL CREATOR, and LEVEL CALIBRATOR. The data of each level are analysed independently and sequentially.
+    </p>
+  </div>
+</div>
+<div class="row text-center">
+  <div class="col">
+    <img src="assets/images/global_diagram_schema.png" width="80%"></img>
+  </div>
+</div>
+</div>
+
+
+<div class="row-head-page">
+<div class="row">
+  <div class="col text-justify">
+    <h2 class="text-center">The modules are described by task-tables</h2>
+    <p class="p">
+      The parameters of each module are described by means a task-table.
+    </p>
+  </div>
+</div>
+<div class="row text-center">
+  <div class="col">
+    <img src="assets/images/tasktable_main_picture.png" width="80%"></img>
+  </div>
+</div>
+</div>
+
+
+
+<div class="row footer">
+  <div class="col text-left">
+  <p>(*)Trevisan-Herraz, Marco et al. Bioinformatics, 2019</p>
+  </div>
+</div>
+
+</div>
+<script>
+/*
+ * Import libraries
+ */
+const { BrowserWindow } = require('electron').remote;
+const mainWindow = BrowserWindow.getFocusedWindow();
+</script>
 </template>

@@ -1,0 +1,82 @@
+{
+  "name": "iSanXoT",
+  "version": "0.4.0",
+  "description": "A bioinformatic application for quantitative high-throughput proteomics using SanXoT workflow",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CNIC-Proteomics/iSanXoT.git"
+  },
+  "keywords": [
+    "iSanXoT",
+    "proteomics",
+    "identification",
+    "quentification",
+    "peptides"
+  ],
+  "author": "CNIC-Proteomics-Unit",
+  "license": "Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
+  "main": "app/main.js",
+  "build": {
+    "artifactName": "${productName} Launcher.${ext}",
+    "asar": true,
+    "directories": {
+      "output": "releases/${platform}/${arch}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "extraResources": [
+      {
+        "from": "resources/src",
+        "to": "src",
+        "filter": [
+          "!**/__pycache__"
+        ]
+      },
+      {
+        "from": "resources/wfs",
+        "to": "wfs",
+        "filter": [
+          "!**/__pycache__"
+        ]
+      },
+      {
+        "from": "resources/adaptors",
+        "to": "adaptors"
+      },
+      {
+        "from": "resources/exec",
+        "to": "exec"
+      },
+      {
+        "from": "resources/node_modules",
+        "to": "node_modules"
+      },
+      {
+        "from": "resources/env",
+        "to": "env",
+        "filter": [
+          "!**/__pycache__"
+        ]
+      }
+    ],
+    "win": {
+      "icon": "app/assets/icons/isanxot.ico"
+    },
+    "mac": {
+      "icon": "app/assets/icons/isanxot.icns"
+    },
+    "linux": {
+      "icon": "app/assets/images/isanxot.png"
+    }
+  },
+  "scripts": {
+    "start": "electron  --trace-warnings .",
+    "build": "electron-builder . --out=dist/win --platform=win32 --arch=x64 --icon=app/assets/images/isanxot.png --asar=true --overwrite"
+  },
+  "devDependencies": {
+    "electron": "13.1.2"
+  }
+}

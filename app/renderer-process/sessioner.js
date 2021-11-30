@@ -1,8 +1,11 @@
 /*
-  Global variables
-*/
+ * Import libraries
+ */
+
+let path = require('path');
+let url = require('url');
 const { ipcRenderer } = require('electron');
-let psTree = require(`${process.env.ISANXOT_LIB_HOME}/exec/node/node_modules/ps-tree`);
+let psTree = require( path.join(process.env.ISANXOT_NODE_MODULES, 'ps-tree') ) ;
 
 // Add the list of processes into the list session
 function addProcToSession(a_pids, wf) {
@@ -30,7 +33,16 @@ function addProcessesToSession(pid, cfg, log, wfname, page=false) {
     var jumpToPage = function (page) {
         // go to procceses section
         if ( page ) {
-            ipcRenderer.send('load-page', page);
+            // ipcRenderer.send('load-page', page);
+            mainWindow.loadURL(
+                url.format({
+                    protocol: 'file',
+                    slashes: true,
+                    pathname: page,
+                })
+            ).catch( (error) => {
+                    console.log(error);
+            });
         }
     }
     // save the whole list of process of ids at the moment

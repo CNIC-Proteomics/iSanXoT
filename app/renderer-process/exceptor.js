@@ -19,11 +19,12 @@ function stopLoadingWorkflow() {
   $(`#executor`).css({'opacity' : 1});
 }
 
-function showErrorMessageBox(head, message, end=false, page=undefined) {
+function showErrorMessageBox(head, message, end=false, page=undefined, callback=undefined) {
   stopLoadingWorkflow();
   dialog.showErrorBox(head, message);
   if (page) ipcRenderer.send('load-page', page);
   if (end) throw new Error(message);
+  if (callback) callback();
 };
 
 function showMessageBox(type, message, title=undefined, end=false, page=undefined) {

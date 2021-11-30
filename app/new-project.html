@@ -53,7 +53,6 @@ $('#projectsubmit').on('click', function() {
     exceptor.showMessageBox('error',`The project folder is required`, title='Creating a new project', end=true);
   }
   // Everything all right, send the variables
-  // win.webContents.send('message', 'Hello second window!');
   ipcRenderer.send('newprojectsubmit', {
     name: projectname,
     folder: projectfolder

@@ -2,7 +2,8 @@
  * Import libraries
  */
 let fs = require('fs');
-const { BrowserWindow, dialog } = require('electron').remote;
+let path = require('path');
+const { BrowserWindow } = require('electron').remote;
 const mainWindow = BrowserWindow.getFocusedWindow();
 
 /*
@@ -64,7 +65,7 @@ function preparePrjDir(name, basefolder) {
 // Prepare the project workspace
 function preparePrjWorkspace(prj_id, prj_rootdir) {
     // extract the project attributes
-    let wfs = JSON.parse(fs.readFileSync(`${__dirname}/../wfs/workflow.json`));
+    let wfs = JSON.parse(fs.readFileSync( path.join(process.env.ISANXOT_WFS_HOME, 'commands.json') ));
     let prj_dirs = wfs['prj_workspace'];
 
     // create the directories for the project
@@ -104,7 +105,7 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
     };
     // Add the directories for the project
     cfg['prj_workspace'] = {};
-    let wfs = JSON.parse(fs.readFileSync(`${__dirname}/../wfs/workflow.json`));
+    let wfs = JSON.parse(fs.readFileSync( path.join(process.env.ISANXOT_WFS_HOME, 'commands.json') ));
     for (let ws in wfs['prj_workspace']) {
         cfg['prj_workspace'][ws] = `${prj_dir}/${wfs['prj_workspace'][ws]}`;
     }

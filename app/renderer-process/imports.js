@@ -1,13 +1,3 @@
-// Remove console log in production mode
-if (process.env.ISANXOT_MODE != "debug") {
-    console.log = function() {};
-}
-
-// Set the local directory
-process.env.ISANXOT_SRC_HOME = process.cwd();
-process.env.ISANXOT_ICON = `${process.env.ISANXOT_SRC_HOME}/app/assets/icons/molecule.png`;
-
-
 /*
  * Import libraries
  */
@@ -72,7 +62,6 @@ $(document).ready(function() {
 /*
  * Renderer functions
  */
-
 ipcRenderer.on('newProject',  function() {
     projector.newProject();
 });
@@ -95,7 +84,8 @@ ipcRenderer.on('saveProject', function() {
     }, 1000); // due the execSync block everything, we have to wait until loading event is finished
 });
 ipcRenderer.on('importWorkflow', function() {
-    let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: workflower.samplesWkfDir });
+    // let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: workflower.samplesWkfDir });
+    let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: process.env.ISANXOT_SAMPLES_DIR });
     if ( wkf_dir !== undefined ) {
         exceptor.loadingWorkflow(); // loading...
         workflower.importWorkflow(wkf_dir);
@@ -145,24 +135,26 @@ function importHTMLtemplate(wfhref, tid, before) {
 
 // Enable/Disable the menu items related to workflow
 function setEnableMenuItem(val) {
-    const { Menu } = require('electron').remote;
-    let mainMenu = Menu.getApplicationMenu();
-    mainMenu.getMenuItemById('save-project').enabled = val;
-    mainMenu.getMenuItemById('import-workflow').enabled = val;
-    mainMenu.getMenuItemById('export-workflow').enabled = val;
-    // enable/disable adaptors
-    mainMenu.getMenuItemById('adaptors').enabled = val;
-    let dirs = fs.readdirSync(`${__dirname}/../adaptors`, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
-    for (let i=0; i<dirs.length; i++) {
-        let adaptor_dir = dirs[i];
-        let adaptor_wf = JSON.parse(fs.readFileSync(`${__dirname}/../adaptors/${adaptor_dir}/adaptor.json`));
-        let adaptor_id = adaptor_wf['id'];
-        if ( mainMenu.getMenuItemById(adaptor_id) ) mainMenu.getMenuItemById(adaptor_id).enabled = val;
+    if ( process.env.ISANXOT_ADAPTOR_HOME !== undefined ) {
+        const { Menu } = require('electron').remote;
+        let mainMenu = Menu.getApplicationMenu();
+        mainMenu.getMenuItemById('save-project').enabled = val;
+        mainMenu.getMenuItemById('import-workflow').enabled = val;
+        mainMenu.getMenuItemById('export-workflow').enabled = val;
+        // enable/disable adaptors
+        mainMenu.getMenuItemById('adaptors').enabled = val;
+        let dirs = fs.readdirSync(process.env.ISANXOT_ADAPTOR_HOME, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+        for (let i=0; i<dirs.length; i++) {
+            let adaptor_dir = dirs[i];
+            let adaptor_wf = JSON.parse(fs.readFileSync(path.join(process.env.ISANXOT_ADAPTOR_HOME, `${adaptor_dir}/adaptor.json`)));
+            let adaptor_id = adaptor_wf['id'];
+            if ( mainMenu.getMenuItemById(adaptor_id) ) mainMenu.getMenuItemById(adaptor_id).enabled = val;
+        }
+        // enable/disable proccesses
+        mainMenu.getMenuItemById('processes').enabled = val;
+        mainMenu.getMenuItemById('processes-main').enabled = val;    
     }
-    // enable/disable proccesses
-    mainMenu.getMenuItemById('processes').enabled = val;
-    mainMenu.getMenuItemById('processes-main').enabled = val;
-}
+};
 
 // Extract the main information from Workflow
 function extractWorkflowAdaptorAttributes() {
@@ -256,7 +248,7 @@ else if ( filename == "processes" ) {
     setEnableMenuItem(false);
 }
 else if ( filename == "index" ) {
-    // for init page
+    // for init page (deprecated)
     // require(`./init`);
 
     // Disable the menu items related with workflow

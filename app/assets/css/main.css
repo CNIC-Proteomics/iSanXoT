@@ -16,8 +16,6 @@ body {
     font-size: .97rem;
 }
 p, ul, li {
-    /* font-size: 1.1em;
-    font-weight: 300; */
     line-height: 1.7em;
     color: #999;
 }
@@ -50,41 +48,41 @@ footer {
 input:disabled, button:disabled {
     cursor: not-allowed;
 }
-/* [type=button],[role=button] {
-    color: #fff;
-    background-color: slategray;
-    border-color: black;
-}
-[type=button]:hover,[role=button]:hover {
-    background-color: #5a6268;
-} */
+
 
 /*
  * ---------------------------------------------------
  *   INIT PAGE
  * ---------------------------------------------------
  */
-#accordion {
-    margin: 20px 10px 0 10px;
+#init {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 30px 0;
+    background-color: white;
 }
-#accordion button {
-    text-decoration: none;
-    color: goldenrod;
+#init p {
+    margin: 0;
+    padding: 0;
 }
-#accordion button.dropdown-toggle {
-    color: #fff;
+#init .row-head-page {
+    margin-bottom: 50px;
 }
-#accordion .card-header {
+#init h1 {
+    font-size: 3rem;
+}
+#init .p {
+    font-size: 1.3rem;
+    font-weight: 300;
+}
+#init .lead {
+    font-size: 1.5rem;
     font-weight: 400;
+}
+#init .footer {
     font-size: 1rem;
-    color: goldenrod;
-    cursor: pointer;
-}
-#accordion  .card-body a {
-    padding-left: 5px;
-}
-#accordion .btn-group.right {
-    float: right;
+    padding: 0;
 }
 
 
@@ -116,9 +114,6 @@ input:disabled, button:disabled {
     margin: 0;
     padding: 0;
 }
-/* div[class^="col-"] {
-    padding: 0 .5em 0 0;
-} */
 .col-1 {
     padding: 0 .1em 0 0;
 }
@@ -135,10 +130,13 @@ input:disabled, button:disabled {
     padding: .3em;
     text-align: center;
 }
-
 #page-content {
     padding-left: 0.5em;
     padding-bottom: 1em;
+}
+#page-content .sdesc p {
+    margin: 0;
+    padding: 0;
 }
 
 /* sidebar */
@@ -278,9 +276,9 @@ input:disabled, button:disabled {
  *   PANEL-SECTION: MAIN_INPUTS
  * ---------------------------------------------------
  */
-    div[id^="panel-"] {
-        margin-top: .6em;
-    }
+div[id^="panel-"] {
+    margin-top: .6em;
+}
     
 /*
  * ---------------------------------------------------
@@ -380,13 +378,15 @@ fieldset[disabled] .btn-selectpicker.focus {
  * ---------------------------------------------------
  */
 #panel-simple {
-    margin-top: .6em;
-    margin-bottom: .6em;
-    height: 30px;
     clear: both;
 }
+#panel-simple .sdesc {
+    margin-bottom: .6em;
+}
+#panel-simple .toggle.btn {
+    margin-bottom: .6em;
+}
 .toggle.btn {
-    /* float: right; */
     min-height: 1.875rem;
 }
 .helpadv {
@@ -404,10 +404,15 @@ fieldset[disabled] .btn-selectpicker.focus {
 * ---------------------------------------------------
 */
 #help {
+    color: red;
+}
+#help p {
+    color: red!important;
+}
+#help {
     padding: 20px;
     background-color: white;
 }
-
 #help h1 {
     text-align: center;
 }
