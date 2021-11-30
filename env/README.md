@@ -26,7 +26,9 @@ Building wheels for collected packages: datrie
 cd resources/env
 
 ./com.env.win.bat "{WRITE THE PYTHON EXECUTABLE}" "{WRITE THE FRONTEND PATH FOR ENV}"  "{WRITE THE BACKENDEND PATH FOR ENV}"
- ./com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "C:/Users/jmrodriguezc/iSanXoT/env" "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/resources/exec"
+ <!-- set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& ./com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "C:/Users/jmrodriguezc/iSanXoT/env" "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/resources/exec"
+ set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& ./com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "C:/Users/jmrodriguezc/iSanXoT/env" "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/resources/exec" -->
+
 
 ```
 ## for Mac
@@ -35,7 +37,7 @@ cd resources/env
 cd resources/env
 
 ./com.env.darwin.sh "{WRITE THE PYTHON EXECUTABLE}" "{WRITE THE FRONTEND PATH FOR ENV}"  "{WRITE THE BACKENDEND PATH FOR ENV}"
-export PATH=/Users/proteomica/iSanXoT/env/node/bi:$PATH && ./com.env.darwin.sh /Users/proteomica/Desktop/iSanXoT_forBuild/env/python-3.9.7-darwin-x64/python3.9  /Users/proteomica/iSanXoT/env  /Users/proteomica/Desktop/iSanXoT_forBuild/resources/exec
+export PATH=/Users/proteomica/iSanXoT/env/node/bin:$PATH && ./com.env.darwin.sh /Users/proteomica/Desktop/iSanXoT_forBuild/env/python-3.9.7-darwin-x64/python3.9  /Users/proteomica/iSanXoT/env  /Users/proteomica/Desktop/iSanXoT_forBuild/resources/exec
 ```
 
 ## for Linux
@@ -51,10 +53,27 @@ export PATH=/home/jmrc/iSanXoT/env/node/bin:$PATH && ./com.env.linux.sh /usr/loc
 ## Package iSanXoT
 
 ## for Windows
-"{WRITE THE FRONTEND PATH FOR ENV}/node/electron-builder"
 
-## for Mac and Linux
+Add the Node path into environment variable
+```
+Open CMD
+SETX PATH %PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node
+Close CMD
+```
+
+Build iSanXoT
+```
+Open New CMD
+"C:/Users/jmrodriguezc/iSanXoT/env/node/electron-builder"
+```
+
+## for Mac
 {WRITE THE FRONTEND PATH FOR ENV}/node/bin/electron-builder
+/Users/proteomica/iSanXoT/env/node/bin/electron-builder
+
+## for Linux
+{WRITE THE FRONTEND PATH FOR ENV}/node/bin/electron-builder
+/home/jmrc/iSanXoT/env/node/bin/electron-builder
 
 
 # Execute iSanXoT in debuging
