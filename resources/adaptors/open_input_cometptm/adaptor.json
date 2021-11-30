@@ -1,0 +1,44 @@
+{
+  "id": "open_input_cometptm",
+  "label": "CNIC - Input from Comet-PTM",
+  "sdesc": "<p><i>Input from Comet-PTM</i>.</p>",
+  "description": "Long description for the adaptor.",
+  "works": [{
+    "id": "inputs",
+    "label": "Inputs",
+    "description": "Short description for the current work (tab)",
+    "cmds": ["CREATE_IDQUANT", "JOINER_ID", "MASTERQ", "GET_IDSTATS"]
+  }],
+  "commands": [{
+    "id": "CREATE_IDQUANT",
+    "label": "Files from Comet-PTM",
+    "title": "Provide input files from Comet-PTM",
+    "visible": true,
+    "panel_adp": "open_input_cometptm/panels/inputs.html",
+    "help_adp": "open_input_cometptm/hmodals/inputs.html",
+    "tasktable": {
+      "file": "create_idquant.tsv",
+      "unique_exec": true,
+      "params": [
+        { "type": "required", "id": "infile", "name": "Identification file" },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "optional", "id": "mzfile", "name": "Quantification File (in mzML format)" },
+        { "type": "optional", "id": "quan_method", "name": "Quan Method" }
+    ]}
+  },{
+    "id": "JOINER_ID",
+    "label": "JOINER",
+    "sdesc": "Concatenate all ID tables in one",
+    "visible": false
+  },{
+    "id": "MASTERQ",
+    "label": "MASTERQ",
+    "sdesc": "Get the first protein selected alphabetically",
+    "visible": false  
+  },{
+    "id": "GET_IDSTATS",
+    "label": "GET_IDSTATS",
+    "sdesc": "Get the statistics of ID table",
+    "visible": false
+  }]
+}

@@ -1,0 +1,21 @@
+---
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
+- name: CREATE_IDQUANT
+  description: Create a file with the identifications and if apply, the quantification
+  force: 0
+  rules:
+  - name: create_idquant#createidquant
+    infiles:
+      -i: __INDIR__
+      -t: __TTABLEFILE_CREATE_IDQUANT__
+    outfiles:        
+      -x: __EXPDIR__/__WF_EXPERIMENT__/ID.tsv
+    parameters:
+      outdir:
+        -o: __EXPDIR__
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/createIDQuant.py" -w __NCPU__ __WF_VERBOSE__ '
+###################

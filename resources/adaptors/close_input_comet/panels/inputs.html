@@ -1,0 +1,117 @@
+<template class="task-template" id="panel-input_comet">
+
+<div id="panel-simple">
+  <div class="helpadv">
+    <svg class="bi text-info" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#info-square-fill" /></svg>
+  </div>
+  <div class="help_adp"></div>
+</div>
+  
+<div id="paneladaptor-input_comet">
+
+  <div class="form-group">
+    <h6>Output folder</h6>
+    <div class="input-group col-sm  adaptor_inputs" id="__OUTDIR__">
+      <input type="text" class="form-control" placeholder=""  value="">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary btn-sm" type="button">Choose folder</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <h6>Default Input folder</h6>  
+    <div class="input-group col-sm  adaptor_inputs" id="__INDIR__">
+      <input type="text" class="form-control" placeholder=""  value="">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary btn-sm" type="button">Choose folder</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <h6>Input files</h6>
+    <input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show advanced options" data-off="Hide advanced options" data-onstyle="light" data-offstyle="dark" data-width="150px" data-height="30px" data-size="sm" checked>
+  </div>
+  
+</div>
+
+<script>
+
+/* Declare variables */
+let remote = require('electron').remote;
+let mainWindow = remote.getCurrentWindow();
+let dialog = remote.dialog;
+
+/* Local Functions */
+function extractInputDirectoryFile(inputs, errsms) {
+  let out = undefined;
+  if(inputs === undefined) {
+    console.log(`${errsms}: input is undefined`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+  }
+  else if (inputs.canceled) {
+    console.log(`${errsms}: canceled operation`);
+  }
+  else if (!('filePaths' in inputs )) {
+    console.log(`${errsms}: filePaths does not defined`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+  }
+  else {
+    if ( inputs['filePaths'].length == 0 ) {
+      console.log(`${errsms}: filePaths is empty`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+    }
+    else {
+      out = inputs['filePaths'][0];
+    }
+  }
+  return out;
+};
+
+/* Local Events */
+$('#__OUTDIR__  button').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
+    if ( inpt !== undefined ) {
+      $(`#__OUTDIR__ input`).val(`${inpt}`);
+    }
+  });
+});
+$('#__INDIR__  button').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
+    if ( inpt !== undefined ) {
+      $(`#__INDIR__ input`).val(`${inpt}`);
+    }
+  });
+});
+
+/* Functions that chech the inputs */
+function checkInputFile(input, errsms, exceptor) {
+  let fs = require('fs');
+  if ( $(`${input}`).val() === undefined || $(`${input}`).val() === '' ) {
+      console.log(`${errsms}: input is undefined`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+    }
+    else {
+      try {
+        if ( !fs.existsSync($(`${input}`).val()) ) {
+          console.log(`${errsms}: input is undefined`);
+          exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+        }
+      } catch(err) {
+        console.log(`${errsms}: input is undefined`);
+        exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+      }
+    }
+    return;
+};
+/* The name and the parameters of this function has to be the same in the adaptors */
+function checkAdaptorInputs(exceptor) {
+  checkInputFile(`#__INDIR__ input`, `Input folder has not been included`, exceptor);
+  checkInputFile(`#__OUTDIR__ input`, `Output folder has not been included`, exceptor);
+};
+
+</script>
+</template>

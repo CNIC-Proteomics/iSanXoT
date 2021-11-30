@@ -1,0 +1,341 @@
+{
+  "id": "isanxot",
+  "label": "iSanXoT Workflow",
+  "sdesc": "<p><i>Basic Workflow</i> is a general-purpose approach to the statistical analysis of multiplexed, high-throughput proteomics experiments. This workflow includes peptide and protein (WSPP) model and the systems biology triangle (SBT) approach.</p>",
+  "description": "Long description for iSanXoT Workflow. You can include HTML",
+  "prj_workspace": {
+    "expdir": "exps",
+    "jobdir": "jobs",
+    "reldir": "rels",
+    "rstdir": "reports",
+    "logdir": "logs",
+    "stadir": "stats"
+  },
+  "works": [{
+    "id": "rels_creator",
+    "label": "Relation tables",
+    "description": "Short description for the current work (tab)",  
+    "cmds": ["RELS_CREATOR"]
+  },{
+    "id": "basic_commands",
+    "label": "Basic commands",
+    "description": "Short description for the current work (tab)",  
+    "cmds": ["LEVEL_CREATOR","LEVEL_CALIBRATOR","INTEGRATE","NORCOMBINE","RATIOS_INT","SBT"]
+  },{
+    "id": "complete_commands",
+    "label": "Complete commands",
+    "description": "Short description for the current work (tab)",  
+    "cmds": ["WSPP_SBT","WSPPG_SBT","WPP_SBT","WPPG_SBT"]
+  },{
+    "id": "reports",
+    "label": "Reports",
+    "description": "Short description for the current work (tab)",  
+    "cmds": ["REPORT","SANSON"]
+  }],
+  "commands": [{
+    "id": "RELS_CREATOR",
+    "label": "RELS CREATOR",
+    "title": "Relation tables",
+    "sdesc": "This module creates 'Relation Tables' (RT) from any tabular file (tsv). Indicate which are the headers from the tsv table that contain the elements to create the lower and upper columns of the relation table (and of the 3rd column if required).",
+    "visible": true,
+    "panel": "sections/panels/simple.html",
+    "help_modal": "sections/hmodals/rels_creator.html",
+    "tasktable": {
+      "file": "rels_creator.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "output", "name": "Relation Table to be created" },
+        { "type": "required", "id": "inf_headers", "name": "Column name of Lower level" },
+        { "type": "required", "id": "sup_headers", "name": "Column name of Upper level" },
+        { "type": "required", "id": "thr_headers", "name": "Column name of 3rd column" },
+        { "type": "required", "id": "inf_infiles", "name": "Table from which RT is extracted" }
+    ]}
+  },{
+    "id": "LEVEL_CREATOR",
+    "label": "LEVEL CREATOR",
+    "title": "Log2-ratios & set the first level",
+    "sdesc": "This module creates a level (a text file containing identifier, X and V values) extracting the data from a Quantification table (IDq file). Only the data with the value specified in 'Experiment' column will be extracted.",
+    "visible": true,
+    "panel": "sections/panels/simple.html",
+    "help_modal": "sections/hmodals/level_creator.html",
+    "tasktable": {
+      "file": "level_creator.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator column" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },
+        { "type": "required", "id": "level", "name": "Level to be created", "dropdown": ["u_scan","u_peptide", "u_protein", "u_gene", "u_category"] },
+        { "type": "required", "id": "output", "name": "Output Sample folder(s)" }
+    ]}
+  },{
+    "id": "LEVEL_CALIBRATOR",
+    "label": "LEVEL CALIBRATOR",
+    "title": "Calibration of level",
+    "sdesc": "This module calibrates the V values of a level by performing the specified integration. Calibration converts raw V values into inverses of variances.",
+    "visible": true,
+    "panel": "sections/panels/simple.html",
+    "help_modal": "sections/hmodals/klibrate.html",
+    "tasktable": {
+      "file": "level_calibrator.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input", "name": "Sample folder(s)" },
+        { "type": "required", "id": "low_level", "name": "Lower level for integration", "dropdown": ["u_scan", "u_peptide", "u_protein", "u_gene"] },
+        { "type": "required", "id": "hig_level", "name": "Upper level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "level", "name": "Name of calibrated level", "dropdown": ["scan","peptide", "protein", "gene"] },
+        { "type": "required", "id": "output", "name": "Output Sample folder(s)" }
+    ]}
+  },{
+    "id": "NORCOMBINE",
+    "label": "NORCOMBINE",
+    "title": "Sample/experiment combination",
+    "sdesc": "This module combines integration data and relation tables from different experiments. After that, the combined integrations and relations are integrated all together.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/norcombine.html",
+    "tasktable": {
+      "file": "norcombine.tsv",
+      "recursive": "files",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input_group", "name": "Sample folder(s)" },
+        { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category",  "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "required", "id": "lowernorm", "name": "lowerNorm", "dropdown": ["lowerNormV", "lowerNormW"] },
+        { "type": "required", "id": "output", "name": "Output Sample folder(s)" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  },{
+    "id": "RATIOS_INT",
+    "label": "RATIOS",
+    "title": "Calculate ratios",
+    "sdesc": "This module calculates the ratios between levels based on the V method.",
+    "visible": true,
+    "panel": "sections/panels/simple.html",
+    "help_modal": "sections/hmodals/ratios.html",
+    "tasktable": {
+      "file": "ratios_int.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator column" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },
+        { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "v_method", "name": "V Method", "select": ["form", "max", "avg"] },
+        { "type": "required", "id": "output", "name": "Output Sample folder(s)" }
+    ]}
+  },{
+    "id": "INTEGRATE",
+    "label": "INTEGRATE",
+    "title": "Integrate",
+    "sdesc": "This command performs an integration from an existing lower level to an upper level using a previously created Relation Table whose name matches the upper and lower levels (e.g. if the user wants to integrate from scan to peptide, isanxot will use the Relation Table called scan2peptide.tsv).",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/integrate.html",
+    "tasktable": {
+      "file": "integrate.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input", "name": "Sample folder(s)" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "output", "name": "Output Sample folder(s)" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  },{
+    "id": "SBT",
+    "label": "SBT",
+    "title": "System Biology Triangle",
+    "sdesc": "This module applies the Generic Integration Algorithm (GIA) to integrate from lower level to intermediate level and then from each level to all.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/sbt.html",
+    "tasktable": {
+      "file": "sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input", "name": "Sample folder(s)" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "optional", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "lowhig_level", "name": "Lower-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "inthig_level", "name": "Int-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "l>i_tag", "name": "low>int Tag" },
+        { "type": "optional", "id": "l>h_tag", "name": "low>hig Tag" },
+        { "type": "optional", "id": "i>h_tag", "name": "int>hig Tag" },
+        { "type": "optional", "id": "l>i_fdr", "name": "low>int FDR" },
+        { "type": "optional", "id": "l>h_fdr", "name": "low>hig FDR" },
+        { "type": "optional", "id": "i>h_fdr", "name": "int>hig FDR" },
+        { "type": "optional", "id": "l>i_var(x)", "name": "low>int Var(x)" },
+        { "type": "optional", "id": "i>h_var(x)", "name": "int>hig Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  },{
+    "id": "SANSON",
+    "label": "SANSON",
+    "title": "Create similarity graph",
+    "sdesc": "This module detects the cateogories containing similar sets of proteins, showing changing proteins within each category.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/system.html",
+    "tasktable": {
+      "file": "sanson.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input", "name": "Sample folder(s)" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["protein", "gene", "category"] },
+        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "low_norm", "name": "Lower norm", "dropdown": ["protein", "gene", "category", "peptideall", "proteinall", "geneall"] },
+        { "type": "optional", "id": "hig_norm", "name": "Higher norm", "dropdown": ["gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "filter", "name": "Filter" }
+    ]}
+  },{
+    "id": "REPORT",
+    "label": "REPORTS",
+    "title": "Extract reports",
+    "sdesc": "This module creates tabular tables (tsv) called 'Report Tables' (RPT) containing the desired quantitative results of an integration from several samples.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/reports.html",
+    "tasktable": {
+      "file": "report.tsv",
+      "recursive": "files",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input_group", "name": "Sample folder(s)" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "required", "id": "reported_vars", "name": "Reported vars" },
+        { "type": "required", "id": "output", "name": "Output report" },
+        { "type": "optional", "id": "show_level", "name": "Level names to show" },
+        { "type": "optional", "id": "rep_file", "name": "Merge with report" },
+        { "type": "optional", "id": "rel_file", "name": "Merge with relation table" },
+        { "type": "optional", "id": "filter", "name": "Filter" }
+    ]}
+  },{
+    "id": "WSPP_SBT",
+    "label": "WSPP - SBT",
+    "title": "Log2-ratios & WSPP - SBT calculations",
+    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2proteinall, protein2category and category2categoryall following the SBT algorithm to analyze coordinated protein changes; it also integrates peptide2peptideall. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wspp_sbt.html",
+    "tasktable": {
+      "file": "wspp_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
+        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  },{
+    "id": "WSPPG_SBT",
+    "label": "WSPPG - SBT",
+    "title": "Log2-ratios & WSPPG - SBT calculations",
+    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wsppg_sbt.html",
+    "tasktable": {
+      "file": "wsppg_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "q>a_tag", "name": "q>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>g_fdr", "name": "q>g FDR" },
+        { "type": "optional", "id": "g>c_fdr", "name": "g>c FDR" },
+        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>g_var(x)", "name": "q>g Var(x)" },
+        { "type": "optional", "id": "g>c_var(x)", "name": "g>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  },{
+    "id": "WPP_SBT",
+    "label": "WPP - SBT",
+    "title": "Log2-ratios & WPP - SBT calculations",
+    "sdesc": "This module performs the integrations peptide2protein, protein2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wspp_sbt.html",
+    "tasktable": {
+      "file": "wpp_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  },{
+    "id": "WPPG_SBT",
+    "label": "WPPG - SBT",
+    "title": "Log2-ratios & WPPG - SBT calculations",
+    "sdesc": "This module performs the integrations peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wsppg_sbt.html",
+    "tasktable": {
+      "file": "wppg_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "q>a_tag", "name": "q>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>g_fdr", "name": "q>g FDR" },
+        { "type": "optional", "id": "g>c_fdr", "name": "g>c FDR" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>g_var(x)", "name": "q>g Var(x)" },
+        { "type": "optional", "id": "g>c_var(x)", "name": "g>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}
+  }]
+}
