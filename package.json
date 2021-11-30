@@ -73,8 +73,7 @@
     }
   },
   "scripts": {
-    "start": "electron  --trace-warnings .",
-    "build": "electron-builder . --out=dist/win --platform=win32 --arch=x64 --icon=app/assets/images/isanxot.png --asar=true --overwrite"
+    "start": "electron  --trace-warnings ."
   },
   "devDependencies": {
     "electron": "13.1.2"
