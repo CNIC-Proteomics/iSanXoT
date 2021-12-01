@@ -40,6 +40,13 @@ def parser_protein_acessions(prot):
     p = [";".join([ re.sub(r".*(\|(.*?)\|).*", r'\2', i) if re.match(r'^[sp|tr]', i) else i for i in x]) for x in p]
     return p
 
+def parser_protein_descriptions(prot):
+    '''
+    Parse the protein description replaciong the "," to ";"
+    '''
+    p = prot.replace(",",";",regex=True)
+    return p
+
 def processing_infiles(file, Expt, FirstComm):
     '''
     Pre-processing the data:
@@ -71,7 +78,7 @@ def processing_infiles(file, Expt, FirstComm):
     # parse the protein description
     df["Protein_Accessions"] = parser_protein_acessions(df["protein"])
     # add the protein description
-    df["Protein_Descriptions"] = df["protein"]
+    df["Protein_Descriptions"] = parser_protein_descriptions(df["protein"])
     # In the case of duplicated scans, we take the scans with the best cXCorr and if the xcore is duplicated we then get the first one.
     # move the Scan_Id to the last column
     df = df.sort_values(by=["Scan_Id","cXCorr","Protein_Accessions"], ascending=[True, False, False]) \
