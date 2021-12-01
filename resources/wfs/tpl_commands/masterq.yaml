@@ -17,12 +17,4 @@
         -l: __WF_LAB_DECOY__
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/masterQ.py" -w __NCPU__ __WF_VERBOSE__ '
-  - name: masterq#getidstats
-    infiles:
-      -i: __EXPDIR__/ID-q.tsv
-    outfiles:        
-      -o: __STADIR__/ID-stats.tsv
-    parameters:
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/stats/getIDstats.py" __WF_VERBOSE__ '
 ###################
