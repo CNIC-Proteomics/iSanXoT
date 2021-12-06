@@ -19,5 +19,5 @@
       v_method:
         -v: 'max'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/SanXoT/calculateRatios.py" -w __NCPU__ __WF_VERBOSE__'
+    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/calculateRatios.py" -w __NCPU__ __WF_VERBOSE__'
 ###################

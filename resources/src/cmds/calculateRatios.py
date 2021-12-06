@@ -78,14 +78,6 @@ def main(args):
 
 
     logging.info(f"calculate the new Vq using {args.v_method} form")
-    # if args.v_method == 'max': # Vq = Max(V1,V2)
-    #     df["Vinf"] = df[["Vinf_1", "Vinf_2"]].max(axis=1)
-        
-    # elif args.v_method == 'form': # Vq = 1/(1/V1+1/V2)
-    #     df["Vinf"] = 1/ (1/df["Vinf_1"] + 1/df["Vinf_2"])
-
-    # elif args.v_method == 'avg': # Vq = Avg(V1,V2)
-    #     df["Vinf"] = df[["Vinf_1", "Vinf_2"]].mean(axis=1)
     if args.v_method == 'max': # Vq = Max(V1,V2)
         df[f"{col_names[2]}"] = df[[f"{col_names[2]}_1", f"{col_names[2]}_2"]].max(axis=1)
         
