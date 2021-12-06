@@ -40,9 +40,22 @@ https://github.com/CNIC-Proteomics/iSanXoT/releases
 
 Double-click the Laucher file to open it, and you'll see an Installer window.
 
-TODO!! ADD SCREENSHOT!!!
+![Installer window](app/assets/images/installation/win_figure1.png "Installer window")
 
-...
+Then, you can choose the folder in which to install iSanXoT
+
+![Choose Install Location](app/assets/images/installation/win_figure2.png "Choose Install Location")
+
+Wait while iSanXot is being installed
+
+![Installing window](app/assets/images/installation/win_figure3.png "Installing window")
+
+Finally, you'll see a window telling you completed setup. You can run iSanXoT immediately if you want.
+
+![Completing setup](app/assets/images/installation/win_figure4.png "Completing setup")
+
+
+
 
 ## MacOS distribution
 
@@ -54,12 +67,30 @@ https://github.com/CNIC-Proteomics/iSanXoT/releases
 
 Double-click the DMG file to open it, and you'll see a Finder window. Often these will include the application itself, some form of arrow, and a shortcut to the Applications folder.
 
-TODO!! ADD SCREENSHOT!!!
+![Installer window](app/assets/images/installation/mac_figure1.png "Installer window")
 
-Simply drag the iSanXoT icon to your Applications folder and you're done: the iSanXoT app is now installed.
+Simply drag the iSanXoT icon to your Applications folder...
+
+![Installing window](app/assets/images/installation/mac_figure2.png "Installing window")
+
+and you're done: the iSanXoT app is now installed.
+
+
+
 
 ## Linux distribution
 
+The iSanXoT application for Linux distribution is packaged in a AppImage.
+
+Download the AppImage in the assets part from the *release* link:
+
+https://github.com/CNIC-Proteomics/iSanXoT/releases
+
+Double-click the AppImage file to open it...
+
+![Installer window](app/assets/images/installation/linux_figure1.png "Installer window")
+
+and you're done: the iSanXoT app is now installed.
 
 ---
 
