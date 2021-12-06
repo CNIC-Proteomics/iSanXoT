@@ -67,7 +67,7 @@
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator column" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },
         { "type": "required", "id": "level", "name": "Level to be created", "dropdown": ["u_scan","u_peptide", "u_protein", "u_gene", "u_category"] },
-        { "type": "required", "id": "output", "name": "Output Sample folder(s)" }
+        { "type": "required", "id": "output", "name": "Output Sample folder" }
     ]}
   },{
     "id": "LEVEL_CALIBRATOR",
@@ -85,7 +85,7 @@
         { "type": "required", "id": "low_level", "name": "Lower level for integration", "dropdown": ["u_scan", "u_peptide", "u_protein", "u_gene"] },
         { "type": "required", "id": "hig_level", "name": "Upper level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "level", "name": "Name of calibrated level", "dropdown": ["scan","peptide", "protein", "gene"] },
-        { "type": "required", "id": "output", "name": "Output Sample folder(s)" }
+        { "type": "required", "id": "output", "name": "Output Sample folder" }
     ]}
   },{
     "id": "NORCOMBINE",
@@ -104,7 +104,7 @@
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "norm", "name": "Norm", "dropdown": ["peptide", "protein", "gene", "category",  "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "required", "id": "lowernorm", "name": "lowerNorm", "dropdown": ["lowerNormV", "lowerNormW"] },
-        { "type": "required", "id": "output", "name": "Output Sample folder(s)" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
         { "type": "optional", "id": "var(x)", "name": "Var(x)" },
@@ -126,7 +126,7 @@
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "v_method", "name": "V Method", "select": ["form", "max", "avg"] },
-        { "type": "required", "id": "output", "name": "Output Sample folder(s)" }
+        { "type": "required", "id": "output", "name": "Output Sample folder" }
     ]}
   },{
     "id": "INTEGRATE",
@@ -143,7 +143,7 @@
         { "type": "required", "id": "input", "name": "Sample folder(s)" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
-        { "type": "optional", "id": "output", "name": "Output Sample folder(s)" },
+        { "type": "optional", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "tag", "name": "Tag" },
         { "type": "optional", "id": "fdr", "name": "FDR" },
         { "type": "optional", "id": "var(x)", "name": "Var(x)" },
@@ -164,7 +164,7 @@
         { "type": "required", "id": "input", "name": "Sample folder(s)" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "int_level", "name": "Intermediate level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "optional", "id": "output", "name": "Output folder(s)" },
+        { "type": "optional", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "lowhig_level", "name": "Lower-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "optional", "id": "inthig_level", "name": "Int-Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "optional", "id": "l>i_tag", "name": "low>int Tag" },
@@ -192,7 +192,7 @@
         { "type": "required", "id": "input", "name": "Sample folder(s)" },
         { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene"] },
         { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["protein", "gene", "category"] },
-        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "low_norm", "name": "Lower norm", "dropdown": ["protein", "gene", "category", "peptideall", "proteinall", "geneall"] },
         { "type": "optional", "id": "hig_norm", "name": "Higher norm", "dropdown": ["gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
         { "type": "optional", "id": "tag", "name": "Tag" },
@@ -237,7 +237,7 @@
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
         { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
         { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
@@ -265,7 +265,7 @@
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
         { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
         { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
@@ -297,7 +297,7 @@
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
         { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
         { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
@@ -323,7 +323,7 @@
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output folder(s)" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
         { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
         { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
         { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
