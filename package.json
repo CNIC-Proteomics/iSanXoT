@@ -17,10 +17,10 @@
   "license": "Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
   "main": "app/main.js",
   "build": {
-    "artifactName": "${productName}_Launcher.${platform}-${arch}.${ext}",
+    "artifactName": "${productName}_Launcher.${version}.${platform}-${arch}.${ext}",
     "asar": true,
     "directories": {
-      "output": "releases/${platform}/${arch}"
+      "output": "releases/${version}/${platform}/${arch}"
     },
     "nsis": {
       "oneClick": false,
