@@ -46,7 +46,7 @@
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
         { "type": "required", "id": "output", "name": "Relation Table to be created" },
         { "type": "required", "id": "inf_headers", "name": "Column name of Lower level" },
-        { "type": "required", "id": "sup_headers", "name": "Column name of Upper level" },
+        { "type": "required", "id": "sup_headers", "name": "Column name of Higher level" },
         { "type": "required", "id": "thr_headers", "name": "Column name of 3rd column" },
         { "type": "required", "id": "inf_infiles", "name": "Table from which RT is extracted" }
     ]}
@@ -218,7 +218,7 @@
         { "type": "required", "id": "output", "name": "Output report" },
         { "type": "optional", "id": "show_level", "name": "Level names to show" },
         { "type": "optional", "id": "rep_file", "name": "Merge with report" },
-        { "type": "optional", "id": "rel_file", "name": "Merge with relation table" },
+        { "type": "optional", "id": "rel_file", "name": "Add columns from relation table" },
         { "type": "optional", "id": "filter", "name": "Filter" }
     ]}
   },{
