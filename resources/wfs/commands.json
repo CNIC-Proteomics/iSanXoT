@@ -83,7 +83,7 @@
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Sample folder(s)" },
         { "type": "required", "id": "low_level", "name": "Lower level for integration", "dropdown": ["u_scan", "u_peptide", "u_protein", "u_gene"] },
-        { "type": "required", "id": "hig_level", "name": "Upper level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "level", "name": "Name of calibrated level", "dropdown": ["scan","peptide", "protein", "gene"] },
         { "type": "required", "id": "output", "name": "Output Sample folder" }
     ]}
@@ -200,7 +200,7 @@
     ]}
   },{
     "id": "REPORT",
-    "label": "REPORTS",
+    "label": "REPORT",
     "title": "Extract reports",
     "sdesc": "This module creates tabular tables (tsv) called 'Report Tables' (RPT) containing the desired quantitative results of an integration from several samples.",
     "visible": true,
