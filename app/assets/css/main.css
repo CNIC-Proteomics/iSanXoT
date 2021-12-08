@@ -30,7 +30,8 @@ section.executor, section.processor {
     bottom: 1.7em;
     width: 100%;
     padding: 1em;
-    background-color: goldenrod;
+    /* background-color: goldenrod; */
+    background-color: rgb(191, 144, 0);
     height: 5em;
     z-index: 1000;
 }
@@ -106,6 +107,12 @@ input:disabled, button:disabled {
 .tabs-parameters .tab-pane {
     width: 100%;   
 }
+.nav-tabs .nav-link {
+    color: goldenrod!important;
+}
+.nav-tabs .nav-link.active {
+    color: rgb(191,144,0)!important;
+}
 
 #page {
     width: 100%;
@@ -124,7 +131,8 @@ input:disabled, button:disabled {
 
 #page .page-header {
     height: auto;
-    background-color: #6d7fcc;
+    /* background-color: #6d7fcc; */
+    background-color: black;
     color: white;
     font-size: 1.8em;
     padding: .3em;
@@ -148,14 +156,15 @@ input:disabled, button:disabled {
     padding: .3em;
 }
 #sidebar {
-    background: #7386D5;
+    /* background: #7386D5; */
+    background: black;
     color: #fff;
     text-align: center;
     height: 100%;
 }
 #sidebar ul {
     padding: 20px 0;
-    border-bottom: 1px solid #47748b;
+    /* border-bottom: 1px solid #47748b; */
 }
 #sidebar ul li a {
     cursor: pointer;
@@ -165,10 +174,12 @@ input:disabled, button:disabled {
     color: #e9ecef;
 }
 #sidebar ul li a.active {
-    color: #7386D5;
+    /* color: #7386D5; */
+    color: black;
     background: #e9ecef;
 }
 #sidebar ul li a:hover {
+    color: #a2a3a5;
     /* color: #fff;
     background: #6d7fcc; */
 }
@@ -394,6 +405,9 @@ fieldset[disabled] .btn-selectpicker.focus {
     float: right;
     cursor: pointer;
 }
+.helpadv .text-info {
+    color: goldenrod!important;
+}
 .modal-xl {
     max-width: 1140px;
 }
@@ -403,12 +417,6 @@ fieldset[disabled] .btn-selectpicker.focus {
 *   HELP PAGES
 * ---------------------------------------------------
 */
-#help {
-    color: red;
-}
-#help p {
-    color: red!important;
-}
 #help {
     padding: 20px;
     background-color: white;
@@ -421,17 +429,62 @@ fieldset[disabled] .btn-selectpicker.focus {
     text-align: justify;
     text-justify: inter-word;
 }
+#help ul, li {
+    color: black;
+}
+
 #help figure.figure.rounded.float-right {
     margin: 10px 0px 10px 10px;
+    width: 40%;
 }
 #help .figure-caption {
     font-size: 100%;
+}
+#help .figure-img {
+    width: 100%;
 }
 #help .footnote {
     margin-top: 40px;
     margin-bottom: 20px;
 }
+div[id^="help_"] {
+    margin-bottom: 6rem;
+    margin-top: 3rem;
+}
 
+/* Divider */
+.h-divider {
+    margin: auto;
+    margin-top: 80px;
+    width: 80%;
+    position: relative;
+}  
+.h-divider .shadow2 {
+    overflow: hidden;
+    height: 20px;
+}
+
+.h-divider .shadow2:after {
+    content: '';
+    display: block;
+    margin: -25px auto 0;
+    width: 100%;
+    height: 25px;
+    border-radius: 125px/12px;
+    box-shadow: 0 0 8px black;
+}
+.h-divider .stars {
+    width: 100px;
+    height: 45px;
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: -20px;
+    left: 50%;
+    margin-left: -45px;
+    font-size: large;
+    color: rgb(191, 144, 0);
+}
+  
 /*
  * ---------------------------------------------------
  *   HMODALS
