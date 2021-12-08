@@ -411,6 +411,9 @@ fieldset[disabled] .btn-selectpicker.focus {
 .modal-xl {
     max-width: 1140px;
 }
+.help_modal a {
+    color: goldenrod!important;
+}
 
 /*
 * ---------------------------------------------------
