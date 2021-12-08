@@ -5,7 +5,7 @@
   "description": "Long description for the adaptor.",
   "works": [{
     "id": "inputs",
-    "label": "Inputs",
+    "label": "Adaptors",
     "description": "Short description for the current work (tab)",
     "cmds": ["CREATE_IDQUANT", "JOINER_ID", "GET_IDSTATS"]
   }],
