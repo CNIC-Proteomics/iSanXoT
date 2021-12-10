@@ -1,13 +1,4 @@
-/* @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"; */
-/* @import "https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,600,700"; */
-/* @import "https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,500,600,700"; */
-@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700";
-
 * {
-    /* font-family: 'Roboto Mono';
-    font-size: .87rem; */
-    /* font-family: 'Roboto Condensed';
-    font-size: .97rem; */
     font-family: 'Roboto';
     font-size: .87rem;
 }
@@ -411,7 +402,7 @@ fieldset[disabled] .btn-selectpicker.focus {
 .modal-xl {
     max-width: 1140px;
 }
-.help_modal a {
+.modal-body a {
     color: goldenrod!important;
 }
 
