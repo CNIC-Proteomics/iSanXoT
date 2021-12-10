@@ -89,15 +89,15 @@ else if (navigator.platform === "MacIntel") {
         process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-darwin-x64/bin/python3');
     }
     else {
-        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python');
+        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python3');
     }
 }
 else if (navigator.platform === "Linux x86_64") {
     if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-linux-x64/bin/python');
+        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-linux-x64/bin/python3');
     }
     else {
-        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python');
+        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python3');
     }
 }
 else {
