@@ -42,8 +42,24 @@ $(window).resize(function() {
     clearTimeout(resizeId);
     resizeId = setTimeout(doneResizing, 250);
 });
-// Operations when the html document is ready
-$(document).ready(function() {
+// // Operations when the html document is ready
+// $(document).ready(function() {
+//     // operations in task-tables
+//     if ( $('.tasktable').length ) {
+//         // render all task-table
+//         $(`.tasktable`).handsontable('render');
+//     }
+//     if ( $('.logtable').length ) {
+//         // render all task-table
+//         $(`.logtable`).handsontable('render');
+//     }
+//     // resize panels
+//     doneResizing();
+//     // stop any loading panel
+//     exceptor.stopLoadingWorkflow();
+// });
+// Operations when the windows is loaded
+$(window).on('load', function() {
     // operations in task-tables
     if ( $('.tasktable').length ) {
         // render all task-table
@@ -212,6 +228,7 @@ importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_intro.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_cmds.html`);
+importHTMLtemplate(`${__dirname}/../sections/helps/help_get-started.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-basic.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-ptm.html`);
 importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-lblfree.html`);
