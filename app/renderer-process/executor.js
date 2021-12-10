@@ -56,7 +56,7 @@ function execProcess(script, cmd, cfg, log, wfname) {
 
 function execTable2Cfg(params) {
     let intpl = `${path.join(process.env.ISANXOT_RESOURCES, 'wfs/tpl_commands')}`;
-    let cmd = `"${process.env.ISANXOT_PYTHON}" "${path.join(process.env.ISANXOT_RESOURCES, 'wfs/table2cfg.py')}" \
+    let cmd = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'wfs/table2cfg.py')}" \
     --attfile "${params.attfile}" \
     --indir "${params.indir}" \
     --intpl "${intpl}" \
@@ -66,7 +66,7 @@ function execTable2Cfg(params) {
 
 function execSnakeMake(params) {
     let smkfile = `${path.join(process.env.ISANXOT_RESOURCES, 'wfs/wf_sanxot.smk')}`;
-    let cmd_smk = `"${process.env.ISANXOT_PYTHON}" "${path.join(process.env.ISANXOT_RESOURCES, 'wfs/mysnake.py')}" \
+    let cmd_smk = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'wfs/mysnake.py')}" \
     --configfile "${params.configfile}" \
     --snakefile "${smkfile}" \
     --cores ${params.nthreads} \

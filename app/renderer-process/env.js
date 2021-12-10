@@ -78,37 +78,41 @@ if (process.env.ISANXOT_MODE == "debug") { // in the case of debugging
 // Set the python executable depending on the platform and mode
 if (navigator.platform === "Win32") {
     if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-win-x64/python.exe');
+        process.env.ISANXOT_PYTHON_HOME = path.join(process.cwd(), 'env/python-3.9.7-win-x64');
     }
     else {
-        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/python.exe');
+        process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python');
     }
+    process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'python.exe');
 }
 else if (navigator.platform === "MacIntel") {
     if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-darwin-x64/bin/python3');
+        process.env.ISANXOT_PYTHON_HOME = path.join(process.cwd(), 'env/python-3.9.7-darwin-x64');
     }
     else {
-        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python3');
+        process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python');
     }
+    process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
 }
 else if (navigator.platform === "Linux x86_64") {
     if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-linux-x64/bin/python3');
+        process.env.ISANXOT_PYTHON_HOME = path.join(process.cwd(), 'env/python-3.9.7-linux-x64');
     }
     else {
-        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python3');
+        process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python');
     }
+    process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
 }
 else {
     ipcRenderer.send('get-install', {'code': 601, 'msg':  `Error setting the platform`});
     exceptor.showErrorMessageBox(`Setting the platform`, `Error setting the platform`, end=false, page=false, callback=function(){closeWindow()} );
 }
-if ( !fs.existsSync(process.env.ISANXOT_PYTHON) ) {
-    ipcRenderer.send('get-install', {'code': 602, 'msg':  `Error getting the python environment: ${process.env.ISANXOT_PYTHON}`});
-    exceptor.showErrorMessageBox(`Getting the python env`, `Error getting the python environment: ${process.env.ISANXOT_PYTHON}`, end=false, page=false, callback=function(){closeWindow()} );
+if ( !fs.existsSync(process.env.ISANXOT_PYTHON_EXEC) ) {
+    ipcRenderer.send('get-install', {'code': 602, 'msg':  `Error getting the python environment: ${process.env.ISANXOT_PYTHON_EXEC}`});
+    exceptor.showErrorMessageBox(`Getting the python env`, `Error getting the python environment: ${process.env.ISANXOT_PYTHON_EXEC}`, end=false, page=false, callback=function(){closeWindow()} );
 }
-ipcRenderer.send('send-env', { 'ISANXOT_PYTHON': process.env.ISANXOT_PYTHON });
+ipcRenderer.send('send-env', { 'ISANXOT_PYTHON_HOME': process.env.ISANXOT_PYTHON_HOME });
+ipcRenderer.send('send-env', { 'ISANXOT_PYTHON_EXEC': process.env.ISANXOT_PYTHON_EXEC });
 
 
 // Send environment variables
@@ -128,7 +132,7 @@ ipcRenderer.send('send-env', {'ISANXOT_ICON': process.env.ISANXOT_ICON});
 
 // Prepare commands consecutively
 let requirements = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/requirements.txt');
-let cmd1 = `"${process.env.ISANXOT_PYTHON}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
+let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
 
 
 // Execute the commands consecutively
