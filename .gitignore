@@ -21,7 +21,10 @@ tests/*
 
 # discard the distribution folders
 releases
-resources/exec
+env/python-3.9.7-win-x64
+env/python-3.9.7-darwin-x64
+env/python-3.9.7-linux-x64
+env/nodejs
 
 # SanXoT
 src/SanXoT/.svn
