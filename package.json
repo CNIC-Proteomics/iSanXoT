@@ -1,7 +1,7 @@
 {
   "name": "iSanXoT",
   "version": "0.4.1",
-  "description": "A bioinformatic application for quantitative high-throughput proteomics using SanXoT workflow",
+  "description": "A bioinformatic application for quantitative high-throughput proteomics using SanXoT package",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CNIC-Proteomics/iSanXoT.git"
@@ -17,7 +17,7 @@
   "license": "Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
   "main": "app/main.js",
   "build": {
-    "artifactName": "${productName}_Launcher.${version}.${platform}-${arch}.${ext}",
+    "artifactName": "${productName}_Launcher_${version}.${platform}-${arch}.${ext}",
     "asar": true,
     "directories": {
       "output": "releases/${version}/${platform}/${arch}"
@@ -47,10 +47,6 @@
         "to": "adaptors"
       },
       {
-        "from": "resources/exec",
-        "to": "exec"
-      },
-      {
         "from": "resources/node_modules",
         "to": "node_modules"
       },
@@ -63,7 +59,13 @@
       }
     ],
     "win": {
-      "icon": "app/assets/icons/isanxot.ico"
+      "icon": "app/assets/icons/isanxot.ico",
+      "extraResources": [
+        {
+          "from": "env/python-3.9.7-win-x64",
+          "to": "exec/python"
+        }
+      ]
     },
     "mac": {
       "icon": "app/assets/icons/isanxot.icns"

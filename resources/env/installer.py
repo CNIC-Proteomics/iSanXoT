@@ -272,11 +272,11 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         requirement_new_file = sys.argv[1]
         lib_home = sys.argv[2]
-    # provide only the requierement file, then the lib to install is the local directory
+    # provide only the requierement file
     elif len(sys.argv) == 2:
         requirement_new_file = sys.argv[1]
-        #lib_home = os.path.dirname(python_exec)
-        lib_home = local_dir
+        lib_home = os.path.dirname(python_exec) # the lib to install is the directory of python exec
+        # lib_home = local_dir # the lib to install is the local directory
     else:
         sys.exit('''
      Installs the package, modules and executable programas that are described in a requirment file

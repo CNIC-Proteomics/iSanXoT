@@ -66,7 +66,6 @@ function execProcess(script, cmd, close=false, callback) {
  */
 
 // Set the resources folder depeding on mode
-// Send environment variables
 $('#frameless-desc-title').text('Preparing environment variables');
 printInDetail('** Preparing environment variables...\n');
 
@@ -74,28 +73,32 @@ process.env.ISANXOT_RESOURCES = process.resourcesPath;
 if (process.env.ISANXOT_MODE == "debug") { // in the case of debugging
     process.env.ISANXOT_RESOURCES = path.join(process.cwd(), 'resources');
 }
-ipcRenderer.send('send-env', { 'ISANXOT_RESOURCES': process.env.ISANXOT_RESOURCES });
-ipcRenderer.send('send-env', { 'ISANXOT_EXEC_HOME': path.join(process.env.ISANXOT_RESOURCES, 'exec') });
-ipcRenderer.send('send-env', { 'ISANXOT_SRC_HOME': path.join(process.env.ISANXOT_RESOURCES, 'src') });
-ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_HOME': path.join(process.env.ISANXOT_RESOURCES, 'adaptors') });
-ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_INIT': path.join(process.env.ISANXOT_RESOURCES, 'adaptors/main_input') });
-ipcRenderer.send('send-env', { 'ISANXOT_WFS_HOME': path.join(process.env.ISANXOT_RESOURCES, 'wfs') });
-ipcRenderer.send('send-env', { 'ISANXOT_SAMPLES_DIR': path.join(process.env.ISANXOT_RESOURCES, 'samples') });
-ipcRenderer.send('send-env', { 'ISANXOT_NODE_MODULES': path.join(process.env.ISANXOT_RESOURCES, 'node_modules') });
 
-// Set the icon
-process.env.ISANXOT_ICON = path.join(process.cwd(), 'app/assets/images/isanxot.png');
-ipcRenderer.send('send-env', {'ISANXOT_ICON': process.env.ISANXOT_ICON});
 
-// Set the python executable depending on the platform
+// Set the python executable depending on the platform and mode
 if (navigator.platform === "Win32") {
-    process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/Scripts/python.exe');
+    if (process.env.ISANXOT_MODE == "debug") {
+        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-win-x64/python.exe');
+    }
+    else {
+        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/python.exe');
+    }
 }
 else if (navigator.platform === "MacIntel") {
-    process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python');
+    if (process.env.ISANXOT_MODE == "debug") {
+        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-darwin-x64/python3.9');
+    }
+    else {
+        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python');
+    }
 }
 else if (navigator.platform === "Linux x86_64") {
-    process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python');
+    if (process.env.ISANXOT_MODE == "debug") {
+        process.env.ISANXOT_PYTHON = path.join(process.cwd(), 'env/python-3.9.7-linux-x64/bin/python');
+    }
+    else {
+        process.env.ISANXOT_PYTHON = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/bin/python');
+    }
 }
 else {
     ipcRenderer.send('get-install', {'code': 601, 'msg':  `Error setting the platform`});
@@ -107,14 +110,33 @@ if ( !fs.existsSync(process.env.ISANXOT_PYTHON) ) {
 }
 ipcRenderer.send('send-env', { 'ISANXOT_PYTHON': process.env.ISANXOT_PYTHON });
 
+
+// Send environment variables
+ipcRenderer.send('send-env', { 'ISANXOT_RESOURCES': process.env.ISANXOT_RESOURCES });
+ipcRenderer.send('send-env', { 'ISANXOT_SRC_HOME': path.join(process.env.ISANXOT_RESOURCES, 'src') });
+ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_HOME': path.join(process.env.ISANXOT_RESOURCES, 'adaptors') });
+ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_INIT': path.join(process.env.ISANXOT_RESOURCES, 'adaptors/main_input') });
+ipcRenderer.send('send-env', { 'ISANXOT_WFS_HOME': path.join(process.env.ISANXOT_RESOURCES, 'wfs') });
+ipcRenderer.send('send-env', { 'ISANXOT_SAMPLES_DIR': path.join(process.env.ISANXOT_RESOURCES, 'samples') });
+ipcRenderer.send('send-env', { 'ISANXOT_NODE_MODULES': path.join(process.env.ISANXOT_RESOURCES, 'node_modules') });
+
+
+// Set the icon
+process.env.ISANXOT_ICON = path.join(process.cwd(), 'app/assets/images/isanxot.png');
+ipcRenderer.send('send-env', {'ISANXOT_ICON': process.env.ISANXOT_ICON});
+
+
 // Prepare commands consecutively
 let requirements = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/requirements.txt');
 let cmd1 = `"${process.env.ISANXOT_PYTHON}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
+
 
 // Execute the commands consecutively
 $('#frameless-desc-title').text('Preparing packages');
 printInDetail('** Preparing packages...\n');
 execProcess('preparing packages', cmd1, close=true);
+
+
 
 
 // BEGIN: DEPRECATED BUT USEFULL: SEE HOW EXECUTE CONSECUTIVELY

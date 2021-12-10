@@ -1,7 +1,6 @@
 # Python 3.9.7
 
 $MANAGER=bin/pip
-install --no-warn-script-location	--upgrade pip
 install --no-warn-script-location	numpy==1.21.3
 install --no-warn-script-location	fsspec==2021.10.1
 install --no-warn-script-location	matplotlib==3.4.3

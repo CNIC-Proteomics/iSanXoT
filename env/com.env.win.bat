@@ -39,20 +39,6 @@ IF %ISANXOT_FRONTEND_HOME%=="" (
 SET  ISANXOT_FRONTEND_HOME=%ISANXOT_FRONTEND_HOME:"=%
 
 
-:: get the backend home for the installation of modules ----------------------
-SET  ISANXOT_BACKEND_HOME=%3
-IF %ISANXOT_BACKEND_HOME%=="" (
-    :: Add the output parameter
-    GOTO :addBackEndHome
-)
-:: remove "'s
-SET  ISANXOT_BACKEND_HOME=%ISANXOT_BACKEND_HOME:"=%
-:: set the python home
-SET  ISANXOT_BACKEND_HOME_PYTHON=%ISANXOT_BACKEND_HOME%/python
-:: overwrite the Python executable
-SET  PYTHON_ENV_EXEC=%ISANXOT_BACKEND_HOME_PYTHON%/Scripts/python.exe
-
-
 :: create the frontend environment: node, node modules, electron, etc. ----------------------
 ECHO **
 ECHO ** creating the frontend environment: node, node modules, electron...
@@ -61,10 +47,10 @@ CMD /C " "%PYTHON_EXEC%" "%INSTALLER_SCRIPT%" "%REQUIREMENTS_FRONTEND_ENV%"  "%I
 IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 
 
-:: create the python environment ----------------------
+:: update pip ----------------------
 ECHO **
-ECHO ** creating the Python environment...
-CMD /C " "%PYTHON_EXEC%" -m venv --upgrade-deps --copies  "%ISANXOT_BACKEND_HOME_PYTHON%" "
+ECHO ** updating pip...
+CMD /C " "%PYTHON_EXEC%" -m pip install  --no-warn-script-location  --upgrade pip "
 :: if everything was fine or not (error => 1 or more)
 IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 
@@ -72,7 +58,7 @@ IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 :: create the backend environment: python venv, packages, etc. ----------------------
 ECHO **
 ECHO ** creating the backend environment: python venv, packages...
-CMD /C " "%PYTHON_ENV_EXEC%" "%INSTALLER_SCRIPT%" "%REQUIREMENTS_BACKEND_PYTHON%"  "%ISANXOT_BACKEND_HOME_PYTHON%" "
+CMD /C " "%PYTHON_EXEC%" "%INSTALLER_SCRIPT%" "%REQUIREMENTS_BACKEND_PYTHON%" "
 :: if everything was fine or not (error => 1 or more)
 IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 

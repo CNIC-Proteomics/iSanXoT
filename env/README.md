@@ -1,95 +1,98 @@
-# Steps how to work with iSanXoT
+# Steps how to create an environment for iSanXoT
 
-# Requierements
-
-Building wheels for collected packages: datrie
-  Building wheel for datrie (pyproject.toml): started
-  Building wheel for datrie (pyproject.toml): finished with status 'error'
-  ERROR: Command errored out with exit status 1:
-   command: 'C:\Users\jmrodriguezc\Desktop\iSanXoT_forBuild\resources\exec\python\Scripts\python.exe' 'C:\Users\jmrodriguezc\Desktop\iSanXoT_forBuild\resources\exec\python\lib\site-packages\pip\_vendor\pep517\in_process\_in_process.py' build_wheel 'C:\cygwin64\tmp\tmp5rb7uhkw'
-       cwd: C:\cygwin64\tmp\pip-install-1pjjafgm\datrie_2d08a4c497604c7f95ede5ef6da99f84
-  Complete output (5 lines):
-  running bdist_wheel
-  running build
-  running build_clib
-  building 'datrie' library
-  error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
-  ----------------------------------------
-  ERROR: Failed building wheel for datrie
+This documentation is for iSanXoT developers.
 
 
 
-# Create the frontend environment, create the python environment, and create the backend environment
-## for windows
+## Create the frontend environment, create the python environment, and create the backend environment
+### for windows
 
+
+1) Install Python
+
+  1.1) Customize installation:
+
+![Customize installation](../docs/env/images/python_installation_1.png "Customize installation")
+    
+  1.2) Optional features:
+  Without documentation, tck, ONLY pip
+
+![Optional features](../docs/env/images/python_installation_2.png "Optional features")
+
+  1.3) Choose the path:
+  Do it in "env/python-3.9.7-win-x64"
+
+![Choose the path](../docs/env/images/python_installation_3.png "Choose the path")
+
+2) Execute:
 ```
-cd resources/env
-
-./com.env.win.bat "{WRITE THE PYTHON EXECUTABLE}" "{WRITE THE FRONTEND PATH FOR ENV}"  "{WRITE THE BACKENDEND PATH FOR ENV}"
- <!-- set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& ./com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "C:/Users/jmrodriguezc/iSanXoT/env" "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/resources/exec"
- set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& ./com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "C:/Users/jmrodriguezc/iSanXoT/env" "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/resources/exec" -->
-
-
-```
-## for Mac
-
-```
-cd resources/env
-
-./com.env.darwin.sh "{WRITE THE PYTHON EXECUTABLE}" "{WRITE THE FRONTEND PATH FOR ENV}"  "{WRITE THE BACKENDEND PATH FOR ENV}"
-export PATH=/Users/proteomica/iSanXoT/env/node/bin:$PATH && ./com.env.darwin.sh /Users/proteomica/Desktop/iSanXoT_forBuild/env/python-3.9.7-darwin-x64/python3.9  /Users/proteomica/iSanXoT/env  /Users/proteomica/Desktop/iSanXoT_forBuild/resources/exec
+cd env
+set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/node" 
 ```
 
-## for Linux
+### for Mac
+
+1) Install Python in the path. Without documentation, tck, ONLY pip => env/python-3.9.7-darwin-x64
+2)
 ```
-cd resources/env
-
-./com.env.linux.sh "{WRITE THE PYTHON EXECUTABLE}" "{WRITE THE FRONTEND PATH FOR ENV}"  "{WRITE THE BACKENDEND PATH FOR ENV}"
-export PATH=/home/jmrc/iSanXoT/env/node/bin:$PATH && ./com.env.linux.sh /usr/local/bin/python3.9 /home/jmrc/iSanXoT/env /home/jmrc/projects/iSanXoT/resources/exec
+cd env
+export PATH=/Users/proteomica/iSanXoT/env/node/bin:$PATH && ./com.env.darwin.sh /Users/proteomica/Desktop/iSanXoT_forBuild/env/python-3.9.7-darwin-x64/python3.9  /Users/proteomica/iSanXoT/env
 ```
 
-# Package iSanXoT for ONLINE mode
+### for Linux
 
-## Package iSanXoT
-
-## for Windows
-
-Add the Node path into environment variable
+1) Install Python in the path. Without documentation, tck, ONLY pip => env/python-3.9.7-linux-x64
+2)
 ```
-Open CMD
+cd env
+export PATH=/home/jmrc/iSanXoT/env/node/bin:$PATH && ./com.env.linux.sh /usr/local/bin/python3.9 /home/jmrc/iSanXoT/env
+```
+
+## Build iSanXoT
+
+### for Windows
+
+Add the Node path into environment variable.
+1) Open CMD
+2)
+```
 SETX PATH %PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node
-Close CMD
 ```
-
-Build iSanXoT
+3) Close CMD
+4) Open New CMD
 ```
-Open New CMD
 "C:/Users/jmrodriguezc/iSanXoT/env/node/electron-builder"
 ```
 
-## for Mac
+### for Mac
 {WRITE THE FRONTEND PATH FOR ENV}/node/bin/electron-builder
 /Users/proteomica/iSanXoT/env/node/bin/electron-builder
 
-## for Linux
+### for Linux
 {WRITE THE FRONTEND PATH FOR ENV}/node/bin/electron-builder
 /home/jmrc/iSanXoT/env/node/bin/electron-builder
 
 
-# Execute iSanXoT in debuging
+## Execute iSanXoT in debug mode
 
-## for windows
-Open CMD
+### for windows
+1) Open CMD
+2)
+```
 SET ISANXOT_MODE=debug&& "C:/Users/jmrodriguezc/iSanXoT/env/node/npm" start
-IMPORTANT!! You have to write in this way:
+```
+Note: You have to write in this way:
 =debug&& (without space)
 
-## for Mac
+### for Mac
+1)
+```
 export ISANXOT_MODE=debug && export PATH=/Users/proteomica/iSanXoT/env/node/bin:$PATH && /Users/proteomica/iSanXoT/env/node/bin/npm start 
+```
 
-## for Linux
+### for Linux
+1)
+```
 export ISANXOT_MODE=debug && export PATH=/home/jmrc/iSanXoT/env/node/bin:$PATH && /home/jmrc/iSanXoT/env/node/bin/npm start
-
-
- git push origin refs/heads/0.4.0:refs/heads/0.4.0
+```
 
