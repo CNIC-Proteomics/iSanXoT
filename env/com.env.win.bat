@@ -9,7 +9,7 @@ SET  ENV_HOME=%ENV_HOME:~0,-1%
 :: check input parameters ----------------------
 SET argC=0
 FOR %%x in (%*) DO SET /A argC+=1
-IF (%argC% LSS "3") (
+IF (%argC% LSS "2") (
     :: add the output parameter
     GOTO :addParameters
 )
@@ -75,7 +75,6 @@ GOTO :successProcess
     ECHO Please, add the whole parameters:
     ECHO   1. Path to python executable
     ECHO   2. Path to install the frontend modules
-    ECHO   3. Path to install the backend packages
     GOTO :EndProcess
 :: ------------------------------------------------
 :addPythonExecHome
