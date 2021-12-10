@@ -68,10 +68,22 @@
       ]
     },
     "mac": {
-      "icon": "app/assets/icons/isanxot.icns"
+      "icon": "app/assets/icons/isanxot.icns",
+      "extraResources": [
+        {
+          "from": "env/python-3.9.7-darwin-x64",
+          "to": "exec/python"
+        }
+      ]
     },
     "linux": {
-      "icon": "app/assets/images/isanxot.png"
+      "icon": "app/assets/images/isanxot.png",
+      "extraResources": [
+        {
+          "from": "env/python-3.9.7-linux-x64",
+          "to": "exec/python"
+        }
+      ]
     }
   },
   "scripts": {
