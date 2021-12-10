@@ -8,6 +8,7 @@
 .RData
 .Ruserdata
 .spyproject
+.DS_Store
 *.pyc
 __pycache__/
 

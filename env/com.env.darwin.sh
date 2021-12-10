@@ -4,13 +4,12 @@
 ENV_HOME=${PWD}
 
 # check input parameters ----------------------
-if [[ $#<3 ]]
+if [[ $#<2 ]]
 then
     # add the output parameter
     echo "Please, add the whole parameters:
     1. Path to python executable
-    2. Path to install the frontend modules
-    3. Path to install the backend packages"
+    2. Path to install the frontend modules"
     exit
 fi
 
@@ -37,33 +36,19 @@ then
 fi
 
 
-# get the backend home for the installation of packages ----------------------
-ISANXOT_BACKEND_HOME=${3}
-if [[ ${ISANXOT_BACKEND_HOME} == "" ]]
-then
-    # add the output parameter
-    echo "Please, add the backend folder"
-    exit
-fi
-# set the python home
-ISANXOT_BACKEND_HOME_PYTHON=${ISANXOT_BACKEND_HOME}/python
-# overwrite the Python executable
-PYTHON_ENV_EXEC=${ISANXOT_BACKEND_HOME_PYTHON}/bin/python
-
-
 # create the frontend environment: node, node modules, electron, etc. ----------------------
 echo "**"
 echo "** creating the frontend environment: node, node modules, electron..."
 ${PYTHON_EXEC} ${INSTALLER_SCRIPT} ${REQUIREMENTS_FRONTEND_ENV}  ${ISANXOT_FRONTEND_HOME}
 
 
-# create the python environment ----------------------
+# update pip ----------------------
 echo "**"
-echo "** creating the Python environment..."
-${PYTHON_EXEC} -m venv --upgrade-deps --copies  ${ISANXOT_BACKEND_HOME_PYTHON}
+echo "** updating pip..."
+${PYTHON_EXEC} -m pip install  --no-warn-script-location  --upgrade pip
 
 
 # create the backend environment: python venv, packages, etc. ----------------------
 echo "**"
 echo "** creating the backend environment: python venv, packages..."
-${PYTHON_ENV_EXEC} ${INSTALLER_SCRIPT} ${REQUIREMENTS_BACKEND_PYTHON}  ${ISANXOT_BACKEND_HOME_PYTHON}
+${PYTHON_EXEC} ${INSTALLER_SCRIPT} ${REQUIREMENTS_BACKEND_PYTHON}

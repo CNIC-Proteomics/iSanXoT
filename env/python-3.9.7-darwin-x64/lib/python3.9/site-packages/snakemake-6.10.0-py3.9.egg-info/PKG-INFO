@@ -1,0 +1,25 @@
+Metadata-Version: 2.1
+Name: snakemake
+Version: 6.10.0
+Summary: Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files.
+Home-page: https://snakemake.readthedocs.io
+Author: Johannes Köster
+Author-email: johannes.koester@tu-dortmund.de
+License: MIT
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Provides-Extra: reports
+Provides-Extra: messaging
+Provides-Extra: google-cloud
+Provides-Extra: pep
+License-File: LICENSE.md
+License-File: AUTHORS.rst
+
+UNKNOWN
+
