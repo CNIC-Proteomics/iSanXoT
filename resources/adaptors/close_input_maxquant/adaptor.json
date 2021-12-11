@@ -7,7 +7,7 @@
     "id": "inputs",
     "label": "Adaptors",
     "description": "Short description for the current work (tab)",
-    "cmds": ["CREATE_IDQUANT", "JOINER_ID", "GET_IDSTATS"]
+    "cmds": ["CREATE_IDQUANT", "JOINER_IDQ"]
   }],
   "commands": [{
     "id": "CREATE_IDQUANT",
@@ -26,14 +26,9 @@
         { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]}
   },{
-    "id": "JOINER_ID",
+    "id": "JOINER_IDQ",
     "label": "JOINER",
-    "sdesc": "Concatenate all ID tables in one",
-    "visible": false
-  },{
-    "id": "GET_IDSTATS",
-    "label": "GET_IDSTATS",
-    "sdesc": "Get the statistics of ID table",
+    "sdesc": "Concatenate all ID tables in one ID-q",
     "visible": false
   }]
 }

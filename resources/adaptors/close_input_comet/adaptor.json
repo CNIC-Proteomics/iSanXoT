@@ -28,7 +28,7 @@
   },{
     "id": "JOINER_ID",
     "label": "JOINER",
-    "sdesc": "Concatenate all id tables in one",
+    "sdesc": "Concatenate all ID tables in one",
     "visible": false
   },{
     "id": "MASTERQ",
