@@ -18,12 +18,12 @@
     "cmds": ["RELS_CREATOR"]
   },{
     "id": "basic_commands",
-    "label": "Basic commands",
+    "label": "Basic modules",
     "description": "Short description for the current work (tab)",  
     "cmds": ["LEVEL_CREATOR","LEVEL_CALIBRATOR","INTEGRATE","NORCOMBINE","RATIOS_INT","SBT"]
   },{
     "id": "complete_commands",
-    "label": "Complete commands",
+    "label": "Complete modules",
     "description": "Short description for the current work (tab)",  
     "cmds": ["WSPP_SBT","WSPPG_SBT","WPP_SBT","WPPG_SBT"]
   },{

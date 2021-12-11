@@ -1,5 +1,5 @@
 [
-    { "id": "main_input", "label": "Main Input", "enabled": false, "clicked": { "dir": "main_input" } },
+    { "id": "main_input", "label": "Main-Input", "enabled": false, "clicked": { "dir": "main_input" } },
     { "type": "separator" },
     { "label": "CNIC - Close Search", "submenu": [
         { "id": "close_input_pd", "label": "CNIC - Input from PD", "enabled": false, "clicked": { "dir": "close_input_pd" } },

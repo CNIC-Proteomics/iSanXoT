@@ -1,7 +1,6 @@
 /*
  * Import libraries
  */
-let fs = require('fs');
 let path = require('path');
 let url = require('url');
 const { BrowserWindow } = require('electron').remote;
@@ -38,7 +37,10 @@ function openHelper(type) {
         helpWindow.setMenu(null);
         helpWindow.show();
     }
-    // helpWindow.webContents.openDevTools();
+    // debug mode
+    if (process.env.ISANXOT_MODE == "debug") {
+        helpWindow.webContents.openDevTools();
+    }
     helpWindow.loadURL(
         url.format({
             protocol: 'file',
