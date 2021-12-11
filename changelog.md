@@ -6,27 +6,40 @@ DATE: 2021_12
 
 ### Highlights
 
++ Added more documentation.
+
+### Changes in the Graphical User Interface
+
++ Rename 'Output folder' to 'Output Sample folder'.
+
++ Modify a little bit the color style.
+
++ Change the label of input adaptors.
+
++ Add 'Roboto' fonts for offline mode.
 
 ### Changes in the Code Workflow
 
-+ TODO!! DOCUMENTACIÓN!!
++ Added more documentation:
+	- Installation.
 
-+ TODO!! CAMBIAR EL LEVEL_CREATOR PARA QUE ADMITA EL ID-q y LEA EN UN PASO. DESPUÉS, GENERA LOS "uncalibrate_level" por CADA FILA.!!
++ Adaptor-Comet:
+	- The list of descriptions has to be separated by commas.
+	- Bug fixed: the get_stats is redundacy in the tpl_commnds of masterq
 
-+ TODO!! RREPORT Pero estaba pensando que quizás se debería permitir que se pueda hacer “merge” del “high_level”. Es decir, primero mira si se puede hacer “merge” del “low_level”, si no es así, probar con el “high_level”.
-Os parece bien?
++ Some programs moved from SanXoT folder to cmd.
+
++ Add version in the release build.
+
++ New implementation for the installation. We have to included the Python packages for each distribution.
+
++ REPORT: 
+TIENES QUE HACER ESTO PORQUE LO HAS AÑADIDO EN LA DOC!!
++ TODO!! RREPORT Pero estaba pensando que quizás se debería permitir que se pueda hacer “merge” del “high_level”. Es decir, primero mira si se puede hacer “merge” del “low_level”, si no es así, probar con el “high_level".
+
++ SANSON: Incluir el programa de DOT to PNG!!!
 
 
-+ TODO!! INCLUIR EL PROGRAMA DE RAFA COMO MASTERQ.
-
-+ TODO!! CUANDO FUERZAS UNA EJECUCCIÓN, NO TE SUSTITUYE LOS "*" EN LOS PATHS DE LOS INFILES
-
-+ TODO!! SIMPLFY THE NAMES OF RULES FOR THE USE IN "More_params"
-
-+ TODO!! Check why is wrong SANSON:
-S:\U_Proteomica\UNIDAD\DatosCrudos\___JAL\GSB_LiverTMTp_202103\PD25_WAT\iSanXoT_033_testJMR/logs/20211022124919
-
-+ TODO!! Poner un nombre de fichero de create_idquant.tsv diferente para cada adaptador!!!
 
 
 ___
@@ -37,7 +50,11 @@ DATE: 2021_11
 
 ### Highlights
 
-+ iSanXoT distribution for Windows, Mac, and Linux in x64.
++ iSanXoT distribution for Windows, Mac, and Linux in x64:
+	+ **Windows 10 Pro** (x64)
+	+ **MacOs High Sierra** (10.13.6)
+	+ **Ubuntu 20.04** (x64)
+
 
 + More documentation.
 

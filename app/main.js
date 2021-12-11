@@ -36,7 +36,7 @@ let template = [
   ]},
   { label: "Help", submenu: [
     { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'help_intro') } },
-    { label: 'Commands', submenu: [
+    { label: 'Modules', submenu: [
       { id: 'help_cmd-rel-creator', label: 'RELS CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-rel-creator') } },
       { id: 'help_cmd-level-creator', label: 'LEVEL CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-creator') } },
       { id: 'help_cmd-level-calibrator', label: 'LEVEL CALIBRATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-calibrator') } },

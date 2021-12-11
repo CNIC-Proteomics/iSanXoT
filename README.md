@@ -71,7 +71,6 @@ The iSanXoT application for Linux distribution is packaged in an AppImage contai
 
 For more details, read the [linux distribution](INSTALL.md#linux-distribution) section in the INSTALL file.
 
-
 # Get started
 
 ---
