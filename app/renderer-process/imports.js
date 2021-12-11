@@ -100,7 +100,6 @@ ipcRenderer.on('saveProject', function() {
     }, 1000); // due the execSync block everything, we have to wait until loading event is finished
 });
 ipcRenderer.on('importWorkflow', function() {
-    // let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: workflower.samplesWkfDir });
     let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: process.env.ISANXOT_SAMPLES_DIR });
     if ( wkf_dir !== undefined ) {
         exceptor.loadingWorkflow(); // loading...
