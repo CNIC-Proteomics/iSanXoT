@@ -29,7 +29,7 @@ ISANXOT_SRC_HOME          = os.environ['ISANXOT_SRC_HOME']
 
 # Important: We have ignore the warnings because in MacOS appears the followinf messages:
 # UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
-ISANXOT_PYTHON_EXEC       = f"{ISANXOT_PYTHON_EXEC} -Wignore"
+ISANXOT_PYTHON_PARAMS     = "-Wignore"
 
 
 if plat == 'Windows':   

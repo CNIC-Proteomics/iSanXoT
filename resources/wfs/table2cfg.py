@@ -685,19 +685,20 @@ def main(args):
     # replace the constants for the config template and the command templates
     logging.info("replace the constants for the config template and the command templates")
     repl = {        
-            '__ISANXOT_SRC_HOME__':     gvars.ISANXOT_SRC_HOME,
-            '__ISANXOT_PYTHON_EXEC__':  gvars.ISANXOT_PYTHON_EXEC,
-            '__ISANXOT_JAVA_EXEC__':    gvars.ISANXOT_JAVA_EXEC,
-            '__ISANXOT_DOT_EXEC__':     gvars.ISANXOT_DOT_EXEC,
-            '__NCPU__':                 str(tpl['ncpu']),
-            '__WF_VERBOSE__':           str(tpl['verbose']),
-            '__EXPDIR__':               __EXPDIR__,
-            '__NAMDIR__':               __JOBDIR__,
-            '__RELDIR__':               __RELDIR__,
-            '__RSTDIR__':               __RSTDIR__,
-            '__LOGDIR__':               __LOGDIR__,
-            '__STADIR__':               __STADIR__,
-            '__IDQFIL__':               __IDQFIL__,
+            '__ISANXOT_SRC_HOME__':       gvars.ISANXOT_SRC_HOME,
+            '__ISANXOT_PYTHON_EXEC__':    gvars.ISANXOT_PYTHON_EXEC,
+            '__ISANXOT_PYTHON_PARAMS__':  gvars.ISANXOT_PYTHON_PARAMS,
+            '__ISANXOT_JAVA_EXEC__':      gvars.ISANXOT_JAVA_EXEC,
+            '__ISANXOT_DOT_EXEC__':       gvars.ISANXOT_DOT_EXEC,
+            '__NCPU__':                   str(tpl['ncpu']),
+            '__WF_VERBOSE__':             str(tpl['verbose']),
+            '__EXPDIR__':                 __EXPDIR__,
+            '__NAMDIR__':                 __JOBDIR__,
+            '__RELDIR__':                 __RELDIR__,
+            '__RSTDIR__':                 __RSTDIR__,
+            '__LOGDIR__':                 __LOGDIR__,
+            '__STADIR__':                 __STADIR__,
+            '__IDQFIL__':                 __IDQFIL__,
             '__CATDB__':                '',
     }
     # add the replacements for the main_inputs

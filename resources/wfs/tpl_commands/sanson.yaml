@@ -22,7 +22,7 @@
       filter:
         -f: '[FDR] < 0.05 & [n_rel] >= 10 & [n_rel] <= 100'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/createSansonHighLevel.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/createSansonHighLevel.py" '
 
   # Rule: filter the relationship file ---
   - name: filter_rel
@@ -34,7 +34,7 @@
       tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/filterRel.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/filterRel.py" '
 
   # Rule: join the outStats files ---
   - name: joiner
@@ -44,7 +44,7 @@
       -o: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOW_NORM___stats.tsv
     parameters:
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/joiner.py" -w __NCPU__ __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/joiner.py" -w __NCPU__ __WF_VERBOSE__ '
 
   # Rule: create graph file in txt format ---
   - name: sanson
@@ -58,7 +58,7 @@
       anal:
         -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/SanXoT/sanson.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanson.py" '
 
   # Rule: execute dot program to get the image of sanson diagram ---
   - name: dotToImg

@@ -29,7 +29,7 @@
       tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
   - name: int_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
@@ -50,7 +50,7 @@
       tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
   - name: int_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
@@ -70,5 +70,5 @@
       tag:
         --tags: '!out'
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
 ###################

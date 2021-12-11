@@ -24,5 +24,5 @@
       type_xcorr:
         -x: cXCorr
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/cmds/fdr.py" -w __NCPU__ __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/fdr.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################

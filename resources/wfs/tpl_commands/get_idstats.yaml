@@ -14,5 +14,5 @@
       -o: __STADIR__/ID-stats.tsv
     parameters:
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__" "__ISANXOT_SRC_HOME__/stats/getIDstats.py" __WF_VERBOSE__ '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/stats/getIDstats.py" __WF_VERBOSE__ '
 ###################
