@@ -27,6 +27,11 @@ ISANXOT_PYTHON_HOME       = os.environ['ISANXOT_PYTHON_HOME']
 ISANXOT_PYTHON_EXEC       = os.environ['ISANXOT_PYTHON_EXEC']
 ISANXOT_SRC_HOME          = os.environ['ISANXOT_SRC_HOME']
 
+# Important: We have ignore the warnings because in MacOS appears the followinf messages:
+# UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
+ISANXOT_PYTHON_EXEC       = f"{ISANXOT_PYTHON_EXEC} -Wignore"
+
+
 if plat == 'Windows':   
     ISANXOT_SNAKEMAKE_EXEC    = f"{ISANXOT_PYTHON_HOME}/Scripts/snakemake.exe"
 
