@@ -9,6 +9,8 @@
 .Ruserdata
 .spyproject
 .DS_Store
+TODO.txt
+TODO.xlsx
 *.pyc
 __pycache__/
 
