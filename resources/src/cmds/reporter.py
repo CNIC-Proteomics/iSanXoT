@@ -37,7 +37,6 @@ COL_VARS = {
     'xinf':   'Xinf',
     'vinf':   'Vinf'
 }
-ROOT_FOLDER = '/jobs/'
 SORTED_EXP_COLS = []
 
 #########################
@@ -53,22 +52,8 @@ def read_infiles(file):
     # read file
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
-    # # get the name of 'experiment' using the folder name
-    # fpath = os.path.dirname(file)
-    # name = os.path.basename(fpath)
-    # df[COL_EXP] = name
-
-    # get the name of 'experiment' until the root folder
-    # By default, we get the last folder name of path
-    fpath = os.path.dirname(file)
-    name = os.path.basename(fpath)
-    # split until the root folder
-    if ROOT_FOLDER in fpath:
-        s = fpath.split(ROOT_FOLDER)
-        if len(s) > 1:
-            s = s[1]
-            name = re.sub(r'[/|\\]+', '/', s) # replace
-    df[COL_EXP] = name
+    # get the name of 'job' until the root folder
+    df[COL_EXP] = common.get_job_name(file)
 
     return df
 
@@ -203,17 +188,16 @@ def add_relation(idf, file, prefix):
     # get the lower and higher levels
     (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
 
-    # create multiindex for the merge.
-    # add the 'LEVEL' label for the indicated column (prefix_i => lower_level)
-    df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == prefix_i else (c,'REL') for c in df.columns])
-    
-    # check how many columns are available in the givn df
-    ints = [i for i in idf.columns if i[0] == prefix_i]
-    # only we apply the operation when there is only one value in the dataframe
-    # to add the relationship
-    if len(ints) == 1:
-        r = ints[0]
-        idf = pd.merge(idf, df, on=[r], how='left')
+    # check if lower_level is in the RT, or then check if higher_level is in the RT
+    # then create multiindex for the merging with RT
+    if prefix_i in df.columns:
+        r = prefix_i
+        df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == r else (c,'REL') for c in df.columns])
+        idf = pd.merge(idf, df, on=[(r,'LEVEL')], how='left')
+    elif prefix_s in df.columns:
+        r = prefix_s
+        df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == r else (c,'REL') for c in df.columns])
+        idf = pd.merge(idf, df, on=[(r,'LEVEL')], how='left')
     return idf
 
 #################
@@ -294,11 +278,12 @@ def main(args):
         cols_level = [c for c in df.columns if c[1] == 'LEVEL']
     # sort VARS based on inputs. if var does not exist, then goes to the end of columns
     cols_vars = [c for c in df.columns if c[1] != 'LEVEL' and c[1] != 'REL']
-    try:
-        s = {v: i for i, v in enumerate(SORTED_EXP_COLS)} # first!! map sorted columns to indexes
-        cols_vars_sorted = sorted(cols_vars, key=lambda x: s[x[1]] if x[1] in s else float('inf'))
-    except:
-        cols_vars_sorted = sorted(cols_vars)
+    # try:
+    #     s = {v: i for i, v in enumerate(SORTED_EXP_COLS)} # first!! map sorted columns to indexes
+    #     cols_vars_sorted = sorted(cols_vars, key=lambda x: s[x[0]] if x[1] in s else float('inf'))
+    # except:
+    #     cols_vars_sorted = sorted(cols_vars)
+    cols_vars_sorted = sorted(cols_vars)
     # the rest of columns (REL)
     cols_rel = [c for c in df.columns if c[1] == 'REL']
     # reindex based on the new order of columns
