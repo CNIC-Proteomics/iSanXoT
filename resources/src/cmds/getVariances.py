@@ -22,12 +22,15 @@ import base64
 from PIL import Image
 from io import BytesIO
 
-
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/libs")
+import common
 
 ###################
 # Local functions #
 ###################
-
 def get_thumbnail(path):
     i = Image.open(path)
     i.thumbnail((300, 300), Image.LANCZOS)
@@ -67,7 +70,8 @@ def main(args):
     for infile in infiles:
         # get dir name (integration)
         dname = os.path.dirname(infile)
-        bname = os.path.basename(dname)
+        # bname = os.path.basename(dname)
+        bname = common.get_job_name(infile)
         
         # get file name of script
         fname = os.path.splitext(os.path.basename(infile))[0]
