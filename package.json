@@ -51,39 +51,25 @@
         "to": "node_modules"
       },
       {
+        "from": "resources/exec",
+        "to": "exec"
+      },
+      {
         "from": "resources/env",
         "to": "env",
         "filter": [
-          "!**/__pycache__"
+          "!node","!python","!**/__pycache__"
         ]
       }
     ],
     "win": {
-      "icon": "app/assets/icons/isanxot.ico",
-      "extraResources": [
-        {
-          "from": "env/python-3.9.7-win-x64",
-          "to": "exec/python"
-        }
-      ]
+      "icon": "app/assets/icons/isanxot.ico"
     },
     "mac": {
-      "icon": "app/assets/icons/isanxot.icns",
-      "extraResources": [
-        {
-          "from": "env/python-3.9.7-darwin-x64",
-          "to": "exec/python"
-        }
-      ]
+      "icon": "app/assets/icons/isanxot.icns"
     },
     "linux": {
-      "icon": "app/assets/images/isanxot.png",
-      "extraResources": [
-        {
-          "from": "env/python-3.9.7-linux-x64",
-          "to": "exec/python"
-        }
-      ]
+      "icon": "app/assets/images/isanxot.png"
     }
   },
   "scripts": {

@@ -23,39 +23,67 @@ import core
 # Local functions #
 ###################
 
+def print_to_stdout(*a):
+    print(*a, file = sys.stdout)
+    
 def exec_command(cmd):
     try:
-        print(f'-- exec: {cmd}')
+        print_to_stdout(f'-- exec: {cmd}')
         crun = subprocess.call(cmd, shell=True)
         if crun == 0:
             return True
         else:
             sys.exit(f"ERROR!! executing the command line:: {cmd}")
+            return False
     except Exception as exc:
         sys.exit(f"ERROR!! executing the command line: {cmd}\n{exc}")
+        return False
 
 def install_exec_manager(url, odir):
-    print("-- install executors")
+    print_to_stdout("-- install executors")
     try:
         # local library
         # import core
-        print("-- create builder")
+        print_to_stdout("-- create builder")
         c = core.builder(tmpdir)
         if url.startswith('http'):
-            print("-- download files: "+url+" > "+tmpdir)
+            print_to_stdout("-- download files: "+url+" > "+tmpdir)
             file = c.download_url(url, outdir=tmpdir)
         else:
             file = url
-        print("-- unzip files: "+file+" > "+tmpdir)
+        print_to_stdout("-- unzip files: "+file+" > "+tmpdir)
         c.unzip_file(file,  tmpdir)
-        print("-- move files to "+odir)
+        print_to_stdout("-- move files to "+odir)
         c.move_files(tmpdir, odir)
-        print("-- remove tmpdir: "+tmpdir)
+        print_to_stdout("-- remove tmpdir: "+tmpdir)
         c.remove_dir(tmpdir)
         # if everything was fine
         return True
     except Exception as exc:
         sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
+        return False
+
+def install_pip_manager(url):
+    print_to_stdout("-- install executors")
+    try:
+        # local library
+        # import core
+        print_to_stdout("-- create builder")
+        c = core.builder(tmpdir)
+        file = url
+        print_to_stdout("-- unzip files: "+file+" > "+tmpdir)
+        c.unzip_file(file,  tmpdir)
+        print_to_stdout("-- get filename")
+        p = os.path.join( tmpdir, os.path.basename(file).split('.tar.gz')[0])
+        print_to_stdout("-- setup python package")
+        exec_command(f'cd {p} && {python_exec} setup.py install')
+    except Exception as exc:
+        sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
+    finally:
+        print_to_stdout("-- remove tmpdir: "+tmpdir)
+        c.remove_dir(tmpdir)
+    # if everything was fine
+    return True
 
 def install_pkg_manager_pip():
     exec_command(f'"{python_exec}"  "{local_dir}/get-pip.py"  --no-warn-script-location')
@@ -67,44 +95,41 @@ def install_pkg_manager(manager):
         # check if package manager is installed
         if not (os.path.isfile(manager) or os.path.isfile(manager+'.exe')):
             if 'pip' in manager:
-                print(f"-- install package manager {manager}")
+                print_to_stdout(f"-- install package manager {manager}")
                 # install_pkg_manager_pip()            
         # if everything was fine
         return True
     except Exception as exc:
         sys.exit(f"ERROR!! installing manager: {manager}\n{exc}")
-                
+
 def install_package(manager, pkg):
     try:
         # handle manager file
         manager = "{}/{}".format(lib_home, manager)
         # create command
-        cmd = f'{manager} {pkg}'
-        print(f'-- exec: {cmd}')
-        crun = subprocess.call(cmd, shell=True)
+        exec_command(f'{manager} {pkg}')
         # if everything was fine
-        if crun == 0:
-            return True
-        else:
-            sys.exit(f"ERROR!! installing the package: {cmd}")
+        return True
     except Exception as exc:
-        sys.exit(f"ERROR!! installing the package: {cmd}\n{exc}")
+        sys.exit(f"ERROR!! installing the package: {pkg}\n{exc}")
+        return False
 
 def download_data(url, odir):
     try:
-        print("-- create builder")
+        print_to_stdout("-- create builder")
         c = core.builder(odir)
-        print("-- download files: "+url+" > "+odir)
+        print_to_stdout("-- download files: "+url+" > "+odir)
         file = c.download_url(url, outdir=odir)
-        print("-- unzip files: "+file+" > "+odir)
+        print_to_stdout("-- unzip files: "+file+" > "+odir)
         c.unzip_file(file,  odir)
         f = f"{odir}/download"
-        print("-- remove tmp file: "+f)
+        print_to_stdout("-- remove tmp file: "+f)
         c.remove_file(f)
         # if everything was fine
         return True
     except Exception as exc:
         sys.exit(f"ERROR!! downloading databases: {url}\n{exc}")
+        return False
 
 def create_report_requirements(file):
     '''
@@ -147,6 +172,8 @@ def check_requirements_satisfied(req_new, req_loc):
                 #     cont = [False]
         else:
             cont = [False]
+    if len(cont) == 0:
+        cont = [False]
     return all(cont)
 
 def print_requirements_satisfied(req_new, req_loc):
@@ -192,6 +219,8 @@ def install_report(trep, req_new, req_loc):
                 if (not trep in req_loc) or (not manager in req_loc[trep]):
                     if trep == 'EXEC':
                         iok = install_exec_manager(manager, man_dir)
+                    if trep == 'PIP':
+                        iok = install_pip_manager(manager)
                     if trep == 'MANAGER':
                         iok = install_pkg_manager(manager)
                     elif trep == 'DATABASES':
@@ -233,6 +262,9 @@ def main():
         # look through the new requirements for the excutor ---
         req_loc = install_report('EXEC', req_new, req_loc)
 
+        # look through the new requirements for the excutor ---
+        req_loc = install_report('PIP', req_new, req_loc)
+
         # look through the new requirements for the packages ---
         req_loc = install_report('MANAGER', req_new, req_loc)
                 
@@ -251,7 +283,7 @@ def main():
 
     # the requirements are already satisfied
     else:
-        print( print_requirements_satisfied(req_new, req_loc) )
+        print_to_stdout( print_requirements_satisfied(req_new, req_loc) )
 
 
      

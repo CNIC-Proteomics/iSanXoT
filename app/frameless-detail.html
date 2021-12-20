@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>iSanXoT</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  textarea#frameless-detail {
+    position: relative;
+    top: 4px;
+    width: 98.5%;
+    height: 661px;
+    resize: none;
+    overflow-y: auto;
+  }
+  textarea#frameless-detail::-webkit-scrollbar {
+    border-radius: 25px;
+  }
+  </style>
+  <script>
+    if (typeof module === 'object') {window.module = module; module = undefined;}
+  </script>
+  <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+  <script>
+    if (window.module) module = window.module;
+  </script>
+</head>
+<body>
+  <!-- <div id="frameless-detail"></div> -->
+  <textarea id="frameless-detail" readonly></textarea>
+<script>
+const { ipcMain } = require('electron').remote;
+
+// Renderer functions from the window "create New Project"
+ipcMain.on('installation-detail', (event, data) => {
+    let $textarea = $('textarea#frameless-detail');
+    $('textarea#frameless-detail').append(data.log);
+    $textarea.scrollTop($textarea[0].scrollHeight);
+    // $('#frameless-detail').append(data.log);
+});
+
+</script>
+</body>
+</html>

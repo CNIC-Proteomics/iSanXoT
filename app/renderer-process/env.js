@@ -6,16 +6,25 @@ let fs = require('fs');
 let path = require('path');
 let cProcess = require('child_process');
 const { ipcRenderer, remote } = require('electron');
+const { BrowserWindow } = require('electron').remote;
+const mainWindow = BrowserWindow.getFocusedWindow();
+
 
 let exceptor = require('./exceptor');
+
+// window for trace logs
+var win = null;
+var trace_log = ''; // keep the logs
 
 /*
  * Local functions
  */
 function printInDetail(data) {
-    let $textarea = $('#frameless-detail > textarea');
-    $('#frameless-detail > textarea').append(data);
-    $textarea.scrollTop($textarea[0].scrollHeight);
+    trace_log += data; // save the trace logs
+    if ( win !== null ) {
+        // render: send log trace
+        ipcRenderer.send('installation-detail', { log: data });
+    }
 };
 
 function closeWindow() {
@@ -77,31 +86,19 @@ if (process.env.ISANXOT_MODE == "debug") { // in the case of debugging
 
 // Set the python executable depending on the platform and mode
 if (navigator.platform === "Win32") {
-    if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON_HOME = path.join(process.cwd(), 'env/python-3.9.7-win-x64');
-    }
-    else {
-        process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python');
-    }
+    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-win-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'python.exe');
+    requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_win-x64.txt');
 }
 else if (navigator.platform === "MacIntel") {
-    if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON_HOME = path.join(process.cwd(), 'env/python-3.9.7-darwin-x64');
-    }
-    else {
-        process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python');
-    }
+    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-darwin-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
+    requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_darwin-x64.txt');
 }
 else if (navigator.platform === "Linux x86_64") {
-    if (process.env.ISANXOT_MODE == "debug") {
-        process.env.ISANXOT_PYTHON_HOME = path.join(process.cwd(), 'env/python-3.9.7-linux-x64');
-    }
-    else {
-        process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python');
-    }
+    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-linux-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
+    requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_linux-x64.txt');
 }
 else {
     ipcRenderer.send('get-install', {'code': 601, 'msg':  `Error setting the platform`});
@@ -131,19 +128,17 @@ ipcRenderer.send('send-env', {'ISANXOT_ICON': process.env.ISANXOT_ICON});
 
 
 // Prepare commands consecutively
-let requirements = path.join(process.env.ISANXOT_RESOURCES, 'exec/python/requirements.txt');
-let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
+let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" `; // install Python packages
 
 
 // Execute the commands consecutively
 $('#frameless-desc-title').text('Preparing packages');
 printInDetail('** Preparing packages...\n');
-execProcess('preparing packages', cmd1, close=true);
+execProcess('preparing packages', cmd1, close=false);
 
 
 
-
-// BEGIN: DEPRECATED BUT USEFULL: SEE HOW EXECUTE CONSECUTIVELY
+// // BEGIN: DEPRECATED BUT USEFULL: SEE HOW EXECUTE CONSECUTIVELY
 // // Prepare commands consecutively
 // let cmd1 = `"${python_exec}" -m venv --upgrade-deps --copies "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // create Python environment
 // let cmd2 = `"${python_exec}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
@@ -160,3 +155,31 @@ execProcess('preparing packages', cmd1, close=true);
 //     execProcess('installing python packages', cmd2, close=true)
 // });
 
+/*
+ * Events
+ */
+document.querySelector('#frmeless-desc-area').addEventListener('click', function() {
+    win = new BrowserWindow({
+        title: 'Create new project',
+        width: 500,
+        height: 700,
+        modal: true,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true
+        },      
+        minimizable: false,
+        resizable: false,
+        'icon': process.env.ISANXOT_ICON,
+        parent: mainWindow
+    });
+    win.setMenu(null);
+    win.loadURL(path.join(__dirname, '../frameless-detail.html'));
+    win.webContents.openDevTools();
+    win.on('close', function () {
+        win = null;
+    });
+    win.show();
+    ipcRenderer.send('installation-detail', { log: trace_log });
+});

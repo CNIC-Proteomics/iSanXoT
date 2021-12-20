@@ -33,11 +33,33 @@ DATE: 2021_12
 
 + New implementation for the installation. We have to included the Python packages for each distribution.
 
++ GETVARIANCES: fixing the function that gets the job name.
+
++ Move stats script into "cmds" folder.
+
 + REPORT: 
-TIENES QUE HACER ESTO PORQUE LO HAS AÑADIDO EN LA DOC!!
-+ TODO!! RREPORT Pero estaba pensando que quizás se debería permitir que se pueda hacer “merge” del “high_level”. Es decir, primero mira si se puede hacer “merge” del “low_level”, si no es así, probar con el “high_level".
+	- Add values from RT checking first the lowr_level and then, the higher_level
+	- For the momento, don't sort the columns
+
+
+
+
 
 + SANSON: Incluir el programa de DOT to PNG!!!
+
++ EN MACOS o LINUX NO MATA LOS PROCESOS. NO  COGE EL PID. PONE:
+ window-all-closed
+   kill all processes
+   kill child processes: 
+   kill processes: /home/jmrc/projects/wspp_sbt_input_pd_2/.isanxot/20211211201813/config.yaml,/home/jmrc/projects/wspp_sbt_input_pd_2/logs/20211211201813/isanxot.log,2999,/home/jmrc/projects/wspp_sbt_input_pd_2/.isanxot/20211211201853/config.yaml,/home/jmrc/projects/wspp_sbt_input_pd_2/logs/20211211201853/isanxot.log,3072
+2999 has been killed!
+error killing 2999: Error: kill ESRCH
+/home/jmrc/projects/wspp_sbt_input_pd_2/logs/20211211201813/isanxot.log has been killed!
+error killing /home/jmrc/projects/wspp_sbt_input_pd_2/logs/20211211201813/isanxot.log: TypeError [ERR_INVALID_ARG_TYPE]: The "pid" argument must be of type number. Received type string ('/home/jmrc/projects/wspp...)
+3072 has been killed!
+/home/jmrc/projects/wspp_sbt_input_pd_2/logs/20211211201853/isanxot.log has been killed!
+error killing /home/jmrc/projects/wspp_sbt_input_pd_2/logs/20211211201853/isanxot.log: TypeError [ERR_INVALID_ARG_TYPE]: The "pid" argument must be of type number. Received type string ('/home/jmrc/projects/wspp...)
+
 
 
 

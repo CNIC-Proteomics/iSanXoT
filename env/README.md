@@ -3,7 +3,7 @@
 This documentation is for iSanXoT developers.
 
 
-## for Windows distribution
+## Execute iSanXoT in debug mode for Windows distribution
 
 ### Clone the repository
 
@@ -20,7 +20,7 @@ cd iSanXoT
 
 1) Create python folder
 ```
-mkdir S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64
+mkdir C:\Users\jmrodriguezc\iSanXoT\env\python
 ```
 
 2) Install Python
@@ -42,33 +42,73 @@ mkdir S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/pytho
 3) Execute:
 ```
 cd env
-set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env/nodejs/node&& com.env.win.bat "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/env/python-3.9.7-win-x64/python.exe" "C:\Users\jmrodriguezc\iSanXoT\env\nodejs"
+set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& com.env.win.bat "C:\Users\jmrodriguezc\iSanXoT\env\python\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
 ```
 Note: You have to write in this way:
-.../nodejs/node&& (without space)
-Note: The frontend folder (nodejs) has to be in local because otherwise the "OpenDevTools" does not work.
+...\env\node&& (without space)
+Note: The frontend folder (node) has to be in local because otherwise the "OpenDevTools" does not work.
 
-### Execute iSanXoT in debug mode
-
-1) Open CMD
-2)
+4) Add the Node path into environment variable:
+Open CMD
 ```
-set ISANXOT_MODE=debug&& "C:\Users\jmrodriguezc\iSanXoT\env\nodejs\node\npm" start
+setx PATH "%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node"
+```
+Close CMD
+
+7) Execute iSanXoT in debug mode:
+Open CMD
+```
+set ISANXOT_MODE=debug&& "C:\Users\jmrodriguezc\iSanXoT\env\node\npm" start
 ```
 Note: You have to write in this way:
 =debug&& (without space)
 
-### Build iSanXoT
 
-Add the Node path into environment variable.
-1) Open CMD
-2)
+
+## Build iSanXoT for Windows distribution
+
+### Prepare the Python requeriments for the build
+
+1) Extract the Python packages from the debuging iSanXoT
 ```
-setx PATH "%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\nodejs\node"
+"C:\Users\jmrodriguezc\iSanXoT\env\python\Scripts\pip3.9.exe" freeze > env/packages/win-x64/requirements.txt
+cd env/packages/win-x64
+"C:\Users\jmrodriguezc\iSanXoT\env\python\Scripts\pip3.9.exe" download -r requirements.txt
+ls -1 > requirements_local.txt
+
+
 ```
-3) Close CMD
-4) Open New CMD
+
+### Install only python in the resource folder
+
+1) Create python folder
 ```
+mkdir S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python
+```
+
+2) Install Python
+
+  2.1) Customize installation:
+
+![Customize installation](../docs/env/images/python_installation_1.png "Customize installation")
+    
+  2.2) Optional features:
+  Without documentation, tck, ONLY pip
+
+![Optional features](../docs/env/images/python_installation_2.png "Optional features")
+
+  2.3) Choose the path:
+  Do it in "env/python-3.9.7-win-x64"
+
+![Choose the path](../docs/env/images/python_installation_3.png "Choose the path")
+
+
+
+3) Build iSanXoT:
+Open New CMD
+```
+cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
+
 "C:\Users\jmrodriguezc\iSanXoT\env\nodejs\node\electron-builder"
 ```
 
@@ -192,7 +232,31 @@ export ISANXOT_MODE=debug && export PATH=/home/jmrc/projects/iSanXoT/env/nodejs/
 
 ### Build iSanXoT
 
-1) Execute the program that builds the packages
+1) Create python folder
+```
+mkdir /home/jmrc/projects/iSanXoT/resource/exec/python
+```
+2) Install Python in the path
+
+    2.1) Uncompress python
+    ```
+    cd env
+    tar -xvf Python-3.9.7.tgz
+    cd Python-3.9.7
+    ```
+    2.2) Configure python to install in user folder
+    ```
+    ./configure --prefix=/home/jmrc/projects/iSanXoT/resource/exec/python
+    ```
+    2.2) Make
+    ```
+    make
+    ```
+    2.3) Make install
+    ```
+    make install
+    ```
+3) Execute the program that builds the packages
 ```
 /home/jmrc/projects/iSanXoT/env/nodejs/node/bin/electron-builder
 ```

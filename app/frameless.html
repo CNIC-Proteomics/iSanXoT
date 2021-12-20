@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>iSanX!</title>
+  <title>iSanXoT</title>
   <style>
   body {
     font-family: system, -apple-system, '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
@@ -45,19 +45,14 @@
     right: 5px;
     font-size: 12px;
   }
-  #frameless-detail > textarea {
+  a#frmeless-desc-area {
+    color: white;
+    font-size: small;
+    right: 0;
     position: absolute;
-    bottom: 0px;
-    left: 0px;
-    width: 694px;
-    height: 150px;
-    resize: none;
-    overflow-y: auto;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-  }
-  #frameless-detail>textarea::-webkit-scrollbar {
-    border-radius: 25px;
+    padding-right: 10px;
+    padding-top: 15px;
+    cursor: pointer;
   }
   </style>
   <!-- Imports JS -->
@@ -75,10 +70,7 @@
     <div id="frameless-desc">
       <img id="pac-man" src="assets/images/init/loadin_coco.gif" class="center"></img>
       <span id="frameless-desc-title"></span>
-      <!-- <a id="frmeless-desc-area">More details</a> -->
-    </div>
-    <div id="frameless-detail">
-      <textarea readonly style="display: none;"></textarea>
+      <a id="frmeless-desc-area">More details</a>
     </div>
   </div>
 <script>

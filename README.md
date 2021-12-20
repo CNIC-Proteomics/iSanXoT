@@ -1,3 +1,5 @@
+<img src="app/assets/images/isanxot.png" width="100">
+
 # iSanXoT
 
 This repository contains the source code and the distribution files for the iSanXoT application.
@@ -71,7 +73,7 @@ The iSanXoT application for Linux distribution is packaged in an AppImage contai
 
 For more details, read the [linux distribution](INSTALL.md#linux-distribution) section in the INSTALL file.
 
-# Get started
+<!-- # Get started -->
 
 ---
 

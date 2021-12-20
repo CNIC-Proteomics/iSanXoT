@@ -21,6 +21,8 @@ function openHelper(type) {
     if ( helpWindow === undefined || helpWindow.isDestroyed() ) {
         helpWindow = new BrowserWindow({
             title: 'iSanXoT Help',
+            minWidth: 900,
+            minHeight: 800,
             width: 900,
             height: 800,
             webPreferences: {

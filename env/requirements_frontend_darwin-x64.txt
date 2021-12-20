@@ -1,6 +1,6 @@
 # node-v14.16.0
 
-$EXEC=node-v14.16.0-darwin-x64.tar.gz        node
+$EXEC=node/node-v14.16.0-darwin-x64.tar.gz        node
 $MANAGER=node/bin/npm
 config set scripts-prepend-node-path true
 install --save-dev --save-exact --global	electron@13.1.2

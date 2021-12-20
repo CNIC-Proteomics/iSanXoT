@@ -35,7 +35,8 @@ let template = [
     { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile(path.join(__dirname, 'processes.html')) } }
   ]},
   { label: "Help", submenu: [
-    { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'help_intro') } },
+    { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'iSanXoT-Help') } },
+    { id: 'get_started', label: 'Get Started', click() { mainWindow.webContents.send('openHelper', 'get_started') } },
     { label: 'Modules', submenu: [
       { id: 'help_cmd-rel-creator', label: 'RELS CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-rel-creator') } },
       { id: 'help_cmd-level-creator', label: 'LEVEL CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-creator') } },
@@ -45,13 +46,13 @@ let template = [
       { id: 'help_cmd-ratios', label: 'RATIOS', click() { mainWindow.webContents.send('openHelper', 'help_cmd-ratios') } },
       { id: 'help_cmd-sbt', label: 'SBT', click() { mainWindow.webContents.send('openHelper', 'help_cmd-sbt') } }
     ]},
-    { label: 'Workflows', submenu: [
-      { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
-      { id: 'help_wf-ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
-    ]},
     { label: 'Adaptors', submenu: [
       { id: 'help_adap-main', label: 'Main Input', click() { mainWindow.webContents.send('openHelper', 'help_adap-main') } },
       { id: 'help_adap-close-pd', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_adap-close-pd') } }
+    ]},
+    { label: 'Workflows', submenu: [
+      { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
+      { id: 'help_wf-ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
     ]}
   ]},
 ]
