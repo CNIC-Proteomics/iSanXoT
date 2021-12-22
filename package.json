@@ -64,8 +64,8 @@
       "icon": "app/assets/icons/isanxot.ico",
       "extraResources": [
         {
-          "from": "resources/exec/python-win-x64",
-          "to": "exec/python-win-x64"
+          "from": "resources/exec/python-3.9.7-win-x64",
+          "to": "exec/python-3.9.7-win-x64"
         }
       ]
     },
@@ -73,8 +73,8 @@
       "icon": "app/assets/icons/isanxot.icns",
       "extraResources": [
         {
-          "from": "resources/exec/python-darwin-x64",
-          "to": "exec/python-darwin-x64"
+          "from": "resources/exec/python-3.9.7-darwin-x64",
+          "to": "exec/python-3.9.7-darwin-x64"
         }
       ]
     },
@@ -82,8 +82,8 @@
       "icon": "app/assets/images/isanxot.png",
       "extraResources": [
         {
-          "from": "resources/exec/python-linux-x64",
-          "to": "exec/python-linux-x64"
+          "from": "resources/exec/python-3.9.7-linux-x64",
+          "to": "exec/python-3.9.7-linux-x64"
         }
       ]
     }
