@@ -35,23 +35,23 @@ function execSyncProcess(script, cmd) {
 function execProcess(script, cmd, cfg, log, wfname) {
     // eexecute command line
     console.log(cmd);
-    // proc = cProcess.exec(cmd);
+    proc = cProcess.exec(cmd);
 
-    // // save the process id in the session storage
-    // sessioner.addProcessesToSession(proc.pid, cfg, log, wfname, `${__dirname}/../processes.html`);
+    // save the process id in the session storage
+    sessioner.addProcessesToSession(proc.pid, cfg, log, wfname, `${__dirname}/../processes.html`);
 
-    // // Handle on stderr
-    // proc.stderr.on('data', (data) => {
-    //     console.log(`stderr: ${data}`);
-    //     exceptor.stopLoadingWorkflow();
-    //     exceptor.showErrorMessageBox(`${script}`, `${data}`, end=true);
-    // });
+    // Handle on stderr
+    proc.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+        exceptor.stopLoadingWorkflow();
+        exceptor.showErrorMessageBox(`${script}`, `${data}`, end=true);
+    });
   
-    // // Handle on exit event
-    // proc.on('close', (code) => {
-    //     console.log(`Child exited with code ${code}`);
-    //     exceptor.stopLoadingWorkflow();
-    // });  
+    // Handle on exit event
+    proc.on('close', (code) => {
+        console.log(`Child exited with code ${code}`);
+        exceptor.stopLoadingWorkflow();
+    });  
 };
 
 function execTable2Cfg(params) {
