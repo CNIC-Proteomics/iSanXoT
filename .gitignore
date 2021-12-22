@@ -32,7 +32,7 @@ resources/exec/python-3.9.7-win-x64
 resources/exec/python-3.9.7-darwin-x64
 resources/exec/python-3.9.7-linux-x64
 
-# discard the temporal python folder (MacOS and Linux distribution)
+# discard the temporal python folder
 env/python/Python-3.9.7
 
 # discard the distribution folders
