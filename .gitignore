@@ -21,17 +21,22 @@ package-lock.json
 tests/*
 !tests/README.md
 
-# discard the distribution folders
-releases
-
 # discard the environment for the frontend
 env/node/node-win-x64
 env/node/node-darwin-x64
 env/node/node-linux-x64
 env/node/requirements.txt
 
+# discard the environment for the frontend
+resources/exec/python-3.9.7-win-x64
+resources/exec/python-3.9.7-darwin-x64
+resources/exec/python-3.9.7-linux-x64
+
 # discard the temporal python folder (MacOS and Linux distribution)
 env/python/Python-3.9.7
+
+# discard the distribution folders
+releases
 
 # SanXoT
 src/SanXoT/.svn
