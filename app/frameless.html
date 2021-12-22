@@ -25,6 +25,7 @@
   }
   #frameless-desc {
     position: relative;
+    color: white;
   }
   #pac-man {
     width: 7%;
@@ -32,21 +33,19 @@
     left: 10px;
   }
   #frameless-desc-title {
-    color: white;
-    font-size: 20px;
+    font-size: large;
     position: relative;
     left: 75px;
-    bottom: 0.6em;
+    bottom: 1.3em;
   }
-  #close {
-    color: white;
+  #frameless-desc-short {
+    font-size: x-small;
     position: absolute;
-    bottom: 20px;
-    right: 5px;
-    font-size: 12px;
+    left: 75px;
+    bottom: 0;
+    padding-right: 10px;
   }
   a#frmeless-desc-area {
-    color: white;
     font-size: small;
     right: 0;
     position: absolute;
@@ -70,7 +69,7 @@
     <div id="frameless-desc">
       <img id="pac-man" src="assets/images/init/loadin_coco.gif" class="center"></img>
       <span id="frameless-desc-title"></span>
-      <a id="frmeless-desc-area">More details</a>
+      <span id="frameless-desc-short"></span>
     </div>
   </div>
 <script>

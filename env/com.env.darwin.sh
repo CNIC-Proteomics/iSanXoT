@@ -42,13 +42,13 @@ echo "** creating the frontend environment: node, node modules, electron..."
 ${PYTHON_EXEC} ${INSTALLER_SCRIPT} ${REQUIREMENTS_FRONTEND_ENV}  ${ISANXOT_FRONTEND_HOME}
 
 
-# update pip ----------------------
-echo "**"
-echo "** updating pip..."
-${PYTHON_EXEC} -m pip install  --no-warn-script-location  --upgrade pip
+# # update pip ----------------------
+# echo "**"
+# echo "** updating pip..."
+# ${PYTHON_EXEC} -m pip install  --no-warn-script-location  --upgrade pip
 
 
-# create the backend environment: python venv, packages, etc. ----------------------
-echo "**"
-echo "** creating the backend environment: python venv, packages..."
-${PYTHON_EXEC} ${INSTALLER_SCRIPT} ${REQUIREMENTS_BACKEND_PYTHON}
+# # create the backend environment: python venv, packages, etc. ----------------------
+# echo "**"
+# echo "** creating the backend environment: python venv, packages..."
+# ${PYTHON_EXEC} ${INSTALLER_SCRIPT} ${REQUIREMENTS_BACKEND_PYTHON}

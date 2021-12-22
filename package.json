@@ -51,19 +51,23 @@
         "to": "node_modules"
       },
       {
-        "from": "resources/exec",
-        "to": "exec"
-      },
-      {
         "from": "resources/env",
         "to": "env",
         "filter": [
-          "!node","!python","!**/__pycache__"
+          "!node",
+          "!python",
+          "!**/__pycache__"
         ]
       }
     ],
     "win": {
-      "icon": "app/assets/icons/isanxot.ico"
+      "icon": "app/assets/icons/isanxot.ico",
+      "extraResources": [
+        {
+          "from": "resources/exec/python-win-x64",
+          "to": "exec/python-win-x64"
+        }
+      ]
     },
     "mac": {
       "icon": "app/assets/icons/isanxot.icns"

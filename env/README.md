@@ -20,7 +20,7 @@ cd iSanXoT
 
 1) Create python folder
 ```
-mkdir C:\Users\jmrodriguezc\iSanXoT\env\python
+mkdir "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python-win-x64"
 ```
 
 2) Install Python
@@ -42,7 +42,7 @@ mkdir C:\Users\jmrodriguezc\iSanXoT\env\python
 3) Execute:
 ```
 cd env
-set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& com.env.win.bat "C:\Users\jmrodriguezc\iSanXoT\env\python\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
+set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& com.env.win.bat "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python-win-x64\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
 ```
 Note: You have to write in this way:
 ...\env\node&& (without space)
@@ -58,7 +58,7 @@ Close CMD
 7) Execute iSanXoT in debug mode:
 Open CMD
 ```
-set ISANXOT_MODE=debug&& "C:\Users\jmrodriguezc\iSanXoT\env\node\npm" start
+set ISANXOT_MODE=debug&& set ISANXOT_DEV=local&& "C:\Users\jmrodriguezc\iSanXoT\env\node\npm" start
 ```
 Note: You have to write in this way:
 =debug&& (without space)
@@ -109,7 +109,7 @@ Open New CMD
 ```
 cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
 
-"C:\Users\jmrodriguezc\iSanXoT\env\nodejs\node\electron-builder"
+"C:\Users\jmrodriguezc\iSanXoT\env\node\electron-builder"
 ```
 
 

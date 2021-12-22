@@ -47,20 +47,20 @@ CMD /C " "%PYTHON_EXEC%" "%INSTALLER_SCRIPT%" "%REQUIREMENTS_FRONTEND_ENV%"  "%I
 IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 
 
-:: update pip ----------------------
-ECHO **
-ECHO ** updating pip...
-CMD /C " "%PYTHON_EXEC%" -m pip install  --no-warn-script-location  --upgrade pip "
-:: if everything was fine or not (error => 1 or more)
-IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
+@REM :: update pip ----------------------
+@REM ECHO **
+@REM ECHO ** updating pip...
+@REM CMD /C " "%PYTHON_EXEC%" -m pip install  --no-warn-script-location  --upgrade pip "
+@REM :: if everything was fine or not (error => 1 or more)
+@REM IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 
 
-:: create the backend environment: python venv, packages, etc. ----------------------
-ECHO **
-ECHO ** creating the backend environment: python venv, packages...
-CMD /C " "%PYTHON_EXEC%" "%INSTALLER_SCRIPT%" "%REQUIREMENTS_BACKEND_PYTHON%" "
-:: if everything was fine or not (error => 1 or more)
-IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
+@REM :: create the backend environment: python venv, packages, etc. ----------------------
+@REM ECHO **
+@REM ECHO ** creating the backend environment: python venv, packages...
+@REM CMD /C " "%PYTHON_EXEC%" "%INSTALLER_SCRIPT%" "%REQUIREMENTS_BACKEND_PYTHON%" "
+@REM :: if everything was fine or not (error => 1 or more)
+@REM IF %ERRORLEVEL% GEQ 1 GOTO :wrongProcess
 
 :: everything was fine
 GOTO :successProcess

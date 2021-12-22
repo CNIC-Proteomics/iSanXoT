@@ -24,12 +24,15 @@ import core
 ###################
 
 def print_to_stdout(*a):
-    print(*a, file = sys.stdout)
+ 
+    # Here a is the array holding the objects
+    # passed as the argument of the function
+    print(*a, file=sys.stdout, flush=True)
     
 def exec_command(cmd):
     try:
-        print_to_stdout(f'-- exec: {cmd}')
-        crun = subprocess.call(cmd, shell=True)
+        # print_to_stdout(f'-- exec: {cmd}')
+        crun = subprocess.call(cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr)
         if crun == 0:
             return True
         else:
@@ -40,11 +43,9 @@ def exec_command(cmd):
         return False
 
 def install_exec_manager(url, odir):
-    print_to_stdout("-- install executors")
+    print_to_stdout(f"** Installing exec manager: {url}")
     try:
-        # local library
-        # import core
-        print_to_stdout("-- create builder")
+        # import core (local library)
         c = core.builder(tmpdir)
         if url.startswith('http'):
             print_to_stdout("-- download files: "+url+" > "+tmpdir)
@@ -64,11 +65,9 @@ def install_exec_manager(url, odir):
         return False
 
 def install_pip_manager(url):
-    print_to_stdout("-- install executors")
+    print_to_stdout(f"** Installing pip module: {url}")
     try:
-        # local library
-        # import core
-        print_to_stdout("-- create builder")
+        # import core (local library)
         c = core.builder(tmpdir)
         file = url
         print_to_stdout("-- unzip files: "+file+" > "+tmpdir)
@@ -115,8 +114,9 @@ def install_package(manager, pkg):
         return False
 
 def download_data(url, odir):
+    print_to_stdout(f"** Downloading data: {url}")
     try:
-        print_to_stdout("-- create builder")
+        # import core (local library)
         c = core.builder(odir)
         print_to_stdout("-- download files: "+url+" > "+odir)
         file = c.download_url(url, outdir=odir)
@@ -234,6 +234,7 @@ def install_report(trep, req_new, req_loc):
                         if not manager in req_loc[trep]:
                             req_loc[trep][manager] = []
                 # install package's
+                print_to_stdout("** Installing collected packages...")
                 for pkg in packages:
                     # check if the new package is already installed
                     if not pkg in req_loc[trep][manager]:

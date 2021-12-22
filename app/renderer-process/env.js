@@ -20,11 +20,8 @@ var trace_log = ''; // keep the logs
  * Local functions
  */
 function printInDetail(data) {
-    trace_log += data; // save the trace logs
-    if ( win !== null ) {
-        // render: send log trace
-        ipcRenderer.send('installation-detail', { log: data });
-    }
+    if ( data.startsWith('**') ) $('#frameless-desc-title').text(data.replace('** ',''));
+    $('#frameless-desc-short').text(data);
 };
 
 function closeWindow() {
@@ -50,6 +47,7 @@ function execProcess(script, cmd, close=false, callback) {
         proc.on('close', (code) => {
             console.log(`Close: Child exited with code ${code}`);
             if (code === 0) {
+                printInDetail('** The installation was executed succesfully');
                 ipcRenderer.send('get-install', {'code': code, 'msg': `Close: Child exited with code ${code}: the installation was executed succesfully`});
                 if (close) closeWindow();
                 if (callback) callback();
@@ -75,28 +73,27 @@ function execProcess(script, cmd, close=false, callback) {
  */
 
 // Set the resources folder depeding on mode
-$('#frameless-desc-title').text('Preparing environment variables');
 printInDetail('** Preparing environment variables...\n');
 
 process.env.ISANXOT_RESOURCES = process.resourcesPath;
-if (process.env.ISANXOT_MODE == "debug") { // in the case of debugging
+if (process.env.ISANXOT_DEV == "local") { // in the case of local debugging
     process.env.ISANXOT_RESOURCES = path.join(process.cwd(), 'resources');
 }
 
 
 // Set the python executable depending on the platform and mode
 if (navigator.platform === "Win32") {
-    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-win-x64');
+    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-win-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'python.exe');
     requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_win-x64.txt');
 }
 else if (navigator.platform === "MacIntel") {
-    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-darwin-x64');
+    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-darwin-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
     requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_darwin-x64.txt');
 }
 else if (navigator.platform === "Linux x86_64") {
-    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-linux-x64');
+    process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-linux-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
     requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_linux-x64.txt');
 }
@@ -132,9 +129,8 @@ let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXO
 
 
 // Execute the commands consecutively
-$('#frameless-desc-title').text('Preparing packages');
-printInDetail('** Preparing packages...\n');
-execProcess('preparing packages', cmd1, close=false);
+printInDetail('** Preparing installation...\n');
+execProcess('preparing installation', cmd1, close=true);
 
 
 
@@ -154,32 +150,3 @@ execProcess('preparing packages', cmd1, close=false);
 //     printInDetail('** Installing Python packages...\n');
 //     execProcess('installing python packages', cmd2, close=true)
 // });
-
-/*
- * Events
- */
-document.querySelector('#frmeless-desc-area').addEventListener('click', function() {
-    win = new BrowserWindow({
-        title: 'Create new project',
-        width: 500,
-        height: 700,
-        modal: true,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-            enableRemoteModule: true
-        },      
-        minimizable: false,
-        resizable: false,
-        'icon': process.env.ISANXOT_ICON,
-        parent: mainWindow
-    });
-    win.setMenu(null);
-    win.loadURL(path.join(__dirname, '../frameless-detail.html'));
-    win.webContents.openDevTools();
-    win.on('close', function () {
-        win = null;
-    });
-    win.show();
-    ipcRenderer.send('installation-detail', { log: trace_log });
-});
