@@ -21,7 +21,7 @@ then
     echo "Please, python executable"
     exit
 fi
-INSTALLER_SCRIPT=${ENV_HOME}/../app/resources/env/installer.py
+INSTALLER_SCRIPT=${ENV_HOME}/../env/installer.py
 REQUIREMENTS_FRONTEND_ENV=${ENV_HOME}/node/requirements_frontend_linux-x64.txt
 REQUIREMENTS_BACKEND_PYTHON=${ENV_HOME}/node/requirements_backend_linux-x64.txt
 

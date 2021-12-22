@@ -156,7 +156,6 @@ cd /Applications
 export ISANXOT_MODE=debug && open -a "iSanXoT.app"
 ```
 
-
 ### In the case there are new python packages: Download the Python packages
 
 1) Extract the Python packages
@@ -177,70 +176,58 @@ ls -1 > requirements_local.txt
 
 ### Create the python environment: Install just python in the resource folder
 
-1) Create python folder
-```
-mkdir /home/jmrc/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64
-```
-2) Install just python in the resource folder
+1) Install just python in the resource folder
 
-    2.1) Uncompress python
+    1.1) Uncompress python
     ```
     cd env/python
     tar -xvf Python-3.9.7.tgz
     cd Python-3.9.7
     ```
-    2.2) Configure python to install in user folder
+    1.2) Configure python to install in user folder
     ```
-    ./configure --prefix=/home/jmrc/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64
+    ./configure --prefix=/home/jmrc/projects/iSanXoT/app/resources/exec/python-3.9.7-linux-x64
     ```
-    2.2) Make
+    1.2) Make
     ```
     make
     ```
-    2.3) Make install
+    1.3) Make install
     ```
     make install
     ```
-3) Execute program that creates the frontend enviroment, and creates the backend environment
+
+### Create the frontend environment
+
+1) Execute program that creates the frontend enviroment
 ```
 cd env
-export PATH=/home/jmrc/projects/iSanXoT/env/nodejs/node/bin:$PATH && ./com.env.linux.sh /home/jmrc/projects/iSanXoT/env/python-3.9.7-linux-x64/bin/python3 /home/jmrc/projects/iSanXoT/env/nodejs
+export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./com.env.linux.sh /home/jmrc/projects/iSanXoT/app/resources/exec/python-3.9.7-linux-x64/bin/python3 /home/jmrc/projects/iSanXoT/env/node
+```
+
+### Build iSanXoT
+
+1) Execute the program that builds the packages
+```
+/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
 ```
 
 ### Execute iSanXoT in debug mode
 
 1) Execute iSanXoT in debug mode
 ```
-export ISANXOT_MODE=debug && export PATH=/home/jmrc/projects/iSanXoT/env/nodejs/node/bin:$PATH && /home/jmrc/projects/iSanXoT/env/nodejs/node/bin/npm start
+cd app
+export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
 ```
 
-### Build iSanXoT
+### In the case there are new python packages: Download the Python packages
 
-1) Create python folder
+1) Extract the Python packages
 ```
-mkdir /home/jmrc/projects/iSanXoT/resource/exec/python
-```
-2) Install Python in the path
+/Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64/bin/pip3 freeze > resources/env/packages/linux-x64/requirements.txt
 
-    2.1) Uncompress python
-    ```
-    cd env
-    tar -xvf Python-3.9.7.tgz
-    cd Python-3.9.7
-    ```
-    2.2) Configure python to install in user folder
-    ```
-    ./configure --prefix=/home/jmrc/projects/iSanXoT/resource/exec/python
-    ```
-    2.2) Make
-    ```
-    make
-    ```
-    2.3) Make install
-    ```
-    make install
-    ```
-3) Execute the program that builds the packages
-```
-/home/jmrc/projects/iSanXoT/env/nodejs/node/bin/electron-builder
+cd resources/env/packages/linux-x64
+/Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64/bin/pip3 download -r requirements.txt
+
+ls -1 > requirements_local.txt
 ```

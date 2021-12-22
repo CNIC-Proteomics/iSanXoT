@@ -9,7 +9,7 @@
 
 $PIP=setuptools-59.6.0.tar.gz
 $PIP=pip-21.3.1.tar.gz
-$MANAGER=Scripts/pip.exe
+$MANAGER=pip3
 install --no-warn-script-location	 packages/linux-x64/numpy-1.21.3-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl
 install --no-warn-script-location	 packages/linux-x64/smmap-5.0.0-py3-none-any.whl
 install --no-warn-script-location	 packages/linux-x64/typing_extensions-4.0.1-py3-none-any.whl

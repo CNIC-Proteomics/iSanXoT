@@ -1,7 +1,7 @@
 # node-v14.16.0
 
-$EXEC=node/node-v14.16.0-linux-x64.tar.gz        node
-$MANAGER=node/bin/npm
+$EXEC=node/node-v14.16.0-linux-x64.tar.gz        node-linux-x64
+$MANAGER=node-linux-x64/bin/npm
 config set scripts-prepend-node-path true
 install --save-dev --save-exact --global	electron@13.1.2
 install --global	ps-tree@1.2.0
