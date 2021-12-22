@@ -20,7 +20,7 @@
     "artifactName": "${productName}_Launcher_${version}.${platform}-${arch}.${ext}",
     "asar": true,
     "directories": {
-      "output": "releases/${version}/${platform}/${arch}"
+      "output": "../releases/${version}/${platform}/${arch}"
     },
     "nsis": {
       "oneClick": false,
