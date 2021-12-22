@@ -23,10 +23,15 @@ tests/*
 
 # discard the distribution folders
 releases
-env/python-3.9.7-win-x64
-env/python-3.9.7-darwin-x64
-env/python-3.9.7-linux-x64
-env/nodejs
+
+# discard the environment for the frontend
+env/node/node-win-x64
+env/node/node-darwin-x64
+env/node/node-linux-x64
+env/node/requirements.txt
+
+# discard the temporal python folder (MacOS and Linux distribution)
+env/python/Python-3.9.7
 
 # SanXoT
 src/SanXoT/.svn
@@ -59,4 +64,3 @@ src/SanXoT/trilogy.py
 src/SanXoT/utest
 src/SanXoT/workflows
 src/SanXoT/xp_vpCollector.py
-
