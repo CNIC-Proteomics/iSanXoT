@@ -57,6 +57,27 @@
         {
           "from": "resources/exec/python-3.9.7-win-x64",
           "to": "exec/python-3.9.7-win-x64"
+        },
+        {
+          "from": "../env",
+          "to": "env",
+          "filter": [
+            "installer.py",
+            "core.py"
+          ]
+        },
+        {
+          "from": "../env/packages",
+          "to": "env",
+          "filter": [
+            "pip-21.3.1.tar.gz",
+            "setuptools-59.6.0.tar.gz",
+            "requirements_backend_win-x64.txt"
+          ]
+        },
+        {
+          "from": "../env/packages/win-x64",
+          "to": "env/packages/win-x64"
         }
       ]
     },
@@ -91,7 +112,34 @@
       ]
     },
     "linux": {
-      "icon": "app/assets/images/isanxot.png"
+      "icon": "app/assets/images/isanxot.png",
+      "extraResources": [
+        {
+          "from": "resources/exec/python-3.9.7-linux-x64",
+          "to": "exec/python-3.9.7-linux-x64"
+        },
+        {
+          "from": "../env",
+          "to": "env",
+          "filter": [
+            "installer.py",
+            "core.py"
+          ]
+        },
+        {
+          "from": "../env/packages",
+          "to": "env",
+          "filter": [
+            "pip-21.3.1.tar.gz",
+            "setuptools-59.6.0.tar.gz",
+            "requirements_backend_linux-x64.txt"
+          ]
+        },
+        {
+          "from": "../env/packages/linux-x64",
+          "to": "env/packages/linux-x64"
+        }
+      ]
     }
   },
   "scripts": {
