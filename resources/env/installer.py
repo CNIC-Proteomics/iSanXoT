@@ -43,7 +43,6 @@ def exec_command(cmd):
         return False
 
 def install_exec_manager(url, odir):
-    print_to_stdout(f"** Installing exec manager: {url}")
     try:
         # import core (local library)
         c = core.builder(tmpdir)
@@ -65,11 +64,10 @@ def install_exec_manager(url, odir):
         return False
 
 def install_pip_manager(url):
-    print_to_stdout(f"** Installing pip module: {url}")
     try:
         # import core (local library)
         c = core.builder(tmpdir)
-        file = url
+        file = os.path.join(local_dir,url)
         print_to_stdout("-- unzip files: "+file+" > "+tmpdir)
         c.unzip_file(file,  tmpdir)
         print_to_stdout("-- get filename")
@@ -106,7 +104,7 @@ def install_package(manager, pkg):
         # handle manager file
         manager = "{}/{}".format(lib_home, manager)
         # create command
-        exec_command(f'{manager} {pkg}')
+        exec_command(f'cd {local_dir} && {manager} {pkg}')
         # if everything was fine
         return True
     except Exception as exc:
@@ -218,14 +216,18 @@ def install_report(trep, req_new, req_loc):
                 # check if the new package manager is already installed
                 if (not trep in req_loc) or (not manager in req_loc[trep]):
                     if trep == 'EXEC':
+                        print_to_stdout(f"** Installing exec manager: {manager}")
                         iok = install_exec_manager(manager, man_dir)
                     if trep == 'PIP':
+                        print_to_stdout(f"** Installing pip module: {manager}")
                         iok = install_pip_manager(manager)
                     if trep == 'MANAGER':
                         iok = install_pkg_manager(manager)
                     elif trep == 'DATABASES':
+                        print_to_stdout(f"** Installing db manager: {manager}")
                         iok = download_data(manager, man_dir)
                     elif trep == 'SAMPLES':
+                        print_to_stdout(f"** Installing samples manager: {manager}")
                         iok = download_data(manager, man_dir)
                     # save modules in the req local
                     if iok:
