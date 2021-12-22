@@ -15,7 +15,7 @@ TODO.xlsx
 __pycache__/
 
 # electron
-package-lock.json
+app/package-lock.json
 
 # tests
 tests/*
@@ -28,9 +28,9 @@ env/node/node-linux-x64
 env/node/requirements.txt
 
 # discard the environment for the frontend
-resources/exec/python-3.9.7-win-x64
-resources/exec/python-3.9.7-darwin-x64
-resources/exec/python-3.9.7-linux-x64
+app/resources/exec/python-3.9.7-win-x64
+app/resources/exec/python-3.9.7-darwin-x64
+app/resources/exec/python-3.9.7-linux-x64
 
 # discard the temporal python folder
 env/python/Python-3.9.7
