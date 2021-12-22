@@ -70,10 +70,22 @@
       ]
     },
     "mac": {
-      "icon": "app/assets/icons/isanxot.icns"
+      "icon": "app/assets/icons/isanxot.icns",
+      "extraResources": [
+        {
+          "from": "resources/exec/python-darwin-x64",
+          "to": "exec/python-darwin-x64"
+        }
+      ]
     },
     "linux": {
-      "icon": "app/assets/images/isanxot.png"
+      "icon": "app/assets/images/isanxot.png",
+      "extraResources": [
+        {
+          "from": "resources/exec/python-linux-x64",
+          "to": "exec/python-linux-x64"
+        }
+      ]
     }
   },
   "scripts": {
