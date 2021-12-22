@@ -24,8 +24,8 @@ IF %PYTHON_EXEC%=="" (
 :: remove "'s
 SET  PYTHON_EXEC=%PYTHON_EXEC:"=%
 SET  INSTALLER_SCRIPT=%ENV_HOME%/../app/resources/env/installer.py
-SET  REQUIREMENTS_FRONTEND_ENV=%ENV_HOME%/requirements_frontend_win-x64.txt
-SET  REQUIREMENTS_BACKEND_PYTHON=%ENV_HOME%/requirements_backend_win-x64.txt
+SET  REQUIREMENTS_FRONTEND_ENV=%ENV_HOME%/node/requirements_frontend_win-x64.txt
+SET  REQUIREMENTS_BACKEND_PYTHON=%ENV_HOME%/node/requirements_backend_win-x64.txt
 
 
 

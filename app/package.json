@@ -49,15 +49,6 @@
       {
         "from": "resources/node_modules",
         "to": "node_modules"
-      },
-      {
-        "from": "resources/env",
-        "to": "env",
-        "filter": [
-          "!node",
-          "!python",
-          "!**/__pycache__"
-        ]
       }
     ],
     "win": {
@@ -75,17 +66,32 @@
         {
           "from": "resources/exec/python-3.9.7-darwin-x64",
           "to": "exec/python-3.9.7-darwin-x64"
+        },
+        {
+          "from": "../env",
+          "to": "env",
+          "filter": [
+            "installer.py",
+            "core.py"
+          ]
+        },
+        {
+          "from": "../env/packages",
+          "to": "env",
+          "filter": [
+            "pip-21.3.1.tar.gz",
+            "setuptools-59.6.0.tar.gz",
+            "requirements_backend_darwin-x64.txt"
+          ]
+        },
+        {
+          "from": "../env/packages/darwin-x64",
+          "to": "env/packages/darwin-x64"
         }
       ]
     },
     "linux": {
-      "icon": "app/assets/images/isanxot.png",
-      "extraResources": [
-        {
-          "from": "resources/exec/python-3.9.7-linux-x64",
-          "to": "exec/python-3.9.7-linux-x64"
-        }
-      ]
+      "icon": "app/assets/images/isanxot.png"
     }
   },
   "scripts": {

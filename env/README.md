@@ -41,7 +41,7 @@ mkdir "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\pyth
 
 3) Copy the cached installation of python
 ```
-cp -r env/python/Python-3.9.7  resources/exec/python-3.9.7-win-x64
+cp -r env/python/Python-3.9.7  app/resources/exec/python-3.9.7-win-x64
 ```
 
 ### Create the frontend environment
@@ -65,7 +65,7 @@ Close CMD
 ### Build iSanXoT
 1) Copy the cached installation of python
 ```
-cp -r env/python/Python-3.9.7  resources/exec/python-3.9.7-win-x64
+cp -r env/python/Python-3.9.7  app/resources/exec/python-3.9.7-win-x64
 ```
 Important note: You have to remove the previous release; otherwise the new release will be too big
 ```
@@ -89,10 +89,10 @@ Note: You have to write in this way:
 ### In the case there are new python packages: Download the Python packages
 1) Extract the Python packages
 ```
-"S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" freeze > resources/env/packages/win-x64/requirements.txt
+"S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" freeze > app/resources/env/packages/win-x64/requirements.txt
 
-cd resources/env/packages/win-x64
-"S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" download -r requirements.txt
+cd app/resources/env/packages/win-x64
+"S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" download -r requirements.txt
 
 ls -1 > requirements_local.txt
 ```
@@ -105,12 +105,7 @@ ls -1 > requirements_local.txt
 
 ### Create the python environment: Install just python in the resource folder
 
-1) Create python folder
-```
-mkdir /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64
-```
-
-2) Install just python in the resource folder
+1) Install just python in the resource folder
 
     2.1) Uncompress python
     ```
@@ -120,7 +115,7 @@ mkdir /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64
     ```
     2.2) Configure python to install in user folder
     ```
-    ./configure --prefix=/Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64
+    ./configure --prefix=/Users/proteomica/projects/iSanXoT/app/resources/exec/python-3.9.7-darwin-x64
     ```
     2.2) Make
     ```
@@ -136,18 +131,14 @@ mkdir /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64
 1) Execute program that creates the frontend enviroment
 ```
 cd env
-export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && ./com.env.darwin.sh /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64/bin/python3  /Users/proteomica/projects/iSanXoT/env/node
+export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && ./com.env.darwin.sh /Users/proteomica/projects/iSanXoT/app/resources/exec/python-3.9.7-darwin-x64/bin/python3  /Users/proteomica/projects/iSanXoT/env/node
 ```
 
 ### Build iSanXoT
 
-1) Install cached python
+1) Execute the program that builds the packages
 ```
-cd env/python/Python-3.9.7 && make install
-```
-
-2) Execute the program that builds the packages
-```
+cd app
 export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/electron-builder
 ```
 
@@ -155,6 +146,7 @@ export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PAT
 
 1) Execute iSanXoT in debug mode
 ```
+cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/npm start 
 ```
 

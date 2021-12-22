@@ -22,8 +22,8 @@ then
     exit
 fi
 INSTALLER_SCRIPT=${ENV_HOME}/../app/resources/env/installer.py
-REQUIREMENTS_FRONTEND_ENV=${ENV_HOME}/requirements_frontend_linux-x64.txt
-REQUIREMENTS_BACKEND_PYTHON=${ENV_HOME}/requirements_backend_linux-x64.txt
+REQUIREMENTS_FRONTEND_ENV=${ENV_HOME}/node/requirements_frontend_linux-x64.txt
+REQUIREMENTS_BACKEND_PYTHON=${ENV_HOME}/node/requirements_backend_linux-x64.txt
 
 
 # get the frontend home for the installation of modules ----------------------
