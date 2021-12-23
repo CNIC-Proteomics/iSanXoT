@@ -23,7 +23,6 @@ plat = platform.system()
 
 # get the environment variables
 ISANXOT_RESOURCES         = os.environ['ISANXOT_RESOURCES']
-ISANXOT_PYTHON_HOME       = os.environ['ISANXOT_PYTHON_HOME']
 ISANXOT_PYTHON_EXEC       = os.environ['ISANXOT_PYTHON_EXEC']
 ISANXOT_SRC_HOME          = os.environ['ISANXOT_SRC_HOME']
 
@@ -33,8 +32,6 @@ ISANXOT_PYTHON_PARAMS     = "-Wignore"
 
 
 if plat == 'Windows':   
-    ISANXOT_SNAKEMAKE_EXEC    = f"{ISANXOT_PYTHON_HOME}/Scripts/snakemake.exe"
-
     ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/cmds/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java.exe"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz/bin/dot.exe"
@@ -42,8 +39,6 @@ if plat == 'Windows':
     ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
 
 elif plat == 'Darwin':
-    ISANXOT_SNAKEMAKE_EXEC    = f"{ISANXOT_PYTHON_HOME}/bin/snakemake"
-
     ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/cmds/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz/bin/dot"
@@ -51,8 +46,6 @@ elif plat == 'Darwin':
     ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
 
 elif plat == 'Linux':
-    ISANXOT_SNAKEMAKE_EXEC    = f"{ISANXOT_PYTHON_HOME}/bin/snakemake"
-
     ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/cmds/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz/bin/dot"

@@ -19,7 +19,6 @@ import logging
 import multiprocessing as mp
 import yaml
 import subprocess
-import shutil
 import re
 import time
 import shlex
@@ -30,6 +29,14 @@ import shlex
 import gvars
 
 NCPUS = int(2/3* mp.cpu_count())
+COMMAND_ORDER = ['COPY_INPUTS','MAIN_INPUTS','CREATE_IDQUANT','FDR_Q','FDR','JOINER_FDR','JOINER_ID','JOINER_IDQ','MASTERQ',
+                 'GET_IDSTATS',
+                 'RELS_CREATOR',
+                 'WSPP_SBT','WSPPG_SBT','WPP_SBT','WPPG_SBT',
+                 'LEVEL_CREATOR','LEVEL_CALIBRATOR',
+                 'INTEGRATE','NORCOMBINE','RATIOS_INT','SBT',
+                 'SANSON','REPORT'
+                 ]
 
 ###################
 # Local functions #
@@ -217,42 +224,21 @@ def main(args):
     # ------
     print(f"MYSNAKE_LOG_VALIDATING\t{time.asctime()}", flush=True)
 
-    logging.debug("validate the input files of workflow")
-    try:
-        # Run the command
-        proc = subprocess.run([f"{gvars.ISANXOT_SNAKEMAKE_EXEC}",
-                                  '--configfile', f"{args.configfile}",
-                                  '--snakefile',  f"{args.snakefile}",
-                                  '--directory',  f"{args.directory}",
-                                  '-n','-r'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        if proc.returncode != 0:
-            raise Exception(f"{proc.stdout.decode('utf-8')}")
-        logging.debug(proc.stdout)
-        # remove tmp folder of snakemake
-        shutil.rmtree(f"{args.directory}/.snakemake")
-    except Exception as exc:
-        sys.exit("ERROR!! Validating the input file of workflow:\n{}".format(exc))
-
-
     # ------
     print(f"MYSNAKE_LOG_STARTING\t{time.asctime()}", flush=True)
 
     logging.debug("extract the order of processes")
-    try:
-        # check if snakemake determines: Nothing to be done.
-        proc_some = re.findall(r'Building DAG of jobs...[\\n|\\r]+Nothing to be done.',str(proc.stdout))
-        if not proc_some:
-            # capture the list of jobs returned by snakemake
-            proc_ord = re.findall(r'Job\s*\d+:\s*([^\:]*)',str(proc.stdout))
-            if not proc_ord:
-                # the list of jobs is empty but due some error
-                raise Exception('the ordered list of processes is empty due some error')
-            logging.debug(f"{proc_ord}")
-        else:
-            # if Nothing to be done, the list of jobs is empty.
-            proc_ord = []
-    except Exception as exc:
-        sys.exit("ERROR!! Extracting the order of processes: {}".format(exc))
+    # get the list of tuples: ( commands (names), their rules)
+    cr = [ (cmd['name'],cmd['rules'][i]['name']) for cmds in cfg['commands'] for cmd in cmds for i in range(len(cmd['rules'])) ]
+    cr = [ (re.sub('\_\d*$','',c[0]), c[1]) for c in cr ]
+    # get dict with the commands_names and list of their own rules
+    dict_1=dict()
+    for c,r in cr:
+        dict_1.setdefault(c, []).append(r)
+    # extract the order of processes
+    proc_ord = [ dict_1[c] for c in COMMAND_ORDER if c in dict_1 ]
+    proc_ord = [i for s in proc_ord for i in s]
+    
 
     logging.debug("extract the rules for each command")
     try:
