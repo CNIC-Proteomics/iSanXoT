@@ -27,7 +27,8 @@ env/node/node-darwin-x64
 env/node/node-linux-x64
 env/node/requirements.txt
 
-# discard the environment for the frontend
+# discard the environment for the backend
+app/resources/env
 app/resources/exec/python-3.9.7-win-x64
 app/resources/exec/python-3.9.7-darwin-x64
 app/resources/exec/python-3.9.7-linux-x64

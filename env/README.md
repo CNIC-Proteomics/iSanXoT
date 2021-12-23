@@ -35,7 +35,7 @@ mkdir "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\pyth
 ![Optional features](../docs/env/images/python_installation_2.png "Optional features")
 
   2.3) Choose the path:
-  Do it in "env/python-3.9.7-win-x64"
+  Do it in "env\python\Python-3.9.7"
 
 ![Choose the path](../docs/env/images/python_installation_3.png "Choose the path")
 
@@ -65,7 +65,7 @@ Close CMD
 ### Build iSanXoT
 1) Copy the cached installation of python
 ```
-cp -r env/python/Python-3.9.7  app/resources/exec/python-3.9.7-win-x64
+XCOPY /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
 ```
 Important note: You have to remove the previous release; otherwise the new release will be too big
 ```
@@ -79,8 +79,23 @@ cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
 ```
 
 ### Execute iSanXoT in debug mode
+
+1) Copy the files to create the backend environment
 Open CMD
 ```
+mkdir "app\resources\env"
+
+for %I in ("env\installer.py" "env\core.py" "env\packages\pip-21.3.1.tar.gz" "env\packages\setuptools-59.6.0.tar.gz" "env\packages\requirements_backend_win-x64.txt") do COPY %I "app\resources\env\."
+
+mkdir "app\resources\env\packages\win-x64"
+
+xcopy /E /I "env\packages\win-x64" "app\resources\env\packages\win-x64\."
+```
+
+2) Execute iSanXoT in debug mode
+Open CMD
+```
+cd app
 set ISANXOT_MODE=debug&& set ISANXOT_DEV=local&& "C:\Users\jmrodriguezc\iSanXoT\env\node\npm" start
 ```
 Note: You have to write in this way:
@@ -254,6 +269,21 @@ mkdir app/resources/env/packages && cp -r env/packages/linux-x64 app/resources/e
 cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
 ```
+
+Note: Open iSanXoT application in debug mode
+```
+export ISANXOT_MODE=debug && ./iSanXoT_Launcher_0.4.1.linux-x86_64.AppImage
+```
+
+```
+./my.AppImage --appimage-extract
+# the contents are extracted into the directory "squashfs-root" in the current working directory
+# you can now run the "AppRun" entry point
+squashfs-root/AppRun [...]
+# optionally, you can clean up the directory again
+rm -r squashfs-root/
+```
+
 
 ### In the case there are new python packages: Download the Python packages
 
