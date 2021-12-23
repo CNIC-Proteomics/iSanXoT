@@ -136,7 +136,18 @@ export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PAT
 
 ### Build iSanXoT
 
-1) Execute the program that builds the packages
+1) Clean folders
+```
+rm -rf app/env app/exec
+```
+
+2) Re-install python
+```
+cd env/python/Python-3.9.7
+make install
+```
+
+3) Execute the program that builds the packages
 ```
 cd app
 export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/electron-builder
@@ -144,13 +155,20 @@ export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PAT
 
 ### Execute iSanXoT in debug mode
 
-1) Execute iSanXoT in debug mode
+1) Copy the files to create the backend environment
+```
+mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/pip-21.3.1.tar.gz env/packages/setuptools-59.6.0.tar.gz env/packages/requirements_backend_darwin-x64.txt app/resources/env/.
+
+mkdir app/resources/env/packages && cp -r env/packages/darwin-x64 app/resources/env/packages/.
+```
+
+2) Execute iSanXoT in debug mode
 ```
 cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/npm start 
 ```
 
-Open iSanXoT application in debug mode
+Note: Open iSanXoT application in debug mode
 ```
 cd /Applications
 export ISANXOT_MODE=debug && open -a "iSanXoT.app"
@@ -206,8 +224,18 @@ export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./c
 ```
 
 ### Build iSanXoT
+1) Clean folders
+```
+rm -rf app/env app/exec
+```
 
-1) Execute the program that builds the packages
+2) Re-install python
+```
+cd env/python/Python-3.9.7
+make install
+```
+
+3) Execute the program that builds the packages
 ```
 /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
 ```
@@ -220,10 +248,9 @@ mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/pip-2
 
 mkdir app/resources/env/packages && cp -r env/packages/linux-x64 app/resources/env/packages/.
 ```
+
 2) Execute iSanXoT in debug mode
 ```
-mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/requirements_backend_linux-x64.txt app/resources/env/.
-mkdir app/resources/env/packages && cp -r env/packages/linux-x64 app/resources/env/packages/.
 cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
 ```
