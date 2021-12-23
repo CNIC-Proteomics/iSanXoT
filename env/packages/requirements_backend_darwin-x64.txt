@@ -1,12 +1,5 @@
 # Python 3.9.7
 
-# install --no-warn-script-location	 packages/darwin-x64/tabulate-0.8.9-py3-none-any.whl // NOT USED?
-# install --no-warn-script-location	 packages/darwin-x64/toposort-1.7-py2.py3-none-any.whl // NOT USED?
-# install --no-warn-script-location	 packages/darwin-x64/datrie-0.8.tar.gz // IN THIS CASE, MICROSOFT VISUAL C++ 14 or higher required 
-
-
-
-
 $PIP=setuptools-59.6.0.tar.gz
 $PIP=pip-21.3.1.tar.gz
 $MANAGER=pip3
@@ -24,7 +17,6 @@ install --no-warn-script-location	 packages/darwin-x64/urllib3-1.26.7-py2.py3-no
 install --no-warn-script-location	 packages/darwin-x64/threadpoolctl-3.0.0-py3-none-any.whl
 install --no-warn-script-location	 packages/darwin-x64/scipy-1.7.1-cp39-cp39-macosx_10_9_x86_64.whl
 install --no-warn-script-location	 packages/darwin-x64/wrapt-1.13.3-cp39-cp39-macosx_10_9_x86_64.whl
-install --no-warn-script-location	 packages/darwin-x64/datrie-0.8.2.tar.gz
 install --no-warn-script-location	 packages/darwin-x64/appdirs-1.4.4-py2.py3-none-any.whl
 install --no-warn-script-location	 packages/darwin-x64/attrs-21.2.0-py2.py3-none-any.whl
 install --no-warn-script-location	 packages/darwin-x64/biopython-1.79-cp39-cp39-macosx_10_9_x86_64.whl
@@ -57,5 +49,4 @@ install --no-warn-script-location	 packages/darwin-x64/ratelimiter-1.2.0.post0-p
 install --no-warn-script-location	 packages/darwin-x64/requests-2.26.0-py2.py3-none-any.whl
 install --no-warn-script-location	 packages/darwin-x64/scikit_learn-1.0.1-cp39-cp39-macosx_10_13_x86_64.whl
 install --no-warn-script-location	 packages/darwin-x64/smart_open-5.2.1-py3-none-any.whl
-install --no-warn-script-location	 packages/darwin-x64/snakemake-6.10.0.tar.gz
 install --no-warn-script-location	 packages/darwin-x64/stopit-1.1.2.tar.gz
