@@ -98,7 +98,7 @@ def install_make_manager(file, odir):
         print_to_stdout("-- remove tmpdir: "+man_dir)
         c.remove_dir(man_dir)
     except Exception as exc:
-        sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
+        sys.exit(f"ERROR!! removing tmp dir: {man_dir}\n{exc}")
     # if everything was fine
     return True
 

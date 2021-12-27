@@ -67,17 +67,25 @@
           ]
         },
         {
-          "from": "../env/packages",
-          "to": "env",
+          "from": "../env/python",
+          "to": "env/python",
           "filter": [
             "pip-21.3.1.tar.gz",
             "setuptools-59.6.0.tar.gz",
-            "requirements_backend_win-x64.txt"
+            "requirements_python_win-x64.txt"
           ]
         },
         {
-          "from": "../env/packages/win-x64",
-          "to": "env/packages/win-x64"
+          "from": "../env/python/packages/win-x64",
+          "to": "env/python/packages/win-x64"
+        },
+        {
+          "from": "../env/exec",
+          "to": "env/exec",
+          "filter": [
+            "windows_10_msbuild_Release_graphviz-2.50.0-win32.zip",
+            "requirements_exec_win-x64.txt"
+          ]
         }
       ]
     },
@@ -97,17 +105,25 @@
           ]
         },
         {
-          "from": "../env/packages",
-          "to": "env",
+          "from": "../env/python",
+          "to": "env/python",
           "filter": [
             "pip-21.3.1.tar.gz",
             "setuptools-59.6.0.tar.gz",
-            "requirements_backend_darwin-x64.txt"
+            "requirements_python_darwin-x64.txt"
           ]
         },
         {
-          "from": "../env/packages/darwin-x64",
-          "to": "env/packages/darwin-x64"
+          "from": "../env/python/packages/darwin-x64",
+          "to": "env/python/packages/darwin-x64"
+        },
+        {
+          "from": "../env/exec",
+          "to": "env/exec",
+          "filter": [
+            "graphviz-2.50.0.tar.gz",
+            "requirements_exec_darwin-x64.txt"
+          ]
         }
       ]
     },
@@ -127,17 +143,25 @@
           ]
         },
         {
-          "from": "../env/packages",
-          "to": "env",
+          "from": "../env/python",
+          "to": "env/python",
           "filter": [
             "pip-21.3.1.tar.gz",
             "setuptools-59.6.0.tar.gz",
-            "requirements_backend_linux-x64.txt"
+            "requirements_python_linux-x64.txt"
           ]
         },
         {
-          "from": "../env/packages/linux-x64",
-          "to": "env/packages/linux-x64"
+          "from": "../env/python/packages/linux-x64",
+          "to": "env/python/packages/linux-x64"
+        },
+        {
+          "from": "../env/exec",
+          "to": "env/exec",
+          "filter": [
+            "graphviz-2.50.0.tar.gz",
+            "requirements_exec_linux-x64.txt"
+          ]
         }
       ]
     }
