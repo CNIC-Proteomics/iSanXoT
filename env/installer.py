@@ -69,38 +69,36 @@ def install_make_manager(file, odir):
     try:
         print_to_stdout("-- extract exec-manager")
         exec_command(f'cd {local_dir} && tar -xvf {file}')
-        # if everything was fine
-        return True
+        pass
     except Exception as exc:
         sys.exit(f"ERROR!! extracting the manager: {file}\n{exc}")
     try:
         print_to_stdout("-- configure exec-manager")
         exec_command(f'cd {man_dir} && ./configure --prefix={odir}')
-        # if everything was fine
-        return True
+        pass
     except Exception as exc:
         sys.exit(f"ERROR!! configuring the manager: {file}\n{exc}")
     try:
         print_to_stdout("-- make exec-manager")
         exec_command(f'cd {man_dir} && make')
-        # if everything was fine
-        return True
+        pass
     except Exception as exc:
         sys.exit(f"ERROR!! making the manager: {file}\n{exc}")
     try:
         print_to_stdout("-- install exec-manager")
         exec_command(f'cd {man_dir} && make install')
-        # if everything was fine
-        return True
+        pass
     except Exception as exc:
         sys.exit(f"ERROR!! installing the manager: {file}\n{exc}")
     try:
         print_to_stdout("-- remove tmpdir: "+man_dir)
+        c = core.builder(man_dir)
         c.remove_dir(man_dir)
+        # if everything was fine
+        return True
     except Exception as exc:
         sys.exit(f"ERROR!! removing tmp dir: {man_dir}\n{exc}")
-    # if everything was fine
-    return True
+        return False
 
 def install_pip_manager(url):
     try:
