@@ -305,6 +305,9 @@ def main():
         req_loc = install_report('EXEC', req_new, req_loc)
 
         # look through the new requirements for the excutor ---
+        req_loc = install_report('MAKE', req_new, req_loc)
+
+        # look through the new requirements for the excutor ---
         req_loc = install_report('PIP', req_new, req_loc)
 
         # look through the new requirements for the packages ---
