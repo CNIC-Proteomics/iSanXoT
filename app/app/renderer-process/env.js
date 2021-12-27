@@ -33,35 +33,38 @@ function execProcess(script, cmd, close=false, callback) {
     try {
         // execute command line
         console.log(cmd);
-        let proc = cProcess.exec(cmd);
-        // Handle on stderr
-        proc.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
-        });
-        // Handle on stderr
-        proc.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-            printInDetail(data);
-        });
-        // Handle on close event
-        proc.on('close', (code) => {
-            console.log(`Close: Child exited with code ${code}`);
-            if (code === 0) {
-                printInDetail('** The installation was executed succesfully');
-                ipcRenderer.send('get-install', {'code': code, 'msg': `Close: Child exited with code ${code}: the installation was executed succesfully`});
-                if (close) closeWindow();
-                if (callback) callback();
-            }
-            else {
-                ipcRenderer.send('get-install', {'code': code, 'msg':  `Close: Child exited with code ${code}: the installation was not complete`});
-                exceptor.showErrorMessageBox(`${script}`, `Error ${script}`, end=false, page=false, callback=function(){closeWindow()} );
-            }
-        });
-        // Handle on error event
-        proc.on('error', (code, signal) => {
-            ipcRenderer.send('get-install', {'code': code, 'msg': `Error ${script}: Child exited with code ${code} and signal ${signal}`});
-            exceptor.showErrorMessageBox(`${script}`, `Error ${script}: Child exited with code ${code} and signal ${signal}`, end=false, page=false, callback=function(){closeWindow()} );
-        });
+
+if (callback) callback();
+
+        // let proc = cProcess.exec(cmd);
+        // // Handle on stderr
+        // proc.stderr.on('data', (data) => {
+        //     console.log(`stderr: ${data}`);
+        // });
+        // // Handle on stderr
+        // proc.stdout.on('data', (data) => {
+        //     console.log(`stdout: ${data}`);
+        //     printInDetail(data);
+        // });
+        // // Handle on close event
+        // proc.on('close', (code) => {
+        //     console.log(`Close: Child exited with code ${code}`);
+        //     if (code === 0) {
+        //         printInDetail('** The installation was executed succesfully');
+        //         ipcRenderer.send('get-install', {'code': code, 'msg': `Close: Child exited with code ${code}: the installation was executed succesfully`});
+        //         if (close) closeWindow();
+        //         if (callback) callback();
+        //     }
+        //     else {
+        //         ipcRenderer.send('get-install', {'code': code, 'msg':  `Close: Child exited with code ${code}: the installation was not complete`});
+        //         exceptor.showErrorMessageBox(`${script}`, `Error ${script}`, end=false, page=false, callback=function(){closeWindow()} );
+        //     }
+        // });
+        // // Handle on error event
+        // proc.on('error', (code, signal) => {
+        //     ipcRenderer.send('get-install', {'code': code, 'msg': `Error ${script}: Child exited with code ${code} and signal ${signal}`});
+        //     exceptor.showErrorMessageBox(`${script}`, `Error ${script}: Child exited with code ${code} and signal ${signal}`, end=false, page=false, callback=function(){closeWindow()} );
+        // });
     } catch (ex) {
         ipcRenderer.send('get-install', {'code': ex.code, 'msg':  "the installation was not complete"});
         exceptor.showErrorMessageBox(`${script}`, `Error ${ex.code} \n ${ex.message}`, end=false, page=false, callback=function(){closeWindow()} );
@@ -85,17 +88,20 @@ if (process.env.ISANXOT_DEV == "local") { // in the case of local debugging
 if (navigator.platform === "Win32") {
     process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-win-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'python.exe');
-    requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_win-x64.txt');
+    requirements_python = path.join(process.env.ISANXOT_RESOURCES, 'env/python/requirements_python_win-x64.txt');
+    requirements_exec = path.join(process.env.ISANXOT_RESOURCES, 'env/exec/requirements_exec_win-x64.txt');
 }
 else if (navigator.platform === "MacIntel") {
     process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-darwin-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
-    requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_darwin-x64.txt');
+    requirements_python = path.join(process.env.ISANXOT_RESOURCES, 'env/python/requirements_python_darwin-x64.txt');
+    requirements_exec = path.join(process.env.ISANXOT_RESOURCES, 'env/exec/requirements_exec_darwin-x64.txt');
 }
 else if (navigator.platform === "Linux x86_64") {
     process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-linux-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
-    requirements = path.join(process.env.ISANXOT_RESOURCES, 'env/requirements_backend_linux-x64.txt');
+    requirements_python = path.join(process.env.ISANXOT_RESOURCES, 'env/python/requirements_python_linux-x64.txt');
+    requirements_exec = path.join(process.env.ISANXOT_RESOURCES, 'env/exec/requirements_exec_linux-x64.txt');
 }
 else {
     ipcRenderer.send('get-install', {'code': 601, 'msg':  `Error setting the platform`});
@@ -125,13 +131,18 @@ ipcRenderer.send('send-env', {'ISANXOT_ICON': process.env.ISANXOT_ICON});
 
 
 // Prepare commands consecutively
-let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" `; // install Python packages
-
+let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements_python}" `; // install Python packages
+let cmd2 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements_exec}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec')}" `; // install exec managers
 
 // Execute the commands consecutively
-printInDetail('** Preparing installation...\n');
-execProcess('preparing installation', cmd1, close=true);
-
+printInDetail('** Preparing environment...\n');
+execProcess('preparing environment', cmd1, close=false,
+// End execution, next...
+// install exec managers
+function() {
+    printInDetail('** Installing exec managers...\n');
+    execProcess('installing exec managers', cmd2, close=true)
+});
 
 
 // // BEGIN: DEPRECATED BUT USEFULL: SEE HOW EXECUTE CONSECUTIVELY
@@ -140,7 +151,6 @@ execProcess('preparing installation', cmd1, close=true);
 // let cmd2 = `"${python_exec}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
 
 // // Execute the commands consecutively
-// $('#frameless-desc-title').text('Preparing Python environment');
 // printInDetail('** Preparing Python environment...\n');
 // execProcess('preparing python environment', cmd1, close=false,
 // // Install Python packages

@@ -63,6 +63,45 @@ def install_exec_manager(url, odir):
         sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
         return False
 
+def install_make_manager(file, odir):
+    # get local folder
+    man_dir = os.path.join( local_dir, os.path.basename(file).split('.tar.gz')[0])
+    try:
+        print_to_stdout("-- extract exec-manager")
+        exec_command(f'cd {local_dir} && tar -xvf {file}')
+        # if everything was fine
+        return True
+    except Exception as exc:
+        sys.exit(f"ERROR!! extracting the manager: {file}\n{exc}")
+    try:
+        print_to_stdout("-- configure exec-manager")
+        exec_command(f'cd {man_dir} && ./configure --prefix={odir}')
+        # if everything was fine
+        return True
+    except Exception as exc:
+        sys.exit(f"ERROR!! configuring the manager: {file}\n{exc}")
+    try:
+        print_to_stdout("-- make exec-manager")
+        exec_command(f'cd {man_dir} && make')
+        # if everything was fine
+        return True
+    except Exception as exc:
+        sys.exit(f"ERROR!! making the manager: {file}\n{exc}")
+    try:
+        print_to_stdout("-- install exec-manager")
+        exec_command(f'cd {man_dir} && make install')
+        # if everything was fine
+        return True
+    except Exception as exc:
+        sys.exit(f"ERROR!! installing the manager: {file}\n{exc}")
+    try:
+        print_to_stdout("-- remove tmpdir: "+man_dir)
+        c.remove_dir(man_dir)
+    except Exception as exc:
+        sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
+    # if everything was fine
+    return True
+
 def install_pip_manager(url):
     try:
         # import core (local library)
@@ -82,9 +121,6 @@ def install_pip_manager(url):
     # if everything was fine
     return True
 
-def install_pkg_manager_pip():
-    exec_command(f'"{python_exec}"  "{local_dir}/get-pip.py"  --no-warn-script-location')
-
 def install_pkg_manager(manager):
     try:
         # handle manager file
@@ -93,7 +129,6 @@ def install_pkg_manager(manager):
         if not (os.path.isfile(manager) or os.path.isfile(manager+'.exe')):
             if 'pip' in manager:
                 print_to_stdout(f"-- install package manager {manager}")
-                # install_pkg_manager_pip()            
         # if everything was fine
         return True
     except Exception as exc:
@@ -218,6 +253,9 @@ def install_report(trep, req_new, req_loc):
                     if trep == 'EXEC':
                         print_to_stdout(f"** Installing exec manager: {manager}")
                         iok = install_exec_manager(manager, man_dir)
+                    if trep == 'MAKE':
+                        print_to_stdout(f"** Installing make manager: {manager}")
+                        iok = install_make_manager(manager, man_dir)
                     if trep == 'PIP':
                         print_to_stdout(f"** Installing pip module: {manager}")
                         iok = install_pip_manager(manager)
@@ -236,14 +274,15 @@ def install_report(trep, req_new, req_loc):
                         if not manager in req_loc[trep]:
                             req_loc[trep][manager] = []
                 # install package's
-                print_to_stdout("** Installing collected packages...")
-                for pkg in packages:
-                    # check if the new package is already installed
-                    if not pkg in req_loc[trep][manager]:
-                        iok = install_package(manager, pkg)
-                        # save the new module
-                        if iok:
-                            req_loc[trep][manager].append(pkg)
+                if len(packages) > 0:
+                    print_to_stdout("** Installing collected packages...")
+                    for pkg in packages:
+                        # check if the new package is already installed
+                        if not pkg in req_loc[trep][manager]:
+                            iok = install_package(manager, pkg)
+                            # save the new module
+                            if iok:
+                                req_loc[trep][manager].append(pkg)
     return req_loc
 
 

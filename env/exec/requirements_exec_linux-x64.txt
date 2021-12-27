@@ -1,0 +1,3 @@
+
+# install graphvix
+$MAKE=exec/graphviz-2.50.0.tar.gz        graphviz-2.50.0
