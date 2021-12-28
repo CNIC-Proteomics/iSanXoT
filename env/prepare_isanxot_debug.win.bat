@@ -20,6 +20,7 @@ ECHO ** preparing the app-resources environment folders...
 MKDIR "%ISANXOT_HOME%\app\resources\env"
 MKDIR "%ISANXOT_HOME%\app\resources\env\python\packages\win-x64"
 MKDIR "%ISANXOT_HOME%\app\resources\env\exec"
+MKDIR "%ISANXOT_HOME%\app\resources\exec"
 
 
 ECHO ** copying the cached folder of python...
