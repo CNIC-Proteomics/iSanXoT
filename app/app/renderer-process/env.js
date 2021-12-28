@@ -42,7 +42,7 @@ function getNProcesses(file) {
         }
         return num;
     } catch (err) {
-        exceptor.showErrorMessageBox(`getNProcesses`, `Error reading file requirements files`, end=false, page=false, callback=function(){closeWindow()} );
+        exceptor.showErrorMessageBox(`getNProcesses`, `Error reading the requirement file: ${file}`, end=false, page=false, callback=function(){closeWindow()} );
     }
 };
 
