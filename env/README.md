@@ -67,14 +67,16 @@ Close CMD
 ### Build iSanXoT
 1) Clean folders
 ```
-rm -rf app/resources/env app/resources/exec
+rmdir /S  "app\resources\env"
+
+rmdir /S  "app\resources\exec"
 ```
 
 2) Copy the cached installation of python
 ```
 cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
 
-XCOPY /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
+xcopy /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
 ```
 
 3) Build iSanXoT
@@ -86,31 +88,10 @@ cd "app"
 
 ### Execute iSanXoT in debug mode
 
-1) Copy the scripts that create the backend environment
-Open CMD
-```
-mkdir "app\resources\env"
+1) Prepare the environment for debug mode
+env/prepare_isanxot_debug.win.bat
 
-for %I in ("env\installer.py" "env\core.py") do COPY %I "app\resources\env\."
-```
-
-2) Copy the python packages
-```
-for %I in ("env\python\pip-21.3.1.tar.gz" "env\python\setuptools-59.6.0.tar.gz" "env\python\requirements_python_win-x64.txt") do COPY %I "app\resources\env\python\."
-
-mkdir "app\resources\env\python\packages\win-x64"
-
-xcopy /E /I "env\python\packages\win-x64" "app\resources\env\python\packages\win-x64\."
-```
-
-3) Copy the files for the exec environment
-```
-mkdir "app\resources\env\exec"
-
-for %I in ("env\exec\windows_10_msbuild_Release_graphviz-2.50.0-win32.zip" "env\exec\requirements_exec_win-x64.txt") do COPY %I "app\resources\env\exec\."
-```
-
-4) Execute iSanXoT in debug mode
+2) Execute iSanXoT in debug mode
 Open CMD
 ```
 cd app
@@ -188,29 +169,10 @@ export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PAT
 
 ### Execute iSanXoT in debug mode
 
-1) Copy the scripts that create the backend environmentOpen CMD
-```
-mkdir app/resources/env
+1) Prepare the environment for debug mode
+env/prepare_isanxot_debug.darwin.sh
 
-cp -r env/installer.py env/core.py app/resources/env/.
-```
-
-
-2) Copy the python packages
-```
-mkdir app/resources/env/python/packages
-
-cp -r env/python/packages/darwin-x64 app/resources/env/python/.
-```
-
-3) Copy the files for the exec environment
-```
-mkdir -p app/resources/env/exec
-
-cp -r env/exec/graphviz-2.50.0.tar.gz  env/exec/requirements_exec_darwin-x64.txt  app/resources/env/exec/.
-```
-
-4) Execute iSanXoT in debug mode
+2) Execute iSanXoT in debug mode
 ```
 cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/npm start 
@@ -313,12 +275,8 @@ export ISANXOT_MODE=debug && squashfs-root/AppRun
 
 ### Execute iSanXoT in debug mode
 
-1) Copy the files to create the backend environment
-```
-mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/pip-21.3.1.tar.gz env/packages/setuptools-59.6.0.tar.gz env/packages/requirements_python_linux-x64.txt app/resources/env/.
-
-mkdir app/resources/env/packages && cp -r env/packages/linux-x64 app/resources/env/packages/.
-```
+1) Prepare the environment for debug mode
+env/prepare_isanxot_debug.linux.sh
 
 2) Execute iSanXoT in debug mode
 ```
