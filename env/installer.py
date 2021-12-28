@@ -243,8 +243,7 @@ def main():
                             c.prepare_workspace(man_dir)
                     if trep == 'EXEC':
                         print_to_stdout(f"** Installing exec manager: {man}")
-                        # iok = install_exec_manager(man, man_dir)
-                        iok = True
+                        iok = install_exec_manager(man, man_dir)
                         print_to_stdout("** The process was completed successfully")
                     if trep == 'MAKE':
                         print_to_stdout(f"** Installing make manager: {man}")
