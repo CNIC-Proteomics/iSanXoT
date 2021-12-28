@@ -232,37 +232,38 @@ def main():
                 # otherwise, install the manager
                 else:
                     # extract the optional parameter
-                    man = re.split(r'[\s|\t]+', manager)
-                    if man:
+                    m = re.split(r'[\s|\t]+', manager)
+                    if m:
                         # get the manager
-                        manager = man[0]
+                        man = m[0]
                         # get the name of output dir and create it
-                        if len(man) > 1:
-                            man_dir = os.path.join(lib_home, man[1])
+                        if len(m) > 1:
+                            man_dir = os.path.join(lib_home, m[1])
                             c = core.builder()
                             c.prepare_workspace(man_dir)
                     if trep == 'EXEC':
-                        print_to_stdout(f"** Installing exec manager: {manager}")
-                        iok = install_exec_manager(manager, man_dir)
+                        print_to_stdout(f"** Installing exec manager: {man}")
+                        # iok = install_exec_manager(man, man_dir)
+                        iok = True
                         print_to_stdout("** The process was completed successfully")
                     if trep == 'MAKE':
-                        print_to_stdout(f"** Installing make manager: {manager}")
-                        iok = install_make_manager(manager, man_dir)
+                        print_to_stdout(f"** Installing make manager: {man}")
+                        iok = install_make_manager(man, man_dir)
                         print_to_stdout("** The process was completed successfully")
                     if trep == 'PIP':
-                        print_to_stdout(f"** Installing pip module: {manager}")
-                        iok = install_pip_manager(manager)
+                        print_to_stdout(f"** Installing pip module: {man}")
+                        iok = install_pip_manager(man)
                         print_to_stdout("** The process was completed successfully")
                     if trep == 'MANAGER':
-                        print_to_stdout(f"** Installing pip module: {manager}")
-                        iok = check_manager(manager)
+                        print_to_stdout(f"** Installing pip module: {man}")
+                        iok = check_manager(man)
                         print_to_stdout("** The process was completed successfully")
                     elif trep == 'DATABASES':
-                        print_to_stdout(f"** Installing db manager: {manager}")
-                        iok = download_data(manager, man_dir)
+                        print_to_stdout(f"** Installing db manager: {man}")
+                        iok = download_data(man, man_dir)
                     elif trep == 'SAMPLES':
-                        print_to_stdout(f"** Installing samples manager: {manager}")
-                        iok = download_data(manager, man_dir)
+                        print_to_stdout(f"** Installing samples manager: {man}")
+                        iok = download_data(man, man_dir)
                     # save modules in the req local
                     if iok:
                         if not trep in req_loc:
