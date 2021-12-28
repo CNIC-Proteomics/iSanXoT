@@ -50,7 +50,7 @@ def install_exec_manager(url, odir):
             print_to_stdout("-- download files: "+url+" > "+tmpdir)
             file = c.download_url(url, outdir=tmpdir)
         else:
-            file = url
+            file = os.path.join(local_dir,url)
         print_to_stdout("-- unzip files: "+file+" > "+tmpdir)
         c.unzip_file(file,  tmpdir)
         print_to_stdout("-- move files to "+odir)
@@ -119,23 +119,19 @@ def install_pip_manager(url):
     # if everything was fine
     return True
 
-def install_pkg_manager(manager):
-    try:
-        # handle manager file
-        manager = "{}/{}".format(lib_home, manager)
-        # check if package manager is installed
-        if not (os.path.isfile(manager) or os.path.isfile(manager+'.exe')):
-            if 'pip' in manager:
-                print_to_stdout(f"-- install package manager {manager}")
-        # if everything was fine
-        return True
-    except Exception as exc:
-        sys.exit(f"ERROR!! installing manager: {manager}\n{exc}")
+def check_manager(manager):
+    # handle manager file
+    manager = os.path.join(lib_home, manager)
+    # check if package manager is installed
+    if not (os.path.isfile(manager) or os.path.isfile(manager+'.exe')):
+        sys.exit(f"ERROR!! The manager file does not exit: {manager}")
+    # if everything was fine
+    return True
 
 def install_package(manager, pkg):
     try:
         # handle manager file
-        manager = "{}/{}".format(lib_home, manager)
+        manager = os.path.join(lib_home, manager)
         # create command
         exec_command(f'cd {local_dir} && {manager} {pkg}')
         # if everything was fine
@@ -187,39 +183,6 @@ def create_report_requirements(file):
         f.close()
     return report
 
-def check_requirements_satisfied(req_new, req_loc):
-    '''
-    Check if the requirements satisfied
-    '''
-    cont = []
-    for t, r in req_new.items():
-        if t in req_loc:
-            for manager,packages in r.items():
-                if manager in req_loc[t]:
-                    for pkg in packages:
-                        if pkg in req_loc[t][manager]:
-                            cont.append(True)
-                # else:
-                #     cont = [False]
-        else:
-            cont = [False]
-    if len(cont) == 0:
-        cont = [False]
-    return all(cont)
-
-def print_requirements_satisfied(req_new, req_loc):
-    '''
-    Create string with the requirements satisfied
-    '''
-    cont = ''
-    for t, r in req_new.items():
-        for manager,packages in r.items():
-            for pkg in packages:
-                if pkg in req_loc[t][manager]:
-                    p = pkg.split()[-1]
-                    cont += f"Requirement already satisfied: {p}\n"
-    return cont
-
 def create_str_requirements(req):
     '''
     Create string with the manager and its required packages
@@ -231,57 +194,6 @@ def create_str_requirements(req):
             for pkg in packages:
                 cont += f"{pkg}\n"
     return cont
-
-def install_report(trep, req_new, req_loc):
-    # if apply, look through the new requirements
-    if trep in req_new:
-        for manager,packages in req_new[trep].items():
-            # extract the optional parameter
-            man = re.split(r'[\s|\t]+', manager)
-            if man:
-                # get the manager
-                manager = man[0]
-                # get the name of output dir and create it
-                if len(man) > 1:
-                    man_dir = f"{lib_home}/{man[1]}"
-                    c = core.builder()
-                    c.prepare_workspace(man_dir)
-                # check if the new package manager is already installed
-                if (not trep in req_loc) or (not manager in req_loc[trep]):
-                    if trep == 'EXEC':
-                        print_to_stdout(f"** Installing exec manager: {manager}")
-                        iok = install_exec_manager(manager, man_dir)
-                    if trep == 'MAKE':
-                        print_to_stdout(f"** Installing make manager: {manager}")
-                        iok = install_make_manager(manager, man_dir)
-                    if trep == 'PIP':
-                        print_to_stdout(f"** Installing pip module: {manager}")
-                        iok = install_pip_manager(manager)
-                    if trep == 'MANAGER':
-                        iok = install_pkg_manager(manager)
-                    elif trep == 'DATABASES':
-                        print_to_stdout(f"** Installing db manager: {manager}")
-                        iok = download_data(manager, man_dir)
-                    elif trep == 'SAMPLES':
-                        print_to_stdout(f"** Installing samples manager: {manager}")
-                        iok = download_data(manager, man_dir)
-                    # save modules in the req local
-                    if iok:
-                        if not trep in req_loc:
-                            req_loc[trep] = {}
-                        if not manager in req_loc[trep]:
-                            req_loc[trep][manager] = []
-                # install package's
-                if len(packages) > 0:
-                    print_to_stdout("** Installing collected packages...")
-                    for pkg in packages:
-                        # check if the new package is already installed
-                        if not pkg in req_loc[trep][manager]:
-                            iok = install_package(manager, pkg)
-                            # save the new module
-                            if iok:
-                                req_loc[trep][manager].append(pkg)
-    return req_loc
 
 
 #################
@@ -297,25 +209,73 @@ def main():
     req_new = create_report_requirements(requirement_new_file)
     req_loc = create_report_requirements(requirement_loc_file)
 
-    # the requirements are not satisfied
-    if (not check_requirements_satisfied(req_new, req_loc) ):
-        # look through the new requirements for the excutor ---
-        req_loc = install_report('EXEC', req_new, req_loc)
-
-        # look through the new requirements for the excutor ---
-        req_loc = install_report('MAKE', req_new, req_loc)
-
-        # look through the new requirements for the excutor ---
-        req_loc = install_report('PIP', req_new, req_loc)
-
-        # look through the new requirements for the packages ---
-        req_loc = install_report('MANAGER', req_new, req_loc)
-                
-        # look through the new requirements for the databases ---
-        req_loc = install_report('DATABASES', req_new, req_loc)
-        
-        # look through the new requirements for the samples ---
-        req_loc = install_report('SAMPLES', req_new, req_loc)
+    # if apply, look through the new requirements
+    for trep in ['EXEC','MAKE','PIP','MANAGER','DATABASES','SAMPLES']:
+        if trep in req_new:
+            for manager,packages in req_new[trep].items():
+                # check if the new package manager is already installed
+                if ( trep in req_loc and manager in req_loc[trep] ):
+                    print_to_stdout(f"** The manager was already installed: {manager}")
+                    print_to_stdout("** The process was completed successfully")                    
+                    # install package's
+                    for pkg in packages:
+                        print_to_stdout(f"** Installing collected package: {pkg.split()[-1]}")
+                        # check if the new package is already installed
+                        iok = install_package(manager, pkg)
+                        # save the new module
+                        if iok:
+                            req_loc[trep][manager].append(pkg)
+                            print_to_stdout("** The process was completed successfully")
+                    
+                # otherwise, install the manager
+                else:
+                    # extract the optional parameter
+                    man = re.split(r'[\s|\t]+', manager)
+                    if man:
+                        # get the manager
+                        manager = man[0]
+                        # get the name of output dir and create it
+                        if len(man) > 1:
+                            man_dir = os.path.join(lib_home, man[1])
+                            c = core.builder()
+                            c.prepare_workspace(man_dir)
+                    if trep == 'EXEC':
+                        print_to_stdout(f"** Installing exec manager: {manager}")
+                        iok = install_exec_manager(manager, man_dir)
+                        print_to_stdout("** The process was completed successfully")
+                    if trep == 'MAKE':
+                        print_to_stdout(f"** Installing make manager: {manager}")
+                        iok = install_make_manager(manager, man_dir)
+                        print_to_stdout("** The process was completed successfully")
+                    if trep == 'PIP':
+                        print_to_stdout(f"** Installing pip module: {manager}")
+                        iok = install_pip_manager(manager)
+                        print_to_stdout("** The process was completed successfully")
+                    if trep == 'MANAGER':
+                        print_to_stdout(f"** Installing pip module: {manager}")
+                        iok = check_manager(manager)
+                        print_to_stdout("** The process was completed successfully")
+                    elif trep == 'DATABASES':
+                        print_to_stdout(f"** Installing db manager: {manager}")
+                        iok = download_data(manager, man_dir)
+                    elif trep == 'SAMPLES':
+                        print_to_stdout(f"** Installing samples manager: {manager}")
+                        iok = download_data(manager, man_dir)
+                    # save modules in the req local
+                    if iok:
+                        if not trep in req_loc:
+                            req_loc[trep] = {}
+                        if not manager in req_loc[trep]:
+                            req_loc[trep][manager] = []
+                    # install package from the manager (pip, npm, etc)
+                    for pkg in packages:
+                        print_to_stdout(f"** Installing collected package: {pkg.split()[-1]}")
+                        # check if the new package is already installed
+                        iok = install_package(manager, pkg)
+                        # save the new module
+                        if iok:
+                            req_loc[trep][manager].append(pkg)
+                            print_to_stdout("** The process was completed successfully")
 
         # write string with the new requiremens into local file ---
         if req_loc:
@@ -323,11 +283,6 @@ def main():
             if cont != '':
                 with open(requirement_loc_file, "w") as file:
                     file.write(cont)
-
-    # the requirements are already satisfied
-    else:
-        print_to_stdout( print_requirements_satisfied(req_new, req_loc) )
-
 
      
     
@@ -365,6 +320,10 @@ if __name__ == "__main__":
      error: the first argument is required
     
     ''')
+    
+    # check input files
+    if ( not os.path.isfile(requirement_new_file) ):
+        sys.exit(f"ERROR!! requirement input file is not exists: {requirement_new_file}")
     
     # get the local requirement file
     requirement_loc_file = "{}/{}".format(lib_home,'requirements.txt')

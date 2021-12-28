@@ -6,22 +6,44 @@ let fs = require('fs');
 let path = require('path');
 let cProcess = require('child_process');
 const { ipcRenderer, remote } = require('electron');
-const { BrowserWindow } = require('electron').remote;
-const mainWindow = BrowserWindow.getFocusedWindow();
-
 
 let exceptor = require('./exceptor');
 
-// window for trace logs
-var win = null;
-var trace_log = ''; // keep the logs
+// N processes
+var nTotalProc = 0;
+var nProc = 0;
 
 /*
  * Local functions
  */
 function printInDetail(data) {
-    if ( data.startsWith('**') ) $('#frameless-desc-title').text(data.replace('** ',''));
-    $('#frameless-desc-short').text(data);
+    // Increase progress bar
+    if ( data.includes('** The process was completed successfully') ) {
+        nProc += 1;
+        let p = (nProc/nTotalProc)*100;
+        if (p > 100) p = 100;
+        $('.progress-bar').css('width', `${p}%`).attr('aria-valuenow', nProc);
+    }
+    // if ( data.startsWith('**') ) $('#frameless-desc-title').text(data.replace('** ',''));
+    // if ( data.startsWith('**') ) $('#frameless-progress .progress-bar').text(data.replace('** ',''));
+    // short description
+    data = data.split(/\r|\n/);
+    for ( let i=0; i < data.length; i++) {
+        if (data[i] != '') $('#frameless-desc-short').text(data[i]);
+    }
+};
+
+function getNProcesses(file) {
+    try {
+        let num = 0;
+        let data = fs.readFileSync(file, 'utf8').toString().split('\n');
+        for ( let i=0; i < data.length; i++) {
+            if ( data[i] != '' && !data[i].startsWith('#') ) num += 1;
+        }
+        return num;
+    } catch (err) {
+        exceptor.showErrorMessageBox(`getNProcesses`, `Error reading file requirements files`, end=false, page=false, callback=function(){closeWindow()} );
+    }
 };
 
 function closeWindow() {
@@ -33,38 +55,37 @@ function execProcess(script, cmd, close=false, callback) {
     try {
         // execute command line
         console.log(cmd);
-
-if (callback) callback();
-
-        // let proc = cProcess.exec(cmd);
-        // // Handle on stderr
-        // proc.stderr.on('data', (data) => {
-        //     console.log(`stderr: ${data}`);
-        // });
-        // // Handle on stderr
-        // proc.stdout.on('data', (data) => {
-        //     console.log(`stdout: ${data}`);
-        //     printInDetail(data);
-        // });
-        // // Handle on close event
-        // proc.on('close', (code) => {
-        //     console.log(`Close: Child exited with code ${code}`);
-        //     if (code === 0) {
-        //         printInDetail('** The installation was executed succesfully');
-        //         ipcRenderer.send('get-install', {'code': code, 'msg': `Close: Child exited with code ${code}: the installation was executed succesfully`});
-        //         if (close) closeWindow();
-        //         if (callback) callback();
-        //     }
-        //     else {
-        //         ipcRenderer.send('get-install', {'code': code, 'msg':  `Close: Child exited with code ${code}: the installation was not complete`});
-        //         exceptor.showErrorMessageBox(`${script}`, `Error ${script}`, end=false, page=false, callback=function(){closeWindow()} );
-        //     }
-        // });
-        // // Handle on error event
-        // proc.on('error', (code, signal) => {
-        //     ipcRenderer.send('get-install', {'code': code, 'msg': `Error ${script}: Child exited with code ${code} and signal ${signal}`});
-        //     exceptor.showErrorMessageBox(`${script}`, `Error ${script}: Child exited with code ${code} and signal ${signal}`, end=false, page=false, callback=function(){closeWindow()} );
-        // });
+        let proc = cProcess.exec(cmd);
+        var procError = '';        
+        // Handle on stderr
+        proc.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+            procError = data;
+        });
+        // Handle on stderr
+        proc.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+            printInDetail(data);
+        });
+        // Handle on close event
+        proc.on('close', (code) => {
+            console.log(`Close: Child exited with code ${code}`);
+            if (code === 0) {
+                printInDetail('** The installation was executed succesfully');
+                ipcRenderer.send('get-install', {'code': code, 'msg': `Close: Child exited with code ${code}: the installation was executed succesfully`});
+                if (close) closeWindow();
+                if (callback) callback();
+            }
+            else {
+                ipcRenderer.send('get-install', {'code': code, 'msg':  `Close: Child exited with code ${code}: the installation was not complete`});
+                exceptor.showErrorMessageBox(`${script}`, `Error ${script}: ${procError}`, end=false, page=false, callback=function(){closeWindow()} );
+            }
+        });
+        // Handle on error event
+        proc.on('error', (code, signal) => {
+            ipcRenderer.send('get-install', {'code': code, 'msg': `Error ${script}: Child exited with code ${code} and signal ${signal}`});
+            exceptor.showErrorMessageBox(`${script}`, `Error ${script}: Child exited with code ${code} and signal ${signal}`, end=false, page=false, callback=function(){closeWindow()} );
+        });
     } catch (ex) {
         ipcRenderer.send('get-install', {'code': ex.code, 'msg':  "the installation was not complete"});
         exceptor.showErrorMessageBox(`${script}`, `Error ${ex.code} \n ${ex.message}`, end=false, page=false, callback=function(){closeWindow()} );
@@ -130,9 +151,16 @@ process.env.ISANXOT_ICON = path.join(process.cwd(), 'app/assets/images/isanxot.p
 ipcRenderer.send('send-env', {'ISANXOT_ICON': process.env.ISANXOT_ICON});
 
 
+// Get the Number of Processes in Total
+nTotalProc = getNProcesses(requirements_python);
+nTotalProc += getNProcesses(requirements_exec);
+$('.progress-bar').attr('aria-valuemax', nTotalProc);
+
+
 // Prepare commands consecutively
-let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements_python}" `; // install Python packages
+let cmd1 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements_python}" "${process.env.ISANXOT_PYTHON_HOME}" `; // install Python packages
 let cmd2 = `"${process.env.ISANXOT_PYTHON_EXEC}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements_exec}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec')}" `; // install exec managers
+
 
 // Execute the commands consecutively
 printInDetail('** Preparing environment...\n');
@@ -143,20 +171,3 @@ function() {
     printInDetail('** Installing exec managers...\n');
     execProcess('installing exec managers', cmd2, close=true)
 });
-
-
-// // BEGIN: DEPRECATED BUT USEFULL: SEE HOW EXECUTE CONSECUTIVELY
-// // Prepare commands consecutively
-// let cmd1 = `"${python_exec}" -m venv --upgrade-deps --copies "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // create Python environment
-// let cmd2 = `"${python_exec}" "${path.join(process.env.ISANXOT_RESOURCES, 'env/installer.py')}" "${requirements}" "${path.join(process.env.ISANXOT_RESOURCES, 'exec/python')}" `; // install Python packages
-
-// // Execute the commands consecutively
-// printInDetail('** Preparing Python environment...\n');
-// execProcess('preparing python environment', cmd1, close=false,
-// // Install Python packages
-// // End execution
-// function() {
-//     $('#frameless-desc-title').text('Installing Python packages');
-//     printInDetail('** Installing Python packages...\n');
-//     execProcess('installing python packages', cmd2, close=true)
-// });

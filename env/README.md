@@ -18,6 +18,8 @@ cd iSanXoT
 
 ### Create the python environment: Install just python in the resource folder
 
+<!-- python-3.9.7-amd64.exe /passive  InstallAllUsers=0  PrependPath=0  Include_pip=1  Include_lib=1  Include_tools=1  Include_symbols=0  Include_test=0  Include_tcltk=0  InstallLauncherAllUsers=0  Include_launcher=0 Include_doc=0  Shortcuts=0  AssociateFiles=0  TargetDir="S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\python\Python-3.9.7" -->
+
 1) Create python folder
 ```
 mkdir "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\python\Python-3.9.7"
@@ -63,36 +65,52 @@ setx PATH "%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node"
 Close CMD
 
 ### Build iSanXoT
-1) Copy the cached installation of python
+1) Clean folders
 ```
-XCOPY /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
+rm -rf app/resources/env app/resources/exec
 ```
-Important note: You have to remove the previous release; otherwise the new release will be too big
-```
-rm -rf releases
-```
-2) Build iSanXoT
+
+2) Copy the cached installation of python
 ```
 cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
+
+XCOPY /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
+```
+
+3) Build iSanXoT
+```
+cd "app"
 
 "C:\Users\jmrodriguezc\iSanXoT\env\node\electron-builder"
 ```
 
 ### Execute iSanXoT in debug mode
 
-1) Copy the files to create the backend environment
+1) Copy the scripts that create the backend environment
 Open CMD
 ```
 mkdir "app\resources\env"
 
-for %I in ("env\installer.py" "env\core.py" "env\packages\pip-21.3.1.tar.gz" "env\packages\setuptools-59.6.0.tar.gz" "env\packages\requirements_backend_win-x64.txt") do COPY %I "app\resources\env\."
-
-mkdir "app\resources\env\packages\win-x64"
-
-xcopy /E /I "env\packages\win-x64" "app\resources\env\packages\win-x64\."
+for %I in ("env\installer.py" "env\core.py") do COPY %I "app\resources\env\."
 ```
 
-2) Execute iSanXoT in debug mode
+2) Copy the python packages
+```
+for %I in ("env\python\pip-21.3.1.tar.gz" "env\python\setuptools-59.6.0.tar.gz" "env\python\requirements_python_win-x64.txt") do COPY %I "app\resources\env\python\."
+
+mkdir "app\resources\env\python\packages\win-x64"
+
+xcopy /E /I "env\python\packages\win-x64" "app\resources\env\python\packages\win-x64\."
+```
+
+3) Copy the files for the exec environment
+```
+mkdir "app\resources\env\exec"
+
+for %I in ("env\exec\windows_10_msbuild_Release_graphviz-2.50.0-win32.zip" "env\exec\requirements_exec_win-x64.txt") do COPY %I "app\resources\env\exec\."
+```
+
+4) Execute iSanXoT in debug mode
 Open CMD
 ```
 cd app
@@ -153,7 +171,7 @@ export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PAT
 
 1) Clean folders
 ```
-rm -rf app/env app/exec
+rm -rf app/resources/env app/resources/exec
 ```
 
 2) Re-install python
@@ -170,14 +188,29 @@ export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PAT
 
 ### Execute iSanXoT in debug mode
 
-1) Copy the files to create the backend environment
+1) Copy the scripts that create the backend environmentOpen CMD
 ```
-mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/pip-21.3.1.tar.gz env/packages/setuptools-59.6.0.tar.gz env/packages/requirements_backend_darwin-x64.txt app/resources/env/.
+mkdir app/resources/env
 
-mkdir app/resources/env/packages && cp -r env/packages/darwin-x64 app/resources/env/packages/.
+cp -r env/installer.py env/core.py app/resources/env/.
 ```
 
-2) Execute iSanXoT in debug mode
+
+2) Copy the python packages
+```
+mkdir app/resources/env/python/packages
+
+cp -r env/python/packages/darwin-x64 app/resources/env/python/.
+```
+
+3) Copy the files for the exec environment
+```
+mkdir -p app/resources/env/exec
+
+cp -r env/exec/graphviz-2.50.0.tar.gz  env/exec/requirements_exec_darwin-x64.txt  app/resources/env/exec/.
+```
+
+4) Execute iSanXoT in debug mode
 ```
 cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/npm start 
@@ -241,7 +274,7 @@ export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./c
 ### Build iSanXoT
 1) Clean folders
 ```
-rm -rf app/env app/exec
+rm -rf app/resources/env app/resources/exec
 ```
 
 2) Re-install python
@@ -252,14 +285,37 @@ make install
 
 3) Execute the program that builds the packages
 ```
-/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
+cd app
+export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
+```
+
+### To execute iSanXoT build
+
+The contents are extracted into the directory "squashfs-root" in the current working directory
+```
+./iSanXoT_Launcher_0.4.1.linux-x86_64.AppImage --appimage-extract
+```
+
+You can now run the "AppRun" entry point
+```
+squashfs-root/AppRun [...]
+```
+
+Optionally, you can clean up the directory again
+```
+rm -r squashfs-root
+```
+
+Note: Open iSanXoT application in debug mode
+```
+export ISANXOT_MODE=debug && squashfs-root/AppRun
 ```
 
 ### Execute iSanXoT in debug mode
 
 1) Copy the files to create the backend environment
 ```
-mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/pip-21.3.1.tar.gz env/packages/setuptools-59.6.0.tar.gz env/packages/requirements_backend_linux-x64.txt app/resources/env/.
+mkdir app/resources/env && cp -r env/installer.py env/core.py env/packages/pip-21.3.1.tar.gz env/packages/setuptools-59.6.0.tar.gz env/packages/requirements_python_linux-x64.txt app/resources/env/.
 
 mkdir app/resources/env/packages && cp -r env/packages/linux-x64 app/resources/env/packages/.
 ```
@@ -269,21 +325,6 @@ mkdir app/resources/env/packages && cp -r env/packages/linux-x64 app/resources/e
 cd app
 export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
 ```
-
-Note: Open iSanXoT application in debug mode
-```
-export ISANXOT_MODE=debug && ./iSanXoT_Launcher_0.4.1.linux-x86_64.AppImage
-```
-
-```
-./my.AppImage --appimage-extract
-# the contents are extracted into the directory "squashfs-root" in the current working directory
-# you can now run the "AppRun" entry point
-squashfs-root/AppRun [...]
-# optionally, you can clean up the directory again
-rm -r squashfs-root/
-```
-
 
 ### In the case there are new python packages: Download the Python packages
 

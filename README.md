@@ -1,4 +1,4 @@
-<img src="app/assets/images/isanxot.png" width="100">
+<img src="app/app/assets/images/isanxot.png" width="100">
 
 # iSanXoT
 

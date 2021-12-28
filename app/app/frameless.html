@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>iSanXoT</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
   <style>
   body {
     font-family: system, -apple-system, '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
@@ -16,6 +17,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
+    z-index: -10;
   }
   .center {
     display: block;
@@ -30,7 +32,8 @@
   #pac-man {
     width: 7%;
     position: absolute;
-    left: 10px;
+    right: 10px;
+    top: -16px;
   }
   #frameless-desc-title {
     font-size: large;
@@ -38,20 +41,20 @@
     left: 75px;
     bottom: 1.3em;
   }
+  .progress-bar {
+    color: black;
+    font-size: xx-small;
+  }
   #frameless-desc-short {
     font-size: x-small;
     position: absolute;
-    left: 75px;
-    bottom: 0;
-    padding-right: 10px;
+    top: 30px;
+    margin-left: 20px;
+    z-index: -10;
   }
-  a#frmeless-desc-area {
-    font-size: small;
-    right: 0;
-    position: absolute;
-    padding-right: 10px;
-    padding-top: 15px;
-    cursor: pointer;
+  #frameless-progress {
+    width: 620px;
+    margin-left: 20px;
   }
   </style>
   <!-- Imports JS -->
@@ -59,6 +62,7 @@
     if (typeof module === 'object') {window.module = module; module = undefined;}
   </script>
   <script src="assets/js/jquery-3.3.1.slim.min.js"></script>
+  <script src="assets/js/bootstrap.min.js"></script>
   <script>
     if (window.module) module = window.module;
   </script>
@@ -68,9 +72,13 @@
     <img src="assets/images/isanxot_logo_text.png" class="center"></img>
     <div id="frameless-desc">
       <img id="pac-man" src="assets/images/init/loadin_coco.gif" class="center"></img>
-      <span id="frameless-desc-title"></span>
+      <!-- <span id="frameless-desc-title"></span> -->
+      <div id="frameless-progress">
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
       <span id="frameless-desc-short"></span>
-    </div>
   </div>
 <script>
   // Prepare the backend environment

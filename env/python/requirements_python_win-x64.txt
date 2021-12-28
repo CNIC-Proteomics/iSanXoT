@@ -7,8 +7,8 @@
 # install --no-warn-script-location	 python/packages/win-x64/snakemake-6.10.0.tar.gz // NOT USED BECAUSE DATRIE INSTALLATION IS NOT WORKING
 
 
-$PIP=setuptools-59.6.0.tar.gz
-$PIP=pip-21.3.1.tar.gz
+$PIP=python/setuptools-59.6.0.tar.gz
+$PIP=python/pip-21.3.1.tar.gz
 $MANAGER=Scripts/pip.exe
 install --no-warn-script-location	 python/packages/win-x64/numpy-1.21.3-cp39-cp39-win_amd64.whl
 install --no-warn-script-location	 python/packages/win-x64/smmap-5.0.0-py3-none-any.whl
