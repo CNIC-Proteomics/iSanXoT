@@ -1,7 +1,7 @@
-#/usr/bin/bash
+#!/bin/bash
 
 # local variables  ----------------------
-ENV_HOME=${PWD}
+ENV_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # check input parameters ----------------------
 if [[ $#<2 ]]
