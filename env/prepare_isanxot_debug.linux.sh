@@ -1,10 +1,11 @@
+#!/bin/bash
 
 # get the isanxot path from the local folder
-SRC_HOME${PWD}
+SRC_HOME=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ISANXOT_HOME=${SRC_HOME}/..
 
 # go to isanxot home
-CD ${ISANXOT_HOME}
+cd ${ISANXOT_HOME}
 
 
 echo "** cleaning the app-resources folders..."
@@ -16,10 +17,11 @@ echo "** preparing the app-resources environment folders..."
 mkdir -p "${ISANXOT_HOME}/app/resources/env"
 mkdir -p "${ISANXOT_HOME}/app/resources/env/python/packages/linux-x64"
 mkdir -p "${ISANXOT_HOME}/app/resources/env/exec"
+mkdir -p "${ISANXOT_HOME}/app/resources/exec"
 
 
-echo "** copying the cached folder of python..."
-cp -r "${ISANXOT_HOME}/env/python/Python-3.9.7"  "${ISANXOT_HOME}/app/resources/exec/python-3.9.7-linux-x64"
+echo "** re-install python..."
+cd ${ISANXOT_HOME}/env/python/Python-3.9.7 && make install
 
 
 echo "** copying the scripts that create the backend environment..."
