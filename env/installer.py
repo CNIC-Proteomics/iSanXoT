@@ -221,12 +221,14 @@ def main():
                     for pkg in packages:
                         print_to_stdout(f"** Installing collected package: {pkg.split()[-1]}")
                         # check if the new package is already installed
-                        iok = install_package(manager, pkg)
-                        # save the new module
-                        if iok:
-                            req_loc[trep][manager].append(pkg)
+                        if not pkg in req_loc[trep][manager]:
+                            iok = install_package(manager, pkg)
+                            # save the new module
+                            if iok:
+                                req_loc[trep][manager].append(pkg)
+                                print_to_stdout("** The process was completed successfully")
+                        else:
                             print_to_stdout("** The process was completed successfully")
-                    
                 # otherwise, install the manager
                 else:
                     # extract the optional parameter
