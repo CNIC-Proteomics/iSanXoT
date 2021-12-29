@@ -50,8 +50,7 @@ cp -r env/python/Python-3.9.7  app/resources/exec/python-3.9.7-win-x64
 
 1) Execute:
 ```
-cd env
-set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& com.env.win.bat "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python-3.9.7-win-x64\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
+set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node&& env\com.env.win.bat "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\resources\exec\python-3.9.7-win-x64\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
 ```
 Note: You have to write in this way:
 ...\env\node&& (without space)
@@ -65,24 +64,20 @@ setx PATH "%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node"
 Close CMD
 
 ### Build iSanXoT
-1) Clean folders
+1) Clean the app-resources environment folders
 ```
-rmdir /S  "app\resources\env"
-
-rmdir /S  "app\resources\exec"
+rmdir /S /Y  "app\resources\env"
+rmdir /S /Y  "app\resources\exec"
 ```
 
 2) Copy the cached installation of python
 ```
-cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
-
 xcopy /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
 ```
 
 3) Build iSanXoT
 ```
 cd "app"
-
 "C:\Users\jmrodriguezc\iSanXoT\env\node\electron-builder"
 ```
 
@@ -104,10 +99,8 @@ Note: You have to write in this way:
 1) Extract the Python packages
 ```
 "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" freeze > app/resources/env/packages/win-x64/requirements.txt
-
 cd app/resources/env/packages/win-x64
 "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" download -r requirements.txt
-
 ls -1 > requirements_local.txt
 ```
 
@@ -144,13 +137,12 @@ ls -1 > requirements_local.txt
 
 1) Execute program that creates the frontend enviroment
 ```
-cd env
-export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && ./com.env.darwin.sh /Users/proteomica/projects/iSanXoT/app/resources/exec/python-3.9.7-darwin-x64/bin/python3  /Users/proteomica/projects/iSanXoT/env/node
+export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && ./env/com.env.darwin.sh /Users/proteomica/projects/iSanXoT/app/resources/exec/python-3.9.7-darwin-x64/bin/python3  /Users/proteomica/projects/iSanXoT/env/node
 ```
 
 ### Build iSanXoT
 
-1) Clean folders
+1) Clean the app-resources environment folders
 ```
 rm -rf app/resources/env app/resources/exec
 ```
@@ -189,10 +181,8 @@ export ISANXOT_MODE=debug && open -a "iSanXoT.app"
 1) Extract the Python packages
 ```
 /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64/bin/pip3 freeze > resources/env/packages/darwin-x64/requirements.txt
-
 cd resources/env/packages/darwin-x64
 /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-darwin-x64/bin/pip3 download -r requirements.txt
-
 ls -1 > requirements_local.txt
 ```
 
@@ -229,12 +219,11 @@ ls -1 > requirements_local.txt
 
 1) Execute program that creates the frontend enviroment
 ```
-cd env
-export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./com.env.linux.sh /home/jmrc/projects/iSanXoT/app/resources/exec/python-3.9.7-linux-x64/bin/python3 /home/jmrc/projects/iSanXoT/env/node
+export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./env/com.env.linux.sh /home/jmrc/projects/iSanXoT/app/resources/exec/python-3.9.7-linux-x64/bin/python3 /home/jmrc/projects/iSanXoT/env/node
 ```
 
 ### Build iSanXoT
-1) Clean folders
+1) Clean the app-resources environment folders
 ```
 rm -rf app/resources/env app/resources/exec
 ```
@@ -289,9 +278,7 @@ export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/
 1) Extract the Python packages
 ```
 /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64/bin/pip3 freeze > resources/env/packages/linux-x64/requirements.txt
-
 cd resources/env/packages/linux-x64
 /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64/bin/pip3 download -r requirements.txt
-
 ls -1 > requirements_local.txt
 ```
