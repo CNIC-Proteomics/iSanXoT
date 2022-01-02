@@ -17,7 +17,7 @@ var resizeId = null;
 function doneResizing() {
     let winheight = $(window).height();    
     if ( $('.tab-content').length ) {
-        let newheight = winheight - 156;
+        let newheight = winheight - 142;
         $(`.tab-content`).height(newheight);
     }
     if ( $('.tasktable').length ) {
