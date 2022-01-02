@@ -29,17 +29,17 @@ mkdir "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\pyth
 
   2.1) Customize installation:
 
-![Customize installation](../docs/env/images/python_installation_1.png "Customize installation")
+![Customize installation](../docs/images/env/python_installation_1.png "Customize installation")
     
   2.2) Optional features:
   Without documentation, tck, ONLY pip
 
-![Optional features](../docs/env/images/python_installation_2.png "Optional features")
+![Optional features](../docs/images/env/python_installation_2.png "Optional features")
 
   2.3) Choose the path:
   Do it in "env\python\Python-3.9.7"
 
-![Choose the path](../docs/env/images/python_installation_3.png "Choose the path")
+![Choose the path](../docs/images/env/python_installation_3.png "Choose the path")
 
 3) Copy the cached installation of python
 ```

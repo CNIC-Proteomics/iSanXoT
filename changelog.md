@@ -43,6 +43,10 @@ DATE: 2021_12
 
 + We have discarded snakemake because "datrie" packages has problems with the three distributions. 
 
++ Discards the title.
+
++ Discard the open search adaptors.
+
 ___
 ## 0.4.0
 ```

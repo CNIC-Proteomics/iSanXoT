@@ -2,7 +2,7 @@
 
 ## Windows distribution
 
-### Requirements for Windows distribution
+<!-- ### Requirements for Windows distribution
 
 iSanXoT uses Windows Python packages which needs via the SDK to build code. Thus, Microsoft Visual C++ 14.0 or greater is required. On Linux and Mac, the C++ libraries are installed with the compiler.
 
@@ -22,7 +22,7 @@ Then for Individual Components select only:
 
 More references:
 
-https://www.scivision.co/python-windows-visual-c++-14-required/
+https://www.scivision.co/python-windows-visual-c++-14-required/ -->
 
 <!-- https://www.scivision.dev/python-windows-visual-c-14-required -->
 <!-- Visual C++ Redistributable para Visual Studio 2015 -->
@@ -30,7 +30,7 @@ https://www.scivision.co/python-windows-visual-c++-14-required/
 <!-- https://go.microsoft.com/fwlink/?LinkId=532606&clcid=0x409 -->
 <!-- https://www.microsoft.com/es-es/download/details.aspx?id=48145 -->
 
-### Installation on Windows
+<!-- ### Installation on Windows -->
 
 The iSanXoT application for Windows distribution is packaged in a NSIS Launcher (exe file).
 
@@ -40,19 +40,19 @@ https://github.com/CNIC-Proteomics/iSanXoT/releases
 
 Double-click the Laucher file to open it, and you'll see an Installer window.
 
-![Installer window](app/assets/images/installation/win_figure1.png "Installer window")
+![Installer window](docs/images/installation/win_figure1.png "Installer window")
 
 Then, you can choose the folder in which to install iSanXoT
 
-![Choose Install Location](app/assets/images/installation/win_figure2.png "Choose Install Location")
+![Choose Install Location](docs/images/installation/win_figure2.png "Choose Install Location")
 
 Wait while iSanXot is being installed
 
-![Installing window](app/assets/images/installation/win_figure3.png "Installing window")
+![Installing window](docs/images/installation/win_figure3.png "Installing window")
 
 Finally, you'll see a window telling you completed setup. You can run iSanXoT immediately if you want.
 
-![Completing setup](app/assets/images/installation/win_figure4.png "Completing setup")
+![Completing setup](docs/images/installation/win_figure4.png "Completing setup")
 
 
 
@@ -67,11 +67,11 @@ https://github.com/CNIC-Proteomics/iSanXoT/releases
 
 Double-click the DMG file to open it, and you'll see a Finder window. Often these will include the application itself, some form of arrow, and a shortcut to the Applications folder.
 
-![Installer window](app/assets/images/installation/mac_figure1.png "Installer window")
+![Installer window](docs/images/installation/mac_figure1.png "Installer window")
 
 Simply drag the iSanXoT icon to your Applications folder...
 
-![Installing window](app/assets/images/installation/mac_figure2.png "Installing window")
+![Installing window](docs/images/installation/mac_figure2.png "Installing window")
 
 and you're done: the iSanXoT app is now installed.
 
@@ -88,7 +88,7 @@ https://github.com/CNIC-Proteomics/iSanXoT/releases
 
 Double-click the AppImage file to open it...
 
-![Installer window](app/assets/images/installation/linux_figure1.png "Installer window")
+![Installer window](docs/images/installation/linux_figure1.png "Installer window")
 
 and you're done: the iSanXoT app is now installed.
 
