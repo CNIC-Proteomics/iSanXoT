@@ -225,7 +225,7 @@ importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
-importHTMLtemplate(`${__dirname}/../sections/helps/iSanXoT-Help.html`);
+importHTMLtemplate(`${__dirname}/../iSanXoT-Help.html`);
 // importHTMLtemplate(`${__dirname}/../sections/helps/help_intro.html`);
 // importHTMLtemplate(`${__dirname}/../sections/helps/help_cmds.html`);
 // importHTMLtemplate(`${__dirname}/../sections/helps/help_get-started.html`);

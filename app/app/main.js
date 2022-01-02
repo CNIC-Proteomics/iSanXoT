@@ -38,21 +38,28 @@ let template = [
     { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'iSanXoT-Help') } },
     { id: 'get_started', label: 'Get Started', click() { mainWindow.webContents.send('openHelper', 'get_started') } },
     { label: 'Modules', submenu: [
-      { id: 'help_cmd-rel-creator', label: 'RELS CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-rel-creator') } },
-      { id: 'help_cmd-level-creator', label: 'LEVEL CREATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-creator') } },
-      { id: 'help_cmd-level-calibrator', label: 'LEVEL CALIBRATOR', click() { mainWindow.webContents.send('openHelper', 'help_cmd-level-calibrator') } },
-      { id: 'help_cmd-integrate', label: 'INTEGRATE', click() { mainWindow.webContents.send('openHelper', 'help_cmd-integrate') } },
-      { id: 'help_cmd-norcombine', label: 'NORCOMBINE', click() { mainWindow.webContents.send('openHelper', 'help_cmd-norcombine') } },
-      { id: 'help_cmd-ratios', label: 'RATIOS', click() { mainWindow.webContents.send('openHelper', 'help_cmd-ratios') } },
-      { id: 'help_cmd-sbt', label: 'SBT', click() { mainWindow.webContents.send('openHelper', 'help_cmd-sbt') } }
+      { id: 'help_cmd-rel-creator', label: 'RELS CREATOR', click() { mainWindow.webContents.send('openHelper', '_RELS_CREATOR') } },
+      { id: 'help_cmd-level-creator', label: 'LEVEL CREATOR', click() { mainWindow.webContents.send('openHelper', '_LEVEL_CREATOR') } },
+      { id: 'help_cmd-level-calibrator', label: 'LEVEL CALIBRATOR', click() { mainWindow.webContents.send('openHelper', '_LEVEL_CALIBRATOR') } },
+      { id: 'help_cmd-integrate', label: 'INTEGRATE', click() { mainWindow.webContents.send('openHelper', '_INTEGRATE') } },
+      { id: 'help_cmd-norcombine', label: 'NORCOMBINE', click() { mainWindow.webContents.send('openHelper', '_NORCOMBINE') } },
+      { id: 'help_cmd-ratios', label: 'RATIOS', click() { mainWindow.webContents.send('openHelper', '_RATIOS') } },
+      { id: 'help_cmd-sbt', label: 'SBT', click() { mainWindow.webContents.send('openHelper', '_SBT') } },
+      { id: 'help_cmd-sanson', label: 'SANSON', click() { mainWindow.webContents.send('openHelper', '_SANSON') } },
+      { id: 'help_cmd-wspp-sbt', label: 'WSPP-SBT', click() { mainWindow.webContents.send('openHelper', '_WSPP-SBT') } },
+      { id: 'help_cmd-wsppG-sbt', label: 'WSPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WSPPG-SBT') } },
+      { id: 'help_cmd-wpp-sbt', label: 'WPP-SBT', click() { mainWindow.webContents.send('openHelper', '_WPP-SBT') } },
+      { id: 'help_cmd-wppG-sbt', label: 'WPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WPPG-SBT') } }
     ]},
     { label: 'Adaptors', submenu: [
-      { id: 'help_adap-main', label: 'Main Input', click() { mainWindow.webContents.send('openHelper', 'help_adap-main') } },
-      { id: 'help_adap-close-pd', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_adap-close-pd') } }
-    ]},
-    { label: 'Workflows', submenu: [
-      { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
-      { id: 'help_wf-ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
+      { id: 'help_adap-main', label: 'Main-Input', click() { mainWindow.webContents.send('openHelper', '_Main_Input') } },
+      { id: 'help_adap-close-inputs-pd', label: 'Close search - Inputs from PD', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_PD') } },
+      { id: 'help_adap-close-inputs-msf', label: 'Close search - Inputs from MSF', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MSFragger') } },
+      { id: 'help_adap-close-inputs-maxq', label: 'Close search - Inputs from MaxQuant', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MaxQuant') } }
+    // ]},
+    // { label: 'Workflows', submenu: [
+    //   { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
+    //   { id: 'help_wf-ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
     ]}
   ]},
 ]
