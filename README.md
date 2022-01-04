@@ -33,30 +33,6 @@ For more details, read the [INSTALL](INSTALL.md) file.
 
 ### Windows distribution
 
-#### Requirements for Windows distribution
-
-iSanXoT uses Windows Python packages which needs via the SDK to build code. Thus, Microsoft Visual C++ 14.0 or greater is required. On Linux and Mac, the C++ libraries are installed with the compiler.
-
-Get the "Microsoft C++ Build Tools" by one of these choices:
-
-- from an offline installer: [vs_BuildTools.exe](env/vs_BuildTools.exe) (Recommended).
-- from [Microsoft Build Tools for Visual Studio] (https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16)
-
-When the Microsoft Build Tools is opened, select:
-
-    Workloads → Desktop development with C++
-    
-Then for Individual Components select only:
-
-    - Windows 10 SDK
-    - C++ x64/x86 build tools (MSVC - VS)
-
-More references:
-
-https://www.scivision.co/python-windows-visual-c++-14-required/
-
-### Installation on Windows
-
 The iSanXoT application for Windows distribution is packaged in a NSIS Launcher (exe file).
 
 For more details, read the [Windows distribution](INSTALL.md#windows-distribution) section in the INSTALL file.
