@@ -9,7 +9,29 @@
             </button>
           </div>
           <div class="modal-body">
-            ...
+            <p>This module is based on The Systems Biology Triangle model [2]. The SBT model performs a triangular integration using lower level, intermediate level and higher level. It is common the levels would be protein, category as lower and intermediate level, and the higher level would be the grand mean. From this way, the SBT module performs a Systems biology analysis.</p>
+            <h5>Simple parameters</h5>
+            <p>The parameters/columns of this module are:</p>
+            <ul>
+              <li>Forced execution: checkbox that determines to force the execution or not.</li>
+              <li>Sample folder(s): indicates the names of the folders where the levels data are located.</li>
+              <li>Lower level: indicates the name of lower-level (“protein” in this case).</li>
+              <li>Intermediate level: indicates the name of intermediate-level (“category”).</li>
+            </ul>
+            <p>By default, the higher-level is the grand mean of each level.</p>
+            <h5>Advanced parameters</h5>
+            <p>This module accepts advanced parameters belonging to the integration part:</p>
+            <ul>
+              <li>Output Sample folder: the name of the folder where the resulting log2-ratio and statistical weight values will be saved (“KO_vs_WT” in our example).</li>
+              <li>Lower-Higher level and Int(ermediate)-Higher level: in the case you don’t want to use the grand mean for the higher level, you can the level for the respective integration.</li>
+              <li>Low(er) > Int(ermediate) Tag and Int(ermediate) > Hig(her) Tag: labels from lower level to intermediate level and from intermediate level to higher level respectively that below to accept or discard elements is the calculation of variance. By default, the “outliers” are discarded.</li>
+              <li>Low(er) > Int(ermediate) FDR and Int(ermediate) > Hig(her) FDR: limit of False Discovery Rate different than 0.01 (1%) for the from lower level to intermediate level and from intermediate level to higher level respectively. If FDR = 0, then the “outliers” are not discarded.</li>
+              <li>Low(er) > Int(ermediate) Var(x) and Int(ermediate) > Hig(her) Var(x): force a variance for the from lower level to intermediate level and from intermediate level to higher level respectively. By default, the variance calculated by first “sanxot” is applied.</li>
+              <li>More params: allows to add more parameters to the programs inside the program. For more detail read “More params” in “Special Parameters” section.</li>
+            </ul>
+            <p>
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_SBT')">Modules > SBT</a>
+            </p>
           </div>
         </div>
       </div>

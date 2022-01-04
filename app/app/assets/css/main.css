@@ -411,26 +411,14 @@ fieldset[disabled] .btn-selectpicker.focus {
 
 /*
 * ---------------------------------------------------
-*   HELP PAGES
+*   HELP MODALS PAGES
 * ---------------------------------------------------
 */
 #help {
     padding: 20px;
     background-color: white;
 }
-#help h1 {
-    text-align: center;
-}
-#help p {
-    color: black;
-    text-align: justify;
-    text-justify: inter-word;
-}
-#help ul, li {
-    color: black;
-}
-
-#help figure.figure.rounded.float-right {
+/* #help figure.figure.rounded.float-right {
     margin: 10px 0px 10px 10px;
     width: 40%;
 }
@@ -447,10 +435,10 @@ fieldset[disabled] .btn-selectpicker.focus {
 div[id^="help_"] {
     margin-bottom: 6rem;
     margin-top: 3rem;
-}
+} */
 
 /* Divider */
-.h-divider {
+/* .h-divider {
     margin: auto;
     margin-top: 80px;
     width: 80%;
@@ -480,15 +468,10 @@ div[id^="help_"] {
     margin-left: -45px;
     font-size: large;
     color: rgb(191, 144, 0);
-}
-  
-/*
- * ---------------------------------------------------
- *   HMODALS
- * ---------------------------------------------------
- */
+} */
+
 #hmodal * {
-    /* font-size: 1.rem; */
+    color: black;
 }
 
 /*

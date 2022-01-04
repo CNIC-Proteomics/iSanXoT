@@ -45,6 +45,7 @@ let template = [
       { id: 'help_cmd-norcombine', label: 'NORCOMBINE', click() { mainWindow.webContents.send('openHelper', '_NORCOMBINE') } },
       { id: 'help_cmd-ratios', label: 'RATIOS', click() { mainWindow.webContents.send('openHelper', '_RATIOS') } },
       { id: 'help_cmd-sbt', label: 'SBT', click() { mainWindow.webContents.send('openHelper', '_SBT') } },
+      { id: 'help_cmd-report', label: 'REPORT', click() { mainWindow.webContents.send('openHelper', '_REPORT') } },
       { id: 'help_cmd-sanson', label: 'SANSON', click() { mainWindow.webContents.send('openHelper', '_SANSON') } },
       { id: 'help_cmd-wspp-sbt', label: 'WSPP-SBT', click() { mainWindow.webContents.send('openHelper', '_WSPP-SBT') } },
       { id: 'help_cmd-wsppG-sbt', label: 'WSPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WSPPG-SBT') } },

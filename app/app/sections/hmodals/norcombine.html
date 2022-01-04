@@ -9,7 +9,28 @@
             </button>
           </div>
           <div class="modal-body">
-            ...
+            <p>NORCOMBINE is a module to integrate technical or biological replicates. For example, there are multiple proteins obtained from integrations separately for each replicate and then the protein-level data are integrated to obtain protein averages (grouped-level data).</p>
+            <h5>Simple parameters</h5>
+            <p>The parameters/columns of this module are:</p>
+            <ul>
+              <li>Forced execution: checkbox that determines to force the execution or not.</li>
+              <li>Sample folder(s): indicates the names of the folders where the lower-level data is located.</li>
+              <li>Level: indicates the name of level. The module will use the data file with the same name of level.</li>
+              <li>Norm: specifies the normalization scheme (“proteinall” here) to be used with level.</li>
+              <li>lowerNorm: selects the type of lower normalization to use: V (the untouched V weight) or W (the new weight containing the variance of the integration).</li>
+              <li>Output Sample folder: the name of the folder where the resulting be saved.</li>
+            </ul>
+            <h5>Advanced parameters</h5>
+            <p>This module accepts advanced parameters belonging to the integration part:</p>
+            <ul>
+              <li>Tag: label that below to accept or discard elements is the calculation of variance. By default, the “outliers” are discarded.</li>
+              <li>FDR: limit of False Discovery Rate different than 0.01 (1%). If FDR = 0, then the “outliers” are not discarded.</li>
+              <li>Var(x): force a variance. By default, the variance calculated by first “sanxot” is applied.</li>
+              <li>More params: allows to add more parameters to the programs inside the program. For more detail read “More params” in “Special Parameters” section.</li>
+            </ul>
+            <p>
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_NORCOMBINE')">Modules > NORCOMBINE</a>
+            </p>
           </div>
         </div>
       </div>

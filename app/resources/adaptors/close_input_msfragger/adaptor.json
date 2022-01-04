@@ -47,8 +47,8 @@
     "title": "FDR calculation",
     "sdesc": "Calculation of FDR and get the first protein selected alphabetically.",
     "visible": true,
-    "panel_adp": "close_input_pd/panels/simple.html",
-    "help_adp": "close_input_pd/hmodals/fdr.html",
+    "panel_adp": "close_input_msfragger/panels/simple.html",
+    "help_adp": "close_input_msfragger/hmodals/fdr.html",
     "tasktable": {
       "file": "fdr_q.tsv",
       "params": [

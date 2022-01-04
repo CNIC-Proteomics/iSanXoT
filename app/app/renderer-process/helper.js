@@ -33,8 +33,7 @@ function openHelper(type) {
             minimizable: true,
             resizable: true,
             'icon': process.env.ISANXOT_ICON,
-            parent: mainWindow,
-            show: false
+            parent: mainWindow
         });
         helpWindow.setMenu(null);
         helpWindow.show();
@@ -53,6 +52,12 @@ function openHelper(type) {
     ).catch( (error) => {
         console.log(error);
     });
+    // Emitted when the window is starting to be close.
+    helpWindow.on('close', function(event) {
+          // give the focus
+        mainWindow.focus()
+    });
+
 }
 
 /*

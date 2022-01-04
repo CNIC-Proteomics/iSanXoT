@@ -184,7 +184,7 @@
     "sdesc": "This module detects the cateogories containing similar sets of proteins, showing changing proteins within each category.",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/system.html",
+    "help_modal": "sections/hmodals/sanson.html",
     "tasktable": {
       "file": "sanson.tsv",
       "params": [
@@ -205,7 +205,7 @@
     "sdesc": "This module creates tabular tables (tsv) called 'Report Tables' (RPT) containing the desired quantitative results of an integration from several samples.",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/reports.html",
+    "help_modal": "sections/hmodals/report.html",
     "tasktable": {
       "file": "report.tsv",
       "recursive": "files",
@@ -288,7 +288,7 @@
     "sdesc": "This module performs the integrations peptide2protein, protein2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wspp_sbt.html",
+    "help_modal": "sections/hmodals/wpp_sbt.html",
     "tasktable": {
       "file": "wpp_sbt.tsv",
       "params": [
@@ -314,7 +314,7 @@
     "sdesc": "This module performs the integrations peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wsppg_sbt.html",
+    "help_modal": "sections/hmodals/wppg_sbt.html",
     "tasktable": {
       "file": "wppg_sbt.tsv",
       "params": [

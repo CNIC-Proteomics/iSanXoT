@@ -9,7 +9,21 @@
             </button>
           </div>
           <div class="modal-body">
-            ...
+            <p>
+              This module calculates the statistical weight of the newly calculated log2-ratios from two comparison samples. This module takes (X,V) of given level from the numerator and denominator samples. It calculates the difference for the new X value (i.e. log2 of the indicated ratios), and combines the V values using the indicated method. Then, the result (X,V) is stores as the same level in the output sample folder.
+            </p>
+            <h5>Simple parameters</h5>
+            <p>The parameters/columns of this module are:</p>
+            <ul>
+              <li>Forced execution: checkbox that determines to force the execution or not.</li>
+              <li>Ratio numerator: indicates which sample contains the level required to make up the numerator of the ratio to be calculated (“KO” in this case).</li>
+              <li>Ratio denominator: indicates which sample contains the level file required to make up the denominator of the ratio to be calculated (“WT” in this case).</li>
+              <li>Level: specifies the level from where the ratio calculation should be made.</li>
+              <li>Output Sample folder: the name of the folder where the resulting log2-ratio and statistical weight values will be saved (“KO_vs_WT” in our example).</li>
+            </ul>
+            <p>
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_RATIOS')">Modules > RATIOS</a>
+            </p>
           </div>
         </div>
       </div>

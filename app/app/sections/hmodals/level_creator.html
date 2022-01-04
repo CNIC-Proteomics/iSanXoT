@@ -3,13 +3,27 @@
       <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="hmodalTitle">Create Rels (relationsip files)</h5>
+            <h5 class="modal-title" id="hmodalTitle">LEVEL CREATOR</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <svg class="bi" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#x" /></svg>
             </button>
           </div>
           <div class="modal-body">
-            ...
+            <p>The LEVEL CREATOR module creates a level that it the quantitative data. This data file is text file that contains three columns: identifier (a text string that is used to identify the element), quantitative value (X: 2-base logarithm of the ratio of the two quantitative measurements) and prior weight (V: a parameter that measures the accuracy of the quantitative value before performing the integration).</p>
+            <p>This module takes the preliminary data from a Quantification table (ID-q file) that is provided by the user applying the “Main Input” adaptor, or it is created by one of adaptors. For more details, read the “Adaptors” section.</p>
+            <h5>Simple parameters</h5>
+            <p>The parameters/columns of this module are:</p>
+            <ul>
+              <li>Forced execution: checkbox that determines to force the execution or not.</li>
+              <li>Experiment: is the name of experiment. This value has to be in a column called "Experiment" within the Quantification data (ID-q file). Only the data with the value specified in 'Experiment' column will be extracted.</li>
+              <li>Ratio numerator column: specifies which sample quantification values make up the numerator for the calculation of log2-ratio values.</li>
+              <li>Ratio denominator column(s): specifies which sample quantification make up the denominator for the calculation of log2-ratio values.</li>
+              <li>Level to be created: designates the level name.</li>
+              <li>Output Sample folder: indicates the name of the folder where the data file of level will be saved.</li>
+            </ul>
+            <p>
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_LEVEL_CREATOR')">Modules > LEVEL CREATOR</a>
+            </p>
           </div>
         </div>
       </div>

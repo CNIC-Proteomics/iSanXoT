@@ -4,7 +4,6 @@
     { "label": "Close Search", "submenu": [
         { "id": "close_input_pd", "label": "Input from PD", "enabled": false, "clicked": { "dir": "close_input_pd" } },
         { "id": "close_input_msfragger", "label": "Input from MSFragger", "enabled": false, "clicked": { "dir": "close_input_msfragger" } },
-        { "id": "close_input_comet", "label": "Input from Comet", "enabled": false, "clicked": { "dir": "close_input_comet" } },
         { "id": "close_input_maxquant", "label": "Input from MaxQuant", "enabled": false, "clicked": { "dir": "close_input_maxquant" } }
     ]}
 ]

@@ -9,13 +9,21 @@
             </button>
           </div>
           <div class="modal-body">
-            <p>
-              This module creates 'Relation Tables' (RT) from any tabular file (tsv). Indicate which are the headers from the tsv table that contain the elements to create the lower and upper columns of the relation table (and of the 3rd column if required).
-            </p>
+            <p>This module parse data from a given tabular file, extract several columns creating a file with tab separated table, Relation Table (RT). These RT created, are used by the integrations in the rest modules. For this reason, the name of RT indicated by the parameter/column of its task-table (“Relation Table to be created”), has to coincide with the “lower-level” and the ”higher-level” of the integration; e.g. whether an integration is between the “peptide” to “protein” levels, the RT applied has to be called “peptide2protein”.</p>
             <p><blockquote>Important: for consistency and to minimize errors, the name of the relation table must match the names of the lower and upper levels (e.g. to integrate the level 'scan' to the level 'peptide' the relation table must be called 'scan2peptide').</blockquote>
             </p>
+            <h5>Simple parameters</h5>
+            <p>The parameters/columns of this module are:</p>
+            <ul>
+              <li>Forced execution: checkbox that determines to force the execution or not.</li>
+              <li>Relation Table to be created: indicates the file name of relation table. This name must be formed with the lower level to higher level for one integration.</li>
+              <li>Column name of Lower level: column name from the given tabular file that will use for the lower level in the resulted RT.</li>
+              <li>Column name of Higher level: column name from the given tabular file that will use for the higher level in the resulted RT.</li>
+              <li>Column name of 3rd column: column name from the given tabular file that will use for the third column in the resulted RT.</li>
+              <li>Table from which RT is extracted: file name with path which the levels are extracted. This file has to be in tabular format. In this parameter the keywords can be used. For more details read “Keywords for the Task-Tables” in the “Special parameters” section.</li>
+            </ul>
             <p>
-              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', 'help_cmd-rel-creator')">Modules > RELS CREATOR</a>.
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_RELS_CREATOR')">Modules > RELS CREATOR</a>
             </p>
           </div>
         </div>

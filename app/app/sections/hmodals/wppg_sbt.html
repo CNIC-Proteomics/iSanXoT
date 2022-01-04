@@ -3,13 +3,13 @@
       <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="hmodalTitle">WSPP-SBT</h5>
+            <h5 class="modal-title" id="hmodalTitle">WPPG_SBT</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <svg class="bi" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#x" /></svg>
             </button>
           </div>
           <div class="modal-body">
-            <p>This module performs the integrations scan to peptide (scan2peptide), peptide to protein (peptide2protein), and protein to category (protein2category). In addition, there are the integrations peptide to peptideall (peptide2peptideall), protein to proteinall (protein2proteinall),  and category to categoryall (category2categoryall). After all these integrations, the SBT algorithm follows to analyze coordinated protein changes.</p>
+            <p>This module performs the integrations peptide2protein, protein2gene, and gene2category. In addition, there are the integrations peptide2gene, peptide2peptideall, protein2proteinall, gene2geneall,  and category2categoryall. After all these integrations, the SBT algorithm follows to analyze coordinated gene changes.</p>
             <h5>Simple parameters</h5>
             <p>The parameters/columns of this module are:</p>
             <ul>
@@ -23,13 +23,13 @@
             <h5>Advanced parameters</h5>
             <p>This module accepts advanced parameters:</p>
             <ul>
-              <li>p>q Tag, p>a Tag, c>a Tag: labels that below to accept or discard elements is the calculation of variance for the integrations: peptide2protein, peptide2peptideall, and category2categoryall, respectively. By default, the “outliers” are discarded.</li>
-              <li>s>p FDR, p>q FDR, q>c FDR: limit of False Discovery Rate different than 0.01 (1%) for the following integrations: scan2peptide, peptide2protein, and protein2category. If FDR = 0, then the “outliers” are not discarded.</li>
-              <li>s>p Var(x), p>q Var(x), q>c Var(x): force a variance for the integrations: scan2peptide, peptide2protein, and protein2category. By default, the variance calculated by first “sanxot” is applied.</li>
+              <li>p>q Tag, q>g Tag, p>a Tag, c>a Tag: labels that below to accept or discard elements is the calculation of variance for the integrations: peptide2protein, protein2gene, peptide2peptideall, and category2categoryall, respectively. By default, the “outliers” are discarded.</li>
+              <li>p>q FDR, q>g FDR, g>c FDR: limit of False Discovery Rate different than 0.01 (1%) for the following integrations: peptide2protein, protein2gene and gene2category. If FDR = 0, then the “outliers” are not discarded.</li>
+              <li>p>q Var(x), q>g Var(x), g>c Var(x): force a variance for the integrations: peptide2protein, protein2gene and gene2category. By default, the variance calculated by first “sanxot” is applied.</li>
               <li>More params: allows to add more parameters to the programs inside the program. For more detail read “More params” in “Special Parameters” section.</li>
-            </ul>            
+            </ul>
             <p>
-              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_WSPP-SBT')">Modules > WSPP-SBT</a>
+              For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_WPPG-SBT')">Modules > WPPG-SBT</a>
             </p>
           </div>
         </div>
