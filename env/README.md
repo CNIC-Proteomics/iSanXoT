@@ -66,8 +66,8 @@ Close CMD
 ### Build iSanXoT
 1) Clean the app-resources environment folders
 ```
-rmdir /S /Y  "app\resources\env"
-rmdir /S /Y  "app\resources\exec"
+rmdir /S /Q  "app\resources\env"
+rmdir /S /Q  "app\resources\exec"
 ```
 
 2) Copy the cached installation of python
