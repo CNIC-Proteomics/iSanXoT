@@ -72,7 +72,8 @@ env\prepare_isanxot_build.win.bat
 
 2) Build iSanXoT
 ```
-cd app&& "C:\Users\jmrodriguezc\iSanXoT\env\node\electron-builder"
+cd app
+"C:\Users\jmrodriguezc\iSanXoT\env\node\electron-builder"
 ```
 
 ### Execute iSanXoT in debug mode
@@ -85,7 +86,8 @@ env\prepare_isanxot_debug.win.bat
 2) Execute iSanXoT in debug mode
 Open CMD
 ```
-cd app&& set ISANXOT_MODE=debug&& set ISANXOT_DEV=local&& "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\npm" start
+cd app
+set ISANXOT_MODE=debug&& set ISANXOT_DEV=local&& "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\npm" start
 ```
 
 Note: You have to write in this way:
@@ -151,7 +153,8 @@ env/prepare_isanxot_build.darwin.sh
 
 2) Execute the program that builds the packages
 ```
-cd app && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/electron-builder
+cd app
+export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/electron-builder
 ```
 
 ### Execute iSanXoT in debug mode
@@ -163,7 +166,8 @@ env/prepare_isanxot_debug.darwin.sh
 
 2) Execute iSanXoT in debug mode
 ```
-cd app && export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/npm start 
+cd app
+export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && /Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin/npm start 
 ```
 
 Note: Open iSanXoT application in debug mode
@@ -227,7 +231,8 @@ env/prepare_isanxot_build.linux.sh
 
 2) Execute the program that builds the packages
 ```
-cd app && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
+cd app
+export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
 ```
 
 ### To execute iSanXoT build
@@ -261,7 +266,8 @@ env/prepare_isanxot_debug.linux.sh
 
 2) Execute iSanXoT in debug mode
 ```
-cd app && export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
+cd app
+export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
 ```
 
 ### In the case there are new python packages: Download the Python packages
