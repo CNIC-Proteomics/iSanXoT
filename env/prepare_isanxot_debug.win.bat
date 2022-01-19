@@ -50,11 +50,6 @@ GOTO :successProcess
 
 
 :: ------------------------------------------------
-:addISANXOThome
-:: Add parameter
-    ECHO   Please, give the isanxot home
-    GOTO :EndProcess
-:: ------------------------------------------------
 :successProcess
 :: Installation has finished successfully
     ECHO **
