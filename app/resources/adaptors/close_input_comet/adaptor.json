@@ -7,7 +7,7 @@
     "id": "inputs",
     "label": "Adaptor",
     "description": "Short description for the current work (tab)",
-    "cmds": ["CREATE_IDQUANT", "JOINER_ID", "MASTERQ", "GET_IDSTATS"]
+    "cmds": ["CREATE_IDQUANT", "FDR_Q", "JOINER_FDR", "GET_IDSTATS"]
   }],
   "commands": [{
     "id": "CREATE_IDQUANT",
@@ -25,6 +25,30 @@
         { "type": "optional", "id": "mzfile", "name": "Quantification File (in mzML format)" },
         { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]}
+  },{
+    "id": "FDR_Q",
+    "label": "FDR",
+    "title": "FDR calculation",
+    "sdesc": "Calculation of FDR and get the first protein selected alphabetically.",
+    "visible": true,
+    "panel_adp": "close_input_comet/panels/simple.html",
+    "help_adp": "close_input_comet/hmodals/fdr.html",
+    "tasktable": {
+      "file": "fdr_q.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
+        { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
+        { "type": "required", "id": "fdr", "name": "FDR cutoff" },
+        { "type": "required", "id": "type_xcorr", "name": "Score" },
+        { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
+    ]}
+  },{
+    "id": "JOINER_FDR",
+    "label": "JOINER",
+    "sdesc": "Concatenate all fdr tables in one",
+    "visible": false
   },{
     "id": "JOINER_ID",
     "label": "JOINER",

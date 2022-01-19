@@ -54,9 +54,10 @@ let template = [
     ]},
     { label: 'Adaptors', submenu: [
       { id: 'help_adap-main', label: 'Main-Input', click() { mainWindow.webContents.send('openHelper', '_Main_Input') } },
-      { id: 'help_adap-close-inputs-pd', label: 'Close search - Inputs from PD', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_PD') } },
-      { id: 'help_adap-close-inputs-msf', label: 'Close search - Inputs from MSF', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MSFragger') } },
-      { id: 'help_adap-close-inputs-maxq', label: 'Close search - Inputs from MaxQuant', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MaxQuant') } }
+      { id: 'help_adap-close-inputs-pd', label: 'Inputs from Proteome Discoverer', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_PD') } },
+      { id: 'help_adap-close-inputs-msf', label: 'Inputs from MSFragger', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MSFragger') } },
+      { id: 'help_adap-close-inputs-msf', label: 'Inputs from Comet', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_Comet') } },
+      { id: 'help_adap-close-inputs-maxq', label: 'Inputs from MaxQuant', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MaxQuant') } }
     // ]},
     // { label: 'Workflows', submenu: [
     //   { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
