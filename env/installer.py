@@ -110,7 +110,7 @@ def install_pip_manager(url):
         print_to_stdout("-- get filename")
         p = os.path.join( tmpdir, os.path.basename(file).split('.tar.gz')[0])
         print_to_stdout("-- setup python package")
-        exec_command(f'cd {p} && {python_exec} setup.py install')
+        exec_command(f'cd "{p}" && "{python_exec}" setup.py install')
     except Exception as exc:
         sys.exit(f"ERROR!! downloading exec program: {url}\n{exc}")
     finally:
@@ -133,7 +133,7 @@ def install_package(manager, pkg):
         # handle manager file
         manager = os.path.join(lib_home, manager)
         # create command
-        exec_command(f'cd {local_dir} && {manager} {pkg}')
+        exec_command(f'cd "{local_dir}" && "{manager}" {pkg}')
         # if everything was fine
         return True
     except Exception as exc:
