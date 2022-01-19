@@ -17,7 +17,7 @@ IF (%argC% LSS "2") (
 
 :: get the python executable ----------------------
 SET  PYTHON_EXEC=%1
-IF %PYTHON_EXEC%=="" (
+IF NOT DEFINED PYTHON_EXEC (
     :: Add the output parameter
     GOTO :addPythonExecHome
 )
@@ -31,7 +31,7 @@ SET  REQUIREMENTS_BACKEND_PYTHON=%ENV_HOME%/node/requirements_backend_win-x64.tx
 
 :: get the frontend home for the installation of modules ----------------------
 SET  ISANXOT_FRONTEND_HOME=%2
-IF %ISANXOT_FRONTEND_HOME%=="" (
+IF NOT DEFINED ISANXOT_FRONTEND_HOME (
     :: Add the output parameter
     GOTO :addFrontEndHome
 )
