@@ -15,8 +15,26 @@ import Comet
 import MaxQuant
 
 ####################
+# Global variables #
+####################
+ROOT_FOLDER = '/jobs/'
+
+####################
 # Common functions #
 ####################
+
+def get_job_name(file):
+    # get the name of 'experiment' until the root folder
+    # By default, we get the last folder name of path
+    fpath = os.path.dirname(file)
+    name = os.path.basename(fpath)
+    # split until the root folder
+    if ROOT_FOLDER in fpath:
+        s = fpath.split(ROOT_FOLDER)
+        if len(s) > 1:
+            s = s[1]
+            name = re.sub(r'[/|\\]+', '/', s) # replace
+    return name
 
 def get_path_file(i, indir):
     '''
