@@ -1,4 +1,56 @@
 ___
+## 0.4.3
+```
+DATE: 2022_02
+```
+
+### Highlights
+
+
+### Changes in the Graphical User Interface
+
++ TODO!! Add the several workflow types.
+
++ TODO!! Fix the percentage of log panels!!
+
++ TODO!! Complete documentation.
+
++ TODO!! Cover the username of pictures.
+
+### Changes in the Code Workflow
+
+
+___
+## 0.4.2
+```
+DATE: 2022_01
+```
+
+### Highlights
+
+
+### Changes in the Graphical User Interface
+
++ The Adaptors tab has been renamed to 'Adaptor'.
+
++ Fixing a bug in Comet Adaptor.
+
++ Approximation to fix the problem when the administrator wants to install iSanXoT.
+
++ Discard the close search words.
+
++ Add list of scores that will use the FDR module adaptors by default.
+
++ New validation of the workflow schema: Check if the input files exit.
+
+### Changes in the Code Workflow
+
++ Include some shell/batch scripts that prepares the environment for the build packages.
+
++ Fixing a bug in the function that retrieves the folder name of jobs
+
+
+___
 ## 0.4.1
 ```
 DATE: 2021_12
