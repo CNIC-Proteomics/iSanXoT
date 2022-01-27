@@ -630,6 +630,7 @@ def main(args):
     Main function
     '''
 
+    # ------
     # init the output file with the given attributes of workflow
     logging.info("init the output file with the attributes of given workflow")
     with open(args.attfile, 'r') as stream:
@@ -658,6 +659,9 @@ def main(args):
     __IDQFIL__ = __EXPDIR__ + '/ID-q.tsv'
     TPL_DATE   = tpl['date']
     
+    
+    
+    # ------
     # extract the list of task-tables (ttablefiles)
     # split by command
     # create a list of tuples (command, dataframe with parameters)
@@ -668,6 +672,8 @@ def main(args):
     indata = common.read_commands_from_tables(tpl['ttablefiles'])
     
 
+
+    # ------
     # check the tasktable parameters for each command:
     # return a variable with the outputs for each command    
     # 1. check whether there are duplicates in the output directories
@@ -682,6 +688,8 @@ def main(args):
     OUTPUTS_FOR_CMD = check_command_parameters(indata)
     
     
+    
+    # ------
     # replace the constants for the config template and the command templates
     logging.info("replace the constants for the config template and the command templates")
     repl = {        
@@ -714,6 +722,7 @@ def main(args):
 
 
 
+    # ------
     logging.info("create a command for each tasktable row")
     tpl['commands'] = []
     for cmd,indat in indata.items():
@@ -750,7 +759,7 @@ def main(args):
 
 
 
-
+    # ------
     logging.info("get the list of outfiles")
     global OUTFILES
     for i in range(len(tpl['commands'])):
@@ -761,6 +770,8 @@ def main(args):
     OUTFILES = np.array(OUTFILES)
 
     
+
+    # ------
     logging.info("add the commands based on the '*' input files")
     for i in range(len(tpl['commands'])):
         for j in range(len(tpl['commands'][i])):
@@ -782,6 +793,7 @@ def main(args):
 
     
 
+    # ------
     logging.info("add command suffix and rule suffix")
     logging.info("fill the clines")
     # add the whole parametes (infiles, outfiles, params) to command line
@@ -793,7 +805,41 @@ def main(args):
         add_params_cline( tpl['commands'][i] )
 
 
-    
+
+    # ------
+    logging.debug("validate the inputs/outputs for the command/rules")
+    # get the whole list of infiles
+    infiles_cmd = [ (tpl['commands'][i][j]['name'], o.replace('\\','/').split(';')) for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['infiles'].values() ]
+    infiles_cmd = [ (i[0],o) for i in infiles_cmd for o in i[1] if o != '' ]
+    infiles = np.unique([ o[1] for o in infiles_cmd ])
+    # get the whole list of outfiles including the files coming from the user
+    outfiles = [ o.replace('\\','/').split(';') for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['outfiles'].values() ]
+    outfiles = [ o for i in outfiles for o in i if o != '' ]
+    ai = [ o.replace('\\','/') for o in tpl['adaptor_inputs'].values()  ]
+    tti = [ o['file'].replace('\\','/') for o in tpl['ttablefiles'] if 'file' in o ]
+    outfiles = np.unique(outfiles + ai + tti)
+    # check if infiles is a subset of outfiles
+    xx = [ x for x in infiles if x not in outfiles ]
+    xx = np.unique(xx)
+    # write error sms getting the name of rule from the input that is not defined
+    sms = ''
+    for x in xx:
+        # get the name of 'job' until the root folder
+        job_name = common.get_job_name(x)
+        # get the filename
+        name = os.path.basename(x)
+        sms += f'> The input file "{job_name}/{name}" '
+        name_rules = np.unique([i[0] for i in infiles_cmd if x in i[1]])
+        if name_rules.size != 0:
+            sms += f'for the rule(s) "{",".join(name_rules)}" '
+        sms += "is not defined\n\n"
+    if sms != '':
+        print(sms) # message to stdout with logging output
+        sys.exit(sms)
+
+
+
+    # ------
     # write the output file
     logging.info("write the output file")
     with open(args.outfile, 'w') as file:

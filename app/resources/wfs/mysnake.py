@@ -200,7 +200,7 @@ def main(args):
     '''
     
     # ------
-    print(f"MYSNAKE_LOG_PREPARING\t{time.asctime()}", flush=True)
+    print(f"MYSNAKE_LOG_STARTING\t{time.asctime()}", flush=True)
     
     logging.debug("check input parameters")
     if args.cores:
@@ -222,10 +222,7 @@ def main(args):
 
 
     # ------
-    print(f"MYSNAKE_LOG_VALIDATING\t{time.asctime()}", flush=True)
-
-    # ------
-    print(f"MYSNAKE_LOG_STARTING\t{time.asctime()}", flush=True)
+    print(f"MYSNAKE_LOG_PREPARING\t{time.asctime()}", flush=True)
 
     logging.debug("extract the order of processes")
     # get the list of tuples: ( commands (names), their rules)
