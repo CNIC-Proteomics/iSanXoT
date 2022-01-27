@@ -73,7 +73,7 @@ env\prepare_isanxot_build.win.bat
 2) Build iSanXoT
 ```
 cd app
-"C:\Users\jmrodriguezc\iSanXoT\env\node\electron-builder"
+"C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\electron-builder"
 ```
 
 ### Execute iSanXoT in debug mode
