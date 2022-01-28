@@ -41,7 +41,8 @@ DATE: 2022_01
 
 + Add list of scores that will use the FDR module adaptors by default.
 
-+ New validation of the workflow schema: Check if the input files exit.
++ New validation of the workflow schema:
+	Check if the input files exit in the table2cfg.
 
 ### Changes in the Code Workflow
 
