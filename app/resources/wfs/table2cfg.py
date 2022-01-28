@@ -813,13 +813,15 @@ def main(args):
     infiles_cmd = [ (i[0],o) for i in infiles_cmd for o in i[1] if o != '' ]
     infiles = np.unique([ o[1] for o in infiles_cmd ])
     # get the whole list of outfiles including the files coming from the user
+    # outfiles = [ o.replace('\\','/').split(';') for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['outfiles'].values() ]
+    # outfiles = [ o for i in outfiles for o in i if o != '' ]
+    # ai = [ o.replace('\\','/') for o in tpl['adaptor_inputs'].values()  ]
+    # tti = [ o['file'].replace('\\','/') for o in tpl['ttablefiles'] if 'file' in o ]
+    # outfiles = np.unique(outfiles + ai + tti)
     outfiles = [ o.replace('\\','/').split(';') for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['outfiles'].values() ]
-    outfiles = [ o for i in outfiles for o in i if o != '' ]
-    ai = [ o.replace('\\','/') for o in tpl['adaptor_inputs'].values()  ]
-    tti = [ o['file'].replace('\\','/') for o in tpl['ttablefiles'] if 'file' in o ]
-    outfiles = np.unique(outfiles + ai + tti)
+    outfiles = np.unique([ o for i in outfiles for o in i if o != '' ])
     # check if infiles is a subset of outfiles
-    xx = [ x for x in infiles if x not in outfiles ]
+    xx = [ x for x in infiles if x not in outfiles and not os.path.exists(x) ]
     xx = np.unique(xx)
     # write error sms getting the name of rule from the input that is not defined
     sms = ''
