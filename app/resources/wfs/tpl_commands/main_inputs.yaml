@@ -5,7 +5,7 @@
 # Description: 
 - name: MAIN_INPUTS
   description: Copy ID-q file to our project
-  force: 0
+  force: 1
   rules:
 
   # Rule: ratios ---
