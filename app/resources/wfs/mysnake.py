@@ -22,6 +22,8 @@ import subprocess
 import re
 import time
 import shlex
+import pandas as pd
+
 
 ####################
 # Global variables #
@@ -225,9 +227,14 @@ def main(args):
     print(f"MYSNAKE_LOG_PREPARING\t{time.asctime()}", flush=True)
 
     logging.debug("extract the order of processes")
-    # get the list of tuples: ( commands (names), their rules)
-    cr = [ (cmd['name'],cmd['rules'][i]['name']) for cmds in cfg['commands'] for cmd in cmds for i in range(len(cmd['rules'])) ]
-    cr = [ (re.sub('\_\d*$','',c[0]), c[1]) for c in cr ]
+    # create a matrix (ist of list then pandas) with:
+    # rows are the columns/columns their rules
+    # with the list of tuple: ( commands (names), their rules)
+    m = [ [ (cmd['name'],cmd['rules'][i]['name']) for i in range(len(cmd['rules'])) ] for cmds in cfg['commands'] for cmd in cmds  ]
+    df = pd.DataFrame(m)
+    # get the list of list extracting the elements by column
+    cr = [ df[c].to_list() for c in df.columns ]
+    cr = [ (re.sub('\_\d*$','',t[0]), t[1]) for c in cr for t in c if t ] # flat the list and remove prefix for the name of comands
     # get dict with the commands_names and list of their own rules
     dict_1=dict()
     for c,r in cr:
