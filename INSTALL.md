@@ -43,7 +43,8 @@ Double-click the Laucher file to open it, and you'll see an Installer window.
 ![Installer window](docs/images/installation/win_figure1.png "Installer window")
 
 Then, you can choose the folder in which to install iSanXoT.
-Important!! For the moment, we recommend to installation "Only for me".
+
+Important!! For the moment, we recommend to installation 'Only for me'.
 
 ![Choose Install Location](docs/images/installation/win_figure2.png "Choose Install Location")
 
