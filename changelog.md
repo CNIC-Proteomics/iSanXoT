@@ -1,5 +1,5 @@
 ___
-## 0.4.3
+## 0.4.4
 ```
 DATE: 2022_02
 ```
@@ -19,6 +19,25 @@ DATE: 2022_02
 
 ### Changes in the Code Workflow
 
++ Force the execution of Main-Input adaptor.
+
++ Mysnake: we have developed a new way to obtain the list of processes.
+
++ TODO!!! Arreglar el LEVEL_CRAETOR. Que sea PARALELO.
+
++ TODO!! Añadir ProteinAsignator?
+
+___
+## 0.4.3
+```
+DATE: 2022_02
+```
+
+### Changes in the Code Workflow
+
++ Force the execution of Main-Input adaptor.
+
++ Mysnake: we have developed a new way to obtain the list of processes.
 
 ___
 ## 0.4.2
