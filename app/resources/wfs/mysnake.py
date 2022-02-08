@@ -19,10 +19,9 @@ import logging
 import multiprocessing as mp
 import yaml
 import subprocess
-import re
 import time
 import shlex
-import pandas as pd
+import re
 
 
 ####################
@@ -56,7 +55,7 @@ def remove_outfiles(cfg):
                 [ os.remove(o) for out in outfiles for o in out if os.path.isfile(o) ]
 
 # define executor function
-def executor(proc):
+def executor(cmd):
     
     def _extract_files(files):
         out = []
@@ -143,53 +142,57 @@ def executor(proc):
             if eval(rule_pos) == 1.0:
                 print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
         return output
+        
+    # for each rule
+    outputs = []
+    for i in range(len(cmd['rules'])):
+        # input parameter
+        rule = cmd['rules'][i]
+        cmd_name, cmd_force, rule_pos = cmd['name'],cmd['force'],f"{i+1}/{len(cmd['rules'])}"
     
-    # input parameter
-    cmd_name, cmd_force, rule_pos, rule = proc['name'],proc['force'],proc['rpos'],proc['rule']
-
-    # declare output
-    output = {
-        'name': rule['name'],
-        'state': 'waiting',
-        'start_time': '-',
-        'end_time': '-',
-        'info': '-',
-        'log_file': 'rule[logfile]' }
-    # get the list of files: inputs, outputs and logs
-    ifiles = _extract_files(rule['infiles'])
-    ofiles = _extract_files(rule['outfiles'])
-    # create directories recursevely
-    [os.makedirs(os.path.dirname(f), exist_ok=True) for f in ifiles]
-    [os.makedirs(os.path.dirname(f), exist_ok=True) for f in ofiles]
-    
-    # this processes would be able to execute
-    # wait until the input files are ready to read/write
-    while not _all_ready(ifiles):
-        try:
-            time.sleep(1)
-        except:
-            raise Exception("Caught KeyboardInterrupt, terminating workers")
-    
-    # It is the moment of the execution
-    if cmd_force == 1 and _all_ready(ifiles):
-        output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
-    elif (cmd_force == 0 or cmd_force == '') and not _all_ready(ofiles):
-        output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
-    elif (cmd_force == 0 or cmd_force == '') and _all_ready(ifiles) and _all_ready(ofiles):
-        state = 'cached'
-        end_time = time.asctime()
-        output['cmd_force'] = cmd_force
-        output['end_time'] = end_time
-        print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
-    else:
-        state = 'already_exec'
-        end_time = time.asctime()
-        output['cmd_force'] = cmd_force
-        output['end_time'] = end_time
-        print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
-
-
-    return output
+        # declare output
+        output = {
+            'name': rule['name'],
+            'state': 'waiting',
+            'start_time': '-',
+            'end_time': '-',
+            'info': '-',
+            'log_file': 'rule[logfile]' }
+        # get the list of files: inputs, outputs and logs
+        ifiles = _extract_files(rule['infiles'])
+        ofiles = _extract_files(rule['outfiles'])
+        # create directories recursevely
+        [os.makedirs(os.path.dirname(f), exist_ok=True) for f in ifiles]
+        [os.makedirs(os.path.dirname(f), exist_ok=True) for f in ofiles]
+        
+        # this processes would be able to execute
+        # wait until the input files are ready to read/write
+        while not _all_ready(ifiles):
+            try:
+                time.sleep(1)
+            except:
+                raise Exception("Caught KeyboardInterrupt, terminating workers")
+        
+        # It is the moment of the execution
+        if cmd_force == 1 and _all_ready(ifiles):
+            output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
+        elif (cmd_force == 0 or cmd_force == '') and not _all_ready(ofiles):
+            output = _exec(rule['cline'], rule['logfile'], cmd_name, cmd_force, rule['name'], rule_pos)
+        elif (cmd_force == 0 or cmd_force == '') and _all_ready(ifiles) and _all_ready(ofiles):
+            state = 'cached'
+            end_time = time.asctime()
+            output['cmd_force'] = cmd_force
+            output['end_time'] = end_time
+            print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
+        else:
+            state = 'already_exec'
+            end_time = time.asctime()
+            output['cmd_force'] = cmd_force
+            output['end_time'] = end_time
+            print(f"MYSNAKE_LOG_END_CMD_EXEC\t{end_time}\t{cmd_name}\t{cmd_force}\t{rule['name']}\t{rule_pos}\t{state}", flush=True)
+        outputs.append(output)
+        
+    return outputs
 
 
 
@@ -225,76 +228,39 @@ def main(args):
 
     # ------
     print(f"MYSNAKE_LOG_PREPARING\t{time.asctime()}", flush=True)
-
-    logging.debug("extract the order of processes")
-    # create a matrix (ist of list then pandas) with:
-    # rows are the columns/columns their rules
-    # with the list of tuple: ( commands (names), their rules)
-    m = [ [ (cmd['name'],cmd['rules'][i]['name']) for i in range(len(cmd['rules'])) ] for cmds in cfg['commands'] for cmd in cmds  ]
-    df = pd.DataFrame(m)
-    # get the list of list extracting the elements by column
-    cr = [ df[c].to_list() for c in df.columns ]
-    cr = [ (re.sub('\_\d*$','',t[0]), t[1]) for c in cr for t in c if t ] # flat the list and remove prefix for the name of comands
-    # get dict with the commands_names and list of their own rules
-    dict_1=dict()
-    for c,r in cr:
-        dict_1.setdefault(c, []).append(r)
-    # extract the order of processes
-    proc_ord = [ dict_1[c] for c in COMMAND_ORDER if c in dict_1 ]
-    proc_ord = [i for s in proc_ord for i in s]
     
-
-    logging.debug("extract the rules for each command")
+    logging.debug("extract the commands in order")
     try:
         cfg_rules = [ {
             'name': cmd['name'],
             'force': cmd['force'],
-            'rpos': f"{i+1}/{len(cmd['rules'])}",
-            'rule': cmd['rules'][i]
-        } for cmds in cfg['commands'] for cmd in cmds for i in range(len(cmd['rules'])) ]
+            'rules': cmd['rules']
+        } for cmds in cfg['commands'] for cmd in cmds ]
         if not cfg_rules:
             raise Exception('the rule list of confing is empty')
     except yaml.YAMLError as exc:
         sys.exit("ERROR!! Extracting the rules for each command: {}".format(exc))
+    # get the total of commands
+    total_cmds = len(cfg_rules)
+    # get dict with the commands_names and list of their own rules
+    dict_1=dict()
+    for c in cfg_rules:
+        n = re.sub('\_\d*$','',c['name'])
+        dict_1.setdefault(n, []).append(c)
+    # extract the order of processes
+    cfg_rules = [ dict_1[c] for c in COMMAND_ORDER if c in dict_1 ]
+    cfg_rules = [i for s in cfg_rules for i in s]
 
-    logging.debug("get the command/rules that will be executed and will not")
-    try:
-        # create a dict with the rule name as key and with the report as value
-        rules_exec = {}
-        rules_notexec = []
-        for c in cfg_rules: 
-            k = c['rule']['name']
-            if k in proc_ord:
-                rules_exec[k] = c
-            else:
-                rules_notexec.append(c)
-    except yaml.YAMLError as exc:
-        sys.exit("ERROR!! Getting the executed and not executed commands/rules: {}".format(exc))
-
-    logging.debug("reorder the config rules based on the list of outputs of workflow managament system")
-    try:
-        # create a list of dict with the processes reported by the output of snakemake (the list of processes for the execution)
-        rules_exec_ord = [ rules_exec[o] for o in proc_ord ]
-    except yaml.YAMLError as exc:
-        sys.exit("ERROR!! Reordering the rules: {}".format(exc))
-    
-    logging.debug("add the cached processes into the list of processes will be executed")
-    try:
-        rules_ord = rules_notexec + rules_exec_ord
-        if rules_ord:
-            total_cmds = len(list(set( [ c['name'] for c in rules_ord ] )))
-    except yaml.YAMLError as exc:
-        sys.exit("ERROR!! Reordering the rules: {}".format(exc))
 
     
     # ------
     print(f"MYSNAKE_LOG_EXECUTING\t{time.asctime()}\t{total_cmds}", flush=True)
-
+    
     logging.debug(f"start the execution of {total_cmds} commands using {NCPUS} processes in parallel")
     pool = mp.Pool(processes=NCPUS)
     results = []
-    for rule in rules_ord:
-        results.append(pool.apply_async(executor, (rule, )))
+    for cmd in cfg_rules:
+        results.append(pool.apply_async(executor, (cmd, )))
     
     logging.debug("close the pool")
     pool.close()
@@ -303,6 +269,7 @@ def main(args):
     
     # ------
     print(f"MYSNAKE_STATS_EXECUTING\t{time.asctime()}", flush=True)
+    
     logging.debug("execute the statistic processes")
     try:
         # command line
