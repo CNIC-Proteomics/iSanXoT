@@ -1,23 +1,23 @@
 {
-  "id": "close_input_comet",
-  "label": "Input Data Adaptor for Comet",
-  "sdesc": "<p><i>Input from Comet</i>.</p>",
+  "id": "cnic_close_input_maxquant",
+  "label": "CNIC Specific Adaptor",
+  "sdesc": "<p><i>Input from MaxQuant</i>.</p>",
   "description": "Long description for the adaptor.",
   "works": [{
     "id": "inputs",
     "label": "Adaptor",
     "description": "Short description for the current work (tab)",
-    "cmds": ["CREATE_IDQUANT", "JOINER_IDQ", "GET_IDSTATS"]
+    "cmds": ["CREATE_IDQUANT", "JOINER_IDQ"]
   }],
   "commands": [{
     "id": "CREATE_IDQUANT",
-    "label": "Files from Comet",
-    "title": "Provide input files from Comet",
+    "label": "Files from MaxQuant",
+    "title": "Provide input files from MaxQuant",
     "visible": true,
-    "panel_adp": "close_input_comet/panels/inputs.html",
-    "help_adp": "close_input_comet/hmodals/inputs.html",
+    "panel_adp": "close_input_maxquant/panels/inputs.html",
+    "help_adp": "close_input_maxquant/hmodals/inputs.html",
     "tasktable": {
-      "file": "create_idquant_comet.tsv",
+      "file": "create_idquant_maxq.tsv",
       "unique_exec": true,
       "params": [
         { "type": "required", "id": "infile", "name": "Identification file" },
@@ -29,11 +29,6 @@
     "id": "JOINER_IDQ",
     "label": "JOINER",
     "sdesc": "Concatenate all ID tables in one ID-q",
-    "visible": false
-  },{
-    "id": "GET_IDSTATS",
-    "label": "GET_IDSTATS",
-    "sdesc": "Get the statistics of ID table",
     "visible": false
   }]
 }

@@ -1,0 +1,29 @@
+<template class="task-template">
+<div class="modal fade" id="hmodal" tabindex="-1" role="dialog" aria-labelledby="hmodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="hmodalTitle">Provide input files from MaxQuant</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <svg class="bi" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#x" /></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            This adaptor allows you to transform the output of MaxQuant into an Identification-Quantification file appropriate for iSanXoT workflows. iSanXoT has been tested for the outputs of MaxQuant 1.6.5.0.
+            The adaptor uses the following fields:
+          </p>
+          <ul>
+            <li>Output folder: describes the path to the folder where iSanXoT output files will be stored.</li>
+            <li>Default Input folder: specifies the location of the files containing results files.</li>
+            <li>Input files: indicates which of the text plain files stored in the input folder. The “modificationSpecificPeptides.txt” is the file considered by iSanXoT. The file names are listed under Identification file column, while their experiment is indicated in Experiment column.</li>
+            <li>Identifier of the associated modification summary stored in the file “modificationSpecificPeptides.txt”. The following figure displays originate file from the experiment (called “PME12”), but larger projects may encompass several experiments.</li>
+          </ul>
+          <p>
+            For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_Inputs_from_MaxQuant')">Adaptors > Inputs from MaxQuant</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

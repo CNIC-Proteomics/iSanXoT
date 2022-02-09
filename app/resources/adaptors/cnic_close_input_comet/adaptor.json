@@ -1,0 +1,68 @@
+{
+  "id": "cnic_close_input_comet",
+  "label": "CNIC Specific Adaptor for Comet",
+  "sdesc": "<p><i>Input from Comet</i>.</p>",
+  "description": "Long description for the adaptor.",
+  "works": [{
+    "id": "inputs",
+    "label": "Adaptor",
+    "description": "Short description for the current work (tab)",
+    "cmds": ["CREATE_IDQUANT", "FDR_Q", "JOINER_FDR", "GET_IDSTATS"]
+  }],
+  "commands": [{
+    "id": "CREATE_IDQUANT",
+    "label": "Files from Comet",
+    "title": "Provide input files from Comet",
+    "visible": true,
+    "panel_adp": "close_input_comet/panels/inputs.html",
+    "help_adp": "close_input_comet/hmodals/inputs.html",
+    "tasktable": {
+      "file": "create_idquant_comet.tsv",
+      "unique_exec": true,
+      "params": [
+        { "type": "required", "id": "infile", "name": "Identification file" },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "optional", "id": "mzfile", "name": "Quantification File (in mzML format)" },
+        { "type": "optional", "id": "quan_method", "name": "Quan Method" }
+    ]}
+  },{
+    "id": "FDR_Q",
+    "label": "FDR",
+    "title": "FDR calculation",
+    "sdesc": "Calculation of FDR and get the first protein selected alphabetically.",
+    "visible": true,
+    "panel_adp": "close_input_comet/panels/simple.html",
+    "help_adp": "close_input_comet/hmodals/fdr.html",
+    "tasktable": {
+      "file": "fdr_q_comet.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
+        { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
+        { "type": "required", "id": "fdr", "name": "FDR cutoff" },
+        { "type": "required", "id": "type_xcorr", "name": "Score", "dropdown": ["XCorr","cXCorr","hyperscore"] },
+        { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
+    ]}
+  },{
+    "id": "JOINER_FDR",
+    "label": "JOINER",
+    "sdesc": "Concatenate all fdr tables in one",
+    "visible": false
+  },{
+    "id": "JOINER_ID",
+    "label": "JOINER",
+    "sdesc": "Concatenate all ID tables in one",
+    "visible": false
+  },{
+    "id": "MASTERQ",
+    "label": "MASTERQ",
+    "sdesc": "Get the first protein selected alphabetically",
+    "visible": false
+  },{
+    "id": "GET_IDSTATS",
+    "label": "GET_IDSTATS",
+    "sdesc": "Get the statistics of ID table",
+    "visible": false
+  }]
+}

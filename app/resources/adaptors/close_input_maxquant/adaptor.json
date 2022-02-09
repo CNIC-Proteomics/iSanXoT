@@ -1,6 +1,6 @@
 {
   "id": "close_input_maxquant",
-  "label": "CNIC - Input from MaxQuant",
+  "label": "Input Data Adaptor for MaxQuant",
   "sdesc": "<p><i>Input from MaxQuant</i>.</p>",
   "description": "Long description for the adaptor.",
   "works": [{
