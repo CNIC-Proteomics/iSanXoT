@@ -4,7 +4,7 @@
 # COMMAND TEMPLATE 
 # Description:
 - name: RATIOS_INT
-  description: Calculate the ratios and integrate
+  description: Calculates the ratios between levels based on the V method
   force: 0
   rules:
 
