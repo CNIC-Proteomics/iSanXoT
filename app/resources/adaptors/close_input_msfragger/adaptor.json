@@ -17,7 +17,7 @@
     "panel_adp": "close_input_msfragger/panels/inputs.html",
     "help_adp": "close_input_msfragger/hmodals/inputs.html",
     "tasktable": {
-      "file": "create_idquant.tsv",
+      "file": "create_idquant_msf.tsv",
       "unique_exec": true,
       "params": [
         { "type": "required", "id": "infile", "name": "Identification file" },
@@ -50,7 +50,7 @@
     "panel_adp": "close_input_msfragger/panels/simple.html",
     "help_adp": "close_input_msfragger/hmodals/fdr.html",
     "tasktable": {
-      "file": "fdr_q.tsv",
+      "file": "fdr_q_msf.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
         { "type": "required", "id": "experiment", "name": "Experiment" },

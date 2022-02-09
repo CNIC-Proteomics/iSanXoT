@@ -17,7 +17,7 @@
     "panel_adp": "close_input_maxquant/panels/inputs.html",
     "help_adp": "close_input_maxquant/hmodals/inputs.html",
     "tasktable": {
-      "file": "create_idquant.tsv",
+      "file": "create_idquant_maxq.tsv",
       "unique_exec": true,
       "params": [
         { "type": "required", "id": "infile", "name": "Identification file" },
