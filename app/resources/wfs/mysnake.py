@@ -21,7 +21,6 @@ import yaml
 import subprocess
 import time
 import shlex
-import re
 
 
 ####################
@@ -30,14 +29,6 @@ import re
 import gvars
 
 NCPUS = int(2/3* mp.cpu_count())
-COMMAND_ORDER = ['COPY_INPUTS','MAIN_INPUTS','CREATE_IDQUANT','FDR_Q','FDR','JOINER_FDR','JOINER_ID','JOINER_IDQ','MASTERQ',
-                 'GET_IDSTATS',
-                 'RELS_CREATOR',
-                 'WSPP_SBT','WSPPG_SBT','WPP_SBT','WPPG_SBT',
-                 'LEVEL_CREATOR','LEVEL_CALIBRATOR',
-                 'INTEGRATE','NORCOMBINE','RATIOS_INT','SBT',
-                 'SANSON','REPORT'
-                 ]
 
 ###################
 # Local functions #
@@ -242,14 +233,6 @@ def main(args):
         sys.exit("ERROR!! Extracting the rules for each command: {}".format(exc))
     # get the total of commands
     total_cmds = len(cfg_rules)
-    # get dict with the commands_names and list of their own rules
-    dict_1=dict()
-    for c in cfg_rules:
-        n = re.sub('\_\d*$','',c['name'])
-        dict_1.setdefault(n, []).append(c)
-    # extract the order of processes
-    cfg_rules = [ dict_1[c] for c in COMMAND_ORDER if c in dict_1 ]
-    cfg_rules = [i for s in cfg_rules for i in s]
 
 
     
