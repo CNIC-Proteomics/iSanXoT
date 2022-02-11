@@ -600,8 +600,10 @@ def add_recursive_cmds(cmd):
             for file in files_ast:
                 folders_exp += _get_unmatch_folder(file, OUTFILES)
             # for each unmatched folder, create a list of rules and replace the '*' to unmatched folder
+            # get the unique folders but keeping the original orders
             rules_new = []
-            for folder_exp in np.unique(folders_exp):
+            # for folder_exp in np.unique(folders_exp):
+            for folder_exp in list(dict.fromkeys(folders_exp)):
                 rules_new.append( replace_val_rec(trules, {'\*': folder_exp}) )
             # assign the new rules to the command
             # update the output files
@@ -609,6 +611,7 @@ def add_recursive_cmds(cmd):
                 rules_new = [i for sublist in rules_new for i in sublist]
                 of = np.array([ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()])
                 OUTFILES = np.unique( np.concatenate((OUTFILES, of)) )
+                # OUTFILES = list(dict.fromkeys( np.concatenate((OUTFILES, of)) ))
                 cmd['rules'] = rules_new
     elif cmd['rule_infiles'] == 'multiple':
         # replace the input files that contains the "multiple infiles" (except its own outfiles)
@@ -812,11 +815,6 @@ def main(args):
     infiles_cmd = [ (i[0],o) for i in infiles_cmd for o in i[1] if o != '' ]
     infiles = np.unique([ o[1] for o in infiles_cmd ])
     # get the whole list of outfiles including the files coming from the user
-    # outfiles = [ o.replace('\\','/').split(';') for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['outfiles'].values() ]
-    # outfiles = [ o for i in outfiles for o in i if o != '' ]
-    # ai = [ o.replace('\\','/') for o in tpl['adaptor_inputs'].values()  ]
-    # tti = [ o['file'].replace('\\','/') for o in tpl['ttablefiles'] if 'file' in o ]
-    # outfiles = np.unique(outfiles + ai + tti)
     outfiles = [ o.replace('\\','/').split(';') for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['outfiles'].values() ]
     outfiles = np.unique([ o for i in outfiles for o in i if o != '' ])
     # check if infiles is a subset of outfiles
