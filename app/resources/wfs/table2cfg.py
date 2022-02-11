@@ -528,19 +528,6 @@ def add_params_cline(cmds):
             # add the command line
             rule['cline'] += " "+cparams
         
-# def _add_corrected_files(trule):
-#     '''
-#     add the correct files if '*' asterisk is in the path
-#     '''
-#     for k,files in trule.items():
-#         if '*' in files:
-#             l = []
-#             for file in files.split(";"):
-#                 l += [f for f in glob.glob(file, recursive=True)]
-#             if len(l) > 0:
-#                 trule[k] = ";".join(l)
-#     return trule
-
 def _get_unmatch_folder(file, outfiles):
     '''
     if the file matches, then get the folder that is not equal
@@ -597,7 +584,7 @@ def add_recursive_cmds(cmd):
         if len(files_ast) > 0:
             # for each file, if the file matches, then get the folder that is not equal
             folders_exp = []
-            for file in files_ast:
+            for file in np.unique(files_ast):
                 folders_exp += _get_unmatch_folder(file, OUTFILES)
             # for each unmatched folder, create a list of rules and replace the '*' to unmatched folder
             # get the unique folders but keeping the original orders
@@ -609,9 +596,8 @@ def add_recursive_cmds(cmd):
             # update the output files
             if len(rules_new) > 0:
                 rules_new = [i for sublist in rules_new for i in sublist]
-                of = np.array([ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()])
-                OUTFILES = np.unique( np.concatenate((OUTFILES, of)) )
-                # OUTFILES = list(dict.fromkeys( np.concatenate((OUTFILES, of)) ))
+                OUTFILES += [ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()]
+                OUTFILES = list(dict.fromkeys(OUTFILES)) # get unique without sort
                 cmd['rules'] = rules_new
     elif cmd['rule_infiles'] == 'multiple':
         # replace the input files that contains the "multiple infiles" (except its own outfiles)
@@ -740,14 +726,10 @@ def main(args):
                 if uniq_exec:
                     # add the parameters into each rule
                     tpl['commands'].append(add_unique_cmd_from_table(df, cmd_tpl))
-                    # # replace constants
-                    # tpl['commands'] = replace_val_rec(tpl['commands'], repl)
                 else: # the rest of commands
                     # create a command for each row
                     # add the parameters for each rule
                     tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
-                    # # replace constants
-                    # tpl['commands'] = replace_val_rec(tpl['commands'], repl)
                 # replace constants
                 tpl['commands'] = replace_val_rec(tpl['commands'], repl)
         # commands without ttable
@@ -762,38 +744,18 @@ def main(args):
 
 
     # ------
-    logging.info("get the list of outfiles")
+    logging.info("add the commands based on the '*' input files")
     global OUTFILES
     for i in range(len(tpl['commands'])):
         for j in range(len(tpl['commands'][i])):
+            # get the outputs of commands that have been ejecuted before. Not all
             for k in range(len(tpl['commands'][i][j]['rules'])):
                 trule = tpl['commands'][i][j]['rules'][k]
                 OUTFILES += [ofile for ofile in trule['outfiles'].values() if '*' not in ofile]
-    OUTFILES = np.array(OUTFILES)
-
-    
-
-    # ------
-    logging.info("add the commands based on the '*' input files")
-    for i in range(len(tpl['commands'])):
-        for j in range(len(tpl['commands'][i])):
             cmd = tpl['commands'][i][j]
             cmd = add_recursive_cmds(cmd) # and also update the OUTFILES
 
 
-
-    # logging.info("fill the '**' input_group files for each command")
-    # # replace the input files that contains the "recursive value" (**)
-    # # except its own outfiles
-    # for i in range(len(tpl['commands'])):
-    #     for j in range(len(tpl['commands'][i])):
-    #         for k in range(len(tpl['commands'][i][j]['rules'])):
-    #             trule = tpl['commands'][i][j]['rules'][k]
-    #             if 'type_infiles' in trule and trule['type_infiles'] == 'multiple':
-    #                 ofiles =  [i for i in OUTFILES if i not in trule['outfiles'].values()]
-    #                 trule['infiles'] = add_recursive_files(trule['infiles'], ofiles)
-
-    
 
     # ------
     logging.info("add command suffix and rule suffix")
