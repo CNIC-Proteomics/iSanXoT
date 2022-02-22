@@ -7,15 +7,15 @@
     "id": "inputs",
     "label": "Adaptor",
     "description": "Short description for the current work (tab)",
-    "cmds": ["CREATE_IDQUANT", "FDR_Q", "JOINER_FDR", "GET_IDSTATS"]
+    "cmds": ["CREATE_IDQUANT", "FDR", "JOINER_FDR", "PROTEIN_ASSIGNER"]
   }],
   "commands": [{
     "id": "CREATE_IDQUANT",
     "label": "Files from MSFragger",
     "title": "Provide input files from MSFragger",
     "visible": true,
-    "panel_adp": "close_input_msfragger/panels/inputs.html",
-    "help_adp": "close_input_msfragger/hmodals/inputs.html",
+    "panel_adp": "cnic_close_input_msfragger/panels/inputs.html",
+    "help_adp": "cnic_close_input_msfragger/hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_msf.tsv",
       "unique_exec": true,
@@ -30,8 +30,8 @@
     "label": "Files from MSFragger",
     "title": "Provide input files from MSFragger",
     "visible": true,
-    "panel_adp": "close_input_msfragger/panels/inputs.html",
-    "help_adp": "close_input_msfragger/hmodals/inputs.html",
+    "panel_adp": "cnic_close_input_msfragger/panels/inputs.html",
+    "help_adp": "cnic_close_input_msfragger/hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_joiner.tsv",
       "unique_exec": true,
@@ -42,15 +42,15 @@
         { "type": "optional", "id": "quan_method", "name": "Quan Method" }
     ]}
   },{
-    "id": "FDR_Q",
+    "id": "FDR",
     "label": "FDR",
     "title": "FDR calculation",
-    "sdesc": "Calculation of FDR and get the first protein selected alphabetically.",
+    "sdesc": "FDR calculation.",
     "visible": true,
-    "panel_adp": "close_input_msfragger/panels/simple.html",
-    "help_adp": "close_input_msfragger/hmodals/fdr.html",
+    "panel_adp": "cnic_close_input_msfragger/panels/simple.html",
+    "help_adp": "cnic_close_input_msfragger/hmodals/fdr.html",
     "tasktable": {
-      "file": "fdr_q_msf.tsv",
+      "file": "fdr_msf.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
         { "type": "required", "id": "experiment", "name": "Experiment" },
@@ -65,6 +65,25 @@
     "label": "JOINER",
     "sdesc": "Concatenate all fdr tables in one",
     "visible": false
+  },{
+    "id": "PROTEIN_ASSIGNER",
+    "label": "Protein Assigner",
+    "title": "Select the most probable protein",
+    "sdesc": "Calculate most probable protein assigned to each PSM.",
+    "visible": true,
+    "panel_adp": "cnic_close_input_msfragger/panels/simple-toggle.html",
+    "help_adp": "cnic_close_input_msfragger/hmodals/passigner.html",
+    "tasktable": {
+      "file": "protein_assigner_msf.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "peptide_col", "name": "Peptide column header" },
+        { "type": "required", "id": "protein_col", "name": "Protein column header" },
+        { "type": "required", "id": "output_col", "name": "Output Protein column header" },
+        { "type": "optional", "id": "prot_sep", "name": "Protein separator" },
+        { "type": "optional", "id": "prot_desc_col", "name": "Prot. Description column header" },
+        { "type": "optional", "id": "output_desc_col", "name": "Output Prot. Desc. column header" }
+    ]}
   },{
     "id": "GET_IDSTATS",
     "label": "GET_IDSTATS",

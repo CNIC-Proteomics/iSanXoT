@@ -43,10 +43,10 @@ def main(args):
     outdat = indat.groupby('Spectrum_File').agg({
         'Scan_Id': 'count',
         'Seq+Mod': lambda x: len(x.unique()),
-        'Protein': lambda x: len(x.unique())
+        'Protein_MPP': lambda x: len(x.unique())
     })
     outdat = outdat.reset_index()
-    outdat.rename(columns={'Spectrum_File': 'spectrum_files', 'Scan_Id':'scans', 'Seq+Mod': 'peptides', 'Protein': 'proteins'}, inplace=True)
+    outdat.rename(columns={'Spectrum_File': 'spectrum_files', 'Scan_Id':'scans', 'Seq+Mod': 'peptides', 'Protein_MPP': 'proteins'}, inplace=True)
 
     
     logging.info('print output')

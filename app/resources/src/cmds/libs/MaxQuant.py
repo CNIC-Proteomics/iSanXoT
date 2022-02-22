@@ -29,15 +29,15 @@ def processing_infiles(file, Expt):
     df["Peptide"] = s
     # add unique value for sequence
     idx = df.index.map(str)+"_"+df['Peptide']
-    df["SeqId"] = idx
+    df["Peptide_Id"] = idx
     # replace 0 to empty in the whole input dataframe
     df.replace('0','', regex=False, inplace=True)
-    # retrieve the first protein of list
-    prot  = df['Proteins'].apply( lambda x: sorted(x.split(';'))[0] if isinstance(x, str) and x != '' else '')
-    df['Protein'] = prot
-    # retrieve the first protein description of list
-    dsc  = df['Protein Names'].apply( lambda x: sorted(x.split(';'))[0] if isinstance(x, str) and x != '' else '')
-    df['Protein_Description'] = dsc
+    # # retrieve the first protein of list
+    # prot  = df['Proteins'].apply( lambda x: sorted(x.split(';'))[0] if isinstance(x, str) and x != '' else '')
+    # df['Protein'] = prot
+    # # retrieve the first protein description of list
+    # dsc  = df['Protein Names'].apply( lambda x: sorted(x.split(';'))[0] if isinstance(x, str) and x != '' else '')
+    # df['Protein_Description'] = dsc
 
     return df
 

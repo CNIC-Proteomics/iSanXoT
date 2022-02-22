@@ -46,7 +46,7 @@ function getAdaptorDir(wkf_dir) {
       let adp_name = '';
       let adpdirs = commoner.getDirectories(process.env.ISANXOT_ADAPTOR_HOME);
       for (let i = 0; i < adpdirs.length; i++) {
-        if ( adpdirs[i].endsWith(adp_id) ) {
+        if ( adpdirs[i] == adp_id ) {
           adp_name = adpdirs[i];
             break;
         }

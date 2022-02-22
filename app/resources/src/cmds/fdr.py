@@ -12,13 +12,13 @@ __status__ = "Development"
 # import global modules
 import os
 import sys
-import itertools
+# import itertools
 import argparse
 import logging
 import pandas as pd
 import numpy as np
-import re
-import xml.etree.ElementTree as etree
+# import re
+# import xml.etree.ElementTree as etree
 import concurrent.futures
 from itertools import repeat
 
@@ -66,45 +66,45 @@ def FdrXc(df, typeXCorr, FDRlvl):
     df = df[ df["T_D"] == 1 ]
     return df
 
-def extract_modifications(s_ddf):
-    '''
-    Create modifications dictionary from xml-doc of UNIMOD
-    '''
-    # extract the unique labels of modifications from the input files
-    m = re.findall(r'\(([^\)]*)\)', str(s_ddf))
-    return m
+# def extract_modifications(s_ddf):
+#     '''
+#     Create modifications dictionary from xml-doc of UNIMOD
+#     '''
+#     # extract the unique labels of modifications from the input files
+#     m = re.findall(r'\(([^\)]*)\)', str(s_ddf))
+#     return m
 
-def join_modifications(mods):
-    # declare
-    modifications = {}
-    lmods = np.unique( list(itertools.chain.from_iterable(mods)) )
-    # create xml-doc from UNIMOD
-    localdir = os.path.dirname(os.path.abspath(__file__))
-    root = etree.parse(localdir+'/unimod.xml').getroot()
-    ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
-    xdoc_mods = root.find('umod:modifications', ns)
-    # extract the delta mono_mass for each modification
-    for m in lmods:
-        delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
-        if delta:
-            mono_mass = delta.get('mono_mass')
-            m2 = r'\('+str(m)+r'\)'
-            modifications[m2] = '('+mono_mass+')'
-    return modifications
+# def join_modifications(mods):
+#     # declare
+#     modifications = {}
+#     lmods = np.unique( list(itertools.chain.from_iterable(mods)) )
+#     # create xml-doc from UNIMOD
+#     localdir = os.path.dirname(os.path.abspath(__file__))
+#     root = etree.parse(localdir+'/unimod.xml').getroot()
+#     ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
+#     xdoc_mods = root.find('umod:modifications', ns)
+#     # extract the delta mono_mass for each modification
+#     for m in lmods:
+#         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
+#         if delta:
+#             mono_mass = delta.get('mono_mass')
+#             m2 = r'\('+str(m)+r'\)'
+#             modifications[m2] = '('+mono_mass+')'
+#     return modifications
 
-def SequenceMod(df, mods, file):
-    '''
-    Create a sequence with modifications
-    '''
-    # get the dataframe from the input tuple df=(exp,df)
-    df = df[1]
-    # read which search engines we have
-    se = common.select_search_engines_acid(file)
-    # create sequence with modifications depending on
-    if se == "PD": df["Peptide"] = PD.SequenceMod(df, mods)
-    elif se == "Comet": df["Peptide"] = Comet.SequenceMod(df)
-    elif se == "MSFragger": df["Peptide"] = MSFragger.SequenceMod(df)
-    return df
+# def SequenceMod(df, mods, file):
+#     '''
+#     Create a sequence with modifications
+#     '''
+#     # get the dataframe from the input tuple df=(exp,df)
+#     df = df[1]
+#     # read which search engines we have
+#     se = common.select_search_engines_acid(file)
+#     # create sequence with modifications depending on
+#     if se == "PD": df["Peptide"] = PD.SequenceMod(df, mods)
+#     elif se == "Comet": df["Peptide"] = Comet.SequenceMod(df)
+#     elif se == "MSFragger": df["Peptide"] = MSFragger.SequenceMod(df)
+#     return df
 
 
 
@@ -134,17 +134,17 @@ def main(args):
     ddf = pd.concat(ddf)
 
     
-    logging.info("create modifications dictionary from xml-doc of UNIMOD")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        mods = executor.map(extract_modifications, ddf['Modifications'], chunksize=int(len(ddf)/args.n_workers))
-    modifications = join_modifications(mods)
-    logging.debug(modifications)
+    # logging.info("create modifications dictionary from xml-doc of UNIMOD")
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+    #     mods = executor.map(extract_modifications, ddf['Modifications'], chunksize=int(len(ddf)/args.n_workers))
+    # modifications = join_modifications(mods)
+    # logging.debug(modifications)
 
     
-    logging.info("calculate the SequenceMod by experiment")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        ddf = executor.map(SequenceMod, list(ddf.groupby("Experiment")), repeat(modifications), repeat(args.infile))
-    ddf = pd.concat(ddf)
+    # logging.info("calculate the SequenceMod by experiment")
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
+    #     ddf = executor.map(SequenceMod, list(ddf.groupby("Experiment")), repeat(modifications), repeat(args.infile))
+    # ddf = pd.concat(ddf)
 
 
     logging.info("print the output")

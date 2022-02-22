@@ -12,7 +12,7 @@
     infiles:
       -ii: __EXPDIR__/*/ID-fdr.tsv
     outfiles:
-      -o: __EXPDIR__/ID-q.tsv
+      -o: __EXPDIR__/ID.tsv
     parameters:
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/joiner.py" -w __NCPU__ __WF_VERBOSE__ '
