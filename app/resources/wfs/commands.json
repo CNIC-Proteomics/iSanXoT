@@ -132,7 +132,7 @@
     "id": "INTEGRATE",
     "label": "INTEGRATE",
     "title": "Integrate",
-    "sdesc": "This command performs an integration from an existing lower level to an upper level using a previously created Relation Table whose name matches the upper and lower levels (e.g. if the user wants to integrate from scan to peptide, isanxot will use the Relation Table called scan2peptide.tsv).",
+    "sdesc": "This module performs an integration from an existing lower level to a higher level using a previously created Relation Table whose name matches the higher and lower levels (e.g. if the user wants to integrate from scan to peptide, iSanXoT will use the Relation Table called scan2peptide.tsv).",
     "visible": true,
     "panel": "sections/panels/simple-toggle.html",
     "help_modal": "sections/hmodals/integrate.html",
