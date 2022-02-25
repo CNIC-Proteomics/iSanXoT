@@ -24,7 +24,8 @@ import re
 ####################
 # Global variables #
 ####################
-INFILE_SUFFIX = 'outStats.tsv'
+SUFFIX_OUTSTATS   = 'outStats.tsv'
+SUFFIX_LOWERNORMW = 'lowerNormW.tsv'
 COL_EXP  = 'NAME'
 COL_IDS_LEVEL = ['idinf','idsup']
 COL_VARS = {
@@ -35,7 +36,9 @@ COL_VARS = {
     'xsup':   'Xsup',
     'vsup':   'Vsup',
     'xinf':   'Xinf',
-    'vinf':   'Vinf'
+    'vinf':   'Vinf',
+    "x'inf":  "X'inf",
+    "winf":   "Winf",
 }
 SORTED_EXP_COLS = []
 
@@ -48,6 +51,15 @@ import common
 ###################
 # Local functions #
 ###################
+def get_all_statsfiles(prefix, folders, suffix):
+    listfiles = []
+    for folder in folders:
+        file = os.path.join(folder, f"{prefix}_{suffix}")
+        listfiles += [f for f in glob.glob(file, recursive=True)]
+    if not listfiles:
+        sys.exit(f"ERROR!! There are not files for the level:{prefix}")
+    return listfiles
+
 def read_infiles(file):
     # read file
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
@@ -57,7 +69,7 @@ def read_infiles(file):
 
     return df
 
-def create_report(ifiles, prefix, param_vars):
+def create_statsDF(ifiles, prefix, col_levels, param_vars):
     '''
     Create report from list of input files
 
@@ -75,13 +87,7 @@ def create_report(ifiles, prefix, param_vars):
     Returns
     -------
     Dataframe with the report.
-    '''
-    logging.debug("compile the level files...")
-    # get the characters of inferior and superior level
-    (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
-    col_levels = [prefix_i] + [prefix_s]
-
-    
+    '''    
     logging.debug(f"{prefix}: read and concat files")
     l = []
     for ifile in ifiles:
@@ -94,7 +100,9 @@ def create_report(ifiles, prefix, param_vars):
     df.drop(df.columns.difference(col_values), 1, inplace=True)
     
     logging.debug(f"{prefix}: rename inf,sup columns")
-    df.rename(columns={'idinf': prefix_i, 'idsup': prefix_s}, inplace=True)
+    c = {'idinf': col_levels[0]}
+    if len(col_levels) == 2: c['idsup'] = col_levels[1]
+    df.rename(columns=c, inplace=True)
 
     logging.debug("replace NaN table")
     # important!! NaN values is important for the statistics
@@ -140,6 +148,44 @@ def create_report(ifiles, prefix, param_vars):
     
     return df
 
+    
+def merge_dfs(df, df2):
+    '''
+    Merge dataframes
+    
+    Parameters
+    ----------
+    df : dataframe
+        Given dataframe.
+        
+    df2 : dataframe
+        Given dataframe.
+
+    Returns
+    -------
+    Merged dataframe.
+
+    '''
+    logging.debug("get the columns that are LEVELS from the current df")
+    # get the columns that are LEVELS from the external report
+    cols_2_idx = [ c[0] for c in df2.columns if c[1] == 'LEVEL' ]
+    # get the columns that are LEVELS from the current df
+    cols_1_idx = [ c[0] for c in df.columns if c[1] == 'LEVEL' ]
+
+    logging.debug("get the relationships intersection for the merging")
+    # merge with given intermediate report based on the intersection relationship from peptide/protein/category
+    # Only if there is intersection between the relationship columns (peptide/protein/category)
+    cols_12_idx = list(set(cols_1_idx) & set(cols_2_idx))
+    if cols_12_idx:
+        logging.debug(f"merge with given intermediate report {cols_12_idx}")
+        # merge with given intermediate report.
+        # outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
+        cols_12_idx = [(c,'LEVEL') for c in cols_12_idx]
+        df3 = pd.merge(df2,df, on=cols_12_idx, how='outer')
+        return df3
+    else:
+        return df
+    
 def merge_intermediate(file, df):
     '''
     Merge intermediate file and given dataframe
@@ -160,26 +206,11 @@ def merge_intermediate(file, df):
     logging.debug("read intermediate file")
     df2 = pd.read_csv(file, sep="\t", header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
     
-    logging.debug("get the columns that are LEVELS from the current df")
-    # get the columns that are LEVELS from the external report
-    cols_2_idx = [ c[0] for c in df2.columns if c[1] == 'LEVEL' ]
-    # get the columns that are LEVELS from the current df
-    cols_1_idx = [ c[0] for c in df.columns if c[1] == 'LEVEL' ]
-
-    logging.debug("get the relationships intersection for the merging")
-    # merge with given intermediate report based on the intersection relationship from peptide/protein/category
-    # Only if there is intersection between the relationship columns (peptide/protein/category)
-    cols_12_idx = list(set(cols_1_idx) & set(cols_2_idx))
-    if cols_12_idx:
-        logging.debug(f"merge with given intermediate report {cols_12_idx}")
-        # merge with given intermediate report.
-        # outer: use union of keys from both frames, similar to a SQL full outer join; sort keys lexicographically.
-        cols_12_idx = [(c,'LEVEL') for c in cols_12_idx]
-        df3 = pd.merge(df2,df, on=cols_12_idx, how='outer')
-        return df3
-    else:
-        return df
-                
+    logging.debug("merge dataframes")
+    df = merge_dfs(df, df2)
+    
+    return df
+    
 def add_relation(idf, file, prefix):
     
     # read relationship file
@@ -210,38 +241,51 @@ def main(args):
     
     # HANDLE with the parameters ----
     
+    # get the characters of inferior and superior level
+    prefix = args.level
+    (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
+
     # Important note! We are not using the given input files.
     # We are going to take the folders and then, obtain the files from the calculated prefixes
-    logging.info("get the list of folder from the given files")
+    logging.info("get the list of folder from the given files")    
     folders = []
     for files in re.split(r'\s*;\s*', args.infiles.strip()):
         folders += [os.path.dirname(f) for f in glob.glob(files, recursive=True)]
     logging.debug(folders)
 
 
-    logging.info("create a dictionary using the calculated prefixes and the all given folders")
-    prefix = args.level
-    listfiles = []
-    for folder in folders:
-        file = os.path.join(folder, f"{prefix}_{INFILE_SUFFIX}")
-        listfiles += [f for f in glob.glob(file, recursive=True)]
-    if not listfiles:
-        sys.exit(f"ERROR!! There are not files for the level:{prefix}")    
+    logging.info("get all {prefix}_{SUFFIX_OUTSTATS} files")
+    listfiles = get_all_statsfiles(prefix, folders, SUFFIX_OUTSTATS)
 
 
     logging.info("extract the list of given variables")
     param_vars = []
     if args.vars:
         param_vars = [COL_VARS[v.lower()] for v in re.split(r'\s*,\s*', args.vars.strip()) if v.lower() in COL_VARS]
-    # param_values = [COL_EXP] + COL_IDS_LEVEL + param_vars
 
 
-    # START with the work ----
 
-    logging.info("create report from list of input files")
-    df = create_report(listfiles, prefix, param_vars)
+    logging.info("create outStats df from list of input files")
+    col_levels = [prefix_i] + [prefix_s] # provide the levels to extract
+    df = create_statsDF(listfiles, prefix, col_levels, param_vars)
+
+
     
+    # if apply, we add the lowerNormW values
+    if "X'inf" in param_vars or "Winf" in param_vars:
+        
+        logging.info("get all {prefix}_{SUFFIX_LOWERNORMW} files")
+        listfiles = get_all_statsfiles(prefix, folders, SUFFIX_LOWERNORMW)
+        
+        logging.info("create lowerNormW df from list of input files")
+        col_levels = [prefix_i] # provide the levels to extract
+        df2 = create_statsDF(listfiles, prefix, col_levels, param_vars)
+        
+        logging.debug("merge lowerNormW df and outStats df")
+        df = merge_dfs(df, df2)
 
+
+    
     # if apply and there is a relationship, we add an intermediate report
     # check if given additional file exits
     if args.rep_file:
