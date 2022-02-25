@@ -376,12 +376,17 @@ def getKandVariance(inputRawData,
 	else:
 		seed = [kSeed, varianceSeed]
 		bestSol, success = leastsq(residuals, seed, args = (inputRawData, inputRelations, medianSide, verbose, showSumSQ, useCooperativity), maxfev = maxIterations)
-	
-	kOut = bestSol[0]
-	varianceOut = bestSol[1]
+
+    # begin: jmrc
+    # When the number of cycles in calibrate is exceeded, we can use k=600, var=0.04 by default. This is based on the values from PESA project
+	if success == 1 or success == 2 or success == 3 or success == 4:
+		kOut = bestSol[0]
+		varianceOut = bestSol[1]
+	else:
+		kOut = 600
+		varianceOut = 0.04
 	if useCooperativity: alphaOut = bestSol[2]
-	# kOut = k
-	# varianceOut = variance
+    # end: jmrc
 	
 	if verbose:
 		print()
