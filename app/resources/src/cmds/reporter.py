@@ -136,7 +136,7 @@ def create_report(ifiles, prefix, param_vars):
         df.columns = pd.MultiIndex.from_tuples(cols_name)
     
         logging.debug("discard the columns with 1's (all)")
-        df = df[[col for col in df.columns if not df[col].nunique()==1]]
+        df = df[[col for col in df.columns if not (df[col].nunique()==1 and df[col].unique()[0]==1) ]]
     
     return df
 
