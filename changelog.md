@@ -1,7 +1,7 @@
 ___
-## 0.4.4
+## 0.4.5
 ```
-DATE: 2022_02
+DATE: 2022_03
 ```
 
 ### Highlights
@@ -9,23 +9,92 @@ DATE: 2022_02
 
 ### Changes in the Graphical User Interface
 
-+ TODO!! Add the several workflow types.
++ We have created some case studies to ilustrade the type of workflows:
+	- WSPP: Work by González-Amor M, et al. Cardiovasc Res. 2021
+		* WSPP step by step without asterisks (the jack of all trades)
+		* Report:
+			- Npep2prot_Quanprot: Zq, Nq(npeptides/prot)
+	- WSPP-SBT: Work by García-Marqués F, et al. Mol Cell Proteomics. 2016:
+		* Biology Systems: WSPP-SBT
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
+			- Zprot2cat_Quanprot_Quancat: Zq, Zc
+	- WSPP_NORCOMBINE_RATIOS_SBT: Work by González-Amor M, et al. Cardiovasc Res. 2021
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+		* Report using the asterisk (the jack of all trades) (1 sample)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
+			- Zprot2cat_Quanprot_Quancat: Zq, Zc
+		* Report produced by the merge of the sample reports with the ratios sample report (SBT)
+	- WSPP_PTM: Work by Bonzon-Kulichenko E, et al. J Proteomics. 2020
+		* WSPP step by step using asterisks (the jack of all trades)
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq,  FDRq, Nq(npeptides/prot)
+			- Npep2prot_Quanprot: Zpq, FDRpq, Ns(nscans/pep)
 
-+ TODO!! Fix the percentage of log panels!!
+	- TODO!!! Incluir un WorkFlow LABELFREE!!
 
 + TODO!! Complete documentation.
+	- Indicar en la documentación que debe coger configurar las búsquedas para que cojan el "Search Rank Hit" == 1
 
-+ TODO!! Cover the username of pictures.
 
 ### Changes in the Code Workflow
 
-+ Force the execution of Main-Input adaptor.
 
-+ Mysnake: we have developed a new way to obtain the list of processes.
++ TODO:
+- Hacer el ADAPTADOR GENERAL basado en las salidas de los PROGRAMAS QUE PROCESAN LAS SALIDAS DE LOS IDENTIFICADORES: TPP, MaxQuant, FragPipe (), PD.
 
-+ TODO!!! Arreglar el LEVEL_CRAETOR. Que sea PARALELO.
++ TODO!! Si fuerzas, que aparezcan todos los procesos en la ejecucción (mysnake)
 
-+ TODO!! Añadir ProteinAsignator?
++ TODO!!! Arreglar el LEVEL_CREATOR. Que sea PARALELO.
+
+
+___
+## 0.4.4
+```
+DATE: 2022_02
+```
+
+### Highlights
+
++ PROTEIN_ASSIGNER is the new Module for CNIC Adaptors.
+
++ The REPORT module can retrieve the X'inf and Winf from the _lowerNormW files.
+
+### Changes in the Graphical User Interface
+
++ We have included more details in the short description for the SBT module and RATIOS module.
+
++ Create general adaptors for the search engines: Proteome Discoverer, MSFragger, Comet and MaxQuant.
+
++ Fixing a minor problem loading the adaptors.
+
++ PROTEIN_ASSIGNER is the new Module for CNIC Adaptors.
+
+### Changes in the Code Workflow
+
++ Minor changes: changes the descrioption of ratios command.
+
++ Now, the modules of adaptors are independent.
+
++ TABLE2CFG: fixing a problem with the unique function. We want the unique list bbut without sort.
+
++ General Adaptors for Proteome Discoverer, MSFragger, Comet, and MaxQuant:
+	- These adaptors only create the columns: Experiment, Scan_Id, and Peptide_Id.
+	- The calculation of Peptide_Id is without the DeltaMass forgetting the unimod file.
+
++ CNIC Specific Adaptors:
+	- These adaptors have the FDR calculation including the cXCorr (for PD).
+	- There is a new Module for CNIC Adaptors: ProteinAssigner 
+
++ KLIBRATE: When the number of cycles in calibrate is exceeded, we can use k=600, var=0.04 by default. This is based on the values from PESA project:
+<img src="docs/images/changelog/k_v_PESA.png">
+
++ REPORT:
+	- Bug fixed: the program does not retrieve the Xsup value.
+	- The program can retrieve the X'inf and Winf from the _lowerNormW files.
 
 ___
 ## 0.4.3
