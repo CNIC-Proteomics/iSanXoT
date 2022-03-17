@@ -14,8 +14,8 @@
     "label": "Files from Comet",
     "title": "Provide input files from Comet",
     "visible": true,
-    "panel_adp": "close_input_comet/panels/inputs.html",
-    "help_adp": "close_input_comet/hmodals/inputs.html",
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_comet.tsv",
       "unique_exec": true,

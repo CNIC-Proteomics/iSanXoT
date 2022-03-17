@@ -226,12 +226,6 @@ importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
 importHTMLtemplate(`${__dirname}/../iSanXoT-Help.html`);
-// importHTMLtemplate(`${__dirname}/../sections/helps/help_intro.html`);
-// importHTMLtemplate(`${__dirname}/../sections/helps/help_cmds.html`);
-// importHTMLtemplate(`${__dirname}/../sections/helps/help_get-started.html`);
-// importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-basic.html`);
-// importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-ptm.html`);
-// importHTMLtemplate(`${__dirname}/../sections/helps/help_wf-lblfree.html`);
 
 // Import scripts
 let exceptor = require('./exceptor');

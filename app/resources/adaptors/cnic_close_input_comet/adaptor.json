@@ -14,8 +14,8 @@
     "label": "Files from Comet",
     "title": "Provide input files from Comet",
     "visible": true,
-    "panel_adp": "cnic_close_input_comet/panels/inputs.html",
-    "help_adp": "cnic_close_input_comet/hmodals/inputs.html",
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_comet.tsv",
       "unique_exec": true,
@@ -31,8 +31,8 @@
     "title": "FDR calculation",
     "sdesc": "FDR calculation.",
     "visible": true,
-    "panel_adp": "cnic_close_input_comet/panels/simple.html",
-    "help_adp": "cnic_close_input_comet/hmodals/fdr.html",
+    "panel_adp": "panels/simple.html",
+    "help_adp": "hmodals/fdr.html",
     "tasktable": {
       "file": "fdr_comet.tsv",
       "params": [
@@ -55,8 +55,8 @@
     "title": "Select the most probable protein",
     "sdesc": "Calculate most probable protein assigned to each PSM.",
     "visible": true,
-    "panel_adp": "cnic_close_input_comet/panels/simple-toggle.html",
-    "help_adp": "cnic_close_input_comet/hmodals/passigner.html",
+    "panel_adp": "panels/simple-toggle.html",
+    "help_adp": "hmodals/passigner.html",
     "tasktable": {
       "file": "protein_assigner_comet.tsv",
       "params": [

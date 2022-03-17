@@ -125,13 +125,13 @@ for (var i = 0; i < wf['works'].length; i++) {
     $(`#${wk_id} #page-content`).append(`<div id="page-tasktable-${cmd_id}"></div>`);
     // add create tasktable panel
     if ( 'panel_adp' in cmd && cmd['panel_adp'] ) {
-      importer.importHTMLtemplate(path.join(adpDir, cmd['panel_adp']), `#${wk_id} #page-tasktable-${cmd_id}`);
+      importer.importHTMLtemplate(path.join(adpDir, wf['adaptor_id'], cmd['panel_adp']), `#${wk_id} #page-tasktable-${cmd_id}`);
     } else if ( 'panel' in cmd && cmd['panel'] ) {
       importer.importHTMLtemplate(`${__dirname}/../${cmd['panel']}`, `#${wk_id} #page-tasktable-${cmd_id}`);
     }
     // add the help modal of the tasktable/command
     if ( 'help_adp' in cmd && cmd['help_adp'] ) {
-      importer.importHTMLtemplate(path.join(adpDir, cmd['help_adp']), `#${wk_id} #page-tasktable-${cmd_id} .help_adp`);
+      importer.importHTMLtemplate(path.join(adpDir, wf['adaptor_id'], cmd['help_adp']), `#${wk_id} #page-tasktable-${cmd_id} .help_adp`);
     } else if ( 'help_modal' in cmd && cmd['help_modal'] ) {
       importer.importHTMLtemplate(`${__dirname}/../${cmd['help_modal']}`, `#${wk_id} #page-tasktable-${cmd_id} .help_modal`);
     }
@@ -271,6 +271,11 @@ for (var i = 0; i < wf['works'].length; i++) {
           },
           licenseKey: 'non-commercial-and-evaluation'    
       });
+      // add handsontable settings
+      if ( 'settings' in cmd_ttable ) {
+        $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('updateSettings', cmd_ttable['settings'] );
+        $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).handsontable('render');
+      }
 
     } // end tasktable in cmd
 

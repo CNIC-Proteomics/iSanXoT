@@ -14,8 +14,8 @@
     "label": "Files from Proteome Discoverer",
     "title": "Provide input files from Proteome Discoverer",
     "visible": true,
-    "panel_adp": "close_input_pd/panels/inputs.html",
-    "help_adp": "close_input_pd/hmodals/inputs.html",
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_pd.tsv",
       "unique_exec": true,

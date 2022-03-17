@@ -14,8 +14,8 @@
     "label": "Files from MSFragger",
     "title": "Provide input files from MSFragger",
     "visible": true,
-    "panel_adp": "cnic_close_input_msfragger/panels/inputs.html",
-    "help_adp": "cnic_close_input_msfragger/hmodals/inputs.html",
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_msf.tsv",
       "unique_exec": true,
@@ -30,8 +30,8 @@
     "label": "Files from MSFragger",
     "title": "Provide input files from MSFragger",
     "visible": true,
-    "panel_adp": "cnic_close_input_msfragger/panels/inputs.html",
-    "help_adp": "cnic_close_input_msfragger/hmodals/inputs.html",
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
     "tasktable": {
       "file": "create_idquant_joiner.tsv",
       "unique_exec": true,
@@ -47,8 +47,8 @@
     "title": "FDR calculation",
     "sdesc": "FDR calculation.",
     "visible": true,
-    "panel_adp": "cnic_close_input_msfragger/panels/simple.html",
-    "help_adp": "cnic_close_input_msfragger/hmodals/fdr.html",
+    "panel_adp": "panels/simple.html",
+    "help_adp": "hmodals/fdr.html",
     "tasktable": {
       "file": "fdr_msf.tsv",
       "params": [
@@ -71,8 +71,8 @@
     "title": "Select the most probable protein",
     "sdesc": "Calculate most probable protein assigned to each PSM.",
     "visible": true,
-    "panel_adp": "cnic_close_input_msfragger/panels/simple-toggle.html",
-    "help_adp": "cnic_close_input_msfragger/hmodals/passigner.html",
+    "panel_adp": "panels/simple-toggle.html",
+    "help_adp": "hmodals/passigner.html",
     "tasktable": {
       "file": "protein_assigner_msf.tsv",
       "params": [

@@ -1,5 +1,6 @@
 [
-    { "id": "main_input", "label": "Main-Input", "enabled": false, "clicked": { "dir": "main_input" } },
+    { "id": "main_input", "label": "Main IDq", "enabled": false, "clicked": { "dir": "main_input" } },
+    { "id": "general_input", "label": "General Input", "enabled": false, "clicked": { "dir": "general_input" } },
     { "type": "separator" },
     { "label": "Input Data Adapters for Proteome Discoverer", "submenu": [
         { "id": "close_input_pd", "label": "General Adaptor", "enabled": false, "clicked": { "dir": "close_input_pd" } },
