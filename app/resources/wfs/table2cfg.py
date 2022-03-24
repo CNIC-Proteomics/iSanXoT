@@ -232,10 +232,20 @@ def _add_datparams_params(p, trule, dat):
             # Exceptions in the 'Variance' parameters:
             # If the value is not false, apply the new variance
             # Otherwise, by default
-            if p.endswith('Var(x)') and dat != 'nan':
+            if p.endswith('var(x)') and dat != 'nan':
                 if dat.upper() != 'FALSE':
-                    del trule['infiles']['-V'] # delete the infile with the variance (by default)
-                    trule['parameters'][p][k] = dat
+                    # delete the infile with the variance (by default)
+                    if '-V' in trule['infiles']: del trule['infiles']['-V']
+                    # force the parameters
+                    trule['more_params'] = '-f '
+                    # create file with the forced variance
+                    o = os.path.dirname( list(trule['outfiles'].values())[0] ) # get the base path of output
+                    vf = os.path.join(o, trule['parameters']['anal']['-a']+'_forcedvar.txt')
+                    f = open(vf, "w")
+                    f.write(f"Variance = {dat}")
+                    f.close()
+                    # add variance file
+                    trule['parameters'][p]['-V'] = vf
                 else:
                     del trule['parameters'][p] # delete the optional parameter of variance
             # Exceptions in the 'Tag' parameters:
@@ -356,12 +366,13 @@ def _add_rules(row, irules):
     rules = copy.deepcopy(irules)
 
     # if 'output' folder does not exits, then we copy the value of 'input' folder
+    # append at the begining of serie the new output value
     if 'output' in row:
         if 'input' in row:
-            row['output'] = row['output'] if row['output'] != 'nan' and row['output'] != '' else row['input']
+            row = pd.concat([ pd.Series({'output': row['output']}), row ]) if row['output'] != 'nan' and row['output'] != '' else row['input']
     else:
         if 'input' in row:
-            row['output'] = row['input']
+            row = pd.concat([ pd.Series({'output': row['input']}), row ])
             
     # Exception in SBT command!!
     # if "lowhig_level" and "inthig_level" don't exit, Then, we include the "low_level"ALL and "int_level"ALL, respectively.

@@ -55,7 +55,7 @@
       maxiterations:
         -m: 600
       s>p_var(x):
-        -v: ''
+        -V: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_sbt#s2p_sanxotsieve
@@ -72,7 +72,7 @@
       s>p_fdr:
         -f: 0.01
       s>p_var(x):
-        -v: ''
+        -V: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
   - name: wspp_sbt#s2p_sanxot2
@@ -107,7 +107,7 @@
       maxiterations:
         -m: 600
       p>q_var(x):
-        -v: ''
+        -V: ''
       p>q_tag:
         --tags: ''
     more_params: ''
@@ -126,7 +126,7 @@
       p>q_fdr:
         -f: 0.01
       p>q_var(x):
-        -v: ''
+        -V: ''
       p>q_tag:
         --tags: ''
     more_params: ''
@@ -165,7 +165,7 @@
       maxiterations:
         -m: 600
       q>c_var(x):
-        -v: ''
+        -V: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
   - name: wspp_sbt#q2c_sanxotsieve
@@ -182,7 +182,7 @@
       q>c_fdr:
         -f: 0.01
       q>c_var(x):
-        -v: ''
+        -V: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
   - name: wspp_sbt#q2c_sanxot2
