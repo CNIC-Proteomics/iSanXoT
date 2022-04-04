@@ -22,7 +22,7 @@ import itertools
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{os.path.dirname(__file__)}/libs")
+sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 import PD
 import MSFragger
@@ -177,7 +177,7 @@ def main(args):
                                 list(ddf.groupby("Experiment")),
                                 itertools.repeat(args.outdir),
                                 itertools.repeat("ID.tsv") )
-    [common.print_outfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
+    [common.rename_tmpfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
         
 
 

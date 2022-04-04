@@ -1,21 +1,5 @@
 [
-    { "id": "main_input", "label": "Main IDq", "enabled": false, "clicked": { "dir": "main_input" } },
-    { "id": "general_input", "label": "General Input", "enabled": false, "clicked": { "dir": "general_input" } },
-    { "type": "separator" },
-    { "label": "Input Data Adapters for Proteome Discoverer", "submenu": [
-        { "id": "close_input_pd", "label": "General Adaptor", "enabled": false, "clicked": { "dir": "close_input_pd" } },
-        { "id": "cnic_close_input_pd", "label": "CNIC Specific Adaptor", "enabled": false, "clicked": { "dir": "cnic_close_input_pd" } }
-    ]},
-    { "label": "Input Data Adapters for MSFragger", "submenu": [
-        { "id": "close_input_msfragger", "label": "General Adaptor", "enabled": false, "clicked": { "dir": "close_input_msfragger" } },
-        { "id": "cnic_close_input_msfragger", "label": "CNIC Specific Adaptor", "enabled": false, "clicked": { "dir": "cnic_close_input_msfragger" } }
-    ]},
-    { "label": "Input Data Adapters for Comet", "submenu": [
-        { "id": "close_input_comet", "label": "General Adaptor", "enabled": false, "clicked": { "dir": "close_input_comet" } },
-        { "id": "cnic_close_input_comet", "label": "CNIC Specific Adaptor", "enabled": false, "clicked": { "dir": "cnic_close_input_comet" } }
-    ]},
-    { "label": "Input Data Adapters for MaxQuant", "submenu": [
-        { "id": "close_input_maxquant", "label": "General Adaptor", "enabled": false, "clicked": { "dir": "close_input_maxquant" } },
-        { "id": "cnic_close_input_maxquant", "label": "CNIC Specific Adaptor", "enabled": false, "clicked": { "dir": "cnic_close_input_maxquant" } }
-    ]}
+    { "id": "general_input_adapter", "label": "Create the IDq", "enabled": false, "clicked": { "dir": "general_input_adapter" } },
+    { "id": "main_input", "label": "Providing the IDq", "enabled": false, "clicked": { "dir": "main_input" } },
+    { "id": "cnic_input_adapter", "label": "CNIC Input Adapter", "enabled": false, "clicked": { "dir": "cnic_input_adapter" } }
 ]

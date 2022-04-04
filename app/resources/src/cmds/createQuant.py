@@ -463,7 +463,7 @@ def main(args):
                                     itertools.repeat(args.outdir),
                                     itertools.repeat("ID-quant.tsv") )  
         # rename tmp file deleting before the original file 
-        [createID.print_outfile(f) for f in list(tmpfiles)]
+        [createID.common.print_tmpfile(f) for f in list(tmpfiles)]
 
     # the program "does anything"... copy the ID.tsv to ID-quant.tsv
     else:
@@ -477,7 +477,7 @@ def main(args):
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
             tmpfiles = executor.map( copy_by_experiment, Expt, itertools.repeat(args.outdir) )  
         # rename tmp file deleting before the original file 
-        [createID.print_outfile(f) for f in list(tmpfiles)]
+        [createID.common.print_tmpfile(f) for f in list(tmpfiles)]
     
     
         

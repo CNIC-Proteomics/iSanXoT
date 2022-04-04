@@ -9,7 +9,7 @@
   rules:
   - name: rels_creator_createrels
     infiles:
-      -ii: __WF_INF_INFILES__
+      -ii: __WF_RELS_INFILE__
       # optional input files
       --sup_infiles: ''
       --thr_infiles: ''

@@ -126,28 +126,35 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
         for (var j = 0; j < wk['cmds'].length; j++) {
             let cmd = wk['cmds'][j];
             let cmd_id = cmd['id'];
-            // create a tasktable for every command
+            let cmd_ttablefiles = {};
             if ( !('ttablefiles' in cfg) ) { cfg['ttablefiles'] = []; }
-            if ( 'tasktable' in cmd && 'file' in cmd['tasktable'] ) {
-                let ttable_file = `${cfg_dir}/${cmd['tasktable']['file']}`;
-                if ( fs.existsSync(ttable_file) ) {
-                    // add the info into config file
-                    let c = {
-                        'type': cmd_id,
-                        'file': ttable_file
+            // create the tasktables for every command            
+            if ( 'tasktable' in cmd ) {
+                let cmd_ttables = [];
+                for (let k=0; k < cmd['tasktable'].length; k++) {
+                    let cmd_ttable = cmd['tasktable'][k];
+                    let cmd_ttable_id = ('id' in cmd_ttable) ? cmd_ttable['id'] : cmd_id.toLowerCase();
+                    if ( 'file' in cmd_ttable ) {
+                        let f = `${cfg_dir}/${cmd_ttable['file']}`;
+                        if ( fs.existsSync(f) ) {
+                            cmd_ttables.push({
+                                'id': cmd_ttable_id,
+                                'file': f
+                            });
+                        }
+                    }
+                }
+                // add to ttfiles for every cmd
+                if ( cmd_ttables.length > 0 ) {
+                    cmd_ttablefiles = {
+                        'name': cmd_id,
+                        'ttables': cmd_ttables
                     };
-                    if ( 'unique_exec' in cmd['tasktable'] ) c['unique_exec'] = true;
-                    cfg['ttablefiles'].push(c);
+                    if ( 'unique_exec' in cmd ) cmd_ttablefiles['unique_exec'] = true;
                 }
             }
-            // command without tasktable
-            else {
-                // add the info into config file
-                let c = {
-                    'type': cmd_id
-                };
-                cfg['ttablefiles'].push(c);
-            }
+            // add to cfg
+            if ( Object.keys(cmd_ttablefiles).length > 0 ) cfg['ttablefiles'].push(cmd_ttablefiles);
         }
     }
     // Write cfg file sync

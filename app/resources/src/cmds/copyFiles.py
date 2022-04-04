@@ -22,7 +22,7 @@ import itertools
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{os.path.dirname(__file__)}/libs")
+sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 
 
@@ -89,7 +89,7 @@ def main(args):
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
         tmpfiles = executor.map( print_by_keyinput, ddf, itertools.repeat(args.outdir))
     # tmpfiles = print_by_keyinput( ddf[0], args.outdir)
-    [common.print_outfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
+    [common.rename_tmpfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 
     
 
 

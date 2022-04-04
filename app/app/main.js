@@ -128,8 +128,11 @@ function createMainWindow () {
     console.log = function() {};
   }
 
+  // maximum size
+  // mainWindow.maximize();
+
   // give the focus
-  mainWindow.focus()
+  mainWindow.focus();
 
   // Emitted when the window is starting to be close.
   mainWindow.on('close', function(event) {

@@ -45,7 +45,7 @@ SORTED_EXP_COLS = []
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{os.path.dirname(__file__)}/libs")
+sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 
 ###################
@@ -354,7 +354,7 @@ def main(args):
     f = f"{args.outfile}.tmp"
     df.to_csv(f, sep="\t", index=False)
     # rename tmp file deleting before the original file 
-    common.print_outfile(f)
+    common.rename_tmpfile(f)
 
 
 

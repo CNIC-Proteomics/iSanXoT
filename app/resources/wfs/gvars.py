@@ -32,21 +32,21 @@ ISANXOT_PYTHON_PARAMS     = "-Wignore"
 
 
 if plat == 'Windows':   
-    ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/cmds/libs/"
+    ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java.exe"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz-2.50.0/bin/dot.exe"
 
     ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
 
 elif plat == 'Darwin':
-    ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/cmds/libs/"
+    ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz-2.50.0/bin/dot"
     
     ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
 
 elif plat == 'Linux':
-    ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/cmds/libs/"
+    ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz-2.50.0/bin/dot"
     

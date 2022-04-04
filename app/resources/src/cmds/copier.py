@@ -21,7 +21,7 @@ __status__ = "Development"
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{os.path.dirname(__file__)}/libs")
+sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 
 #################
@@ -37,7 +37,7 @@ def main(args):
         f = f"{args.outfile}.tmp"
         shutil.copyfile(args.infile, f)
         # rename tmp file deleting before the original file 
-        common.print_outfile(f)        
+        common.rename_tmpfile(f)        
     except Exception as exc:
         sms = "ERROR!! Copying file: {}".format(exc)
         print(sms) # message to stdout with logging output

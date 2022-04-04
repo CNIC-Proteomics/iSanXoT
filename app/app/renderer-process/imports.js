@@ -15,26 +15,15 @@ const { dialog } = require('electron').remote;
 // Resize table from the window size
 var resizeId = null;
 function doneResizing() {
-    let winheight = $(window).height();    
+    let winheight = $(window).height();
+    let outerheight = $('.tab-content').outerHeight(); // content height
     if ( $('.tab-content').length ) {
         let newheight = winheight - 142;
         $(`.tab-content`).height(newheight);
+        // get the maximum height for sideber
+        if ( outerheight > $(`#sidebar`).height() ) $(`#sidebar`).height(outerheight);
     }
-    if ( $('.tasktable').length ) {
-        let newheight = winheight - 260;
-        $(`.tasktable`).height(newheight);
-        $(`.wtHolder`).height(newheight);        
-        $(`#page-tasktable-CREATE_ID .tasktable`).height('auto');
-        $(`#page-tasktable-CREATE_ID .wtHolder`).height('auto');
-    }
-    // if ( $('#panel-logger').length ) {
-    //     let newheight = winheight - 156;
-    //     $(`#panel-logger`).height(newheight);
-    // }
-    // if ( $('.logtable').length ) {
-    //     let newheight = winheight - 210;
-    //     $(`#workflowlogs .logtable`).height(newheight);
-    // }
+
 }
 
 // Function when the windows is resize
@@ -42,22 +31,6 @@ $(window).resize(function() {
     clearTimeout(resizeId);
     resizeId = setTimeout(doneResizing, 250);
 });
-// // Operations when the html document is ready
-// $(document).ready(function() {
-//     // operations in task-tables
-//     if ( $('.tasktable').length ) {
-//         // render all task-table
-//         $(`.tasktable`).handsontable('render');
-//     }
-//     if ( $('.logtable').length ) {
-//         // render all task-table
-//         $(`.logtable`).handsontable('render');
-//     }
-//     // resize panels
-//     doneResizing();
-//     // stop any loading panel
-//     exceptor.stopLoadingWorkflow();
-// });
 // Operations when the windows is loaded
 $(window).on('load', function() {
     // operations in task-tables

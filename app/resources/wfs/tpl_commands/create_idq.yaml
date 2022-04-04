@@ -1,0 +1,20 @@
+---
+
+###################
+# COMMAND TEMPLATE 
+# Description: 
+- name: CREATE_IDQ
+  description: Create a file with the identifications.
+  force: 0
+  rules:
+  - name: create_idq#create_idq
+    infiles:
+      -id:  __INDIR__
+      -te: __TTABLEFILE_ADD_EXPCOL__
+      -tl: __TTABLEFILE_ADD_LEVELID__
+    outfiles:        
+      -o: __EXPDIR__/ID-q.tsv
+    parameters:
+    more_params: ''
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/createIDq.py" -w __NCPU__ __WF_VERBOSE__ '
+###################

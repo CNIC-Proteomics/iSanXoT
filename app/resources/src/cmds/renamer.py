@@ -25,12 +25,12 @@ def main(args):
     '''
     Main function
     '''
-    logging.info("rename the file")
+    logging.info("replace the file")
     try:
-        # rename the file
-        os.rename(f"{args.infile}", f"{args.outfile}")
+        # replace the file
+        os.replace(f"{args.infile}", f"{args.outfile}")
     except Exception as exc:
-        sms = "ERROR!! Renaming file: {}".format(exc)
+        sms = "ERROR!! Replacing file: {}".format(exc)
         print(sms) # message to stdout with logging output
         sys.exit(sms)
 
@@ -40,11 +40,8 @@ def main(args):
 if __name__ == "__main__":
     # parse arguments
     parser = argparse.ArgumentParser(
-        description='Rename file',
+        description='Replace file',
         epilog='''Examples:
-        python  src/SanXoT/joiner.py
-          -ii TMT1/ID-q.tsv;TMT2/ID-q.tsv
-          -o ID-q.tsv
         ''',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-i',  '--infile',  required=True, help='Input file')

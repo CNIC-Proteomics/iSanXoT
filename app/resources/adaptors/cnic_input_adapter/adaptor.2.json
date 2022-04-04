@@ -1,0 +1,126 @@
+{
+  "id": "cnic_input_adapter",
+  "label": "Specific Adapter for CNIC group",
+  "sdesc": "<p><i>Specific Adapter</i>.</p>",
+  "description": "Specific Adapter for CNIC group",
+  "works": [{
+    "id": "inputs",
+    "label": "Adaptor",
+    "description": "Specific Adapter to provide the Inputs",
+    "cmds": ["ADD_EXPCOL", "ADD_LEVELID", "ADD_QUANT", "FDR", "PROTEIN_ASSIGNER"]
+  }],
+  "commands": [{
+    "id": "ADD_EXPCOL",
+    "sdesc": "Add the experiment column",
+    "label": "General Adapter to provide the Inputs",
+    "title": "General Adapter to provide the Inputs",
+    "visible": true,
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
+    "tasktable": {
+      "id": "add_expcol",
+      "file": "add_expcol.tsv",
+      "unique_exec": true,
+      "settings": {
+        "disableVisualSelection": true,
+        "autoColumnSize": true,
+        "contextMenu": true,
+        "manualColumnResize": false,
+        "readOnly": true,
+        "rowHeaders": false,
+        "minRows": 0,
+        "height": "150px"
+      },
+      "params": [
+        { "type": "required", "id": "infile", "name": "Identification file" },
+        { "type": "required", "id": "experiment", "name": "Experiment" }
+      ]
+    }
+  },{
+    "id": "ADD_LEVELID",
+    "sdesc": "Add the identifiers for level",
+    "visible": true,
+    "tasktable": {
+      "id": "add_levelid",
+      "file": "add_levelid.tsv",
+      "unique_exec": true,
+      "settings": {
+        "disableVisualSelection": true,
+        "autoColumnSize": true,
+        "contextMenu": true,
+        "manualColumnResize": false,
+        "readOnly": true,
+        "rowHeaders": false,
+        "minRows": 0,
+        "height": "150px"
+      },
+      "params": [
+        { "type": "required", "id": "headers_join", "name": "Headers to join" },
+        { "type": "required", "id": "label_name", "name": "Label name" }
+      ]
+    }
+  },{
+    "id": "ADD_QUANT",
+    "sdesc": "Add the quantifications.",
+    "visible": true,
+    "tasktable": {
+      "id": "add_quant",
+      "file": "add_quant.tsv",
+      "unique_exec": true,
+      "settings": {
+        "height": "150px"
+      },
+      "params": [
+        { "type": "required", "id": "infile", "name": "Identification file" },
+        { "type": "required", "id": "mzfile", "name": "Quantification File (in mzML format)" },
+        { "type": "required", "id": "quan_method", "name": "Quan Method" }
+      ]
+    }
+  },{
+    "id": "FDR",
+    "sdesc": "FDR calculation.",
+    "visible": true,
+    "tasktable": {
+      "id": "fdr",
+      "file": "fdr.tsv",
+      "unique_exec": true,
+      "settings": {
+        "height": "150px"
+      },
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
+        { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
+        { "type": "required", "id": "fdr", "name": "FDR cutoff" },
+        { "type": "required", "id": "type_xcorr", "name": "Score", "dropdown": ["XCorr","cXCorr","hyperscore"] },
+        { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
+      ]
+    }
+  },{
+    "id": "PROTEIN_ASSIGNER",
+    "sdesc": "Calculate most probable protein assigned to each PSM.",
+    "visible": true,
+    "tasktable": {
+      "id": "protein_assigner",
+      "file": "protein_assigner.tsv",
+      "settings": {
+        "autoColumnSize": true,
+        "contextMenu": false,
+        "manualColumnResize": false,
+        "rowHeaders": false,
+        "minRows": 1,
+        "maxRows": 1,
+        "height": "70px"
+      },
+      "params": [
+        { "type": "required", "id": "peptide_col", "name": "Peptide column header" },
+        { "type": "required", "id": "protein_col", "name": "Protein column header" },
+        { "type": "required", "id": "output_col", "name": "Output Protein column header" },
+        { "type": "required", "id": "prot_sep", "name": "Protein separator" },
+        { "type": "optional", "id": "prot_desc_col", "name": "Prot. Description column header" },
+        { "type": "optional", "id": "output_desc_col", "name": "Output Prot. Desc. column header" }
+      ]
+    }
+  }]
+}

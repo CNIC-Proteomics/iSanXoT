@@ -28,25 +28,29 @@ function activeAdvancedEvents(importer) {
 
       // add the toggle_adv_parameters
       if ('tasktable' in cmd) {
-        let cmd_ttable = cmd['tasktable'];
-        // Get the list of optionals parameters
-        let opt = commoner.getIndexParamsWithAttr(cmd_ttable['params'], 'type', 'optional');
-        if ( opt ) {
-          // provide the event function
-          $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .toggleadv`).change({'opt': opt, 'wk_id': wk_id, 'cmd_id': cmd_id}, toggleAdvParameters);
-          // get cmd table
-          let cmd_table = $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .tasktable`).data('handsontable');
-          if (cmd_table !== undefined) {
-            // Iterate over the data of opt parameteers
-            for (var k = 0; k < opt.length; k++) {
-              let opt_idx = opt[k];
-              // get the data of opt parameters              
-              let cmd_data = cmd_table.getDataAtCol(opt_idx);
-              if ( cmd_data ) {
-                // if there is data
-                if ( !(commoner.allBlanks(cmd_data)) ) {
-                  $(`#${wk_id} [id^=page-tasktable-${cmd_id}] .toggleadv`).trigger('click');
-                  break;
+        for (let k=0; k < cmd['tasktable'].length; k++) {
+          let cmd_ttable = cmd['tasktable'][k];
+          // Get the list of optionals parameters
+          let opt = commoner.getIndexParamsWithAttr(cmd_ttable['params'], 'type', 'optional');
+          if ( opt ) {
+            let ttable_id = `#${wk_id} #page-tasktable-${cmd_id}`;
+            if ( 'id' in cmd_ttable ) ttable_id = `#${wk_id} #${cmd_ttable['id']}`;    
+            // provide the event function
+            $(`${ttable_id} .toggleadv`).change({'opt': opt, 'wk_id': wk_id, 'cmd_id': cmd_id}, toggleAdvParameters);
+            // get cmd table
+            let cmd_table = $(`${ttable_id} .tasktable`).data('handsontable');
+            if (cmd_table !== undefined) {
+              // Iterate over the data of opt parameteers
+              for (var l = 0; l < opt.length; l++) {
+                let opt_idx = opt[l];
+                // get the data of opt parameters              
+                let cmd_data = cmd_table.getDataAtCol(opt_idx);
+                if ( cmd_data ) {
+                  // if there is data
+                  if ( !(commoner.allBlanks(cmd_data)) ) {
+                    $(`${ttable_id} .toggleadv`).trigger('click');
+                    break;
+                  }
                 }
               }
             }

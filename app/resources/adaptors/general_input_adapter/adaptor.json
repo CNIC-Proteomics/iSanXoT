@@ -1,0 +1,57 @@
+{
+  "id": "general_input_adapter",
+  "label": "Adapter that creates the IDq",
+  "sdesc": "<p><i>General Adapter</i>.</p>",
+  "description": "Creates the IDq",
+  "works": [{
+    "id": "inputs",
+    "label": "Adaptor",
+    "description": "Specific Adapter to provide the Inputs",
+    "cmds": ["CREATE_IDQ"]
+  }],
+  "commands": [{
+    "id": "CREATE_IDQ",
+    "sdesc": "Create the ID-q (identification and quantification) file for iSanXoT",
+    "label": "General Adapter to provide the Inputs",
+    "title": "General Adapter to provide the Inputs",
+    "panel_adp": "panels/inputs.html",
+    "help_adp": "hmodals/inputs.html",
+    "visible": true,
+    "unique_exec": true,
+    "tasktable": [{
+      "id": "add_expcol",
+      "file": "add_expcol.tsv",
+      "settings": {
+        "disableVisualSelection": true,
+        "autoColumnSize": true,
+        "contextMenu": true,
+        "manualColumnResize": false,
+        "readOnly": true,
+        "rowHeaders": false,
+        "minRows": 0,
+        "height": "150px"
+      },
+      "params": [
+        { "type": "required", "id": "infile", "name": "Identification file" },
+        { "type": "required", "id": "experiment", "name": "Experiment" }
+      ]
+    },{
+      "id": "add_levelid",
+      "file": "add_levelid.tsv",
+      "settings": {
+        "disableVisualSelection": true,
+        "autoColumnSize": true,
+        "contextMenu": true,
+        "manualColumnResize": false,
+        "readOnly": true,
+        "rowHeaders": false,
+        "minRows": 0,
+        "height": "150px"
+      },
+      "params": [
+        { "type": "required", "id": "headers_join", "name": "Headers to join" },
+        { "type": "required", "id": "label_name", "name": "Label name" }
+      ]
+    }]
+  }]
+}

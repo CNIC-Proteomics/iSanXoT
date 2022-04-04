@@ -91,59 +91,21 @@ def check_command_parameters(indata):
     outfiles = {}
     # iterate over all commands
     for cmd,indat in indata.items():
-        if 'table' in indat:
-            df = indat['table']
-            outs = []
-            if 'output' in df.columns and 'level' in df.columns:
-                outs = list((df['output']+'/'+df['level']).values)
-            if 'output' in df.columns and 'sup_level' in df.columns:
-                outs = list((df['output']+'/'+df['sup_level']).values)
-            if outs:
-                outdirs.extend(outs)
-                for o in outs:
-                    outfiles[o] = cmd
+        if 'ttables' in indat:
+            for df in indat['ttables']:
+                outs = []
+                if 'output' in df.columns and 'level' in df.columns:
+                    outs = list((df['output']+'/'+df['level']).values)
+                if 'output' in df.columns and 'sup_level' in df.columns:
+                    outs = list((df['output']+'/'+df['sup_level']).values)
+                if outs:
+                    outdirs.extend(outs)
+                    for o in outs:
+                        outfiles[o] = cmd
         
-        #  BEGIN:  NOT WORK HERE because the input file does not exist yet!!!
-        
+        #  BEGIN:  NOT WORK HERE because the input file does not exist yet!!!        
         # # 3. For Level_Creator: check if the column headers are in the input files and there are not repeated.
-        # if cmd == 'LEVEL_CREATOR':
-        #     # create the headers
-        #     # extract the unique values that below to specific columns
-        #     h = list(df.groupby(['feat_col','ratio_numerator','ratio_denominator']).groups.keys())
-        #     h = [re.split(r'\s*,\s*',x) for x in list(itertools.chain(*h))]
-        #     h = np.unique([i for sublist in h for i in sublist])
-        #     # 'Experiment' column is mandatory
-        #     headers = np.concatenate( (['Experiment'], h) )
-        #     # check if headears are included in the input file
-        #     if os.path.isfile(__IDQFIL__):
-        #         elems_not_included = check_headers(__IDQFIL__, headers)
-        #         if len(elems_not_included) > 0:
-        #             sms = "ERROR!! These headers {} are not included in the file {}".format(elems_not_included, __IDQFIL__)
-        #             print(sms) # message to stdout with logging output
-        #             sys.exit(sms)
-        #     else:
-        #         sms = "ERROR!! The input file {} does not exist".format(__IDQFIL__)
-        #         print(sms) # message to stdout with logging output
-        #         sys.exit(sms)
-
         # # 4. For Rels_Creator: check if the column headers are in the input files and there are not repeated.
-        # elif cmd == 'RELS_CREATOR':
-        #     # check if headers are in the input file
-        #     cols = ['inf_infiles'] + [c for c in df.columns if c in ['inf_headers', 'sup_headers', 'thr_headers']]
-        #     sms = ''
-        #     for x in df[cols].itertuples(index=False, name=None):
-        #         file = x[0]
-        #         h = x[1:]
-        #         if os.path.isfile(file):
-        #             elems_not_included = check_headers(file, h)
-        #             if len(elems_not_included) > 0:
-        #                 sms += "ERROR!! These headers {} are not included in the file {}\n".format(elems_not_included, file)
-        #         else:
-        #             sms += "ERROR!! The input file {} does not exist\n".format(file)
-        #     if sms != '':
-        #         print(sms) # message to stdout with logging output
-        #         sys.exit(sms)
-        
         #  END:  NOT WORK HERE because the input file does not exist yet!!!
 
     # 2. check if there are duplicates in the output directories
@@ -186,6 +148,19 @@ def replace_val_rec(data, repl):
         return pattern.sub(lambda m: repl[re.escape(m.group(0))], str(data))
     else:
         return data
+
+def remove_ttable_param(data, comp):
+    '''
+    Remove the parameter whose ttables param have not been added
+    '''
+    for rule in data['rules']:
+        for i in ['infiles','outfiles']:
+            # use 'list' to force a copy of keys to be made
+            # and avoid the "dictionary changed size during iteration" error
+            for k in list(rule[i].keys()):
+                if comp in rule[i][k]:
+                    del rule[i][k]
+    return data
 
 def check_val_in_dict(data, stxt):
     '''
@@ -706,17 +681,18 @@ def main(args):
             '__LOGDIR__':                 __LOGDIR__,
             '__STADIR__':                 __STADIR__,
             '__IDQFIL__':                 __IDQFIL__,
-            '__CATDB__':                '',
+            '__WF_RELS_INFILE__':         __IDQFIL__
     }
     # add the replacements for the main_inputs
     for k_id in tpl['adaptor_inputs'].keys():
         repl[k_id] = tpl['adaptor_inputs'][k_id]
         
     # add the replacements for the data files of tasktable commands
-    for datfile in tpl['ttablefiles']:
-        if 'file' in datfile:
-            l = "__TTABLEFILE_{}__".format(datfile['type'].upper())
-            repl[l] = datfile['file']    
+    for ttablefile in tpl['ttablefiles']:
+        if 'ttables' in ttablefile:
+            for tt in ttablefile['ttables']:
+                l = "__TTABLEFILE_{}__".format(tt['id'].upper())
+                repl[l] = tt['file']    
     tpl = replace_val_rec(tpl, repl)
 
 
@@ -725,24 +701,33 @@ def main(args):
     logging.info("create a command for each tasktable row")
     tpl['commands'] = []
     for cmd,indat in indata.items():
+        uniq_exec = indat['unique_exec']
         # commands with ttable
-        if 'table' in indat:
-            uniq_exec = indat['unique_exec']
-            df = indat['table']
-            # read the templates of commands
-            cmd_tpl = read_tpl_command(args.intpl, cmd)
-            # replace constant within command tpls
-            cmd_tpl = replace_val_rec(cmd_tpl, repl)
-            if cmd_tpl:
-                if uniq_exec:
-                    # add the parameters into each rule
-                    tpl['commands'].append(add_unique_cmd_from_table(df, cmd_tpl))
-                else: # the rest of commands
-                    # create a command for each row
-                    # add the parameters for each rule
-                    tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
-                # replace constants
-                tpl['commands'] = replace_val_rec(tpl['commands'], repl)
+        if 'ttables' in indat:
+            # the unique_exec use the tables as parameters. don't create multiple jobs from the table rows
+            if uniq_exec:
+                # read the templates of commands
+                cmd_tpl = read_tpl_command(args.intpl, cmd)
+                # replace constant within command tpls
+                cmd_tpl = replace_val_rec(cmd_tpl, repl)
+                # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
+                cmd_tpl = remove_ttable_param(cmd_tpl, '__TTABLEFILE_')
+                # add the template
+                tpl['commands'].append([cmd_tpl])
+            # multiple executions from the row tables
+            else:
+                for df in indat['ttables']:
+                    # read the templates of commands
+                    cmd_tpl = read_tpl_command(args.intpl, cmd)
+                    # replace constant within command tpls
+                    cmd_tpl = replace_val_rec(cmd_tpl, repl)
+                    if cmd_tpl:
+                        # create a command for each row
+                        # add the parameters for each rule
+                        tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
+
+            # replace constants
+            tpl['commands'] = replace_val_rec(tpl['commands'], repl)
         # commands without ttable
         else:
             # read the templates of commands
@@ -765,19 +750,6 @@ def main(args):
                 OUTFILES += [ofile for ofile in trule['outfiles'].values() if '*' not in ofile]
             cmd = tpl['commands'][i][j]
             cmd = add_recursive_cmds(cmd) # and also update the OUTFILES
-
-
-
-    # ------
-    logging.info("add command suffix and rule suffix")
-    logging.info("fill the clines")
-    # add the whole parametes (infiles, outfiles, params) to command line
-    # add number suffix that increase with the rule
-    # add the logfile
-    global RULE_SUFFIX
-    RULE_SUFFIX = 1
-    for i in range(len(tpl['commands'])):
-        add_params_cline( tpl['commands'][i] )
 
 
 
@@ -808,6 +780,20 @@ def main(args):
     if sms != '':
         print(sms) # message to stdout with logging output
         sys.exit(sms)
+
+
+
+    # ------
+    logging.info("add command suffix and rule suffix")
+    logging.info("fill the clines")
+    # add the whole parametes (infiles, outfiles, params) to command line
+    # add number suffix that increase with the rule
+    # add the logfile
+    global RULE_SUFFIX
+    RULE_SUFFIX = 1
+    for i in range(len(tpl['commands'])):
+        add_params_cline( tpl['commands'][i] )
+
 
 
 

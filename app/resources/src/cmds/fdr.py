@@ -17,15 +17,13 @@ import argparse
 import logging
 import pandas as pd
 import numpy as np
-# import re
-# import xml.etree.ElementTree as etree
 import concurrent.futures
 from itertools import repeat
 
 #########################
 # Import local packages #
 #########################
-sys.path.append(f"{os.path.dirname(__file__)}/libs")
+sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 import PD
 import MSFragger
@@ -35,13 +33,25 @@ import Comet
 # Local functions #
 ###################
 
-def preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas):
-    # read which search engines we have
-    se = common.select_search_engines_acid(file)
+def read_infile(file):
+    '''
+    Read file
+    '''
+    # read input file
+    try:
+        df = pd.read_csv(file, sep="\t")
+    except Exception as exc:
+        sms = "Reading input file: {}".format(exc)
+        logging.error(sms)
+        sys.exit(sms)
+    return df
+
+
+def preProcessing(df, se, deltaMassThreshold, tagDecoy, JumpsAreas):
     # processing the input files depending on
-    if se == "PD": df = PD.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
-    elif se == "Comet": df = Comet.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
-    elif se == "MSFragger": df = MSFragger.preProcessing(file, deltaMassThreshold, tagDecoy, JumpsAreas)
+    if se == "PD": df = PD.preProcessing(df, deltaMassThreshold, tagDecoy, JumpsAreas)
+    elif se == "Comet": df = Comet.preProcessing(df, deltaMassThreshold, tagDecoy, JumpsAreas)
+    elif se == "MSFragger": df = MSFragger.preProcessing(df, deltaMassThreshold, tagDecoy, JumpsAreas)
     else: df = None
     return df
 
@@ -49,9 +59,8 @@ def FdrXc(df, typeXCorr, FDRlvl):
     '''
     Calculate FDR and filter by cXCorr
     '''
-    # get the dataframe from the input tuple df=(exp,df)
     # sort by the type of score
-    df = df[1].sort_values(by=[typeXCorr,"T_D"], ascending=False)
+    df = df.sort_values(by=[typeXCorr,"T_D"], ascending=False)
     # rank the target and decoy individually
     df["rank"] = df.groupby("T_D").cumcount()+1
     df["rank_T"] = np.where(df["T_D"]==1, df["rank"], 0)
@@ -66,93 +75,76 @@ def FdrXc(df, typeXCorr, FDRlvl):
     df = df[ df["T_D"] == 1 ]
     return df
 
-# def extract_modifications(s_ddf):
-#     '''
-#     Create modifications dictionary from xml-doc of UNIMOD
-#     '''
-#     # extract the unique labels of modifications from the input files
-#     m = re.findall(r'\(([^\)]*)\)', str(s_ddf))
-#     return m
+def processing(df, indata, se):
+    # get the dataframe from the input tuple df=(exp,df)
+    # get the indata from the dataframe group by experiment
+    exp_df = df[0]
+    df = df[1]
+    indata = indata[indata['experiment']==exp_df]
+    if not indata.empty:
+        # get params
+        deltaMassThreshold = int(indata['threshold'].values[0])
+        tagDecoy = str(indata['lab_decoy'].values[0])
+        FDRlvl = float(indata['fdr'].values[0])
+        typeXCorr = str(indata['type_xcorr'].values[0])
+        JumpsAreas = int(indata['jump_areas'].values[0])
+        # pre-processing the data: rename columns, assign target-decoy, correct monoisotopic mass
+        df = preProcessing(df, se, deltaMassThreshold, tagDecoy, JumpsAreas)
+        # calculate FDR and filter
+        df = FdrXc(df, typeXCorr, FDRlvl)
+    else:
+        df = None
+    return df
 
-# def join_modifications(mods):
-#     # declare
-#     modifications = {}
-#     lmods = np.unique( list(itertools.chain.from_iterable(mods)) )
-#     # create xml-doc from UNIMOD
-#     localdir = os.path.dirname(os.path.abspath(__file__))
-#     root = etree.parse(localdir+'/unimod.xml').getroot()
-#     ns = {'umod': 'http://www.unimod.org/xmlns/schema/unimod_2'}
-#     xdoc_mods = root.find('umod:modifications', ns)
-#     # extract the delta mono_mass for each modification
-#     for m in lmods:
-#         delta = xdoc_mods.find('umod:mod[@title="'+m+'"]/umod:delta', ns)
-#         if delta:
-#             mono_mass = delta.get('mono_mass')
-#             m2 = r'\('+str(m)+r'\)'
-#             modifications[m2] = '('+mono_mass+')'
-#     return modifications
-
-# def SequenceMod(df, mods, file):
-#     '''
-#     Create a sequence with modifications
-#     '''
-#     # get the dataframe from the input tuple df=(exp,df)
-#     df = df[1]
-#     # read which search engines we have
-#     se = common.select_search_engines_acid(file)
-#     # create sequence with modifications depending on
-#     if se == "PD": df["Peptide"] = PD.SequenceMod(df, mods)
-#     elif se == "Comet": df["Peptide"] = Comet.SequenceMod(df)
-#     elif se == "MSFragger": df["Peptide"] = MSFragger.SequenceMod(df)
-#     return df
-
+def calc_fdr(n_workers, ses, df, indata):
+    '''
+    Calculate the FDR
+    '''    
+    with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:        
+        ddf = executor.map(processing, list(df.groupby("Experiment")), repeat(indata), repeat(ses))
+    ddf = pd.concat(ddf)
+    # begin: for debugging in Spyder
+    # ddf = processing( list(df.groupby("Experiment"))[0], indata, ses)
+    # end: for debugging in Spyder
+    return ddf
 
 
 def main(args):
     '''
     Main function
     '''
-    logging.info("prepare input parameters")
-    deltaMassThreshold = args.threshold
-    tagDecoy = args.lab_decoy
-    FDRlvl = args.fdr
-    typeXCorr = args.type_xcorr
-    JumpsAreas = args.jump_areas
-    
-  
-    logging.info("pre-processing the data: assign target-decoy, correct monoisotopic mass")
-    ddf = preProcessing(args.infile, deltaMassThreshold, tagDecoy, JumpsAreas)
-    if ddf is None:
-        sms = "At least, one of input files is wrong"
+    # read the task-tables
+    logging.info("reading the task-table")
+    indata = common.read_task_table(args.intbl)
+    if indata.empty:
+        sms = "There is not task-table"
         logging.error(sms)
         sys.exit(sms)
 
-      
-    logging.info("calculate the FDR by experiment")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        ddf = executor.map(FdrXc, list(ddf.groupby("Experiment")), repeat(typeXCorr), repeat(FDRlvl))
-    ddf = pd.concat(ddf)
 
+    logging.info("reading in file depending on search engine")
+    df = read_infile(args.infile)
+
+
+    logging.info("selecting the search engine")
+    se = common.select_search_engine(df)
+    logging.debug(se)
+    if not se:
+        sms = "The search engines has not been recognized"
+        logging.error(sms)
+        sys.exit(sms)
+
+
+    logging.info("calculating the FDR by experiment")
+    ddf = calc_fdr(args.n_workers, se, df, indata)
+        
     
-    # logging.info("create modifications dictionary from xml-doc of UNIMOD")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-    #     mods = executor.map(extract_modifications, ddf['Modifications'], chunksize=int(len(ddf)/args.n_workers))
-    # modifications = join_modifications(mods)
-    # logging.debug(modifications)
-
-    
-    # logging.info("calculate the SequenceMod by experiment")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-    #     ddf = executor.map(SequenceMod, list(ddf.groupby("Experiment")), repeat(modifications), repeat(args.infile))
-    # ddf = pd.concat(ddf)
-
-
-    logging.info("print the output")
+    logging.info("printing the output")
     # print to tmp file
     f = f"{args.outfile}.tmp"
     ddf.to_csv(f, sep="\t", index=False)
     # rename tmp file deleting before the original file 
-    common.print_outfile(f)
+    common.rename_tmpfile(f)
 
 
 
@@ -167,11 +159,7 @@ if __name__ == '__main__':
         ''')
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',  '--infile', required=True, help='Input file: ID.tsv')
-    parser.add_argument('-f',  '--fdr', type=float, default=0.01, help='FDR value (default: %(default)s)')
-    parser.add_argument('-x',  '--type_xcorr', type=str, default='XCorr', help="Calculate FDR from the the given scores: 'XCorr','cXCorr','hyperscore' (default: %(default)s)")
-    parser.add_argument('-t',  '--threshold', type=int, default=20, help='Threshold of delta mass (default: %(default)s)')
-    parser.add_argument('-j',  '--jump_areas', type=int, choices=[1,3,5], default=5, help='Number of jumps [1,3,5] (default: %(default)s)')
-    parser.add_argument('-l',  '--lab_decoy', required=True, help='Label of decoy sequences in the db file')
+    parser.add_argument('-t',  '--intbl', required=True, help='File with the input data: experiments, threshold, score, etc')
     parser.add_argument('-o',  '--outfile',   required=True, help='Output file')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()

@@ -8,7 +8,7 @@ let fs = require('fs');
  * Local functions
  */
 
-// get the files/dirs in directory sorted by name
+// Get the dirs in directory sorted by name
 function getDirectories(source) {
     let files = [];
     try {
@@ -17,11 +17,24 @@ function getDirectories(source) {
             .map(dirent => dirent.name)
             .reverse();
     } catch (e) {
+        console.log(`getting the folders in directory: ${e}`);
+    }
+    return files;
+}
+  
+// Get the files in directory sorted by name
+function getFiles(source) {
+    let files = [];
+    try {
+        files = fs.readdirSync(source, { withFileTypes: true })
+            .filter(dirent => dirent.isFile())
+            .map(dirent => dirent.name);
+    } catch (e) {
         console.log(`getting the files in directory: ${e}`);
     }
     return files;
-    }
-  
+}
+
 // Get the most recent execution directory
 // the files has to be sorted by name
 function getMostRecentDir(dir) {  
@@ -30,7 +43,76 @@ function getMostRecentDir(dir) {
     return (files.length > 0)? files[0] : undefined;
 }
 
-  
+// Sort the list of files by their extensions.
+// The files with the same extension should be sorted by name.
+function sortFilesByExt(files) {
+    let arr = [];
+    for (let x of files) { 
+        let a =  x.split(/[\.]/g).filter(i => i.length > 0); 
+        let b = '';
+        if (a.length >= 2 && !x.endsWith('.')) b = a[a.length - 1];
+        arr.push([b, x.replace(b, '')]);
+    }
+    return arr.sort().map(x => x[1].concat(x[0]));
+}
+
+// Read the header of file
+function readHeaderFile(file) {
+    let header = undefined;
+    try {
+        data = fs.readFileSync(file, 'utf8').toString().split('\n');
+        for ( let i=0; i < data.length; i++) {
+            if ( data[i] != '' ) {
+                headers = data[i].split('\t');
+                break;
+            }
+        }
+        return headers;
+    } catch (e) {
+        console.log(`reading the headers: ${e}`);
+    }
+    return header;
+}
+
+// Get the column values from list of column indexes
+// If the col list is undefined then return all values
+function getColumnValuesFromFile(file, headers) {
+    let vals = [];
+    try {
+        data = fs.readFileSync(file,'utf8').toString().split('\n');
+        let isHeader = true;
+        let cols = [];
+        for ( let i=0; i < data.length; i++) {
+            if ( data[i] != '' ) {
+                // the first (not empty) line is the header
+                // get the index of given headers
+                if ( isHeader ) {
+                    let dat = data[i].split('\t');
+                    cols = headers.map(x => dat.indexOf(x));
+                    isHeader = false;
+                }
+                // data lines
+                // save the data into matrix (list of lists)
+                else {
+                    let dat = data[i].split('\t');
+                    if ( cols === undefined ) {
+                        vals.push(dat);
+                    }
+                    else if ( Array.isArray(cols) && cols.length > 0 ) {
+                        let d = [];
+                        for (let i=0; i<cols.length; i++) d.push(dat[cols[i]]);
+                        vals.push(d);
+                    }   
+                }
+            }
+        }
+        return vals;
+    } catch (e) {
+        console.log(`reading the vals: ${e}`);
+    }
+    return vals;
+}
+
 // Get an object of list from given ID
 function getObjectFromID(data, id) {
     let rst = data.filter(obj => { return obj.id === `${id}` });
@@ -102,6 +184,14 @@ function allBlanks(arr) {
     return true;
 }
 
+// Check if any element of array is empty
+function anyBlank(arr) {
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] == '' || arr[i] == null) return true;
+    }
+    return false;
+}
+
 // Get all indexes of all ocurrences in array
 function getAllIndexes(arr, val) {
     var indexes = [];
@@ -131,12 +221,17 @@ function removeListIndexes(arr, rem) {
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {
     getDirectories:             getDirectories,
+    getFiles:                   getFiles,
     getMostRecentDir:           getMostRecentDir,
+    sortFilesByExt:             sortFilesByExt,
+    readHeaderFile:             readHeaderFile,
+    getColumnValuesFromFile:    getColumnValuesFromFile,
     getObjectFromID:            getObjectFromID,
     getIndexParamsWithAttr:     getIndexParamsWithAttr,
     getIndexParamsWithKey:      getIndexParamsWithKey,
     isEqual:                    isEqual,
     allBlanks:                  allBlanks,
+    anyBlank:                   anyBlank,
     getAllIndexes:              getAllIndexes,
     removeListIndexes:          removeListIndexes
 };

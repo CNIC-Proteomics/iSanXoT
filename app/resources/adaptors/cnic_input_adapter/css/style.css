@@ -1,0 +1,159 @@
+* {
+    font-family: 'Roboto';
+    font-size: .87rem;
+}
+label,button {
+    font-size: 1rem;
+}
+
+#add-annots {
+    margin: 10px;
+}
+
+.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+.col {
+    padding-right: 0;
+    padding-left: 0;
+}
+.col-buttons {
+    display: grid;
+}
+.col-buttons button {
+    height: 2rem !important;
+    margin: 0 10px .125rem 10px;
+}
+
+.row.add-annots {
+    margin-bottom: 10px;
+}
+.row.add-annots [id^="select-"] {
+    height: 170px;
+}
+.row.add-annots .text-center {
+    display: inline-grid;
+    margin-top: 100%;
+    margin-left: 5px;
+}
+.col.col-5 {
+    border: 1px solid grey;
+    border-radius: .25rem;
+}
+.col.col-1 {
+    padding-top: 80px;
+}
+.col.col-6 {
+    padding-top: 80px;
+}
+
+.row.select-headers {
+    height: 300px;
+}
+.bootstrap-select .dropdown-menu {
+    top: 100%;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: block;
+    height: 220px;
+    background-color: transparent;
+    overflow: visible !important;
+    border: none;
+}
+button.btn.dropdown-toggle::after {
+    content: none;
+}
+.bootstrap-select > button {
+    pointer-events: none;
+}
+.bootstrap-select .dropdown-menu, .bootstrap-select .show {
+    max-height: 420px !important;
+    width: 100%;
+}
+.bs-actionsbox {
+    position: relative;
+    padding: 4px 8px;
+}
+
+#select-input-files {
+    margin-bottom: 5px;
+    height: 12.25rem;
+}
+
+fieldset {
+    height: 100%;
+}
+fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    padding: 0 .8em .8em .8em !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+    box-shadow:  0px 0px 0px 0px #000;
+}
+legend.scheduler-border {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+}
+
+/*
+ * ---------------------------------------------------
+ *   LOADER
+ * ---------------------------------------------------
+ */
+ #loader {
+    display: none;
+}
+.loading-page {
+    z-index: 2000;
+    background-color: white;
+    opacity: .6;
+    width: 100%;
+    height: 99%;
+    position: absolute;
+}
+.loading-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2001;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid goldenrod;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
+}
+@-webkit-keyframes animatebottom {
+    from { bottom:-100px; opacity:0 } 
+    to { bottom:0px; opacity:1 }
+}
+@keyframes animatebottom { 
+    from{ bottom:-100px; opacity:0 } 
+    to{ bottom:0; opacity:1 }
+}

@@ -164,15 +164,22 @@ function exportWorkflowCmds(cfg_dir, wf) {
       // concatenate the data table of all commands
       // iterate over all commands
       for (var j = 0; j < wk['cmds'].length; j++) {
-          let cmd = wk['cmds'][j];
-          let cmd_id = cmd['id'];
-          // create a tasktable for every command
-          if ( 'tasktable' in cmd && 'params' in cmd['tasktable'] ) {
+        let cmd = wk['cmds'][j];
+        let cmd_id = cmd['id'];
+        // create tasktables
+        if ( 'tasktable' in cmd ) {
+          for (let k=0; k < cmd['tasktable'].length; k++) {
+            let cmd_ttable = cmd['tasktable'][k];
+            if ( 'params' in cmd_ttable ) {
+              // get table id
+              let ttable_id = `#${wk_id} #page-tasktable-${cmd_id}`;
+              if ( 'id' in cmd_ttable ) ttable_id = `#${wk_id} #${cmd_ttable['id']}`;
+
               // get the id header based on 'commands.json'
               let header_ids = [];
               let header_names = [];
               try {
-                header_ids = cmd['tasktable']['params'].map(a => a.id);
+                header_ids = cmd_ttable['params'].map(a => a.id);
                 if (header_ids.includes(undefined)) {
                     throw "the list of id headers contains undefined value";
                 }
@@ -181,7 +188,7 @@ function exportWorkflowCmds(cfg_dir, wf) {
               }
               // get the header names based on 'commands.json'
               try {
-                header_names = cmd['tasktable']['params'].map(a => a.name);
+                header_names = cmd_ttable['params'].map(a => a.name);
                 if (header_names.includes(undefined)) {
                     throw "the list of id headers contains undefined value";
                 }
@@ -191,14 +198,14 @@ function exportWorkflowCmds(cfg_dir, wf) {
               // export tasktable to CSV
               let cont = '';
               try {
-                if ( $(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`).length ) {
-                    cont = exportTasktable(`#${wk_id} #page-tasktable-${cmd_id} .tasktable`, header_ids, header_names);
+                if ( $(`${ttable_id} .tasktable`).length ) {
+                    cont = exportTasktable(`${ttable_id} .tasktable`, header_ids, header_names);
                 }
               } catch (err) {
                   exceptor.showErrorMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
               }
               // if not empty write tasktable file sync
-              let ttable_file = `${cfg_dir}/${cmd['tasktable']['file']}`;
+              let ttable_file = `${cfg_dir}/${cmd_ttable['file']}`;
               if ( cont != '' ) {
                   try {
                       fs.writeFileSync(ttable_file, cont, 'utf-8');
@@ -214,7 +221,9 @@ function exportWorkflowCmds(cfg_dir, wf) {
                     exceptor.showErrorMessageBox('Error Message', `Updating the tasktable file: ${err}`, end=true);    
                 }
               }
+            } // end if ( 'params' in cmd_ttable )
           }
+        } // end if ( 'tasktable' in cmd )
       }
   }
 }
