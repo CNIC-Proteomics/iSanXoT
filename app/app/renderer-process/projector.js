@@ -153,6 +153,13 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
                     if ( 'unique_exec' in cmd ) cmd_ttablefiles['unique_exec'] = true;
                 }
             }
+            // command without tasktable
+            else {                
+                cmd_ttablefiles = {
+                    'name': cmd_id
+                };
+                if ( 'unique_exec' in cmd ) cmd_ttablefiles['unique_exec'] = true;
+            }
             // add to cfg
             if ( Object.keys(cmd_ttablefiles).length > 0 ) cfg['ttablefiles'].push(cmd_ttablefiles);
         }

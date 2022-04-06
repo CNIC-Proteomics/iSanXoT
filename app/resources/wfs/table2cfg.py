@@ -36,7 +36,7 @@ __RELDIR__  = None
 __RSTDIR__  = None
 __LOGDIR__  = None
 __STADIR__  = None
-__IDQFIL__  = None
+__IDQFILE__  = None
 
 OUTPUTS_FOR_CMD     = None
 TPL_DATE            = None
@@ -314,6 +314,13 @@ def add_datparams(p, trule, val):
         # transform the input file
         v = _transform_relationship_path(val)
         _add_datparams_params(p, trule, v)
+
+    elif p == 'rels_infile':
+        l = '__WF_'+p.upper()+'__'
+        # add default value
+        v = __IDQFILE__ if val == '' or val == 'nan' else val
+        # replace the constant to the given value
+        _replace_datparams(v, trule['infiles'],  l)
 
     elif p == 'more_params':
         _add_datparams_moreparams(p, trule, val)
@@ -622,7 +629,7 @@ def main(args):
     global __RSTDIR__
     global __LOGDIR__
     global __STADIR__
-    global __IDQFIL__
+    global __IDQFILE__
     global TPL_DATE
     __EXPDIR__ = tpl['prj_workspace']['expdir'].replace('\\','/')
     __JOBDIR__ = tpl['prj_workspace']['jobdir'].replace('\\','/')
@@ -630,7 +637,7 @@ def main(args):
     __RSTDIR__ = tpl['prj_workspace']['rstdir'].replace('\\','/')
     __LOGDIR__ = tpl['prj_workspace']['logdir'].replace('\\','/')
     __STADIR__ = tpl['prj_workspace']['stadir'].replace('\\','/')
-    __IDQFIL__ = __EXPDIR__ + '/ID-q.tsv'
+    __IDQFILE__ = __EXPDIR__ + '/ID-q.tsv'
     TPL_DATE   = tpl['date']
     
     
@@ -680,8 +687,8 @@ def main(args):
             '__RSTDIR__':                 __RSTDIR__,
             '__LOGDIR__':                 __LOGDIR__,
             '__STADIR__':                 __STADIR__,
-            '__IDQFIL__':                 __IDQFIL__,
-            '__WF_RELS_INFILE__':         __IDQFIL__
+            '__IDQFILE__':                __IDQFILE__,
+            '__WF_RELS_INFILE__':         __IDQFILE__
     }
     # add the replacements for the main_inputs
     for k_id in tpl['adaptor_inputs'].keys():

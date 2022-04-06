@@ -17,15 +17,15 @@
     "description": "Short description for the current work (tab)",  
     "cmds": ["RELS_CREATOR"]
   },{
-    "id": "basic_commands",
-    "label": "Basic modules",
-    "description": "Short description for the current work (tab)",  
-    "cmds": ["LEVEL_CREATOR","LEVEL_CALIBRATOR","INTEGRATE","NORCOMBINE","RATIOS_INT","SBT"]
-  },{
     "id": "complete_commands",
     "label": "Complete modules",
     "description": "Short description for the current work (tab)",  
     "cmds": ["WSPP_SBT","WSPPG_SBT","WPP_SBT","WPPG_SBT"]
+  },{
+    "id": "basic_commands",
+    "label": "Basic modules",
+    "description": "Short description for the current work (tab)",  
+    "cmds": ["LEVEL_CREATOR","LEVEL_CALIBRATOR","INTEGRATE","NORCOMBINE","RATIOS_INT","SBT"]
   },{
     "id": "reports",
     "label": "Reports",
@@ -48,7 +48,123 @@
         { "type": "required", "id": "inf_headers", "name": "Column name of Lower level" },
         { "type": "required", "id": "sup_headers", "name": "Column name of Higher level" },
         { "type": "required", "id": "thr_headers", "name": "Column name of 3rd column" },
-        { "type": "required", "id": "rels_infile", "name": "Table from which RT is extracted", "dropdown": ["__IDQFIL__"] }
+        { "type": "required", "id": "rels_infile", "name": "Table from which RT is extracted" }
+      ]}]
+  },{
+    "id": "WSPP_SBT",
+    "label": "WSPP - SBT",
+    "title": "Log2-ratios & WSPP - SBT calculations",
+    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2proteinall, protein2category and category2categoryall following the SBT algorithm to analyze coordinated protein changes; it also integrates peptide2peptideall. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wspp_sbt.html",
+    "tasktable": [{
+      "file": "wspp_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
+        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}]
+  },{
+    "id": "WSPPG_SBT",
+    "label": "WSPPG - SBT",
+    "title": "Log2-ratios & WSPPG - SBT calculations",
+    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wsppg_sbt.html",
+    "tasktable": [{
+      "file": "wsppg_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "q>a_tag", "name": "q>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>g_fdr", "name": "q>g FDR" },
+        { "type": "optional", "id": "g>c_fdr", "name": "g>c FDR" },
+        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>g_var(x)", "name": "q>g Var(x)" },
+        { "type": "optional", "id": "g>c_var(x)", "name": "g>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}]
+  },{
+    "id": "WPP_SBT",
+    "label": "WPP - SBT",
+    "title": "Log2-ratios & WPP - SBT calculations",
+    "sdesc": "This module performs the integrations peptide2protein, protein2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wpp_sbt.html",
+    "tasktable": [{
+      "file": "wpp_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}]
+  },{
+    "id": "WPPG_SBT",
+    "label": "WPPG - SBT",
+    "title": "Log2-ratios & WPPG - SBT calculations",
+    "sdesc": "This module performs the integrations peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+    "visible": true,
+    "panel": "sections/panels/simple-toggle.html",
+    "help_modal": "sections/hmodals/wppg_sbt.html",
+    "tasktable": [{
+      "file": "wppg_sbt.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
+        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
+        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
+        { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
+        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
+        { "type": "optional", "id": "q>a_tag", "name": "q>a Tag" },
+        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
+        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
+        { "type": "optional", "id": "q>g_fdr", "name": "q>g FDR" },
+        { "type": "optional", "id": "g>c_fdr", "name": "g>c FDR" },
+        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
+        { "type": "optional", "id": "q>g_var(x)", "name": "q>g Var(x)" },
+        { "type": "optional", "id": "g>c_var(x)", "name": "g>c Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
     ]}]
   },{
     "id": "LEVEL_CREATOR",
@@ -220,122 +336,6 @@
         { "type": "optional", "id": "rep_file", "name": "Merge with report" },
         { "type": "optional", "id": "rel_file", "name": "Add columns from relation table" },
         { "type": "optional", "id": "filter", "name": "Filter" }
-    ]}]
-  },{
-    "id": "WSPP_SBT",
-    "label": "WSPP - SBT",
-    "title": "Log2-ratios & WSPP - SBT calculations",
-    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2proteinall, protein2category and category2categoryall following the SBT algorithm to analyze coordinated protein changes; it also integrates peptide2peptideall. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wspp_sbt.html",
-    "tasktable": [{
-      "file": "wspp_sbt.tsv",
-      "params": [
-        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
-        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
-        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output Sample folder" },
-        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
-        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
-        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
-        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
-        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
-        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
-        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
-        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
-        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
-    ]}]
-  },{
-    "id": "WSPPG_SBT",
-    "label": "WSPPG - SBT",
-    "title": "Log2-ratios & WSPPG - SBT calculations",
-    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wsppg_sbt.html",
-    "tasktable": [{
-      "file": "wsppg_sbt.tsv",
-      "params": [
-        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
-        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
-        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output Sample folder" },
-        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
-        { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
-        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
-        { "type": "optional", "id": "q>a_tag", "name": "q>a Tag" },
-        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
-        { "type": "optional", "id": "s>p_fdr", "name": "s>p FDR" },
-        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
-        { "type": "optional", "id": "q>g_fdr", "name": "q>g FDR" },
-        { "type": "optional", "id": "g>c_fdr", "name": "g>c FDR" },
-        { "type": "optional", "id": "s>p_var(x)", "name": "s>p Var(x)" },
-        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
-        { "type": "optional", "id": "q>g_var(x)", "name": "q>g Var(x)" },
-        { "type": "optional", "id": "g>c_var(x)", "name": "g>c Var(x)" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
-    ]}]
-  },{
-    "id": "WPP_SBT",
-    "label": "WPP - SBT",
-    "title": "Log2-ratios & WPP - SBT calculations",
-    "sdesc": "This module performs the integrations peptide2protein, protein2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wpp_sbt.html",
-    "tasktable": [{
-      "file": "wpp_sbt.tsv",
-      "params": [
-        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
-        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
-        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output Sample folder" },
-        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
-        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
-        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
-        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
-        { "type": "optional", "id": "q>c_fdr", "name": "q>c FDR" },
-        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
-        { "type": "optional", "id": "q>c_var(x)", "name": "q>c Var(x)" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
-    ]}]
-  },{
-    "id": "WPPG_SBT",
-    "label": "WPPG - SBT",
-    "title": "Log2-ratios & WPPG - SBT calculations",
-    "sdesc": "This module performs the integrations peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wppg_sbt.html",
-    "tasktable": [{
-      "file": "wppg_sbt.tsv",
-      "params": [
-        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
-        { "type": "required", "id": "feat_col", "name": "Identifier column header" },
-        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
-        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
-        { "type": "required", "id": "output", "name": "Output Sample folder" },
-        { "type": "optional", "id": "p>q_tag", "name": "p>q Tag" },
-        { "type": "optional", "id": "q>g_tag", "name": "q>g Tag" },
-        { "type": "optional", "id": "p>a_tag", "name": "p>a Tag" },
-        { "type": "optional", "id": "q>a_tag", "name": "q>a Tag" },
-        { "type": "optional", "id": "c>a_tag", "name": "c>a Tag" },
-        { "type": "optional", "id": "p>q_fdr", "name": "p>q FDR" },
-        { "type": "optional", "id": "q>g_fdr", "name": "q>g FDR" },
-        { "type": "optional", "id": "g>c_fdr", "name": "g>c FDR" },
-        { "type": "optional", "id": "p>q_var(x)", "name": "p>q Var(x)" },
-        { "type": "optional", "id": "q>g_var(x)", "name": "q>g Var(x)" },
-        { "type": "optional", "id": "g>c_var(x)", "name": "g>c Var(x)" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
     ]}]
   }]
 }

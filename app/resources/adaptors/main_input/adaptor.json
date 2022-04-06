@@ -13,8 +13,8 @@
     "id": "MAIN_INPUTS",
     "label": "Input files",
     "title": "Provide input files",
-    "visible": true,
     "panel_adp": "panels/main_inputs.html",
-    "help_adp": "hmodals/main_inputs.html"
+    "help_adp": "hmodals/main_inputs.html",
+    "visible": true
   }]
 }
