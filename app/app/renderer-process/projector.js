@@ -193,7 +193,7 @@ function newProject() {
         parent: mainWindow
     });
     win.setMenu(null);
-    win.loadURL(`${__dirname}/../new-project.html`);
+    win.loadFile(`${__dirname}/../new-project.html`);
     // win.webContents.openDevTools();
     win.on('close', function () {
         win = null;
