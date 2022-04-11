@@ -48,7 +48,7 @@
         { "type": "required", "id": "inf_headers", "name": "Column name of Lower level" },
         { "type": "required", "id": "sup_headers", "name": "Column name of Higher level" },
         { "type": "required", "id": "thr_headers", "name": "Column name of 3rd column" },
-        { "type": "required", "id": "rels_infile", "name": "Table from which RT is extracted" }
+        { "type": "required", "id": "rels_infiles", "name": "Table from which RT is extracted" }
       ]}]
   },{
     "id": "WSPP_SBT",

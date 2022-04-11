@@ -203,7 +203,7 @@ def main(args):
         
     logging.info("read input files of inferior header")
     l = []
-    for f in args.inf_infiles.split(";"):
+    for f in args.rels_infiles.split(";"):
         d = pd.read_csv(f, sep="\t", na_values=['NA'], low_memory=False)
         l.append(d)
     datinf = pd.concat(l)
@@ -353,7 +353,7 @@ if __name__ == "__main__":
     parser.add_argument('-i',  '--inf_header',  required=True, help='Column(s) for the inferior level')
     parser.add_argument('-j',  '--sup_header',  help='Column(s) for the superior level')
     parser.add_argument('-k',  '--thr_header',  help='Column(s) for the third level')
-    parser.add_argument('-ii', '--inf_infiles',  required=True, help='Input file for the inferior header')
+    parser.add_argument('-ii', '--rels_infiles',  required=True, help='Input file for the inferior header')
     parser.add_argument('-ji', '--sup_infiles',  help='Input file for the superior header')
     parser.add_argument('-ki', '--thr_infiles',  help='Input file for the third header')
     parser.add_argument('-o',  '--outfile', required=True, help='Output file with the relationship table')
