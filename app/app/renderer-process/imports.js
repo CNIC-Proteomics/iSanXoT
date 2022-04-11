@@ -67,9 +67,11 @@ ipcRenderer.on('saveProject', function() {
     exceptor.loadingWorkflow();
     setTimeout(function() {
         let [prj_id,prj_dir,dte_dir] = projector.saveProject();
-        // everything was alright
+        // everything was alright or not
+        if ( prj_id !== undefined && prj_dir !== undefined && dte_dir !== undefined ) exceptor.showMessageBox('info', "Your project has been saved successfully", title='Save project');
+        else exceptor.showMessageBox('error', "Project not saved!", title='Save project');
+        // stop loading
         exceptor.stopLoadingWorkflow();
-        exceptor.showMessageBox('info', "Your project has been saved successfully", title='Save project');
     }, 1000); // due the execSync block everything, we have to wait until loading event is finished
 });
 ipcRenderer.on('importWorkflow', function() {

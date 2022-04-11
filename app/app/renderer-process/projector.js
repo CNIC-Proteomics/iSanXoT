@@ -235,37 +235,40 @@ function openProject(prj_dir) {
 }
 
 function saveProject() {
-    // Get input parameters (from URL)
-    let url_params = new URLSearchParams(window.location.search);
-    let prj_id = url_params.get('pid');
-    if (prj_id === undefined) prj_id = 'date_id';
-    let adp_dir = url_params.get('adir');
-    // get the project directory from the form
-    let prj_dir = $(`#__OUTDIR__ input`).val();
-    // prepare the workspace of project
-    let cfg_dir = workflower.prepareWfWorkspace(prj_id, prj_dir);
-    // get the workflow structure
-    let wkf = workflower.extractWorkflowStr();
-    // get the adaptor structure
-    let adp = workflower.extractAdaptorStr(adp_dir);
-    // join the adaptor strcuture and workflow structure
-    let wf = workflower.joinWorkflowAdaptorStr(adp, wkf);
-    // export workflow Commands
-    workflower.exportWorkflowCmds(cfg_dir, wf);
-    // export project cfg file
-    let wf_cfgfile = exportProjectCfg(prj_id, prj_dir, cfg_dir, wf);
-    // create the root folder of project. Here, the variable contains completed path.
-    projectfolder = preparePrjDir('', prj_dir);
     // check adaptor inputs
-    checkAdaptorInputs(exceptor);
-    // Exec: create config file for the execution of workflow
-    executor.execTable2Cfg({
-        'indir': cfg_dir,
-        'attfile': wf_cfgfile,
-        'outfile': `${cfg_dir}/config.yaml`,
-        'logdir': cfg_dir
-    });
-    return [prj_id, prj_dir, cfg_dir];
+    inputs_ok = checkAdaptorInputs(exceptor);
+    if (inputs_ok) {
+        // get input parameters (from URL)
+        let url_params = new URLSearchParams(window.location.search);
+        let prj_id = url_params.get('pid');
+        if (prj_id === undefined) prj_id = 'date_id';
+        let adp_dir = url_params.get('adir');
+        // get the project directory from the form
+        let prj_dir = $(`#__OUTDIR__ input`).val();
+        // prepare the workspace of project
+        let cfg_dir = workflower.prepareWfWorkspace(prj_id, prj_dir);
+        // get the workflow structure
+        let wkf = workflower.extractWorkflowStr();
+        // get the adaptor structure
+        let adp = workflower.extractAdaptorStr(adp_dir);
+        // join the adaptor strcuture and workflow structure
+        let wf = workflower.joinWorkflowAdaptorStr(adp, wkf);
+        // export workflow Commands
+        workflower.exportWorkflowCmds(cfg_dir, wf);
+        // export project cfg file
+        let wf_cfgfile = exportProjectCfg(prj_id, prj_dir, cfg_dir, wf);
+        // create the root folder of project. Here, the variable contains completed path.
+        projectfolder = preparePrjDir('', prj_dir);
+        // Exec: create config file for the execution of workflow
+        executor.execTable2Cfg({
+            'indir': cfg_dir,
+            'attfile': wf_cfgfile,
+            'outfile': `${cfg_dir}/config.yaml`,
+            'logdir': cfg_dir
+        });
+        return [prj_id, prj_dir, cfg_dir];
+    }
+    else return [undefined,undefined,undefined];
 }
 
 /*

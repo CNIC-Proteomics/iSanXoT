@@ -145,31 +145,35 @@ $('#__INDIR__  button').click(function() {
   });
 });
 
-
 /* Functions that chech the inputs */
 function checkInputFile(input, errsms, exceptor) {
   let fs = require('fs');
   if ( $(`${input}`).val() === undefined || $(`${input}`).val() === '' ) {
       console.log(`${errsms}: input is undefined`);
-      exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+      return false;
     }
     else {
       try {
         if ( !fs.existsSync($(`${input}`).val()) ) {
           console.log(`${errsms}: input is undefined`);
-          exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+          exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+          return false;
         }
       } catch(err) {
         console.log(`${errsms}: input is undefined`);
-        exceptor.showErrorMessageBox('Error Message', `${errsms}`, end=true);
+        exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+        return false;
       }
     }
-    return;
+    return true;
 };
 /* The name and the parameters of this function has to be the same in the adaptors */
 function checkAdaptorInputs(exceptor) {
-  checkInputFile(`#__INDIR__ input`, `Input folder has not been included`, exceptor);
-  checkInputFile(`#__OUTDIR__ input`, `Output folder has not been included`, exceptor);
+  let o = [];
+  o.push( checkInputFile(`#__IDQ_FILE__ input`, `Input file has not been included`, exceptor) );
+  o.push( checkInputFile(`#__OUTDIR__ input`, `Output folder has not been included`, exceptor) );
+  return o.every(element => element === true);
 };
 
 /* Window to add the metadata from inputs */
