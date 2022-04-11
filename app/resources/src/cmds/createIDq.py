@@ -50,17 +50,40 @@ def add_exps(indata, indir):
     if len(indata) > 1:
         exp = indata[1]
         df['Experiment'] = exp
+    return df
+
+def add_exps_specfile(indata, indir):
+    '''
+    Pre-processing the data for CNIC group
+    - add needed columns
+    '''
+    # read input file
+    try:
+        file = common.get_path_file(indata[0], indir)
+        df = pd.read_csv(file, sep="\t")
+    except Exception as exc:
+        sms = "At least, one of input files is wrong: {}".format(exc)
+        logging.error(sms)
+        sys.exit(sms)
+    # add Experiment column
+    if len(indata) > 1:
+        exp = indata[1]
+        df['Experiment'] = exp
     # add the Spectrum File column from the input file name
     if 'Spectrum_File' not in df.columns:
         df['Spectrum_File'] = os.path.basename(file)
     return df
 
-def add_experiments(n_workers, indir, indata):
+def add_experiments(n_workers, indir, indata, addSpecFile=False):
     '''
     Add experiment column
     '''
-    with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
-        ddf = executor.map( add_exps, indata.values.tolist(), repeat(indir))
+    if addSpecFile:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
+            ddf = executor.map( add_exps_specfile, indata.values.tolist(), repeat(indir))        
+    else:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
+            ddf = executor.map( add_exps, indata.values.tolist(), repeat(indir))
     ddf = pd.concat(ddf)
     # begin: for debugging in Spyder
     # ddf = add_exps(infiles[0], Expt[0] )
@@ -101,9 +124,13 @@ def main(args):
     if indata.empty:
         sms = "There is not experiment task-table"
         logging.error(sms)
-        sys.exit(sms)  
+        sys.exit(sms)
     logging.info("processing the input file: read, add exp")
-    df = add_experiments(args.n_workers, args.indir, indata)
+    if args.intbl_quant or args.intbl_fdr:
+        # in addition, add 'Spectrum_File' columns
+        df = add_experiments(args.n_workers, args.indir, indata, True)
+    else:
+        df = add_experiments(args.n_workers, args.indir, indata)
 
 
 
@@ -119,6 +146,7 @@ def main(args):
 
 
 
+
     if args.intbl_quant or args.intbl_fdr:
         logging.info("extracting the search engines")
         se = common.select_search_engine(df)
@@ -127,6 +155,7 @@ def main(args):
             sms = "The search engines has not been recognized"
             logging.error(sms)
             sys.exit(sms)
+
 
 
 
@@ -140,6 +169,10 @@ def main(args):
             sys.exit(sms)
         logging.info("extracting the quantification")
         df = extractQuant.add_quantification(args.n_workers, args.indir_mzml, se, df, indata)
+        logging.info("printing quantification file")
+        f = os.path.join( os.path.dirname(args.outfile), 'Q-all.tsv' )
+        df.to_csv(f, index=False, sep="\t", line_terminator='\n')
+
 
 
 
