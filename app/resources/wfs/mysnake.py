@@ -256,7 +256,7 @@ def main(args):
     logging.debug("execute the statistic processes")
     try:
         # command line
-        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/src/cmds/getVariances.py"
+        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/cmds/getVariances.py"
         --indir    "{args.directory}/jobs"
         --outfile  "{args.directory}/stats/variance_report.html"'''
         # Run the command
