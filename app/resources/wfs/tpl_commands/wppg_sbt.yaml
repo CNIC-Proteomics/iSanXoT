@@ -55,7 +55,7 @@
       maxiterations:
         -m: 600
       p>q_var(x):
-        -V: ''
+        -v: ''
       p>q_tag:
         --tags: ''
     more_params: ''
@@ -74,7 +74,7 @@
       p>q_fdr:
         -f: 0.01
       p>q_var(x):
-        -V: ''
+        -v: ''
       p>q_tag:
         --tags: ''
     more_params: ''
@@ -113,7 +113,7 @@
       maxiterations:
         -m: 600
       p>g_var(x):
-        -V: ''
+        -v: ''
       p>g_tag:
         --tags: ''
     more_params: ''
@@ -132,7 +132,7 @@
       p>g_fdr:
         -f: 0.01
       p>g_var(x):
-        -V: ''
+        -v: ''
       p>g_tag:
         --tags: ''
     more_params: ''
@@ -176,7 +176,7 @@
       q>g_tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s -f '
   - name: wsppg_sbt#q2g_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
@@ -229,7 +229,7 @@
       maxiterations:
         -m: 600
       g>c_var(x):
-        -V: ''
+        -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
   - name: wsppg_sbt#g2c_sanxotsieve
@@ -246,7 +246,7 @@
       g>c_fdr:
         -f: 0.01
       g>c_var(x):
-        -V: ''
+        -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
   - name: wsppg_sbt#g2c_sanxot2
@@ -449,7 +449,7 @@
       c>a_tag:
         --tags: ''
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s '
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxot.py" -g -b -s -f '
   - name: wsppg_sbt#c2a_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv

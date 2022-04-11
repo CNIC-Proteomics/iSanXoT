@@ -211,16 +211,13 @@ def _add_datparams_params(p, trule, dat):
                 if dat.upper() != 'FALSE':
                     # delete the infile with the variance (by default)
                     if '-V' in trule['infiles']: del trule['infiles']['-V']
+                    # add variance seed
+                    trule['parameters'][p][k] = dat
                     # force the parameters
-                    trule['more_params'] = '-f '
-                    # create file with the forced variance
-                    o = os.path.dirname( list(trule['outfiles'].values())[0] ) # get the base path of output
-                    vf = os.path.join(o, trule['parameters']['anal']['-a']+'_forcedvar.txt')
-                    f = open(vf, "w")
-                    f.write(f"Variance = {dat}")
-                    f.close()
-                    # add variance file
-                    trule['parameters'][p]['-V'] = vf
+                    # but check if not already exist the -f param (ssanxotsieve case)
+                    c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                    if not any(c):
+                        trule['more_params'] = '-f '
                 else:
                     del trule['parameters'][p] # delete the optional parameter of variance
             # Exceptions in the 'Tag' parameters:
@@ -318,9 +315,9 @@ def add_datparams(p, trule, val):
     elif p == 'rels_infile':
         l = '__WF_'+p.upper()+'__'
         # add default value
+        # transform the input file
         v = __IDQFILE__ if val == '' or val == 'nan' else val
-        # replace the constant to the given value
-        _replace_datparams(v, trule['infiles'],  l)
+        _add_datparams_params(p, trule, v)
 
     elif p == 'more_params':
         _add_datparams_moreparams(p, trule, val)
@@ -687,8 +684,7 @@ def main(args):
             '__RSTDIR__':                 __RSTDIR__,
             '__LOGDIR__':                 __LOGDIR__,
             '__STADIR__':                 __STADIR__,
-            '__IDQFILE__':                __IDQFILE__,
-            '__WF_RELS_INFILE__':         __IDQFILE__
+            '__IDQFILE__':                __IDQFILE__
     }
     # add the replacements for the main_inputs
     for k_id in tpl['adaptor_inputs'].keys():

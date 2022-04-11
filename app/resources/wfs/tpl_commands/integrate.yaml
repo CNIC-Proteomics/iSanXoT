@@ -23,7 +23,7 @@
       place:
         -p: __NAMDIR__/__WF_OUTPUT__
       var(x):
-        -V: ''
+        -v: ''
       maxiterations:
         -m: 600
       tag:
@@ -46,7 +46,7 @@
       fdr:
         -f: 0.01
       var(x):
-        -V: ''
+        -v: ''
       tag:
         --tags: ''
     more_params: ''
