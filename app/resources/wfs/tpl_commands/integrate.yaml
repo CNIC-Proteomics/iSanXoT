@@ -9,7 +9,7 @@
   rules:
 
     # Rule: sanxot integration: obtain integrated Z and FDR values ---
-  - name: int_sanxot1
+  - name: sanxot1
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
@@ -30,7 +30,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: int_sanxotsieve
+  - name: sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
@@ -51,7 +51,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: int_sanxot2
+  - name: sanxot2
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv

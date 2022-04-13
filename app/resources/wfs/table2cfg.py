@@ -188,6 +188,9 @@ def _add_more_params(name, params):
     if params != 'nan':
         try:
             params = params.replace('\\','/') # for windows path's
+            params = params.replace('\'','"')
+            if not params.startswith('{'): params = '{'+params
+            if not params.endswith('{'): params = params+'}'
             jparams = json.loads(params)
             for k,pr in jparams.items():
                 if k in name:

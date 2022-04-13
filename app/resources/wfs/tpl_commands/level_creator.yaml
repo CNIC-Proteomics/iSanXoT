@@ -9,7 +9,7 @@
   rules:
 
   # Rule: ratios and creates level ---
-  - name: level_creator#level_creator
+  - name: level_creator
     infiles:
       -i: __EXPDIR__/ID-q.tsv
     outfiles:

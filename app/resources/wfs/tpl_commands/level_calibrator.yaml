@@ -8,7 +8,7 @@
   force: 0
   rules:
 
-  - name: level_calibrator#klibrate
+  - name: klibrate
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv

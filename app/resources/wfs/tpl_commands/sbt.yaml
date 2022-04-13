@@ -10,7 +10,7 @@
 
     # Rule: sanxot integration: lower to intermediate ---
     # Without outliers and the variance is calculated. FDR = 0
-  - name: sbt_l2i_sanxot1
+  - name: l2i_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_INT_LEVEL__.tsv
@@ -31,7 +31,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: sbt_l2i_sanxotsieve
+  - name: l2i_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_INT_LEVEL__.tsv
@@ -52,7 +52,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: sbt_l2i_sanxot2
+  - name: l2i_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_INT_LEVEL___tagged.tsv
@@ -75,7 +75,7 @@
 
     # Rule: sanxot integration: intermediate to high ---
     # With outliers and the variance is 0. FDR = 0
-  - name: sbt_i2h_sanxot1
+  - name: i2h_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
       -r: __RELDIR__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL__.tsv
@@ -96,7 +96,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s -f '
-  - name: sbt_i2h_sanxotsieve
+  - name: i2h_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
       -r: __RELDIR__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL__.tsv
@@ -116,7 +116,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: sbt_i2h_sanxot2
+  - name: i2h_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/__WF_INT_LEVEL__2__WF_INTHIG_LEVEL___tagged.tsv
@@ -138,7 +138,7 @@
 
     # Rule: sanxot integration: lower to high ---
     # With outliers and the variance is from low2int. FDR = 0
-  - name: sbt_l2h_sanxot1
+  - name: l2h_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__.tsv
@@ -157,7 +157,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: sbt_l2h_sanxotsieve
+  - name: l2h_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL__.tsv
@@ -176,7 +176,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: sbt_l2h_sanxot2
+  - name: l2h_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_LOWHIG_LEVEL___tagged.tsv

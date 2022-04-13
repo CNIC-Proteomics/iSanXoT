@@ -9,7 +9,7 @@
   rules:
 
   # Rule: ratios and creates level ---
-  - name: wspp_sbt#level_creator
+  - name: level_creator
     infiles:
       -i: __EXPDIR__/ID-q.tsv
     outfiles:
@@ -27,7 +27,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/level_creator.py" __WF_VERBOSE__ '
 
   # Rule: calibrates the level
-  - name: wspp_sbt#klibrate
+  - name: klibrate
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/uscan.tsv
       -r: __RELDIR__/uscan2peptide.tsv
@@ -41,7 +41,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g '
 
   # Rule: scan2peptide ---
-  - name: wspp_sbt#s2p_sanxot1
+  - name: s2p_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/scan.tsv
       -r: __RELDIR__/scan2peptide.tsv
@@ -58,7 +58,7 @@
         -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: wspp_sbt#s2p_sanxotsieve
+  - name: s2p_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/scan.tsv
       -r: __RELDIR__/scan2peptide.tsv
@@ -75,7 +75,7 @@
         -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: wspp_sbt#s2p_sanxot2
+  - name: s2p_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/scan.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/scan2peptide_tagged.tsv
@@ -93,7 +93,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
 
   # Rule: peptide2protein ---
-  - name: wspp_sbt#p2q_sanxot1
+  - name: p2q_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2protein.tsv
@@ -112,7 +112,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: wspp_sbt#p2q_sanxotsieve
+  - name: p2q_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2protein.tsv
@@ -131,7 +131,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: wspp_sbt#p2q_sanxot2
+  - name: p2q_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
@@ -151,7 +151,7 @@
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
 
   # Rule: protein2category ---
-  - name: wspp_sbt#q2c_sanxot1
+  - name: q2c_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2category.tsv
@@ -168,7 +168,7 @@
         -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: wspp_sbt#q2c_sanxotsieve
+  - name: q2c_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2category.tsv
@@ -185,7 +185,7 @@
         -v: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: wspp_sbt#q2c_sanxot2
+  - name: q2c_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
@@ -206,7 +206,7 @@
 
     # Rule: peptide2all ---
     # With-outliers. Calculated-Var. FDR = 0
-  - name: wspp_sbt#p2a_sanxot1
+  - name: p2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
@@ -223,7 +223,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: wspp_sbt#p2a_sanxotsieve
+  - name: p2a_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __RELDIR__/peptide2peptideall.tsv
@@ -240,7 +240,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: wspp_sbt#p2a_sanxot2
+  - name: p2a_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
@@ -261,7 +261,7 @@
 
     # Rule: protein2all ---
     # ! outliers. Var = var_q2c. FDR = 0
-  - name: wspp_sbt#q2a_sanxot1
+  - name: q2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2proteinall.tsv
@@ -276,7 +276,7 @@
         -m: 600
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: wspp_sbt#q2a_sanxotsieve
+  - name: q2a_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __RELDIR__/protein2proteinall.tsv
@@ -291,7 +291,7 @@
         -f: 0
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: wspp_sbt#q2a_sanxot2
+  - name: q2a_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
@@ -312,7 +312,7 @@
 
     # Rule: category2all ---
     # With-outliers. Var = 0. FDR = 0
-  - name: wspp_sbt#c2a_sanxot1
+  - name: c2a_sanxot1
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
       -r: __RELDIR__/category2categoryall.tsv
@@ -331,7 +331,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s -f '
-  - name: wspp_sbt#c2a_sanxotsieve
+  - name: c2a_sanxotsieve
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
       -r: __RELDIR__/category2categoryall.tsv
@@ -349,7 +349,7 @@
         --tags: ''
     more_params: ''
     cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: wspp_sbt#c2a_sanxot2
+  - name: c2a_sanxot2
     infiles:
       -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
       -r: __NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
