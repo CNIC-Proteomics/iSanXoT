@@ -7,7 +7,7 @@
   description: Command that creates relationship tables from category DB
   force: 0
   rules:
-  - name: rels_creator_createrels
+  - name: createrels
     infiles:
       --rels_infiles: __IDQFILE__
       # optional input files
