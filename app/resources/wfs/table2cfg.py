@@ -412,7 +412,7 @@ def add_cmd(row, icmd):
     cmd = copy.deepcopy(icmd)
     
     # Add the label of forced execution
-    if 'force' in row:
+    if 'force' in row and row['force'] == '1':
         cmd['force'] = int(row['force'])
 
     # add rules
