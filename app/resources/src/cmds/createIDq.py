@@ -14,9 +14,12 @@ import os
 import sys
 import argparse
 import logging
+import shutil
 import pandas as pd
 import concurrent.futures
 from itertools import repeat
+import threading
+
 
 
 #########################
@@ -112,26 +115,53 @@ def add_levelids(df, indata):
     return df
 
 
+def print_in_background(df, file):
+    df.to_csv(file, index=False, sep="\t", line_terminator='\n')
+
     
 
 def main(args):
     '''
     Main function
     '''
-    logging.info("executing the step that adds the metadata ---")
-    logging.info("reading the experiment task-table")
-    indata = common.read_task_table(args.intbl_exp)
-    if indata.empty:
-        sms = "There is not experiment task-table"
-        logging.error(sms)
-        sys.exit(sms)
-    logging.info("processing the input file: read, add exp")
-    if args.intbl_quant or args.intbl_fdr:
-        # in addition, add 'Spectrum_File' columns
-        df = add_experiments(args.n_workers, args.indir, indata, True)
+    
+    # PROVIDE_IDQ module ---
+    if args.infile and not args.indir and not args.intbl_exp:
+        logging.info("executing PROVIDE_IDQ module ---")
+        try:
+            logging.info("coping the identification/quantification file")
+            # print to tmp file
+            f = f"{args.outfile}.tmp"
+            shutil.copyfile(args.infile, f)
+            # rename tmp file deleting before the original file 
+            common.rename_tmpfile(f)        
+        except Exception as exc:
+            sms = "ERROR!! Copying file: {}".format(exc)
+            logging.error(sms)
+            sys.exit(sms)
+    
+        # exit program
+        sys.exit(0)
+    
+    # CREATE_IDQ module ---
+    if args.indir and args.intbl_exp and not args.infile:
+        logging.info("executing CREATE_IDQ module ---")
+        logging.info("reading the experiment task-table")
+        indata = common.read_task_table(args.intbl_exp)
+        if indata.empty:
+            sms = "There is not experiment task-table"
+            logging.error(sms)
+            sys.exit(sms)
+        logging.info("processing the input file: read, add exp")
+        if args.intbl_quant or args.intbl_fdr:
+            # in addition, add 'Spectrum_File' columns
+            df = add_experiments(args.n_workers, args.indir, indata, True)
+        else:
+            df = add_experiments(args.n_workers, args.indir, indata)
     else:
-        df = add_experiments(args.n_workers, args.indir, indata)
-
+        sms = "You have to provide one of two type of inputs: prividing ID-q by user or creating the ID-q from proteomic pipelines"
+        logging.error(sms)
+        sys.exit(sms)       
 
 
     if args.intbl_lev:
@@ -145,6 +175,8 @@ def main(args):
         df = add_levelids(df, indata)
 
 
+
+    # CNIC ADAPTORS ----
 
 
     if args.intbl_quant or args.intbl_fdr:
@@ -160,7 +192,7 @@ def main(args):
 
 
     if args.intbl_quant:
-        logging.info("executing the step that adds the quantifications ---")
+        logging.info("executing CNIC_ADAPTOR:ADD_QUANT module ---")
         logging.info("reading the quantification task-table")
         indata = common.read_task_table(args.intbl_quant)
         if indata.empty:
@@ -171,13 +203,17 @@ def main(args):
         df = extractQuant.add_quantification(args.n_workers, args.indir_mzml, se, df, indata)
         logging.info("printing quantification file")
         f = os.path.join( os.path.dirname(args.outfile), 'Q-all.tsv' )
-        df.to_csv(f, index=False, sep="\t", line_terminator='\n')
+        df.to_csv(f, index=False, sep="\t", line_terminator='\n')           
+        # logging.info("printing quantification file (in background)")
+        # f = os.path.join( os.path.dirname(args.outfile), 'Q-all.tsv' )
+        # thread = threading.Thread(target=print_in_background, name="Printer", args=(df, f))
+        # thread.start()
 
 
 
 
     if args.intbl_fdr:
-        logging.info("executing the step that calculates the pRatio ---")
+        logging.info("executing CNIC_ADAPTOR:ADD_FDR (pRatio) module ---")
         logging.info("reading the FDR task-table")
         indata = common.read_task_table(args.intbl_fdr)
         if indata.empty:
@@ -195,7 +231,7 @@ def main(args):
 
 
     if args.intbl_mpp:
-        logging.info("executing the step that calculates the most probable protein ---")
+        logging.info("executing CNIC_ADAPTOR:ADD_MPP module ---")
         logging.info("reading the MPP task-table")
         indata = common.read_task_table(args.intbl_mpp)
         if indata.empty:
@@ -256,11 +292,15 @@ if __name__ == '__main__':
             - Calculate the most probable protein.
         ''')
     parser.add_argument('-w',   '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-
-    parser.add_argument('-id',   '--indir', required=True, help='Input Directory where identifications are saved')
-    parser.add_argument('-te',  '--intbl-exp', required=True, help='File has the params for the input experiments')
+    # input files:
+    # Identification/Quantification input file
+    parser.add_argument('-ii',  '--infile', help='Input Identification/Quantification file')
+    # or
+    # create ID-q from proteomics pipelines
+    parser.add_argument('-id',  '--indir', help='Input Directory where identifications are saved')
+    parser.add_argument('-te',  '--intbl-exp', help='File has the params for the input experiments')
     parser.add_argument('-tl',  '--intbl-lev', help='File has the params for the level identifiers')
-
+    # optional parameters:
     parser.add_argument('-iz',  '--indir-mzml', help='Input Directory where mzML are saved')
     parser.add_argument('-tq',  '--intbl-quant', help='File has the params for the quantification extraction')
     parser.add_argument('-tf',  '--intbl-fdr', help='File has the pRatio params')

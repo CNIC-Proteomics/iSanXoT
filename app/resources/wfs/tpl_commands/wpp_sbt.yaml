@@ -314,6 +314,8 @@
     parameters:
       anal:
         -a: category2categoryall
+      c>a_var(x):
+        -v: 0
       c>a_tag:
         --tags: ''
     more_params: ''

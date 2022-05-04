@@ -281,8 +281,8 @@ input:disabled, button:disabled {
  *   PANEL-SECTION: MAIN_INPUTS
  * ---------------------------------------------------
  */
-div[id^="panel-"] {
-    margin-top: .6em;
+div[id^="page-work-"] {
+    padding-top: .6em;
 }
     
 /*
@@ -311,7 +311,7 @@ div[id^="panel-"] {
 .form-control {
     font-size: inherit;
 }
-#species, #__INDIR__, #__OUTDIR__, #modfile, #dbfile, #def-dbfile, #decoylabel, .custom-select {
+#__INDIR__, #__OUTDIR__, .custom-select {
     height: 30px;
 }
 section.tab-content > .form-inline {
@@ -384,18 +384,21 @@ fieldset[disabled] .btn-selectpicker.focus {
  */
 #panel-simple {
     clear: both;
+    margin-bottom: 1em;
 }
 #panel-simple .sdesc {
-    margin-bottom: .6em;
+    margin-right: .6em;
+    text-align: justify;
+    display: inline-block;
+    width: 95%;
 }
-#panel-simple .toggle.btn {
+.toggle.btn {
     margin-bottom: .6em;
 }
 .toggle.btn {
     min-height: 1.875rem;
 }
 .helpadv {
-    position: relative;
     float: right;
     cursor: pointer;
 }
@@ -490,43 +493,39 @@ div[id^="help_"] {
  * ---------------------------------------------------
  */
 
-#paneladaptor-input #add_expcol .wtHider, 
-#paneladaptor-input #add_levelid .wtHider,
-#paneladaptor-input #add_quant .wtHider,
-#paneladaptor-input #fdr .wtHider,
-#paneladaptor-input #protein_assigner .wtHider {
-    /* pointer-events: none; */
+#page-ttable-add_expcol .wtHider, 
+#page-ttable-add_levelid .wtHider,
+#page-ttable-add_quant .wtHider,
+#page-ttable-fdr .wtHider,
+#page-ttable-protein_assigner .wtHider {
     opacity: 0.8;
 }
-
-
-#paneladaptor-input .row {
+.paneladaptor .row {
     margin-right: 0;
     margin-left: 0;
 }
-#paneladaptor-input .col {
+.paneladaptor .col {
     padding-right: 0;
     padding-left: 0;
 }
-#paneladaptor-input .col-buttons {
+.paneladaptor .col-buttons {
     height: 20px !important;
     margin-bottom: 2px;
 }
-#paneladaptor-input .row .text-center {
+.paneladaptor .row .text-center {
     margin-top: 60px;
 }
-
-#paneladaptor-input fieldset {
+.paneladaptor fieldset {
     height: 100%;
     margin-bottom: 1.5rem;
 }
-#paneladaptor-input fieldset.scheduler-border {
+.paneladaptor fieldset.scheduler-border {
     border: 1px groove #ddd !important;
     padding: 0 .8em .8em .8em !important;
     -webkit-box-shadow:  0px 0px 0px 0px #000;
     box-shadow:  0px 0px 0px 0px #000;
 }
-#paneladaptor-input legend.scheduler-border {
+.paneladaptor legend.scheduler-border {
     font-size: 1.2em !important;
     font-weight: bold !important;
     text-align: left !important;
@@ -534,7 +533,9 @@ div[id^="help_"] {
     padding:0 10px;
     border-bottom:none;
 }
-#paneladaptor-input .form-check {
-    margin-bottom: .25rem;
+.paneladaptor .form-check {
+    margin-bottom: 1rem;
 }
-
+.paneladaptor .form-control.process-panel {
+    background-color: inherit;
+}

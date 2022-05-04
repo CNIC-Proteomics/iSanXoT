@@ -109,60 +109,56 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
     for (let ws in wfs['prj_workspace']) {
         cfg['prj_workspace'][ws] = `${prj_dir}/${wfs['prj_workspace'][ws]}`;
     }
-    // Add the adaptor id
-    cfg['adaptor_id'] = wf['adaptor_id'];
-    // Add the values of all adaptors
-    if ( !('adaptor_inputs' in cfg) ) { cfg['adaptor_inputs'] = {}; }
-    $(`[id^=paneladaptor-]`).find(".adaptor_inputs").each(function() {
-        let k = this.id;
-        let v = $(this).find("input").val();
-        cfg['adaptor_inputs'][`${k}`] = v;
-    });
-
-    // Iterate over all the works of the workflow
-    for (var i = 0; i < wf['works'].length; i++) {
-        let wk = wf['works'][i];    
-        // iterate over all commands
-        for (var j = 0; j < wk['cmds'].length; j++) {
-            let cmd = wk['cmds'][j];
-            let cmd_id = cmd['id'];
-            let cmd_ttablefiles = {};
-            if ( !('ttablefiles' in cfg) ) { cfg['ttablefiles'] = []; }
-            // create the tasktables for every command            
-            if ( 'tasktable' in cmd ) {
-                let cmd_ttables = [];
-                for (let k=0; k < cmd['tasktable'].length; k++) {
-                    let cmd_ttable = cmd['tasktable'][k];
-                    let cmd_ttable_id = ('id' in cmd_ttable) ? cmd_ttable['id'] : cmd_id.toLowerCase();
-                    if ( 'file' in cmd_ttable ) {
-                        let f = `${cfg_dir}/${cmd_ttable['file']}`;
-                        if ( fs.existsSync(f) ) {
-                            cmd_ttables.push({
-                                'id': cmd_ttable_id,
-                                'file': f
-                            });
+    // Check if commands are available correctly
+    for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
+        let tab = wf['tabs'][h];
+        for (var i = 0; i < tab['works'].length; i++) { // go through works
+            let wk = tab['works'][i];    
+            for (var j = 0; j < wk['cmds'].length; j++) { // go through cmds
+                let cmd = wk['cmds'][j];
+                let cmd_id = cmd['id'];
+                let incmds = {};
+                if ( !('inpcmds' in cfg) ) { cfg['inpcmds'] = []; }
+                // create params (mostly for adaptor)
+                if ( 'params' in cmd ) {
+                    let cmd_params = [];
+                    for (let k=0; k < cmd['params'].length; k++) {
+                        let param = cmd['params'][k];
+                        if ( $(`#${param}`).length > 0 && $(`#${param}`).val() != '' ) {
+                            cmd_params.push({
+                                'key': param,
+                                'val': $(`#${param}`).val()
+                            });    
                         }
                     }
+                    if ( cmd_params.length > 0 ) incmds['params'] = cmd_params;
                 }
-                // add to ttfiles for every cmd
-                if ( cmd_ttables.length > 0 ) {
-                    cmd_ttablefiles = {
-                        'name': cmd_id,
-                        'ttables': cmd_ttables
-                    };
-                    if ( 'unique_exec' in cmd ) cmd_ttablefiles['unique_exec'] = true;
+                // create the tasktables
+                if ( 'tasktable' in cmd ) {
+                    let cmd_ttables = [];
+                    for (let k=0; k < cmd['tasktable'].length; k++) {
+                        let ttable = cmd['tasktable'][k];
+                        let cmd_ttable_id = ('id' in ttable) ? ttable['id'] : cmd_id.toLowerCase();
+                        if ( 'file' in ttable ) {
+                            let f = `${cfg_dir}/${ttable['file']}`;
+                            if ( fs.existsSync(f) ) {
+                                cmd_ttables.push({
+                                    'id': cmd_ttable_id,
+                                    'file': f
+                                });
+                            }
+                        }
+                    }
+                    if ( cmd_ttables.length > 0 ) incmds['ttables'] = cmd_ttables;
+                }
+                // add parameter unique_exec for the command
+                if ( Object.keys(incmds).length !== 0 && incmds.constructor === Object && 'unique_exec' in cmd ) incmds['unique_exec'] = true;
+                // add to cfg
+                if ( Object.keys(incmds).length > 0 ) {                    
+                    cfg['inpcmds'].push(Object.assign({'name': cmd_id}, incmds));
                 }
             }
-            // command without tasktable
-            else {                
-                cmd_ttablefiles = {
-                    'name': cmd_id
-                };
-                if ( 'unique_exec' in cmd ) cmd_ttablefiles['unique_exec'] = true;
-            }
-            // add to cfg
-            if ( Object.keys(cmd_ttablefiles).length > 0 ) cfg['ttablefiles'].push(cmd_ttablefiles);
-        }
+        }    
     }
     // Write cfg file sync
     let cfgfile = `${cfg_dir}/.cfg.yaml`;
@@ -170,7 +166,7 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
     try {
         fs.writeFileSync(cfgfile, cfgcont, 'utf-8');
     } catch (err) {    
-        exceptor.showErrorMessageBox('Error Message', `Writing the config file ${cfgfile}: ${err}`, end=true);    
+        exceptor.showErrorMessageBox('Error Message', `Writing the config file ${cfgfile}: ${err}`, end=true);
     }
     return cfgfile;
 }
@@ -223,8 +219,8 @@ function openProject(prj_dir) {
         exceptor.showMessageBox('error',`The workflow directory is not defined`, title='Opening project', end=false);
     }
     else {
-        // get the adaptor directory from the workflow dir. By default, it is the basic adaptor
-        let adp_dir = workflower.getAdaptorDir(wkf_dir);
+        // // get the adaptor directory
+        let adp_dir = process.env.ISANXOT_ADAPTOR_HOME;
         // check if the workflow folder is 'date_id'. This means, the given directory comes from workflow folder.
         // assign project_dir to undefined to force an exception.
         let wf_id = wkf_dir.match(/([^\/]*)\/*$/)[1];
@@ -236,21 +232,20 @@ function openProject(prj_dir) {
 
 function saveProject() {
     // check adaptor inputs
-    inputs_ok = checkAdaptorInputs(exceptor);
-    if (inputs_ok) {
+    // return project folder
+    let [prj_dir, adp_cmds, ] = checkAdaptorInputs(exceptor);
+    if (adp_cmds && prj_dir) {
         // get input parameters (from URL)
         let url_params = new URLSearchParams(window.location.search);
         let prj_id = url_params.get('pid');
         if (prj_id === undefined) prj_id = 'date_id';
         let adp_dir = url_params.get('adir');
-        // get the project directory from the form
-        let prj_dir = $(`#__OUTDIR__ input`).val();
         // prepare the workspace of project
         let cfg_dir = workflower.prepareWfWorkspace(prj_id, prj_dir);
         // get the workflow structure
         let wkf = workflower.extractWorkflowStr();
         // get the adaptor structure
-        let adp = workflower.extractAdaptorStr(adp_dir);
+        let adp = workflower.extractAdaptorStr(adp_dir, adp_cmds);
         // join the adaptor strcuture and workflow structure
         let wf = workflower.joinWorkflowAdaptorStr(adp, wkf);
         // export workflow Commands

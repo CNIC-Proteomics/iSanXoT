@@ -1,5 +1,0 @@
-[
-    { "id": "general_input_adapter", "label": "Create the IDq", "enabled": false, "clicked": { "dir": "general_input_adapter" } },
-    { "id": "main_input", "label": "Providing the IDq", "enabled": false, "clicked": { "dir": "main_input" } },
-    { "id": "cnic_input_adapter", "label": "CNIC Input Adapter", "enabled": false, "clicked": { "dir": "cnic_input_adapter" } }
-]

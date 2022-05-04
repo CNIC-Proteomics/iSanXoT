@@ -258,7 +258,7 @@ def main(args):
         # command line
         cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/cmds/getVariances.py"
         --indir    "{args.directory}/jobs"
-        --outfile  "{args.directory}/stats/variance_report.html"'''
+        --outfile  "{args.directory}/stats/variances.tsv"'''
         # Run the command
         cargs = shlex.split(cline) # convert string into args            
         proc = subprocess.call(cargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

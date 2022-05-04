@@ -4,7 +4,7 @@
 # COMMAND TEMPLATE 
 # Description:
 - name: SANSON
-  description: detector of cateogories containing similar sets of proteins, showing changing proteins within each category
+  description: Detects the cateogories containing similar sets of proteins, showing changing proteins within each category
   force: 0
   rules:
 

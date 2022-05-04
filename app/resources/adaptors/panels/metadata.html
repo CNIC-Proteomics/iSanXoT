@@ -2,14 +2,14 @@
 <html>
 <head>
     <!-- Base the path in the app folder for the imports -->
-    <base href="../../../../app/" />
+    <base href="../../../app/" />
     <!-- Imports CSS -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/handsontable-7.4.0.full.min.css">
     <link rel="stylesheet" href="assets/css/fonts.css">
     <link rel="stylesheet" href="assets/css/bootstrap-select.min.css">
     <!-- local lib -->
-    <link rel="stylesheet" href="../resources/adaptors/cnic_input_adapter/css/style.css">
+    <link rel="stylesheet" href="../resources/adaptors/css/style.css">
     <!-- Imports JS -->
     <script>
       if (typeof module === 'object') {window.module = module; module = undefined;}
@@ -76,11 +76,7 @@ let url_params = new URLSearchParams(window.location.search);
 let lib_dir = url_params.get('libdir');
 let inp_dir = url_params.get('inpdir');
 
-// inp_dir = "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/case_studies/adaptor_studies/bak_specific_adapters/experiments/pd"
-// inp_dir = "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/case_studies/adaptor_studies/bak_specific_adapters/experiments/msf";
-// inp_dir = "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/case_studies/adaptor_studies/MaxQuant_results/DEL/combined/txt"
-// inp_dir = "S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/case_studies/adaptor_studies/FragPipe_results/Jurkat1"
-
+// Init tables
 let cols_tbl_exp = {
   headers: ['File', 'Experiment'],
   params:   [{}, {readOnly: false}]

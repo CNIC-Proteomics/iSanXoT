@@ -131,6 +131,8 @@
         -a: __WF_INT_LEVEL__2__WF_INTHIG_LEVEL__
       place:
         -p: __NAMDIR__/__WF_OUTPUT__
+      i>h_var(x):
+        -v: 0
       i>h_tag:
         --tags: ''
     more_params: ''

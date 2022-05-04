@@ -1,0 +1,475 @@
+<template class="task-template" id="panel-input">
+
+<div id="panel-simple">
+  <div class="sdesc"><p></p></div>
+  <div class="helpadv">
+    <svg class="bi text-info" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#info-square-fill" /></svg>
+  </div>
+  <div class="help_modal"></div>
+</div>
+  
+<div class="paneladaptor">
+
+  <div class="form-group">
+    <h6>Project folder</h6>
+    <div class="input-group col-sm">
+      <input type="text" class="form-control adp_input" placeholder="" value="" id="__OUTDIR__">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary btn-sm __OUTDIR__" type="button">Choose folder</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-cmd-CREATE_IDQ">
+    <fieldset class="scheduler-border">
+      <legend class="scheduler-border">Provide the Identification/Quantification file (ID-q)</legend>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="radioAdaptor" id="radio_adaptor_PROVIDE_IDQ" checked>
+        <label class="form-check-label" for="radio_adaptor_PROVIDE_IDQ">Select User-Provided</label>
+      </div>
+      <div class="form-group process-panel">
+        <div class="input-group col-sm">
+          <input type="text" class="form-control adp_input" placeholder="" value="" id="__IDQ_FILE__">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary btn-sm __IDQ_FILE__" type="button">Choose Identification file</button>
+          </div>
+        </div>
+      </div>
+    </fieldset> <!-- end User-provided panel -->
+    <fieldset class="scheduler-border">
+      <legend class="scheduler-border">Create adapted input file from proteomics pipeline results</legend>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="radioAdaptor" id="radio_adaptor_CREATE_IDQ">
+        <label class="form-check-label" for="radio_adaptor_CREATE_IDQ">Select Adaptor from proteomic pipelines</label>
+      </div>
+      <div class="form-control process-panel">
+        <div class="form-group">
+          <div class="input-group col-sm">
+            <input type="text" class="form-control adp_input" placeholder="" value="" id="__INDIR__">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary btn-sm __INDIR__" type="button">Choose folder + Add annots</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <label>Add and name the experiments (read-only table)</label>
+            <div id="page-ttable-add_expcol"></div>
+          </div>
+          <div class="col-6">
+            <label>Add the initial level identifiers (read-only table)</label>
+            <div id="page-ttable-add_levelid"></div>
+          </div>
+        </div>
+      </div>
+    </fieldset> <!-- end Adapted inputs panel -->
+  </div> <!-- end CREATE_IDQ -->
+
+<script>
+
+/*
+ * Import libraries
+ */
+let path = require('path');
+let url = require('url');
+const { dialog, BrowserWindow, ipcMain } = require('electron').remote;
+const mainWindow = BrowserWindow.getFocusedWindow();
+let commoner = require('./renderer-process/common');
+let importer = require('./renderer-process/imports');
+let exceptor = require('./renderer-process/exceptor');
+
+/*
+ * Declare variables
+ */
+var annotWindow = undefined;
+var inpdir = undefined;
+// Get input parameters (from URL)
+let url_params = new URLSearchParams(window.location.search);
+let adp_dir = url_params.get('adir');
+// get imported variables
+let wf  = importer.wf;
+
+/*
+ * Local Functions
+ */
+function extractInputDirectoryFile(inputs, errsms) {
+  let out = undefined;
+  if(inputs === undefined) {
+    console.log(`${errsms}: input is undefined`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+  }
+  else if (inputs.canceled) {
+    console.log(`${errsms}: canceled operation`);
+  }
+  else if (!('filePaths' in inputs )) {
+    console.log(`${errsms}: filePaths does not defined`);
+    exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+  }
+  else {
+    if ( inputs['filePaths'].length == 0 ) {
+      console.log(`${errsms}: filePaths is empty`);
+      exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+    }
+    else {
+      out = inputs['filePaths'][0];
+    }
+  }
+  return out;
+};
+
+// Add the metadata values into the table
+function addMetaDataIntoTable(metadata) {
+  // add metadata for experiment table
+  if ( 'exp' in metadata ) {
+    // update the headers based on the metadata
+    let h = $(`#page-ttable-add_expcol .tasktable`).handsontable('getColHeader');
+    let n = metadata.exp[0].length;
+    h = h.slice(0,n);
+    // add metadata
+    $(`#page-ttable-add_expcol .tasktable`).handsontable({
+      data: metadata.exp,
+      maxRows: metadata.exp.length,
+      colHeaders: h,
+      minCols: h.length,
+      maxCols: h.length
+    });
+    $(`#page-ttable-add_expcol .tasktable`).handsontable('render');
+  }
+  // add metadata for identifier table
+  if ( 'ide' in metadata ) {
+    $(`#page-ttable-add_levelid .tasktable`).handsontable({
+      data: metadata.ide,
+      maxRows: metadata.ide.length
+    });
+    $(`#page-ttable-add_levelid .tasktable`).handsontable('render');
+  }
+};
+
+/*
+ * Local Events
+ */
+
+ // Operations when the windows is loaded
+$(document).ready(function() {
+  // init page (coming from new project method)
+  if ( $('#__IDQ_FILE__').val() == '' && $('#__INDIR__').val() == '' ) {
+    if ( $('#radio_adaptor_PROVIDE_IDQ').prop("checked") ) $('#radio_adaptor_PROVIDE_IDQ').prop("checked",true).trigger('change');
+    if ( $('#radio_adaptor_CREATE_IDQ').prop("checked") ) $('#radio_adaptor_CREATE_IDQ').prop("checked",true).trigger('change');
+  }
+  else {
+    // check the values from adaptors to know which panel has to be enabled (from open_project method)
+    let t = $('#page-ttable-add_expcol .tasktable').handsontable('getData');
+    if ( $('#__IDQ_FILE__').val() !== '' && t.every(commoner.allBlanks) ) {
+      $('#radio_adaptor_PROVIDE_IDQ').prop("checked",true).trigger('change');
+    }
+    else if ( $('#__INDIR__').val() !== '' && !t.every(commoner.allBlanks) ) {
+      $('#radio_adaptor_CREATE_IDQ').prop("checked",true).trigger('change');
+    }
+  }
+});
+// Changes in the radio buttons (user-provided adaptor and adapted from pipelines)
+$('input:radio[id^="radio_adaptor"]').change(function() {
+  if ( this.id == 'radio_adaptor_PROVIDE_IDQ' ) {
+    // enable this panel
+    let e1 = $(this).parent().next();
+    $(e1).css('pointer-events','inherit').css('opacity','1');
+    // disable the other panel
+    let e2 = $('#radio_adaptor_CREATE_IDQ').parent().next();
+    $(e2).css('pointer-events','none').css('opacity','0.6');
+  }
+  else if ( this.id == 'radio_adaptor_CREATE_IDQ' ) {
+    // enable this panel
+    let e1 = $(this).parent().next();
+    $(e1).css('pointer-events','inherit').css('opacity','1');
+    // disable the other panel
+    let e2 = $('#radio_adaptor_PROVIDE_IDQ').parent().next();
+    $(e2).css('pointer-events','none').css('opacity','0.6');
+  }
+});
+// Button events
+$('button.__OUTDIR__').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No output directory selected`);
+    if ( inpt !== undefined ) {
+      $(`#__OUTDIR__`).val(`${inpt}`);
+    }
+  });
+});
+$('button.__IDQ_FILE__ ').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openFile'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No input file selected`);
+    if ( inpt !== undefined ) {
+      $(`#__IDQ_FILE__`).val(`${inpt}`);
+    }
+  });
+});
+$('button.__INDIR__').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
+    if ( inpt !== undefined ) {
+      inpdir = inpt;
+      newAnnotWindow(inpt);
+    }
+  });
+});
+$('#__INDIR__').change(function() {
+  // if empty dir, delete exp tables
+  if ( $(this).val() == "" ) {
+    $('#page-ttable-add_expcol .tasktable').handsontable('updateSettings', { "data": [[]] });
+    $('#page-ttable-add_levelid .tasktable').handsontable('updateSettings', { "data": [[]] });
+  }
+});
+
+/* Window to add the metadata from inputs */
+function newAnnotWindow(input_folder) {
+  if ( annotWindow === undefined || annotWindow.isDestroyed() ) {
+        annotWindow = new BrowserWindow({
+            title: 'Add metadata from input files',
+            width: 1000,
+            height: 900,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true
+            },
+            minimizable: false,
+            resizable: false,
+            'icon': process.env.ISANXOT_ICON,
+            parent: mainWindow
+        });
+        annotWindow.setMenu(null);
+        annotWindow.show();
+        // disable the events in the document
+        document.body.style.pointerEvents = 'none';
+        // don't show the menu
+        mainWindow.menuBarVisible = false;
+    }
+
+    // annotWindow.webContents.openDevTools();
+
+    // create the URL
+    annotWindow.loadURL(
+      url.format({
+            protocol: 'file',
+            pathname: path.join(adp_dir, 'panels/metadata.html'),
+            query: {
+              'libdir': __dirname,
+              'inpdir': input_folder
+            }
+      })
+    ).catch( (error) => {
+        console.log(error);
+    });
+    // Emitted when the window is starting to be close.
+    annotWindow.on('close', function(event) {
+      // enamble the events in the document
+      document.body.style.pointerEvents = '';
+      // show the menu
+      mainWindow.menuBarVisible = true;
+      // give the focus
+      mainWindow.focus();
+      // check if exp table is fill
+      let dt = $('#page-ttable-add_expcol .tasktable').handsontable('getData');
+      if ( dt.every(commoner.allBlanks) ) {
+        exceptor.showErrorMessageBox('Error Message', `Any input file was selected`);
+      }
+      else {
+        $(`#__INDIR__`).val(`${inpdir}`);
+      }
+    });
+}
+
+/*
+ * Renderer functions
+ */
+
+// Renderer functions from the window "Add metadata"
+ipcMain.on('submitmetadata', (event, metadata) => {
+  // add metadata values in the table
+  addMetaDataIntoTable(metadata);
+  // enable opacity
+  $(`#page-ttable-add_expcol .wtHider`).css('opacity','1');
+  $(`#page-ttable-add_levelid .wtHider`).css('opacity','1');
+});
+
+/*
+ * External functions
+ */
+
+// Functions that chech the inputs
+function checkInputFile(input, errsms, exceptor) {
+  let fs = require('fs');
+  let v = $(`${input}`).val();
+  if ( v === undefined || v === '' ) {
+      if (exceptor) exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+      return undefined;
+    }
+    else {
+      try {
+        if ( !fs.existsSync(v) ) {
+          if (exceptor) exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+          return undefined;
+        }
+      } catch(err) {
+        if (exceptor) exceptor.showErrorMessageBox('Error Message', `${errsms}`);
+        return undefined;
+      }
+    }
+    return v;
+};
+
+// The name and the parameters of this function has to be the same in the adaptors
+function checkAdaptorInputs(exceptor) {
+  // get the inputs
+  let adp_cmds = [];
+  let adp_id = $('input[id^=radio_adaptor_]:checked').attr('id').replace('radio_adaptor_','');
+  let c1 = checkInputFile(`#__IDQ_FILE__`, `Input file has not been included`);
+  let c2 = checkInputFile(`#__INDIR__`, `Input folder has not been included`);
+  let te = $('#page-ttable-add_expcol .tasktable').handsontable('getData');
+  let tq = $('#page-ttable-add_quant .tasktable').handsontable('getData');
+  let tf = $('#page-ttable-fdr .tasktable').handsontable('getData');
+  let tp = $('#page-ttable-protein_assigner .tasktable').handsontable('getData');
+  // check the output parameter (mandatory)
+  let o = $(`#__OUTDIR__`).val();
+  if ( o === undefined || o === '' ) {
+    exceptor.showErrorMessageBox('Error Message', `Output folder has not been included`);
+    return [undefined, undefined];
+  }
+  // determine which commands from adapter are used
+  // check the inputs for the provide_idq command
+  if ( adp_id == 'PROVIDE_IDQ' && ( c1 === undefined || c1 === '' ) ) {
+    exceptor.showErrorMessageBox('Error Message', `The identification/quantitation file has not been provided`);
+    return [undefined, undefined];
+  }
+  else if ( adp_id == 'PROVIDE_IDQ' && c1 != '' ) {
+    // add the adaptor id
+    adp_cmds.push('CREATE_IDQ');
+    // just in case, remove the other fields values
+    $(`#__INDIR__`).val('');
+    // it also remove ttables exp and ide
+    $('#__INDIR__').trigger('change');
+  }
+  // check the inputs for create_idq command
+  if ( adp_id == 'CREATE_IDQ' && ( c2 === undefined || c2 === ''|| te.every(commoner.allBlanks) ) ) {
+    exceptor.showErrorMessageBox('Error Message', `The identification/quantitation file has not been provided`);
+    return [undefined, undefined];
+  }
+  else if ( adp_id == 'CREATE_IDQ' && c2 != '' && !te.every(commoner.allBlanks) ) {
+    // add the adaptor id
+    adp_cmds.push('CREATE_IDQ');
+    // just in case, remove the other fields values
+    $(`#__IDQ_FILE__`).val('');
+  }
+  // check the inputs for adapt_idq command
+  if ( $('#add_quant_check').is(':checked') && $(`#__MZML_INDIR__`).val() == '' && !tq.every(commoner.allBlanks) ) {
+    exceptor.showErrorMessageBox('Error Message', `Adding Quantification: The mzML folder has to be defined`);
+    return [undefined, undefined];
+  }
+  // return the output folder and commands from adaptor
+  return [o, adp_cmds];
+};
+
+
+
+/*
+ * Specific functions for CNIC adapter
+ */
+
+// Operations when the windows is loaded
+$(document).ready(function() {
+  // check the tasktables of processes panels
+  // fill => enable
+  // not fill => disable
+  let t = [[]];
+  t = $('#page-ttable-add_quant .tasktable').handsontable('getData');
+  if ( t && t.every(commoner.allBlanks) ) $('#add_quant_check').prop("checked",false).trigger('change');
+  else $('#add_quant_check').prop("checked",true).trigger('change');
+
+  t = $('#page-ttable-fdr .tasktable').handsontable('getData');
+  if ( t && t.every(commoner.allBlanks) ) $('#fdr_check').prop("checked",false).trigger('change');
+  else $('#fdr_check').prop("checked",true).trigger('change');
+
+  t = $('#page-ttable-protein_assigner .tasktable').handsontable('getData');
+  if ( t && t.every(commoner.allBlanks) ) $('#protein_assigner_check').prop("checked",false).trigger('change');
+  else $('#protein_assigner_check').prop("checked",true).trigger('change');
+});
+
+$('button.__MZML_INDIR__').click(function() {
+  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+    let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
+    if ( inpt !== undefined ) {
+      $(`#__MZML_INDIR__`).val(`${inpt}`);
+    }
+  });
+});
+
+/* Checkbox for the sub-modules */
+$('#add_quant_check').change(function() {
+  // get the task-table id
+  // get the elem of process-panel
+  let i = 'page-ttable-add_quant';
+  let e = $(this).parent().next();
+  if ( this.checked ) {
+    // enable
+    $(e).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1'); // task-table
+    // add class to save the table
+    $(`#${i} .hot`).addClass('tasktable');
+    // if task-table is empty, then fill it with the values from metadata task-table
+    t = $(`#${i} .tasktable`).handsontable('getData');
+    if ( t.every(commoner.allBlanks) ) {
+      d = $('#page-ttable-add_expcol .tasktable').handsontable('getData');
+      $(`#${i} .tasktable`).handsontable({data: d });
+    }
+  }
+  else {
+    // disable
+    $(e).css('pointer-events','none').css('opacity','0.6');
+    $(`#${i} .wtHider`).css('pointer-events','none').css('opacity','0.6'); // task-table
+    // remove class to don't save tbe table
+    $(`#${i} .hot`).removeClass('tasktable');
+  }
+});
+$('#fdr_check').change(function() {
+  // get the task-table id
+  // get the elem of process-panel
+  let i = 'page-ttable-fdr';
+  let e = $(this).parent().next();
+  if ( this.checked ) {
+    $(e).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1'); // task-table
+    // add class to save the table
+    $(`#${i} .hot`).addClass('tasktable');
+  }
+  else {
+    // disable
+    $(e).css('pointer-events','none').css('opacity','0.6');
+    $(`#${i} .wtHider`).css('pointer-events','none').css('opacity','0.6'); // task-table
+    // remove class to don't save tbe table
+    $(`#${i} .hot`).removeClass('tasktable');
+  }
+});
+$('#protein_assigner_check').change(function() {
+  // get the task-table id
+  // get the elem of process-panel
+  let i = 'page-ttable-protein_assigner';
+  let e = $(this).parent().next();
+  if ( this.checked ) {
+    // enable
+    $(e).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1'); // task-table
+    // add class to save the table
+    $(`#${i} .hot`).addClass('tasktable');
+  }
+  else {
+    // disable
+    $(e).css('pointer-events','none').css('opacity','0.6');
+    $(`#${i} .wtHider`).css('pointer-events','none').css('opacity','0.6'); // task-table
+    // remove class to don't save tbe table
+    $(`#${i} .hot`).removeClass('tasktable');
+  }
+});
+
+
+</script>
+</template>

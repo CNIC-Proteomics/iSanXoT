@@ -140,7 +140,7 @@ ipcRenderer.send('send-env', { 'ISANXOT_PYTHON_EXEC': process.env.ISANXOT_PYTHON
 ipcRenderer.send('send-env', { 'ISANXOT_RESOURCES': process.env.ISANXOT_RESOURCES });
 ipcRenderer.send('send-env', { 'ISANXOT_SRC_HOME': path.join(process.env.ISANXOT_RESOURCES, 'src') });
 ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_HOME': path.join(process.env.ISANXOT_RESOURCES, 'adaptors') });
-ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_INIT': path.join(process.env.ISANXOT_RESOURCES, 'adaptors/general_input_adapter') });
+ipcRenderer.send('send-env', { 'ISANXOT_ADAPTOR_TYPE': 'adaptor.json' });
 ipcRenderer.send('send-env', { 'ISANXOT_WFS_HOME': path.join(process.env.ISANXOT_RESOURCES, 'wfs') });
 ipcRenderer.send('send-env', { 'ISANXOT_SAMPLES_DIR': path.join(process.env.ISANXOT_RESOURCES, 'wfs/samples') });
 ipcRenderer.send('send-env', { 'ISANXOT_NODE_MODULES': path.join(process.env.ISANXOT_RESOURCES, 'node_modules') });

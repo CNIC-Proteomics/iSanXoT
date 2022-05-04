@@ -20,7 +20,7 @@ let all_pids = { 'pids':[], 'c_pids':[] };
 
 // Menu
 let template = [
-  { label: "Menu", submenu: [    
+  { label: "Project", submenu: [    
     { id: 'new-project',  label: 'New Project...', accelerator: 'Ctrl+N', click() { mainWindow.webContents.send('newProject') } },
     { id: 'open-project', label: 'Open Project...', accelerator: 'Ctrl+O', click() { mainWindow.webContents.send('openProject') } },
     { id: 'save-project', label: 'Save Project', accelerator: 'Ctrl+S', enabled: false, click() { mainWindow.webContents.send('saveProject') } },
@@ -30,7 +30,6 @@ let template = [
     { type: 'separator' },
     { id: 'exit', label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
-  { id: "adaptors", label: "Adaptors", submenu: []},
   { id: "processes", label: "Processes", submenu: [
     { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile(path.join(__dirname, 'processes.html')) } }
   ]},
@@ -51,40 +50,9 @@ let template = [
       { id: 'help_cmd-wsppG-sbt', label: 'WSPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WSPPG-SBT') } },
       { id: 'help_cmd-wpp-sbt', label: 'WPP-SBT', click() { mainWindow.webContents.send('openHelper', '_WPP-SBT') } },
       { id: 'help_cmd-wppG-sbt', label: 'WPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WPPG-SBT') } }
-    ]},
-    { label: 'Adaptors', submenu: [
-      { id: 'help_adap-main', label: 'Main-Input', click() { mainWindow.webContents.send('openHelper', '_Main_Input') } },
-      { id: 'help_adap-close-inputs-pd', label: 'Inputs from Proteome Discoverer', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_PD') } },
-      { id: 'help_adap-close-inputs-msf', label: 'Inputs from MSFragger', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MSFragger') } },
-      { id: 'help_adap-close-inputs-msf', label: 'Inputs from Comet', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_Comet') } },
-      { id: 'help_adap-close-inputs-maxq', label: 'Inputs from MaxQuant', click() { mainWindow.webContents.send('openHelper', '_Inputs_from_MaxQuant') } }
-    // ]},
-    // { label: 'Workflows', submenu: [
-    //   { id: 'help_wf-basic', label: 'Basic', click() { mainWindow.webContents.send('openHelper', 'help_wf-basic') } },
-    //   { id: 'help_wf-ptm', label: 'PTM', click() { mainWindow.webContents.send('openHelper', 'help_wf-ptm') } }
     ]}
   ]},
 ]
-
-// Add Adaptor menus
-// This function handles arrays and objects recursively
-function addClickFuncRecursively(obj) {
-  for (var k in obj) {
-    if ( obj[k] !== null && typeof obj[k] == "object" && !('clicked' in obj[k]) ) {
-      addClickFuncRecursively(obj[k]);
-    }
-    else if ( obj[k] !== null && typeof obj[k] == "object" && 'clicked' in obj[k] ) {
-      // add the function for click event
-      obj[k].click = function(menu) {
-        mainWindow.webContents.send('importAdaptor', menu.clicked) };
-    }
-  }
-}
-let adaptor_menu = JSON.parse(fs.readFileSync( path.join(__dirname, '/../resources/adaptors/adaptors.json') ));
-addClickFuncRecursively(adaptor_menu);
-template[1]['submenu'] = adaptor_menu;
-// console.log(JSON.stringify(adaptor_menu, null, 4));
-
 
 // Add 'debugging' menu
 if (process.env.ISANXOT_MODE == "debug") {

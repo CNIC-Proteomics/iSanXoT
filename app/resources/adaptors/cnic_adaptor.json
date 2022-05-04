@@ -2,22 +2,26 @@
   "id": "cnic_input_adapter",
   "label": "Specific Adapter for CNIC group",
   "sdesc": "<p><i>Specific Adapter</i>.</p>",
-  "description": "Specific Adapter for CNIC group",
-  "works": [{
+  "desc": "Long description",
+  "tabs": [{
     "id": "inputs",
-    "label": "Adaptor",
-    "description": "Specific Adapter to provide the Inputs",
-    "cmds": ["CREATE_IDQ", "ADD_IDQ"]
+    "label": "Input File(s)",
+    "works": [{
+      "id": "inputs",
+      "label": "Input Adaptor",
+      "title": "Provide Input File containing quantitative data",
+      "sdesc": "The file may be provided by the user or adapted from other pipelines (see help for more information about formatting and pipelines compatible with current version).",  
+      "panel": "panels/cnic_inputs.html",
+      "hmodal": "hmodals/inputs.html",
+      "visible": true,  
+      "cmds": ["CREATE_IDQ"]
+    }]  
   }],
   "commands": [{
     "id": "CREATE_IDQ",
-    "sdesc": "Add the experiment column",
-    "label": "General Adapter to provide the Inputs",
-    "title": "General Adapter to provide the Inputs",
-    "panel_adp": "panels/inputs.html",
-    "help_adp": "hmodals/inputs.html",
-    "visible": true,
+    "sdesc": "Create ID-q file for the project. It could be to add the quantification, even the fdr, and the most probable protein",
     "unique_exec": true,
+    "params": ["__IDQ_FILE__", "__INDIR__", "__MZML_INDIR__", "__OUTDIR__"],
     "tasktable": [{
       "id": "add_expcol",
       "file": "add_expcol.tsv",
@@ -52,13 +56,7 @@
         { "type": "required", "id": "headers_join", "name": "Headers to join" },
         { "type": "required", "id": "label_name", "name": "Label name" }
       ]
-    }]
-  },{
-    "id": "ADD_IDQ",
-    "sdesc": "Add the quantifications, FDR calculation, and calculate most probable protein assigned to each PSM.",
-    "visible": true,
-    "unique_exec": true,
-    "tasktable": [{
+    },{
       "id": "add_quant",
       "file": "add_quant.tsv",
       "settings": {

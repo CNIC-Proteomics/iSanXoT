@@ -154,12 +154,19 @@ def remove_ttable_param(data, comp):
     Remove the parameter whose ttables param have not been added
     '''
     for rule in data['rules']:
+        # use 'list' to force a copy of keys to be made
+        # and avoid the "dictionary changed size during iteration" error
         for i in ['infiles','outfiles']:
-            # use 'list' to force a copy of keys to be made
-            # and avoid the "dictionary changed size during iteration" error
-            for k in list(rule[i].keys()):
-                if comp in rule[i][k]:
-                    del rule[i][k]
+            if i in rule and rule[i] is not None:
+                for k in list(rule[i].keys()):
+                    if re.search(comp, rule[i][k]):
+                        del rule[i][k]
+        for i in ['parameters']:
+            if i in rule and rule[i] is not None:
+                for j in list(rule[i].keys()):
+                    for k in list(rule[i][j].keys()):
+                        if re.search(comp, rule[i][j][k]):
+                            del rule[i][j][k]
     return data
 
 def check_val_in_dict(data, stxt):
@@ -212,15 +219,27 @@ def _add_datparams_params(p, trule, dat):
             # Otherwise, by default
             if p.endswith('var(x)') and dat != 'nan':
                 if dat.upper() != 'FALSE':
+                    # # delete the infile with the variance (by default)
+                    # if '-V' in trule['infiles']: del trule['infiles']['-V']
+                    # # add variance seed
+                    # trule['parameters'][p][k] = dat
+                    # # force the parameters
+                    # # but check if not already exist the -f param (ssanxotsieve case)
+                    # c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                    # if not any(c):
+                    #     trule['more_params'] = '-f '
                     # delete the infile with the variance (by default)
                     if '-V' in trule['infiles']: del trule['infiles']['-V']
-                    # add variance seed
-                    trule['parameters'][p][k] = dat
                     # force the parameters
-                    # but check if not already exist the -f param (ssanxotsieve case)
-                    c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
-                    if not any(c):
-                        trule['more_params'] = '-f '
+                    trule['more_params'] = '-f '
+                    # create file with the forced variance
+                    o = os.path.dirname( list(trule['outfiles'].values())[0] ) # get the base path of output
+                    vf = os.path.join(o, trule['parameters']['anal']['-a']+'_forcedvar.txt')
+                    f = open(vf, "w")
+                    f.write(f"Variance = {dat}")
+                    f.close()
+                    # add variance file
+                    trule['parameters'][p]['-V'] = vf                        
                 else:
                     del trule['parameters'][p] # delete the optional parameter of variance
             # Exceptions in the 'Tag' parameters:
@@ -643,14 +662,14 @@ def main(args):
     
     
     # ------
-    # extract the list of task-tables (ttablefiles)
+    # extract the list of task-tables (inpcmds)
     # split by command
     # create a list of tuples (command, dataframe with parameters)
     # dropping empty rows and empty columns
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
     logging.info("read the multiple input files with the commands")
-    indata = common.read_commands_from_tables(tpl['ttablefiles'])
+    indata = common.read_commands_from_tables(tpl['inpcmds'])
     
 
 
@@ -689,17 +708,16 @@ def main(args):
             '__STADIR__':                 __STADIR__,
             '__IDQFILE__':                __IDQFILE__
     }
-    # add the replacements for the main_inputs
-    for k_id in tpl['adaptor_inputs'].keys():
-        repl[k_id] = tpl['adaptor_inputs'][k_id]
-        
-    # add the replacements for the data files of tasktable commands
-    for ttablefile in tpl['ttablefiles']:
-        if 'ttables' in ttablefile:
-            for tt in ttablefile['ttables']:
+    # add the replacements from the input cmds: the params and task-tables
+    for inpcmd in tpl['inpcmds']:
+        if 'params' in inpcmd:
+            for tt in inpcmd['params']:
+                l = tt['key']
+                repl[l] = tt['val']
+        if 'ttables' in inpcmd:
+            for tt in inpcmd['ttables']:
                 l = "__TTABLEFILE_{}__".format(tt['id'].upper())
-                repl[l] = tt['file']    
-    tpl = replace_val_rec(tpl, repl)
+                repl[l] = tt['file']
 
 
 
@@ -708,40 +726,30 @@ def main(args):
     tpl['commands'] = []
     for cmd,indat in indata.items():
         uniq_exec = indat['unique_exec']
-        # commands with ttable
-        if 'ttables' in indat:
-            # the unique_exec use the tables as parameters. don't create multiple jobs from the table rows
-            if uniq_exec:
-                # read the templates of commands
-                cmd_tpl = read_tpl_command(args.intpl, cmd)
-                # replace constant within command tpls
-                cmd_tpl = replace_val_rec(cmd_tpl, repl)
-                # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
-                cmd_tpl = remove_ttable_param(cmd_tpl, '__TTABLEFILE_')
-                # add the template
-                tpl['commands'].append([cmd_tpl])
-            # multiple executions from the row tables
-            else:
-                for df in indat['ttables']:
-                    # read the templates of commands
-                    cmd_tpl = read_tpl_command(args.intpl, cmd)
-                    # replace constant within command tpls
-                    cmd_tpl = replace_val_rec(cmd_tpl, repl)
-                    if cmd_tpl:
-                        # create a command for each row
-                        # add the parameters for each rule
-                        tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
-
-            # replace constants
-            tpl['commands'] = replace_val_rec(tpl['commands'], repl)
-        # commands without ttable
-        else:
+        # the unique_exec use the tables as parameters. don't create multiple jobs from the table rows
+        if uniq_exec:
             # read the templates of commands
             cmd_tpl = read_tpl_command(args.intpl, cmd)
             # replace constant within command tpls
             cmd_tpl = replace_val_rec(cmd_tpl, repl)
-            if cmd_tpl:
-                tpl['commands'].append([cmd_tpl])
+            # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
+            cmd_tpl = remove_ttable_param(cmd_tpl, '^__')
+            # add the template
+            tpl['commands'].append([cmd_tpl])
+        # multiple executions from the row tables
+        else:
+            for df in indat['ttables']:
+                # read the templates of commands
+                cmd_tpl = read_tpl_command(args.intpl, cmd)
+                # replace constant within command tpls
+                cmd_tpl = replace_val_rec(cmd_tpl, repl)
+                if cmd_tpl:
+                    # create a command for each row
+                    # add the parameters for each rule
+                    tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
+
+        # replace constants
+        tpl['commands'] = replace_val_rec(tpl['commands'], repl)
 
 
 

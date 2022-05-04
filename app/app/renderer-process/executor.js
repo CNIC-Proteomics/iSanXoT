@@ -79,15 +79,17 @@ function execSnakeMake(params) {
 function executeProject() {
     // save project
     let [prj_id, prj_dir, dte_dir] = projector.saveProject();
-    // prepare the workspace of project
-    let log_dir = projector.preparePrjWorkspace(prj_id, prj_dir);
-    // Execute snakemake
-    execSnakeMake({
-        'configfile': `${dte_dir}/config.yaml`,
-        'nthreads':   `${document.querySelector('#nthreads').value}`,
-        'directory':  `${prj_dir}`,
-        'logfile':    `${log_dir}/isanxot.log`
-    });
+    if ( prj_id && prj_dir && dte_dir ) {
+        // prepare the workspace of project
+        let log_dir = projector.preparePrjWorkspace(prj_id, prj_dir);
+        // Execute snakemake
+        execSnakeMake({
+            'configfile': `${dte_dir}/config.yaml`,
+            'nthreads':   `${document.querySelector('#nthreads').value}`,
+            'directory':  `${prj_dir}`,
+            'logfile':    `${log_dir}/isanxot.log`
+        });
+    }
 };
 
 /*

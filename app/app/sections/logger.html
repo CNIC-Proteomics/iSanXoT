@@ -21,13 +21,15 @@
 <div id="panel-logger">
   <div id="projectlogs" class="form-group">
     <h6>Project logs table</h6>
+    <p>Press a process to see the workflow logs</p>
     <div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>
   </div>
 
   <div id="workflowlogs" class="form-group">
     <h6>Workflow logs</h6>
+    <p style="display: none;">Press the command to see the command logs (for not cached commands)</p>
     <div class="message"></div>
-    <div class="table"></div>
+    <div class="table"><div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div></div>    
   </div>  
 </div>
 

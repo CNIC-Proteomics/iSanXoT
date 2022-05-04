@@ -275,7 +275,9 @@ class logger {
                 afterSelection: function(r,c) {
                     // create the commands logs for the selected project
                     let data = this.getDataAtRow(r);
-                    that.createWorkflowLogsTable(data);
+                    if (!commoner.allBlanks(data)) {
+                        that.createWorkflowLogsTable(data);
+                    }
                 },
                 columns: [{            
                     data: 'pid',
@@ -326,7 +328,7 @@ class logger {
         let cmds = logData[7] || logData['cmds'];
         // init panels
         $(`#workflowlogs .message`).html(``);
-        $(`#workflowlogs .table`).html(`<div name="hot" class="logtable hot handsontable htRowHeaders htColumnHeaders"></div>`);
+        $(`#workflowlogs p`).css('display','block');
         // check if project has an error
         if ( status == 'wf error' ) {
             // remove old message/table

@@ -4,7 +4,7 @@
 # COMMAND TEMPLATE 
 # Description:
 - name: INTEGRATE
-  description: Integration
+  description: Performs an integration from an existing lower level to a higher level using a created Relation Table
   force: 0
   rules:
 

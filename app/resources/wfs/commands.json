@@ -11,36 +11,145 @@
     "logdir": "logs",
     "stadir": "stats"
   },
-  "works": [{
+  "tabs": [{
     "id": "rels_creator",
     "label": "Relation tables",
-    "description": "Short description for the current work (tab)",  
-    "cmds": ["RELS_CREATOR"]
-  },{
-    "id": "complete_commands",
-    "label": "Complete modules",
-    "description": "Short description for the current work (tab)",  
-    "cmds": ["WSPP_SBT","WSPPG_SBT","WPP_SBT","WPPG_SBT"]
+    "works": [{
+      "id": "rels_creator",
+      "label": "RELS CREATOR",
+      "title": "Relation tables",
+      "sdesc": "This module creates 'Relation Tables' (RT) from any tabular file (tsv). Indicate which are the headers from the tsv table that contain the elements to create the lower and upper columns of the relation table (and of the 3rd column if required).",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/rels_creator.html",
+      "visible": true,  
+      "cmds": ["RELS_CREATOR"]
+    }]
   },{
     "id": "basic_commands",
     "label": "Basic modules",
-    "description": "Short description for the current work (tab)",  
-    "cmds": ["LEVEL_CREATOR","LEVEL_CALIBRATOR","INTEGRATE","NORCOMBINE","RATIOS_INT","SBT"]
+    "works": [{
+      "id": "level_creator",
+      "label": "LEVEL CREATOR",
+      "title": "Log2-ratios & set the first level",
+      "sdesc": "This module creates a level (a text file containing identifier, X and V values) extracting the data from a Quantification table (IDq file). Only the data with the value specified in 'Experiment' column will be extracted.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/level_creator.html",
+      "visible": true,
+      "cmds": ["LEVEL_CREATOR"]
+    },{
+      "id": "level_calibrator",
+      "label": "LEVEL CALIBRATOR",
+      "title": "Calibration of level",
+      "sdesc": "This module calibrates the V values of a level by performing the specified integration. Calibration converts raw V values into inverses of variances.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/klibrate.html",
+      "visible": true,
+      "cmds": ["LEVEL_CALIBRATOR"]
+    },{
+      "id": "integrate",
+      "label": "INTEGRATE",
+      "title": "Integrate",
+      "sdesc": "This module performs an integration from an existing lower level to a higher level using a previously created Relation Table whose name matches the higher and lower levels (e.g. if the user wants to integrate from scan to peptide, iSanXoT will use the Relation Table called scan2peptide.tsv).",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/integrate.html",
+      "visible": true,
+      "cmds": ["INTEGRATE"]
+    },{
+      "id": "norcombine",
+      "label": "NORCOMBINE",
+      "title": "Sample/experiment combination",
+      "sdesc": "This module combines integration data and relation tables from different experiments. After that, the combined integrations and relations are integrated all together.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/norcombine.html",
+      "visible": true,
+      "cmds": ["NORCOMBINE"]
+    },{
+      "id": "ratios_int",
+      "label": "RATIOS",
+      "title": "Calculate ratios",
+      "sdesc": "This module calculates the ratios between levels based on the V method.<br/><b>Suggestion:</b> We recommend you to write the 'Output Sample folder' taking into account that the folder names is sorting alphanumerically in the report (REPORT module output).",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/ratios.html",
+      "visible": true,
+      "cmds": ["RATIOS_INT"]
+    },{
+      "id": "sbt",
+      "label": "SBT",
+      "title": "System Biology Triangle",
+      "sdesc": "This module applies the Generic Integration Algorithm (GIA) to integrate from lower level to intermediate level and then from each level to all.<br/><b>Warning!</b> Don't forget to provide the Relation Table 'protein2category' within the RELS CREATOR module. Click on Info icon for further details.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/sbt.html",
+      "visible": true,
+      "cmds": ["SBT"]
+    }]
+  },{
+    "id": "complete_commands",
+    "label": "Compound modules",
+    "works": [{
+      "id": "wspp_sbt",
+      "label": "WSPP - SBT",
+      "title": "Log2-ratios & WSPP - SBT calculations",
+      "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2proteinall, protein2category and category2categoryall following the SBT algorithm to analyze coordinated protein changes; it also integrates peptide2peptideall. The Relation Tables must be defined by the RELS CREATOR module.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/wspp_sbt.html",
+      "visible": true,
+      "cmds": ["WSPP_SBT"]
+    },{
+      "id": "wsppg_sbt",
+      "label": "WSPPG - SBT",
+      "title": "Log2-ratios & WSPPG - SBT calculations",
+      "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/wsppg_sbt.html",
+      "visible": true,
+      "cmds": ["WSPPG_SBT"]
+    },{
+      "id": "wpp_sbt",
+      "label": "WPP - SBT",
+      "title": "Log2-ratios & WPP - SBT calculations",
+      "sdesc": "This module performs the integrations peptide2protein, protein2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/wpp_sbt.html",
+      "visible": true,
+      "cmds": ["WPP_SBT"]
+    },{
+      "id": "wppg_sbt",
+      "label": "WPPG - SBT",
+      "title": "Log2-ratios & WPPG - SBT calculations",
+      "sdesc": "This module performs the integrations peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/wppg_sbt.html",
+      "visible": true,
+      "cmds": ["WPPG_SBT"]
+    }]
   },{
     "id": "reports",
     "label": "Reports",
-    "description": "Short description for the current work (tab)",  
-    "cmds": ["REPORT","SANSON"]
+    "works": [{
+      "id": "report",
+      "label": "REPORT",
+      "title": "Extract reports",
+      "sdesc": "This module creates tabular tables (tsv) called 'Report Tables' (RPT) containing the desired quantitative results of an integration from several samples.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/report.html",  
+      "visible": true,
+      "cmds": ["REPORT"]
+    },{
+      "id": "sanson",
+      "label": "SANSON",
+      "title": "Create similarity graph",
+      "sdesc": "This module detects the cateogories containing similar sets of proteins, showing changing proteins within each category.",
+      "panel": "sections/panels/simple.html",
+      "hmodal": "sections/hmodals/sanson.html",  
+      "visible": true,
+      "cmds": ["SANSON"]
+    }]
   }],
   "commands": [{
     "id": "RELS_CREATOR",
-    "label": "RELS CREATOR",
-    "title": "Relation tables",
-    "sdesc": "This module creates 'Relation Tables' (RT) from any tabular file (tsv). Indicate which are the headers from the tsv table that contain the elements to create the lower and upper columns of the relation table (and of the 3rd column if required).",
-    "visible": true,
-    "panel": "sections/panels/simple.html",
-    "help_modal": "sections/hmodals/rels_creator.html",
+    "sdesc": "Creates relation tables",
     "tasktable": [{
+      "id": "rels_creator",
       "file": "rels_creator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -52,13 +161,9 @@
       ]}]
   },{
     "id": "WSPP_SBT",
-    "label": "WSPP - SBT",
-    "title": "Log2-ratios & WSPP - SBT calculations",
-    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2proteinall, protein2category and category2categoryall following the SBT algorithm to analyze coordinated protein changes; it also integrates peptide2peptideall. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wspp_sbt.html",
+    "sdesc": "Calculation of WPP and SBT",
     "tasktable": [{
+      "id": "wspp_sbt",
       "file": "wspp_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -80,13 +185,9 @@
     ]}]
   },{
     "id": "WSPPG_SBT",
-    "label": "WSPPG - SBT",
-    "title": "Log2-ratios & WSPPG - SBT calculations",
-    "sdesc": "This module performs the integrations scan2peptide, peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wsppg_sbt.html",
+    "sdesc": "Calculation of WPPG and SBT",
     "tasktable": [{
+      "id": "wsppg_sbt",
       "file": "wsppg_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -112,13 +213,9 @@
     ]}]
   },{
     "id": "WPP_SBT",
-    "label": "WPP - SBT",
-    "title": "Log2-ratios & WPP - SBT calculations",
-    "sdesc": "This module performs the integrations peptide2protein, protein2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wpp_sbt.html",
+    "sdesc": "Calculation of WPP and SBT",
     "tasktable": [{
+      "id": "wpp_sbt",
       "file": "wpp_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -138,13 +235,9 @@
     ]}]
   },{
     "id": "WPPG_SBT",
-    "label": "WPPG - SBT",
-    "title": "Log2-ratios & WPPG - SBT calculations",
-    "sdesc": "This module performs the integrations peptide2protein, protein2gene, gene2category following the SBT algorithm to analyze coordinated gene changes. The Relation Tables must be defined by the RELS CREATOR module.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/wppg_sbt.html",
+    "sdesc": "Calculation of WSPPG and SBT",
     "tasktable": [{
+      "id": "wpp_sbt",
       "file": "wppg_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -168,13 +261,9 @@
     ]}]
   },{
     "id": "LEVEL_CREATOR",
-    "label": "LEVEL CREATOR",
-    "title": "Log2-ratios & set the first level",
-    "sdesc": "This module creates a level (a text file containing identifier, X and V values) extracting the data from a Quantification table (IDq file). Only the data with the value specified in 'Experiment' column will be extracted.",
-    "visible": true,
-    "panel": "sections/panels/simple.html",
-    "help_modal": "sections/hmodals/level_creator.html",
+    "sdesc": "Calculate the log2-ratios and get the level",
     "tasktable": [{
+      "id": "level_creator",
       "file": "level_creator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -187,13 +276,9 @@
     ]}]
   },{
     "id": "LEVEL_CALIBRATOR",
-    "label": "LEVEL CALIBRATOR",
-    "title": "Calibration of level",
     "sdesc": "This module calibrates the V values of a level by performing the specified integration. Calibration converts raw V values into inverses of variances.",
-    "visible": true,
-    "panel": "sections/panels/simple.html",
-    "help_modal": "sections/hmodals/klibrate.html",
     "tasktable": [{
+      "id": "level_calibrator",
       "file": "level_calibrator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -204,14 +289,27 @@
         { "type": "required", "id": "output", "name": "Output Sample folder" }
     ]}]
   },{
-    "id": "NORCOMBINE",
-    "label": "NORCOMBINE",
-    "title": "Sample/experiment combination",
-    "sdesc": "This module combines integration data and relation tables from different experiments. After that, the combined integrations and relations are integrated all together.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/norcombine.html",
+    "id": "INTEGRATE",
+    "sdesc": "Performs an integration from an existing lower level to a higher level using a created Relation Table",
     "tasktable": [{
+      "id": "integrate",
+      "file": "integrate.tsv",
+      "params": [
+        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
+        { "type": "required", "id": "input", "name": "Sample folder(s)" },
+        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
+        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
+        { "type": "optional", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "tag", "name": "Tag" },
+        { "type": "optional", "id": "fdr", "name": "FDR" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
+    ]}]  
+  },{
+    "id": "NORCOMBINE",
+    "sdesc": "Combines integration data and relation tables from different experiments",
+    "tasktable": [{
+      "id": "norcombine",
       "file": "norcombine.tsv",
       "recursive": "files",
       "params": [
@@ -228,13 +326,9 @@
     ]}]
   },{
     "id": "RATIOS_INT",
-    "label": "RATIOS",
-    "title": "Calculate ratios",
-    "sdesc": "This module calculates the ratios between levels based on the V method.<br/><b>Suggestion:</b> We recommend you to write the 'Output Sample folder' taking into account that the folder names is sorting alphanumerically in the report (REPORT module output).",
-    "visible": true,
-    "panel": "sections/panels/simple.html",
-    "help_modal": "sections/hmodals/ratios.html",
+    "sdesc": "Calculates the ratios between levels based on the V method",
     "tasktable": [{
+      "id": "ratios_int",
       "file": "ratios_int.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -245,35 +339,10 @@
         { "type": "required", "id": "output", "name": "Output Sample folder" }
     ]}]
   },{
-    "id": "INTEGRATE",
-    "label": "INTEGRATE",
-    "title": "Integrate",
-    "sdesc": "This module performs an integration from an existing lower level to a higher level using a previously created Relation Table whose name matches the higher and lower levels (e.g. if the user wants to integrate from scan to peptide, iSanXoT will use the Relation Table called scan2peptide.tsv).",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/integrate.html",
-    "tasktable": [{
-      "file": "integrate.tsv",
-      "params": [
-        { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "input", "name": "Sample folder(s)" },
-        { "type": "required", "id": "low_level", "name": "Lower level", "dropdown": ["peptide", "protein", "gene", "category"] },
-        { "type": "required", "id": "hig_level", "name": "Higher level", "dropdown": ["peptide", "protein", "gene", "category", "peptideall", "proteinall", "geneall", "categoryall"] },
-        { "type": "optional", "id": "output", "name": "Output Sample folder" },
-        { "type": "optional", "id": "tag", "name": "Tag" },
-        { "type": "optional", "id": "fdr", "name": "FDR" },
-        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
-        { "type": "optional", "id": "more_params", "name": "More params" }
-    ]}]
-  },{
     "id": "SBT",
-    "label": "SBT",
-    "title": "System Biology Triangle",
-    "sdesc": "This module applies the Generic Integration Algorithm (GIA) to integrate from lower level to intermediate level and then from each level to all.<br/><b>Warning!</b> Don't forget to provide the Relation Table 'protein2category' within the RELS CREATOR module. Click on Info icon for further details.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/sbt.html",
+    "sdesc": "System Biology Triangle",
     "tasktable": [{
+      "id": "sbt",
       "file": "sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -295,13 +364,9 @@
     ]}]
   },{
     "id": "SANSON",
-    "label": "SANSON",
-    "title": "Create similarity graph",
-    "sdesc": "This module detects the cateogories containing similar sets of proteins, showing changing proteins within each category.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/sanson.html",
+    "sdesc": "Detects the cateogories containing similar sets of proteins, showing changing proteins within each category",
     "tasktable": [{
+      "id": "sanson",
       "file": "sanson.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -316,13 +381,9 @@
     ]}]
   },{
     "id": "REPORT",
-    "label": "REPORT",
-    "title": "Extract reports",
-    "sdesc": "This module creates tabular tables (tsv) called 'Report Tables' (RPT) containing the desired quantitative results of an integration from several samples.",
-    "visible": true,
-    "panel": "sections/panels/simple-toggle.html",
-    "help_modal": "sections/hmodals/report.html",
+    "sdesc": "Retrieves the reports",
     "tasktable": [{
+      "id": "report",
       "file": "report.tsv",
       "recursive": "files",
       "params": [
@@ -337,5 +398,10 @@
         { "type": "optional", "id": "rel_file", "name": "Add columns from relation table" },
         { "type": "optional", "id": "filter", "name": "Filter" }
     ]}]
+  },{
+    "id": "GET_VARIANCES",
+    "sdesc": "Retrieves the reports",
+    "unique_exec": true,
+    "params": ["__OUTDIR__"]
   }]
 }

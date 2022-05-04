@@ -55,7 +55,7 @@ ipcRenderer.on('newProject',  function() {
     projector.newProject();
 });
 ipcRenderer.on('openProject',  function() {
-    let prj_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"] });
+    let prj_dir = dialog.showOpenDialogSync({ title: "Open Project Folder", properties: ["openDirectory"] });
     if ( prj_dir !== undefined ) {
         exceptor.loadingWorkflow(); // loading...
         projector.openProject(prj_dir);
@@ -75,7 +75,7 @@ ipcRenderer.on('saveProject', function() {
     }, 1000); // due the execSync block everything, we have to wait until loading event is finished
 });
 ipcRenderer.on('importWorkflow', function() {
-    let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"], defaultPath: process.env.ISANXOT_SAMPLES_DIR });
+    let wkf_dir = dialog.showOpenDialogSync({ title: "Import Workflow from Folder", properties: ["openDirectory"], defaultPath: process.env.ISANXOT_SAMPLES_DIR });
     if ( wkf_dir !== undefined ) {
         exceptor.loadingWorkflow(); // loading...
         workflower.importWorkflow(wkf_dir);
@@ -83,7 +83,7 @@ ipcRenderer.on('importWorkflow', function() {
     }
 });
 ipcRenderer.on('exportWorkflow', function() {
-    let wkf_dir = dialog.showOpenDialogSync({ properties: ["openDirectory"] });
+    let wkf_dir = dialog.showOpenDialogSync({ title: "Export Workflow to Folder", properties: ["openDirectory"] });
     if ( wkf_dir !== undefined ) {
         // loading...
         exceptor.loadingWorkflow();
@@ -131,15 +131,6 @@ function setEnableMenuItem(val) {
         mainMenu.getMenuItemById('save-project').enabled = val;
         mainMenu.getMenuItemById('import-workflow').enabled = val;
         mainMenu.getMenuItemById('export-workflow').enabled = val;
-        // enable/disable adaptors
-        mainMenu.getMenuItemById('adaptors').enabled = val;
-        let dirs = fs.readdirSync(process.env.ISANXOT_ADAPTOR_HOME, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
-        for (let i=0; i<dirs.length; i++) {
-            let adaptor_dir = dirs[i];
-            let adaptor_wf = JSON.parse(fs.readFileSync(path.join(process.env.ISANXOT_ADAPTOR_HOME, `${adaptor_dir}/adaptor.json`)));
-            let adaptor_id = adaptor_wf['id'];
-            if ( mainMenu.getMenuItemById(adaptor_id) ) mainMenu.getMenuItemById(adaptor_id).enabled = val;
-        }
         // enable/disable proccesses
         mainMenu.getMenuItemById('processes').enabled = val;
         mainMenu.getMenuItemById('processes-main').enabled = val;    

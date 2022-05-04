@@ -4,7 +4,7 @@
 # COMMAND TEMPLATE 
 # Description:
 - name: RELS_CREATOR
-  description: Command that creates relationship tables from category DB
+  description: Creates relation tables
   force: 0
   rules:
   - name: createrels

@@ -10,8 +10,9 @@
           </div>
           <div class="modal-body">
             <p>This module parse data from a given tabular file, extract several columns creating a file with tab separated table, Relation Table (RT). These RT created, are used by the integrations in the rest modules. For this reason, the name of RT indicated by the parameter/column of its task-table (“Relation Table to be created”), has to coincide with the “lower-level” and the ”higher-level” of the integration; e.g. whether an integration is between the “peptide” to “protein” levels, the RT applied has to be called “peptide2protein”.</p>
-            <p><blockquote>Important: for consistency and to minimize errors, the name of the relation table must match the names of the lower and upper levels (e.g. to integrate the level 'scan' to the level 'peptide' the relation table must be called 'scan2peptide').</blockquote>
-            </p>
+            <p>Tip!! You can add a constant value indicating the value in square bracket. E.g. [1], or [all].</p>
+            <p><blockquote>Important!! for consistency and to minimize errors, the name of the relation table must match the names of the lower and upper levels (e.g. to integrate the level 'scan' to the level 'peptide' the relation table must be called 'scan2peptide').</blockquote></p>
+
             <h5>Simple parameters</h5>
             <p>The parameters/columns of this module are:</p>
             <ul>

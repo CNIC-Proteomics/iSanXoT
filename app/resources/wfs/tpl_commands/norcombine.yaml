@@ -4,7 +4,7 @@
 # COMMAND TEMPLATE 
 # Description: 
 - name: NORCOMBINE
-  description: Combine experiments
+  description: Combines integration data and relation tables from different experiments
   force: 0
   rule_infiles: multiple
   rules:

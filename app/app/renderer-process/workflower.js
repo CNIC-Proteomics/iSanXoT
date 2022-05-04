@@ -31,78 +31,65 @@ function getWorkflowDir(dir) {
   return wkf_dir;
 }
 
-// Get the adaptor directory. By default, it is the basic adaptor (main_input)
-function getAdaptorDir(wkf_dir) {
-  let adp_dir = undefined;
-  // if exists the adaptor config file, comes from empty adaptor folder
-  if ( fs.existsSync(`${wkf_dir}/adaptor.json`) ) {
-    adp_dir = wkf_dir;
-  }
-  // then, check if adaptor_id is on the workflow folder
-  else {
-    let cfg = getWorkflowCfg(wkf_dir);
-    if ( cfg !== undefined && 'adaptor_id' in cfg ) {
-      let adp_id = cfg['adaptor_id'];
-      let adp_name = '';
-      let adpdirs = commoner.getDirectories(process.env.ISANXOT_ADAPTOR_HOME);
-      for (let i = 0; i < adpdirs.length; i++) {
-        if ( adpdirs[i] == adp_id ) {
-          adp_name = adpdirs[i];
-            break;
-        }
-      }
-      if ( adp_name != '' ) adp_dir = `${process.env.ISANXOT_ADAPTOR_HOME}/${adp_name}`;
-    }
-  }
-  // otherwise, reports the basic adaptor folder
-  if ( adp_dir === undefined ) adp_dir = process.env.ISANXOT_ADAPTOR_INIT;
-  return adp_dir;
-}
-
 // Extract the information of workflow
 // Go through the works of the workflow and fill the information of work and commands
 function extractWorkflowStr() {
   // extract the project attributes
   let wkf = JSON.parse(fs.readFileSync( path.join(process.env.ISANXOT_WFS_HOME, 'commands.json') ));
-  // create the information of works for the workflow
-  for (var i = 0; i < wkf['works'].length; i++) {
-      // extract the information of commands for each work
-      for (var j = 0; j < wkf['works'][i]['cmds'].length; j++) {
-          let cmd_id = wkf['works'][i]['cmds'][j];
+  // create the information of tabs/works/cmds for the workflow
+  for (var i = 0; i < wkf['tabs'].length; i++) {
+    for (var j = 0; j < wkf['tabs'][i]['works'].length; j++) {
+      for (var k = 0; k < wkf['tabs'][i]['works'][j]['cmds'].length; k++) {
+          let cmd_id = wkf['tabs'][i]['works'][j]['cmds'][k];
           // extract the info of cmd
           let cmd = commoner.getObjectFromID(wkf['commands'], cmd_id);
           // replace the info cmd
-          wkf['works'][i]['cmds'][j] = cmd;
+          wkf['tabs'][i]['works'][j]['cmds'][k] = cmd;
       }
+    }
   }
   return wkf;
 }
 
 // Extract the structure of adaptor
 // Go through the works of the adaptor and fill the information of work and commands
-function extractAdaptorStr(adp_dir) {
+function extractAdaptorStr(adp_dir, adp_cmds) {
   // extract the project attributes
-  let adp = JSON.parse(fs.readFileSync(`${adp_dir}/adaptor.json`));
-  // create the information of works for the workflow
-  for (var i = 0; i < adp['works'].length; i++) {
-      // extract the information of commands for each work
-      for (var j = 0; j < adp['works'][i]['cmds'].length; j++) {
-          let cmd_id = adp['works'][i]['cmds'][j];
-          // extract the info of cmd
-          let cmd = commoner.getObjectFromID(adp['commands'], cmd_id);
-          // replace the info cmd
-          adp['works'][i]['cmds'][j] = cmd;
+  let wkf = JSON.parse(fs.readFileSync(path.join(adp_dir, process.env.ISANXOT_ADAPTOR_TYPE)));
+  // create the information of tabs/works/cmds for the workflow
+  for (var i = 0; i < wkf['tabs'].length; i++) {
+    for (var j = 0; j < wkf['tabs'][i]['works'].length; j++) {
+      // redifine the list of cmds for the adaptor
+      let new_cmds = [];
+      for (var k = 0; k < wkf['tabs'][i]['works'][j]['cmds'].length; k++) {
+          let cmd_id = wkf['tabs'][i]['works'][j]['cmds'][k];
+          // if adp_cmds is defined  => get only the cmds in the list
+          if ( adp_cmds ) {
+            if ( adp_cmds.length > 0 && adp_cmds.includes(cmd_id) ) {
+              let cmd = commoner.getObjectFromID(wkf['commands'], cmd_id);
+              new_cmds.push(cmd);
+            }            
+          }
+          // if adp_cmds is not defined => extract all cmds
+          else {
+            let cmd = commoner.getObjectFromID(wkf['commands'], cmd_id);
+            new_cmds.push(cmd);
+          }          
       }
-  }  
-  return adp;
+      if ( new_cmds && new_cmds.length > 0 ) wkf['tabs'][i]['works'][j]['cmds'] = new_cmds;
+    }
+  }
+  return wkf;
 }
 
 // Join the adaptor structure and workflow structure
 function joinWorkflowAdaptorStr(adp, wkf) {
   let wf = wkf;
-  wf['adaptor_id'] = adp['id'];
-  for (let i = adp['works'].length -1; i >= 0; i--) {
-    wf['works'].unshift(adp['works'][i]);
+  for (let i = adp['tabs'].length -1; i >= 0; i--) {
+    wf['tabs'].unshift(adp['tabs'][i]);
+  }
+  for (let i = adp['commands'].length -1; i >= 0; i--) {
+    wf['commands'].unshift(adp['commands'][i]);
   }
   return wf;
 }
@@ -154,32 +141,27 @@ function exportTasktable(tsk_id, header_ids, header_names) {
 // Export the workflow commnands
 function exportWorkflowCmds(cfg_dir, wf) {
 
-  // Determines which adaptor is executed without tasktable ---
-  // Create a tasktable for every command ---
-  // Iterate over all the works of the workflow
-  for (var i = 0; i < wf['works'].length; i++) {
-      let wk = wf['works'][i];
+  for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
+    let tab = wf['tabs'][h];
+    for (var i = 0; i < tab['works'].length; i++) { // go through works
+      let wk = tab['works'][i];
       let wk_id = wk['id'];
-
       // concatenate the data table of all commands
-      // iterate over all commands
-      for (var j = 0; j < wk['cmds'].length; j++) {
+      for (var j = 0; j < wk['cmds'].length; j++) { // go through cmds
         let cmd = wk['cmds'][j];
         let cmd_id = cmd['id'];
         // create tasktables
         if ( 'tasktable' in cmd ) {
           for (let k=0; k < cmd['tasktable'].length; k++) {
-            let cmd_ttable = cmd['tasktable'][k];
-            if ( 'params' in cmd_ttable ) {
-              // get table id
-              let ttable_id = `#${wk_id} #page-tasktable-${cmd_id}`;
-              if ( 'id' in cmd_ttable ) ttable_id = `#${wk_id} #${cmd_ttable['id']}`;
-
+            let ttable = cmd['tasktable'][k];
+            let ttable_id = ttable['id'];
+            let ttable_file = `${cfg_dir}/${ttable['file']}`;
+            if ( 'params' in ttable ) {
               // get the id header based on 'commands.json'
               let header_ids = [];
               let header_names = [];
               try {
-                header_ids = cmd_ttable['params'].map(a => a.id);
+                header_ids = ttable['params'].map(a => a.id);
                 if (header_ids.includes(undefined)) {
                     throw "the list of id headers contains undefined value";
                 }
@@ -188,7 +170,7 @@ function exportWorkflowCmds(cfg_dir, wf) {
               }
               // get the header names based on 'commands.json'
               try {
-                header_names = cmd_ttable['params'].map(a => a.name);
+                header_names = ttable['params'].map(a => a.name);
                 if (header_names.includes(undefined)) {
                     throw "the list of id headers contains undefined value";
                 }
@@ -198,14 +180,13 @@ function exportWorkflowCmds(cfg_dir, wf) {
               // export tasktable to CSV
               let cont = '';
               try {
-                if ( $(`${ttable_id} .tasktable`).length ) {
-                    cont = exportTasktable(`${ttable_id} .tasktable`, header_ids, header_names);
+                if ( $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).length ) {
+                    cont = exportTasktable(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`, header_ids, header_names);
                 }
               } catch (err) {
                   exceptor.showErrorMessageBox('Error Message', `Exporting the command table ${cmd_id}: ${err}`, end=true);    
               }
               // if not empty write tasktable file sync
-              let ttable_file = `${cfg_dir}/${cmd_ttable['file']}`;
               if ( cont != '' ) {
                   try {
                       fs.writeFileSync(ttable_file, cont, 'utf-8');
@@ -221,11 +202,12 @@ function exportWorkflowCmds(cfg_dir, wf) {
                     exceptor.showErrorMessageBox('Error Message', `Updating the tasktable file: ${err}`, end=true);    
                 }
               }
-            } // end if ( 'params' in cmd_ttable )
-          }
+            }
+          } // end for loop ttable
         } // end if ( 'tasktable' in cmd )
-      }
-  }
+      } // end for loop cmds
+    } // end for loop works
+  } // // end for loop tabs
 }
 
 // Add workflow workspace
@@ -235,7 +217,7 @@ function loadWorkflow(prj_id, prj_dir, wkf_dir, adp_dir) {
   // project folder is required
   if (prj_dir === undefined || prj_dir == '') exceptor.showErrorMessageBox('Error Message', `The project folder is not defined`, end=true);
   // adaptor folder. By default, the main_input adaptor
-  adp_dir = (adp_dir !== undefined && adp_dir != '')? adp_dir : process.env.ISANXOT_ADAPTOR_INIT;
+  adp_dir = (adp_dir !== undefined && adp_dir != '')? adp_dir : process.env.ISANXOT_ADAPTOR_HOME;
   // required to load the project when comers from processes frontpage
   if(!mainWindow) {
     var BrowserWindow = require('electron').remote;
@@ -309,7 +291,6 @@ function importAdaptor(adp_dir) {
 module.exports = {
   getWorkflowCfg: getWorkflowCfg,
   getWorkflowDir: getWorkflowDir,
-  getAdaptorDir: getAdaptorDir,
   extractWorkflowStr: extractWorkflowStr,
   extractAdaptorStr: extractAdaptorStr,
   joinWorkflowAdaptorStr: joinWorkflowAdaptorStr,
