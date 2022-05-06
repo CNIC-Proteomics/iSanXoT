@@ -140,8 +140,8 @@ def main(args):
             logging.error(sms)
             sys.exit(sms)
     
-        # exit program
-        sys.exit(0)
+        # exit main
+        return None
     
     # CREATE_IDQ module ---
     if args.indir and args.intbl_exp and not args.infile:
