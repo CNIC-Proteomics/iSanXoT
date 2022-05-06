@@ -42,7 +42,7 @@ def targetdecoy(df, tagDecoy, sep):
     Assing target and decoy proteins
     '''    
     z = list(df["Protein Accessions"].str.split(sep))
-    p = [(all(tagDecoy  in item for item in i )) for i in z]
+    p = [(all(tagDecoy  in item for item in i )) if type(i) is list else True for i in z]
     r = [0 if i==True else 1 for i in p]
     return r
 

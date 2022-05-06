@@ -286,7 +286,9 @@
         { "type": "required", "id": "low_level", "name": "Lower level for integration", "dropdown": ["u_scan", "u_peptide", "u_protein", "u_gene"] },
         { "type": "required", "id": "hig_level", "name": "Higher level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "level", "name": "Name of calibrated level", "dropdown": ["scan","peptide", "protein", "gene"] },
-        { "type": "required", "id": "output", "name": "Output Sample folder" }
+        { "type": "required", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "k_const", "name": "K-constant" },
+        { "type": "optional", "id": "more_params", "name": "More params" }
     ]}]
   },{
     "id": "INTEGRATE",

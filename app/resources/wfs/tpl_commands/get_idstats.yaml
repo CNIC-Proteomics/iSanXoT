@@ -7,7 +7,7 @@
   description: Get the statistics of ID table
   force: 0
   rules:
-  - name: getidstats#getidstats
+  - name: getidstats
     infiles:
       -i: __EXPDIR__/ID-q.tsv
     outfiles:        

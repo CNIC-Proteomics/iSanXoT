@@ -254,19 +254,52 @@ def main(args):
     print(f"MYSNAKE_STATS_EXECUTING\t{time.asctime()}", flush=True)
     
     logging.debug("execute the statistic processes")
+    logging.debug("getting the output values from calibration...")
     try:
         # command line
-        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/cmds/getVariances.py"
-        --indir    "{args.directory}/jobs"
-        --outfile  "{args.directory}/stats/variances.tsv"'''
+        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/cmds/getKlibrateVals.py"
+        --n_workers "{NCPUS}"
+        --indir     "{args.directory}/jobs"
+        --outfile   "{args.directory}/stats/klibration_vals.tsv"'''
+        print(cline, flush=True)
         # Run the command
         cargs = shlex.split(cline) # convert string into args            
         proc = subprocess.call(cargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if proc != 0:
             raise Exception("error")
     except Exception as exc:
-        print("ERROR!! Getting the variance report:\n{}".format(exc), flush=True)
-
+        print("ERROR!! Getting the output values from calibration:\n{}".format(exc), flush=True)
+    logging.debug("getting the output values from integration: variances, totalNelems, excludedNelems, etc...")
+    try:
+        # command line
+        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/cmds/getIntegrationVals.py"
+        --n_workers "{NCPUS}"
+        --indir     "{args.directory}/jobs"
+        --outfile   "{args.directory}/stats/integration_vals.tsv"'''
+        print(cline, flush=True)
+        # Run the command
+        cargs = shlex.split(cline) # convert string into args            
+        proc = subprocess.call(cargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if proc != 0:
+            raise Exception("error")
+    except Exception as exc:
+        print("ERROR!! Getting the output values from integration:\n{}".format(exc), flush=True)
+    logging.debug("getting the time values...")
+    try:
+        # command line
+        cline = f'''"{gvars.ISANXOT_PYTHON_EXEC}" "{gvars.ISANXOT_SRC_HOME}/cmds/getTimeVals.py"
+        --n_workers "{NCPUS}"
+        --indir     "{args.directory}/logs"
+        --logid     "{cfg['date']}"
+        --outfile   "{args.directory}/stats/times_{cfg['date']}.tsv"'''
+        print(cline, flush=True)
+        # Run the command
+        cargs = shlex.split(cline) # convert string into args            
+        proc = subprocess.call(cargs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if proc != 0:
+            raise Exception("error")
+    except Exception as exc:
+        print("ERROR!! Getting the time values:\n{}".format(exc), flush=True)
     # ------
     print(f"MYSNAKE_LOG_FINISHED\t{time.asctime()}", flush=True)
 

@@ -187,24 +187,23 @@ def add_values(df, tpl):
     for k,v in l:
         tpl[k] = v
 
-def _add_more_params(name, params):
+def _add_more_params(name, params, out):
     '''
     Add the more_params to the specific rule
     '''
-    out = ''
     if params != 'nan':
         try:
             params = params.replace('\\','/') # for windows path's
             params = params.replace('\'','"')
             if not params.startswith('{'): params = '{'+params
-            if not params.endswith('{'): params = params+'}'
+            if not params.endswith('}'): params = params+'}'
             jparams = json.loads(params)
             for k,pr in jparams.items():
                 if k in name:
-                    out += pr
+                    out += f" {pr} "
+            return out
         except:
-            out = ''
-        return out
+            return out
     else:
         return out
 
@@ -218,30 +217,26 @@ def _add_datparams_params(p, trule, dat):
             # If the value is not false, apply the new variance
             # Otherwise, by default
             if p.endswith('var(x)') and dat != 'nan':
-                if dat.upper() != 'FALSE':
-                    # # delete the infile with the variance (by default)
-                    # if '-V' in trule['infiles']: del trule['infiles']['-V']
-                    # # add variance seed
-                    # trule['parameters'][p][k] = dat
-                    # # force the parameters
-                    # # but check if not already exist the -f param (ssanxotsieve case)
-                    # c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
-                    # if not any(c):
-                    #     trule['more_params'] = '-f '
-                    # delete the infile with the variance (by default)
-                    if '-V' in trule['infiles']: del trule['infiles']['-V']
-                    # force the parameters
-                    trule['more_params'] = '-f '
-                    # create file with the forced variance
-                    o = os.path.dirname( list(trule['outfiles'].values())[0] ) # get the base path of output
-                    vf = os.path.join(o, trule['parameters']['anal']['-a']+'_forcedvar.txt')
-                    f = open(vf, "w")
-                    f.write(f"Variance = {dat}")
-                    f.close()
-                    # add variance file
-                    trule['parameters'][p]['-V'] = vf                        
-                else:
-                    del trule['parameters'][p] # delete the optional parameter of variance
+                # delete the infile with the variance (by default)
+                if '-V' in trule['infiles']: del trule['infiles']['-V']
+                # add variance seed
+                trule['parameters'][p][k] = dat
+                # force the parameters
+                # but check if not already exist the -f param (ssanxotsieve case)
+                c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                if not any(c):
+                    trule['more_params'] = trule['more_params']+'-f '
+            # Exceptions in the 'K-constant' parameters:
+            # If the value is not false, apply the new variance
+            # Otherwise, by default
+            elif p.endswith('k_const') and dat != 'nan':
+                # add variance seed
+                trule['parameters'][p][k] = dat
+                # force the parameters
+                # but check if not already exist the -f param (ssanxotsieve case)
+                c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                if not any(c):
+                    trule['more_params'] = trule['more_params']+'-f '
             # Exceptions in the 'Tag' parameters:
             # Update the template values (not overwrite from the given data)
             elif p.endswith('tag') and dat != 'nan':
@@ -261,7 +256,7 @@ def _add_datparams_params(p, trule, dat):
         
 
 def _add_datparams_moreparams(p, trule, dat):
-    trule['more_params'] = _add_more_params(trule['name'], str(dat))
+    trule['more_params'] = _add_more_params(trule['name'], str(dat), trule['more_params'])
 
 def _replace_datparams(dat, trule, label):
     for k,tr in trule.items():
@@ -342,7 +337,8 @@ def add_datparams(p, trule, val):
         _add_datparams_params(p, trule, v)
 
     elif p == 'more_params':
-        _add_datparams_moreparams(p, trule, val)
+        # _add_datparams_moreparams(p, trule, val)
+        trule['more_params'] = _add_more_params(trule['name'], str(val), trule['more_params'])
     
     # general case
     # p == 'experiment','input','output','level','norm','low_level', 'int_level','hig_level','lowhig_level','inthig_level','inf_infiles'
@@ -472,10 +468,13 @@ def _param_str_to_dict(s):
         if cpr.startswith('-'):
             if len(cprs) > i+1 and not cprs[i+1].startswith('-'):
                 d[cpr] = cprs[i+1]
-                i = i + 2
+                i += 2
             else:
                 d[cpr] = ''
-                i = i + 1
+                i += 1
+        else:
+            d[cpr] = ''
+            i += 1
     return d
 
 def _str_cline(k,v):

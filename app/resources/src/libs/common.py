@@ -16,23 +16,35 @@ import Comet
 ####################
 # Global variables #
 ####################
-ROOT_FOLDER = '/jobs/'
+ROOT_FOLDER = r'[\/|\\]jobs[\/|\\]'
 
 ####################
 # Common functions #
 ####################
 
 def get_job_name(file):
-    # get the name of 'experiment' until the root folder
-    # By default, we get the last folder name of path
-    fpath = os.path.dirname(file)
-    name = os.path.basename(fpath)
-    # split until the root folder
-    if ROOT_FOLDER in fpath:
-        s = fpath.split(ROOT_FOLDER)
-        if len(s) > 1:
-            s = s[1]
-            name = re.sub(r'[/|\\]+', '/', s) # replace
+    # get the job name from file or from string (command line)
+    if os.path.isfile(file):
+        # get the name of 'experiment' until the root folder
+        # By default, we get the last folder name of path
+        fpath = os.path.dirname(file)
+        name = os.path.basename(fpath)
+    # the input is string (not empty)
+    elif file != '':
+        fpath = file
+        name = file
+    else:
+        fpath = None
+        name = ''
+    # extract the job name from the ROOT folder
+    if fpath is not None:
+        # split until the root folder
+        if re.search(ROOT_FOLDER, fpath):
+            s = re.split(ROOT_FOLDER,fpath)
+            if len(s) > 1:
+                s = s[1]
+                name = re.sub(r'[/|\\]+', '/', s) # replace
+                name = name.split()[0] # get the first word
     return name
 
 

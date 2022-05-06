@@ -7,7 +7,7 @@
   description: Create ID-q file for the project. It could be to add the quantification, even the fdr, and the most probable protein.
   force: 1
   rules:
-  - name: create_idq#create_idq
+  - name: create_idq
     infiles:
       -ii: __IDQ_FILE__
       -id: __INDIR__

@@ -33,7 +33,7 @@
       -r: __RELDIR__/uscan2peptide.tsv
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/scan.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/scan_variance.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/uscan_kinfoFile.txt
     parameters:
       anal:
         -a: uscan
@@ -362,6 +362,8 @@
     parameters:
       anal:
         -a: category2categoryall
+      c>a_var(x):
+        -v: 0
       c>a_tag:
         --tags: ''
     more_params: ''

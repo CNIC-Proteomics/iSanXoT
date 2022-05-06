@@ -33,7 +33,7 @@
       -r: __RELDIR__/upeptide2protein.tsv
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide_variance.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/upeptide_kinfoFile.txt
     parameters:
       anal:
         -a: upeptide
