@@ -20,7 +20,6 @@ app/package-lock.json
 # tests
 tests/*
 !tests/README.md
-studies
 
 # discard the environment for the frontend
 env/node/node-win-x64
