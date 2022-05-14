@@ -3,22 +3,20 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="hmodalTitle">Provide input files from Proteome Discoverer</h5>
+          <h5 class="modal-title" id="hmodalTitle">Provide Input File containing Quantitative Data</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <svg class="bi" width="30" height="30" fill="currentColor"><use xlink:href="assets/icons/bootstrap-icons-1.3.0/bootstrap-icons.svg#x" /></svg>
           </button>
         </div>
         <div class="modal-body">
-          <p>This adaptor allows you to transform the output of Proteome Discoverer (PD) into an Identification-Quantification file appropriate for iSanXoT workflows. iSanXoT has been tested for the outputs of PD 2.5.</p>
-          <p>The adaptor uses the following fields:</p>
+          <p>The iSanXoT Input Adaptor menu offers users the possibility to either provide their own Identification/Quantification file, which contains the identification and quantification data, or have the Input Adaptor prepare this file from the results obtained using any of the mainstream proteomics pipelines.</p>
+          <p>Please indicate in the Project folder field the path to the folder where iSanXoT output files will be stored, then choose one of two options:</p>
           <ul>
-          <li>Output folder: describes the path to the folder where iSanXoT output files will be stored.</li>
-          <li>Default Input folder: specifies the location of the files containing PSM identification and quantification data (the PSMs.txt files).</li>
-          <li>Input files: indicates which of the PSM.txt files stored in the input folder must be considered by iSanXoT. PSMs.txt file names are listed under Infile, while their experiment allocation is indicated in Experiment.</li>
+          <li>User-provided Identification/Quantification file: Choose this option if you already have an Identification/Quantification file that meets the following conditions</li>
+          <li>Prepare Identification/Quantification file from proteomics pipelines: This option prepares the Identification/Quantification file required by iSanXoT based on the output from any proteomics pipeline (so far it has been tested with Trans-Proteomic Pipeline, FragPipe, MaxQuant, and Proteome Discoverer) provided that quantitative values (e.g. intensities) are given for the items to be integrated.</li>
           </ul>
-          <p>The following figure displays six PSMs.txt files originate from the same experiment (termed “Jurkat”), but larger projects may encompass several experiments (e.g. “TMT1”, “TMT2” and “TMT3”; or “Exp1”, “Exp2” and “Exp3”).</p>
           <p>
-            For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_Inputs_from_PD')">Adaptors > Inputs from Proteome Discoverer</a>
+            For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_Adaptors')">Input Adaptor</a>
           </p>
         </div>
       </div>
