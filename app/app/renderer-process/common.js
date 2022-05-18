@@ -123,7 +123,7 @@ function getObjectFromID(data, id) {
     return rst;
 }
 
-// Get the list of index with the given attribute value
+// Get the list of index from a given attribute value
 function getIndexParamsWithAttr(data, key, attr) {
     function findWithAttr(array, ke, at) {
         let rst = [];
@@ -142,7 +142,7 @@ function getIndexParamsWithAttr(data, key, attr) {
     return rst;
 }
 
-// Get the list of index with the given attribute value
+// Get the list of index and values from a given key
 function getIndexParamsWithKey(data, key) {
     function findWithAttr(array, ke) {
         let [rst,cnt] = [ [],[] ];
@@ -212,6 +212,11 @@ function removeListIndexes(arr, rem) {
     }
     return arr;
 }
+
+// Sort list of Object based on a list of values
+function sortListObjFromListVals(arr, key, slst) {
+    return arr.sort((a, b) => ( slst.indexOf(a[key]) > slst.indexOf(b[key]) ? 1 : -1 ));
+}
   
 /*
  * Functions for the Main Menu of app (main.js)
@@ -233,5 +238,6 @@ module.exports = {
     allBlanks:                  allBlanks,
     anyBlank:                   anyBlank,
     getAllIndexes:              getAllIndexes,
-    removeListIndexes:          removeListIndexes
+    removeListIndexes:          removeListIndexes,
+    sortListObjFromListVals:    sortListObjFromListVals
 };

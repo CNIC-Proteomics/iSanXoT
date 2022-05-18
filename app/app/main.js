@@ -34,7 +34,7 @@ let template = [
     { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile(path.join(__dirname, 'processes.html')) } }
   ]},
   { label: "Help", submenu: [
-    { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', 'User_Guide') } },
+    { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', '_Introduction') } },
     { id: 'get_started', label: 'Get Started', click() { mainWindow.webContents.send('openHelper', '_Get_Started') } },
     { label: 'Modules', submenu: [
       { id: 'help_cmd-rel-creator', label: 'RELS CREATOR', click() { mainWindow.webContents.send('openHelper', '_RELS_CREATOR') } },
@@ -52,7 +52,8 @@ let template = [
       { id: 'help_cmd-wppG-sbt', label: 'WPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WPPG-SBT') } }
     ]},
     { id: 'input_adaptor', label: 'Input Adaptor', click() { mainWindow.webContents.send('openHelper', '_Adaptors') } },
-    { id: 'special_params', label: 'Special Parameters', click() { mainWindow.webContents.send('openHelper', '_Special_parameters') } }
+    { id: 'special_params', label: 'Special Parameters', click() { mainWindow.webContents.send('openHelper', '_Special_parameters') } },
+    { id: 'license', label: 'License', click() { mainWindow.webContents.send('openHelper', '_License') } }
   ]},
 ]
 

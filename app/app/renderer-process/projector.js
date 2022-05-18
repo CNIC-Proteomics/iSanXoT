@@ -158,8 +158,16 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
                     cfg['inpcmds'].push(Object.assign({'name': cmd_id}, incmds));
                 }
             }
-        }    
+        }
     }
+
+    // Sort the input commands from the list of commands (json)
+    // get the list of commands
+    let [rst,cnt] = commoner.getIndexParamsWithKey(wfs['commands'], 'id');
+    // sort the input commands based the list of commands
+    cfg['inpcmds'] = commoner.sortListObjFromListVals(cfg['inpcmds'], 'name', cnt);
+
+
     // Write cfg file sync
     let cfgfile = `${cfg_dir}/.cfg.yaml`;
     let cfgcont = jsyaml.safeDump(cfg);
