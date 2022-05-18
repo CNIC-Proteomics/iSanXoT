@@ -268,7 +268,7 @@ def main(args):
         if proc != 0:
             raise Exception("error")
     except Exception as exc:
-        print("ERROR!! Getting the output values from calibration:\n{}".format(exc), flush=True)
+        print("WARNING!! Getting the output values from calibration:\n{}".format(exc), flush=True)
     logging.debug("getting the output values from integration: variances, totalNelems, excludedNelems, etc...")
     try:
         # command line
@@ -283,7 +283,7 @@ def main(args):
         if proc != 0:
             raise Exception("error")
     except Exception as exc:
-        print("ERROR!! Getting the output values from integration:\n{}".format(exc), flush=True)
+        print("WARNING!! Getting the output values from integration:\n{}".format(exc), flush=True)
     logging.debug("getting the time values...")
     try:
         # command line
@@ -299,7 +299,7 @@ def main(args):
         if proc != 0:
             raise Exception("error")
     except Exception as exc:
-        print("ERROR!! Getting the time values:\n{}".format(exc), flush=True)
+        print("WARNING!! Getting the time values:\n{}".format(exc), flush=True)
     # ------
     print(f"MYSNAKE_LOG_FINISHED\t{time.asctime()}", flush=True)
 
