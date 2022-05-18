@@ -225,7 +225,7 @@ def _add_datparams_params(p, trule, dat):
                 # but check if not already exist the -f param (ssanxotsieve case)
                 c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
                 if not any(c):
-                    trule['more_params'] = trule['more_params']+'-f '
+                    trule['more_params'] = trule['more_params']+' -f'
             # Exceptions in the 'K-constant' parameters:
             # If the value is not false, apply the new variance
             # Otherwise, by default
@@ -236,7 +236,7 @@ def _add_datparams_params(p, trule, dat):
                 # but check if not already exist the -f param (ssanxotsieve case)
                 c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
                 if not any(c):
-                    trule['more_params'] = trule['more_params']+'-f '
+                    trule['more_params'] = trule['more_params']+' -f'
             # Exceptions in the 'Tag' parameters:
             # Update the template values (not overwrite from the given data)
             elif p.endswith('tag') and dat != 'nan':
@@ -605,10 +605,12 @@ def add_recursive_cmds(cmd):
                 rules_new.append( replace_val_rec(trules, {'\*': folder_exp}) )
             # assign the new rules to the command
             # update the output files
-            if len(rules_new) > 0:
+            if len(rules_new) > 0:                
                 rules_new = [i for sublist in rules_new for i in sublist]
                 OUTFILES += [ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()]
                 OUTFILES = list(dict.fromkeys(OUTFILES)) # get unique without sort
+                # of = np.array([ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()])
+                # OUTFILES = np.unique( np.concatenate((OUTFILES, of)) )
                 cmd['rules'] = rules_new
     elif cmd['rule_infiles'] == 'multiple':
         # replace the input files that contains the "multiple infiles" (except its own outfiles)
@@ -749,6 +751,18 @@ def main(args):
 
         # replace constants
         tpl['commands'] = replace_val_rec(tpl['commands'], repl)
+
+
+
+    # # ------
+    # logging.info("get the list of outfiles")
+    # global OUTFILES
+    # for i in range(len(tpl['commands'])):
+    #     for j in range(len(tpl['commands'][i])):
+    #         for k in range(len(tpl['commands'][i][j]['rules'])):
+    #             trule = tpl['commands'][i][j]['rules'][k]
+    #             OUTFILES += [ofile for ofile in trule['outfiles'].values() if '*' not in ofile]
+    # OUTFILES = np.array(OUTFILES)
 
 
 
