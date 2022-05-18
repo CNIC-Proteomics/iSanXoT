@@ -68,7 +68,7 @@ def get_values(infile,cols):
         sname = common.get_job_name(infile)
         # get integration name
         iname = os.path.splitext(fname)[0]
-        iname = re.sub('\_.*$','',iname)
+        iname = re.sub('\_[^\_]*$','',iname)
         # get variance from _infoFile.txt
         fh = open(infile, "r").read()
         v = re.findall("Variance = (.*)", fh)
