@@ -21,7 +21,7 @@
             <h5>Advanced parameters</h5>
             <p>This module accepts advanced parameters:</p>
             <ul>
-              <li>Tag: label that below to accept or discard elements is the calculation of variance. By default, the “outliers” are discarded.</li>
+              <li>Tag: is a text label that indicates which elements from the lower level are integrated into the higher level. The tags must be specified in the third column of the corresponding Relation table. This allows the user to discard elements for integration without needing to eliminate them from the Relation Table. Thus, if the label ”marked” is used as a Tag, only the lower level elements containing the label marked  in the third column of the lower_level2higher_level relation file will be integrated. Logical operators can also be used in the Tag field to make complex decisions. By default, iSanXoT eliminates outliers from the lower level according to an FDR<1% threshold. For further details, read the Advanced Parameters for the <a href="#" onclick="mainWindow.webContents.send('openHelper', '_INTEGRATE')">INTEGRATE</a> module.</li>
               <li>FDR: limit of False Discovery Rate different than 0.01 (1%). If FDR = 0, then the “outliers” are not discarded.</li>
               <li>Var(x): force a variance. By default, the variance is calculated.</li>
               <li>More params: allows to add more parameters to the programs inside the program. For more detail read “More params” in “Special Parameters” section.</li>

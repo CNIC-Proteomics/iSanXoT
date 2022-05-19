@@ -1,6 +1,5 @@
-<template class="task-template" id="User_Guide">
-
 <html>
+
 <head>
 <meta http-equiv=Content-Type content="text/html; charset=utf-8">
 <meta name=Generator content="Microsoft Word 15 (filtered)">
@@ -345,7 +344,7 @@ class=MsoBookTitle><span lang=EN-US style='font-size:36.0pt'>Help and
 documentation</span></span></p>
 
 <p class=MsoTitleCxSpLast align=center style='text-align:center'><span
-class=MsoBookTitle><span lang=EN-US>(1.0.X)</span></span></p>
+class=MsoBookTitle><span lang=EN-US>(1.0.x)</span></span></p>
 
 <p class=MsoNormal align=center style='text-align:center'><span lang=EN-US>&nbsp;</span></p>
 
@@ -366,6 +365,10 @@ clear=all style='page-break-before:always'>
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span lang=EN-US><a href="#_Introduction">Introduction</a></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
+lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US><a href="#_License">License</a></span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 class=MsoHyperlink><span lang=EN-US style='font-family:Symbol;text-decoration:
@@ -616,7 +619,7 @@ href="https://www.cnic.es"><span lang=EN-GB style='color:#4472C4'>https://www.cn
 
 <p class=MsoNormal>&nbsp;</p>
 
-<h2>License</h2>
+<h2><a name="_License"></a>License</h2>
 
 <p class=MsoNormal>This application is licensed under a <b>Creative Commons
 Attribution-NonCommercial-NoDerivs 4.0 Unported License</b>.</p>
@@ -973,7 +976,7 @@ lang=EN-US>3</span></b><b><span lang=EN-US>. Window that creates a new project.<
 <h4><span lang=EN-US>Opening a project</span></h4>
 
 <p class=MsoNormal><span lang=EN-US>By selecting <i>Project &gt; Open Project</i>
-a s a folder selection dialog box shows up that allows the user to indicate the
+as a folder selection dialog box shows up that allows the user to indicate the
 location of an already existing project folder to be opened by iSanXoT.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
@@ -1039,8 +1042,8 @@ the specific Input element or Module selected.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>The execution panel, located on the bottom
 of the main window, allows the user to indicate the number of processors to be
-used by iSanXoT. The Start button launches the execution of the workflow shaped
-by the Input elements and Modules.</span></p>
+used by iSanXoT, 4 by default. The Start button launches the execution of the
+workflow shaped by the Input elements and Modules.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1219,14 +1222,14 @@ name="_Relation_tables_module"></a><span lang=EN-US>Relation tables module</span
 <h3><a name="_RELS_CREATOR"></a><span lang=EN-US style='font-family:"Calibri",sans-serif'>RELS
 CREATOR</span></h3>
 
-<p class=MsoNormal><span lang=EN-US>This module generates relation tables from tab-separated
-values (TSV) files. Relation tables, which are TSV files relating lower-level
-identifiers (e.g. peptides) to the corresponding higher-level elements (e.g.
-proteins),  are required for module execution. For this reason, the naming convention
-for the file indicated under “Relation Table to be created” in the RELS CREATOR
-task table is <i>lower level + “2” + higher level</i>; e.g. whether an
-integration is from the “peptide” level to the “protein” level, a relation
-table called “peptide2protein” will be necessary.</span></p>
+<p class=MsoNormal><span lang=EN-US>This module generates relation tables (RT) from
+tab-separated values (TSV) files. Relation tables, which are TSV files relating
+lower-level identifiers (e.g. peptides) to the corresponding higher-level
+elements (e.g. proteins),  are required for module execution. For this reason,
+the naming convention for the file indicated under “Relation Table to be
+created” in the RELS CREATOR task table is <i>lower level + “2” + higher level</i>;
+e.g. whether an integration is from the “peptide” level to the “protein” level,
+a relation table called “peptide2protein” will be necessary.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>The fields showing in the RELS CREATOR task
 table are (</span><span lang=EN-US><b>Figure 6</b></span><span lang=EN-US>):</span></p>
@@ -1239,10 +1242,10 @@ This checkbox field indicates whether to force the execution or not.</span></p>
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Relation Table to be created</span></i><span
-lang=EN-US> specifies relation table filenames. As commented above, the naming
-convention for these files is <i>lower level + “2” + higher level</i>; e.g.
-whether an integration is from the “peptide” level to the “protein” level, a
-relation table called “peptide2protein” will be necessary.</span></p>
+lang=EN-US> specifies relation table filenames. As commented above, the naming convention
+for these files is <i>lower level + “2” + higher level</i>; e.g. whether an
+integration is from the “peptide” level to the “protein” level, a relation
+table called “peptide2protein” will be necessary.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1262,8 +1265,8 @@ resulting relation table.</span></p>
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Column name of 3<sup>rd</sup> column</span></i><span
 lang=EN-US> is the column header that designates which elements from the
-indicated file (see below) will be taken as third column elements in the resulting
-relation table.</span></p>
+indicated file (see below) will be taken as third column elements in the
+resulting relation table.</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1403,15 +1406,17 @@ statistical weight values.</span></p>
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Output Sample folder</span></i><span
-lang=EN-US>  specifies the name of the folder where the output data file
-containing the new, calibrated statistical weight values will be saved.</span></p>
+lang=EN-US> specifies the name of the folder where the output data file
+containing the new, calibrated statistical weight values will be saved. If the
+cell is empty, the output sample folder is the given “Sample folder” (second
+column).</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=579 height=193 id="Picture 5"
 src="User_Guide_files/image017.png"></span></p>
 
-<p class=MsoCaption><a name="_Ref103114351"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>8</span></b><b><span lang=EN-US>. A sample task table in the LEVEL CALIBRATOR
-module.</span></b></p>
+<p class=MsoCaption><a name="_Ref103114351"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>8</span></b><b><span lang=EN-US>. A sample task table in the LEVEL
+CALIBRATOR module.</span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1419,27 +1424,28 @@ module.</span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>The LEVEL_CALIBRATOR module accepts the
 following additional parameters (</span><span lang=EN-US><b>Figure 9</b></span><span
-lang=EN-US>):</span></p>
+lang=EN-US>): </span></p>
+
+<p class=MsoNormal><span lang=EN-US>To perform the calibration two parameters,
+have to be calculated: the k (weight constant), and the variance.</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>K-constant </span></i><span lang=EN-US>sets a
-forced value for the k-constant. To perform the calibration two parameters,
-have to be calculated: the k (weight constant), and the variance. Using this
-parameter, the introduced value is forced as K-constant.</span></p>
+forced value for the k-constant. Using this parameter, the introduced value is
+forced as K-constant.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Var(x)</span></i><span lang=EN-US> sets a forced
-value for the variance. To perform the calibration two parameters, have to be
-calculated: the k (weight constant), and the variance. Using this parameter,
-the introduced value is forced as the variance.</span></p>
+value for the variance. Using this parameter, the introduced value is forced as
+the variance.</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal style='page-break-after:avoid'><span lang=EN-US><img
@@ -1468,8 +1474,8 @@ src="User_Guide_files/image019.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103096863"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>10</span></b><b><span lang=EN-US>. Schematic representation of the
 INTEGRATE module.</span></b><span lang=EN-US> The integration is carried out
-from any lower level to any higher level using the programs “SanXoT” and
-“SanXoTSieve” and the generic integration algorithm (GIA).</span></p>
+from any lower level to any higher level using the programs “SanXoT” and “SanXoTSieve”
+and the generic integration algorithm (GIA).</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1498,7 +1504,7 @@ src="User_Guide_files/image020.png"></span></p>
 lang=EN-US> A first integration is done with “SanXoT” that calculates the
 variance; then “SanXoTSieve” removes outliers tagging them in a new relation
 table; finally, a second integration is done with “SanXoT” using the variance
-cal</span></p>
+calculated.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1558,7 +1564,7 @@ INTEGRATE module.</span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h4><span lang=EN-US>Advanced parameters</span></h4>
+<h4><a name="_Advanced_parameters"></a><span lang=EN-US>Advanced parameters</span></h4>
 
 <p class=MsoNormal><span lang=EN-US>The INTEGRATE module accepts the following additional
 parameters (</span><span lang=EN-US><b>Figure 13</b></span><span lang=EN-US>):</span></p>
@@ -1571,9 +1577,72 @@ saved.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>Tag</span></i><span lang=EN-US> is a text label
-that points out lower level elements to be discarded in the calculation of
-variance.</span></p>
+</span></span><i><span lang=EN-US>Tag</span></i><span lang=EN-US> is a text
+label that indicates which elements from the lower level are integrated into
+the higher level. The tags must be specified in the third column of the
+corresponding Relation Table. This allows the user to discard elements for
+integration without needing to eliminate them from the Relation Table. Thus, if
+the label ”marked” is used as a Tag, only the lower level elements containing
+the label marked  in the third column of the lower_level2higher_level Relation Table
+will be integrated. Logical operators can also be used in the Tag field to make
+complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><i><span lang=EN-US>Tag</span></i><span
+lang=EN-US> is a parameter to distinguish groups to perform the integration. For
+instance, if the user specifies “marked” the elements containing the label
+“marked” in the third column of the “lower_level2higher_level” Relation Table
+will be included in (or discarded from) the integration.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>The tag can be used by
+inclusion, such as &quot;mod&quot; or by exclusion, putting first the
+&quot;!&quot; symbol, such as &quot;!mod&quot;.  Tags should be included in a
+third column of the relations file.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>Different tags can be
+combined using logical operators &quot;and&quot; (&amp;), &quot;or&quot; (|),
+and &quot;not&quot; (!), and parentheses. Some examples:</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:34.8pt'><span
+lang=EN-US>!out&amp;mod</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:34.8pt'><span
+lang=EN-US>!out&amp;(dig0|dig1)</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:34.8pt'><span
+lang=EN-US>(!dig0&amp;!dig1)|mod1</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:34.8pt'><span
+lang=EN-US>mod1|mod2|mod3</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:34.8pt'><span
+lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><b><i><span lang=EN-US>Warning</span></i></b><span
+lang=EN-US>: Unless specified otherwise by the user, by default iSanXoT
+eliminates outliers from the lower level according to an FDR&lt;1% threshold.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>iSanXoT automatically adds
+the tag “out” in the third column of the relation table to label outliers, so
+that they are not integrated. It is not thus recommended to use this tag for
+other purposes.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><b><i><span lang=EN-US>Note</span></i></b><span
+lang=EN-US> that although the discarded elements will not be included in
+calculations, the parameter Z will be calculated and tabulated in the
+corresponding output (outStats) file.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details see
+SanXoT wiki [6].</span></p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>&nbsp;</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1590,9 +1659,9 @@ the first <i>Lower level </i>&gt;<i> Higher level</i> integration.</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -1609,8 +1678,8 @@ advanced parameters for the INTEGRATE module.</span></b></p>
 <p class=MsoNormal><span lang=EN-US>The NORCOMBINE module combines technical or
 biological replicates (</span><span lang=EN-US><b>Figure 14</b></span><span
 lang=EN-US>). For example, NORCOMBINE can be used to merge the protein-level
-data from 4 patients with respect to a 4-individual control group into a single
-patient-level protein dataset and a single control-level dataset.</span></p>
+data from 4 individual patients and 4 individual controls into a patient- and a
+control-level protein dataset, respectively.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=451 height=388 id="Picture 114"
@@ -1679,7 +1748,7 @@ the normalization scheme to be used in the integrations.</span></p>
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>lowerNorm</span></i><span lang=EN-US> specifies
-the type of <i>lowerNorm</i> file (see above)to be used.</span></p>
+the type of <i>lowerNorm</i> file (see above) to be used.</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1704,9 +1773,22 @@ lang=EN-US>):</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>Tag</span></i><span lang=EN-US> is a label used
-to specify which elements should be included in the calculation of variance. By
-default, outlier elements are ruled out.</span></p>
+</span></span><i><span lang=EN-US>Tag</span></i><span lang=EN-US> is a text
+label that indicates which elements from the lower level are integrated into
+the higher level. The tags must be specified in the third column of the
+corresponding Relation Table. This allows the user to discard elements for
+integration without needing to eliminate them from the Relation Table. Thus, if
+the label ”marked” is used as a Tag, only the lower level elements containing
+the label marked  in the third column of the lower_level2higher_level Relation table
+will be integrated. Logical operators can also be used in the Tag field to make
+complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module. </span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1722,9 +1804,9 @@ based on the Levenberg-Marquardt algorithm.</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -1754,8 +1836,8 @@ maximum value between the numerator and denominator statistical weight value. </
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>form</span></i><span lang=EN-US> uses the value
-resulting from 1/(1/Vn + 1/Vd), where Vn and Vd are the statistical weight value
-for the numerator and the denominator, respectively.</span></p>
+resulting from 1/(1/Vn + 1/Vd), where Vn and Vd are the statistical weight
+value for the numerator and the denominator, respectively.</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1790,7 +1872,7 @@ lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman
 </span></span><i><span lang=EN-US>Ratio denominator column(s)</span></i><span
 lang=EN-US> specifies the name of the folder(s) containing the quantitative
 values to be used as a denominator for the new log<sub>2</sub>-ratio
-calculation.</span></p>
+calculation. The sample folders have to be separated by comma.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1814,13 +1896,13 @@ module.</span></b></p>
 
 <h3><a name="_SBT"></a><span lang=EN-US style='font-family:"Calibri",sans-serif'>SBT</span></h3>
 
-<p class=MsoNormal><span lang=EN-US>This module is based on the SBT algorithm [2],
-which performs an integration between the lower and the higher levels using the
-variance previously obtained in an integration between the lower and an
-intermediate level (</span><span lang=EN-US><b>Figure 20</b></span><span
-lang=EN-US>). Usually the SBT module is applied to carry out the protein &gt;
-grand mean integration using the variance associated with the protein &gt;
-category integration.   </span></p>
+<p class=MsoNormal><span lang=EN-US>This module is based on the Systems Biology
+Triangle (SBT) algorithm [2], which performs an integration between the lower
+and the higher levels using the variance previously obtained in an integration
+between the lower and an intermediate level (</span><span
+lang=EN-US><b>Figure 20</b></span><span lang=EN-US>). Usually the SBT module is
+applied to carry out the protein &gt; grand mean integration using the variance
+associated with the protein &gt; category integration.   </span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1830,7 +1912,8 @@ src="User_Guide_files/image029.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103093737"></a><a name="_Ref103093681"><b><span
 lang=EN-US>Figure </span></b></a><b><span lang=EN-US>20</span></b><b><span
-lang=EN-US>. <a name="_Ref103093692">Schematic representation of the SBT module.</a></span></b></p>
+lang=EN-US>. <a name="_Ref103093692">Schematic representation of the SBT
+module.</a></span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1881,21 +1964,34 @@ parameters (</span><span lang=EN-US><b>Figure 22</b></span><span lang=EN-US>):</
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Output Sample folder</span></i><span
 lang=EN-US> indicates an alternative folder to store the resulting log<sub>2</sub>-ratio
-and statistical weight values other than than “Sample folder(s)”.</span></p>
+and statistical weight values other than “Sample folder(s)”.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Lower-Higher level</span></i><span
 lang=EN-US> and <i>Int(ermediate)-Higher level </i>specify an alternative
-higher level other than the grand mean of the lower level elaments.</span></p>
+higher level other than the grand mean of the lower level elements.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Low(er) &gt; Int(ermediate)</span></i><span
-lang=EN-US> Tag and <i>Int(ermediate) &gt; Hig(her) Tag</i> label lower and
-intermediate level elements to be included or discarded in the calculation of
-variance when carrying out the lower level &gt; intermediate level and the
-intermediate level &gt; higher level integration, respectively.</span></p>
+lang=EN-US> Tag and <i>Int(ermediate) &gt; Hig(her)</i> are the text label that
+indicates which elements from the lower level are integrated into the intermediate
+level, and the intermediate level are integrated into higher level. The tags
+must be specified in the third column of the corresponding Relation Table. This
+allows the user to discard elements for integration without needing to
+eliminate them from the Relation Table. Thus, if the label ”marked” is used as
+a Tag, only the lower level elements containing the label marked  in the third
+column of the lower_level2intermediate_level and
+intermediate_level2higher_level Relation Tables will be integrated. Logical
+operators can also be used in the Tag field to make complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module. </span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1916,9 +2012,9 @@ variance calculated in the lower level &gt; intermediate level integration.</spa
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -1939,7 +2035,10 @@ lang=EN-US>Compound modules</span></h2>
 
 <p class=MsoNormal><span lang=EN-US>The Compound modules perform a sequence of
 consecutive integrations based on the WSPP statistical model [3] and the SBT
-algorithm [2].</span></p>
+algorithm [2]. In addition, each module creates the initial level and calibrate
+this initial level. The WSPP-SBT and WSPPG-SBT modules create and calibrate the
+“scan” level; and the WPP-SBT and WPPG-SBT create and calibrate the “peptide”
+level.</span></p>
 
 <h3><span lang=EN-US style='font-family:"Calibri",sans-serif'>WSPP-SBT</span></h3>
 
@@ -2010,11 +2109,22 @@ lang=EN-US>):</span></p>
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>p&gt;q Tag</span></i><span lang=EN-US>, <i>p&gt;a
-Tag</i>, <i>c&gt;a Tag</i> are text labels used to filter out lower level
-elements in the calculation of variance for the integrations
-peptide&gt;protein, peptide&gt;peptideall, and category&gt;categoryall,
-respectively. By default, outlier elements are discarded in the calculation of
-variance.</span></p>
+Tag</i>, <i>c&gt;a Tag</i> are the text label that indicates which elements
+from the lower level (“p” and “c”) are integrated into the higher level (“q”
+and “a”). The tags must be specified in the third column of the corresponding Relation
+Table. This allows the user to discard elements for integration without needing
+to eliminate them from the Relation Table. Thus, if the label ”marked” is used
+as a Tag, only the lower level elements containing the label marked  in the
+third column of the lower_level2higher_level Relation table will be integrated.
+Logical operators can also be used in the Tag field to make complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module.</span><span class=MsoCommentReference><span lang=EN-US
+style='font-size:8.0pt;line-height:107%'> </span></span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2035,9 +2145,9 @@ integration (</span><span lang=EN-US><b>Figure 10</b></span><span lang=EN-US>).<
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -2111,19 +2221,30 @@ lang=EN-US>):</span></p>
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>p&gt;q Tag</span></i><span lang=EN-US>, <i>q&gt;g
-Tag</i>, <i>p&gt;a Tag</i>, <i>c&gt;a Tag</i> are text labels used to filter
-out lower level elements in the calculation of variance for the integrations:
-peptide&gt;2protein, protein&gt;gene, peptide&gt;peptideall, and
-category&gt;categoryall, respectively. By default, outlier elements are
-discarded in the calculation of variance.</span></p>
+Tag</i>, <i>p&gt;a Tag</i>, <i>c&gt;a Tag</i> are the text label that indicates
+which elements from the lower level (“p”, “q” and “c”) are integrated into the higher
+level (“q”, “g” and “a”). The tags must be specified in the third column of the
+corresponding Relation Table. This allows the user to discard elements for
+integration without needing to eliminate them from the Relation Table. Thus, if
+the label ”marked” is used as a Tag, only the lower level elements containing
+the label marked  in the third column of the lower_level2higher_level Relation table
+will be integrated. Logical operators can also be used in the Tag field to make
+complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>s&gt;p FDR</span></i><span lang=EN-US>, <i>p&gt;q
 FDR</i>, <i>q&gt;g FDR</i>, <i>g&gt;c FDR</i> establish an FDR threshold other
-than 0.01 (1%) for outlier removal in the following integrations: scan&gt;2peptide,
-peptide&gt;2protein, protein&gt;gene, and gene&gt;category, respectively. If
-FDR = 0 is selected, then the outliers are not discarded.</span></p>
+than 0.01 (1%) for outlier removal in the following integrations:
+scan&gt;2peptide, peptide&gt;2protein, protein&gt;gene, and gene&gt;category,
+respectively. If FDR = 0 is selected, then the outliers are not discarded.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2137,9 +2258,9 @@ lang=EN-US><b>Figure 10</b></span><span lang=EN-US>).</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -2212,11 +2333,21 @@ lang=EN-US>):</span></p>
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>p&gt;q Tag</span></i><span lang=EN-US>, <i>p&gt;a
-Tag</i>, <i>c&gt;a Tag</i> are text labels used to filter out lower level
-elements in the calculation of variance for the integrations:
-peptide&gt;2protein, peptide&gt;peptideall, and category&gt;categoryall,
-respectively. By default, outlier elements are discarded in the calculation of
-variance.</span></p>
+Tag</i>, <i>c&gt;a Tag</i> are the text label that indicates which elements
+from the lower level (“p” and “c”) are integrated into the higher level (“q”
+and “a”). The tags must be specified in the third column of the corresponding Relation
+Table. This allows the user to discard elements for integration without needing
+to eliminate them from the Relation Table. Thus, if the label ”marked” is used
+as a Tag, only the lower level elements containing the label marked  in the
+third column of the lower_level2higher_level Relation Table will be integrated.
+Logical operators can also be used in the Tag field to make complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2236,9 +2367,9 @@ lang=EN-US><b>Figure 10</b></span><span lang=EN-US>).</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -2263,8 +2394,9 @@ is applied to the gene &gt; geneall integration.</span></p>
 
 <h4><span lang=EN-US>Standard parameters</span></h4>
 
-<p class=MsoNormal><span lang=EN-US>The standard parameters required by the WPPG-SBT
-module are (</span><span lang=EN-US><b>Figure 23</b></span><span lang=EN-US>):</span></p>
+<p class=MsoNormal><span lang=EN-US>The standard parameters required by the
+WPPG-SBT module are (</span><span lang=EN-US><b>Figure 23</b></span><span
+lang=EN-US>):</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2311,11 +2443,22 @@ lang=EN-US>):</span></p>
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>p&gt;q Tag</span></i><span lang=EN-US>, <i>q&gt;g
-Tag, p&gt;a Tag, q&gt;a Tag,</i> <i>c&gt;a Tag</i> are text labels used to
-filter out lower level elements in the calculation of variance for the
-integrations peptide&gt;protein, protein&gt;gene, peptide&gt;peptideall,
-protein&gt;proteinall, and category&gt;categoryall, respectively. By default,
-outlier elements are discarded in the calculation of variance.</span></p>
+Tag, p&gt;a Tag, q&gt;a Tag,</i> <i>c&gt;a Tag</i> are the text label that
+indicates which elements from the lower level (“p”, “q” and “c”) are integrated
+into the higher level (“q”, “g” and “a”). The tags must be specified in the
+third column of the corresponding Relation Table. This allows the user to
+discard elements for integration without needing to eliminate them from the Relation
+Table. Thus, if the label ”marked” is used as a Tag, only the lower level
+elements containing the label marked  in the third column of the lower_level2higher_level
+Relation table will be integrated. Logical operators can also be used in the
+Tag field to make complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2336,9 +2479,9 @@ integration (</span><span lang=EN-US><b>Figure 10</b></span><span lang=EN-US>).<
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US>
-allows to add more parameters to the programs inside the program. For more
-details see <a href="#_More_params">More params</a> in the “Special Parameters”
+</span></span><i><span lang=EN-US>More params</span></i><span lang=EN-US> allows
+adding more parameters to the internal programs of the module. For more details
+see <a href="#_More_params">More params</a> in the “Special Parameters”
 Section.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
@@ -2478,8 +2621,8 @@ parameters in the REPORT module.</span></b></p>
 report</i> and <i>Merge with report</i> are merged according to the column
 header that they share. Thus, the REPORT task table shown in </span><span lang=EN-US><b>Figure 30</b></span><span lang=EN-US> will cause the module to incorporate
 the number of scans per peptide, displayed in the report “Nscan_pep”, to the
-report “Nscan_Normpep_prot_XZ”, as these two reports share the lower level elements
-showing under the “peptide” header.</span></p>
+report “Nscan_Normpep_prot_XZ”, as these two reports share the lower level
+elements showing under the “peptide” header.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=588 height=144 id="Picture 26"
@@ -2525,8 +2668,8 @@ normal'>Lower level</span><span lang=EN-US> they all three share.</span></p>
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Finally, the report data can be filtered performing
-logical operations the with the <i>Reported vars</i> in the <i>Filter</i> field.
-For instance, in the report task table displayed in </span><span
+logical operations with the <i>Reported vars</i> in the <i>Filter</i> field. For
+instance, in the report task table displayed in </span><span
 lang=EN-US><b>Figure 32</b></span><span lang=EN-US>:</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
@@ -2562,7 +2705,7 @@ the structure <i>Reported var</i>_<i>integration</i>, like “n_protein2category
 Such filter applies to all samples. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>However, the filter “KO_vs_WT@FDR_category2categoryall”
-is applied based on the variable “FDR”from the category &gt; categoryall
+is applied based on the variable “FDR” from the category &gt; categoryall
 integration, but only to the “KO_vs_WT” sample. Moreover, the filter “WT1,WT2@FDR_category2categoryall”
 is applied to the “WT1” and “WT2” samples.</span></p>
 
@@ -2594,8 +2737,9 @@ located.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><span lang=EN-US> indicates the name of the lower level elements
-(“protein” in this case) to be used.</span></p>
+</span></span><i><span lang=EN-US>Lower level</span></i><span lang=EN-US>
+indicates the name of the lower level elements (“protein” in this case) to be
+used.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2637,8 +2781,21 @@ The default value is included the normalization of higher level to all.</span></
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Tag</span></i><span lang=EN-US> is a text
-label used to filter out <i>Lower level</i> elements. By default, the elements
-tagged as outliers with the label “out” are discarded.</span></p>
+label that indicates which elements from the lower level are integrated into
+the higher level. The tags must be specified in the third column of the
+corresponding Relation Table. This allows the user to discard elements for
+integration without needing to eliminate them from the Relation Table. Thus, if
+the label ”marked” is used as a Tag, only the lower level elements containing
+the label marked  in the third column of the lower_level2higher_level Relation table
+will be integrated. Logical operators can also be used in the Tag field to make
+complex decisions.</span></p>
+
+<p class=MsoListParagraphCxSpMiddle>By default, iSanXoT eliminates outliers
+from the lower level according to an FDR&lt;1% threshold.</p>
+
+<p class=MsoListParagraphCxSpMiddle><span lang=EN-US>For further details, read
+the Advanced Parameters for the <a href="#_Advanced_parameters">INTEGRATE</a>
+module.<i> </i></span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2697,9 +2854,9 @@ src="User_Guide_files/image046.png"></span></p>
 <p class=MsoNormal><span lang=EN-US>Each row calculates a ratio that is saved to
 the corresponding <i>Output Sample folder</i>. Thus, the ratio of 113 to the
 mean of 113, 114, 115, and 116 is saved to the “Jurkat_WT/WT_1” folder; the 114
-ratio is saved to “Jurkat_WT/WT_2”, and so on. One way to create the task table
-of the INTEGRATE module could be the following, where each row represents an
-integration for a given sample:</span></p>
+to the mean of 113, 114, 115 ratio is saved to “Jurkat_WT/WT_2”, and so on. One
+way to create the task table of the INTEGRATE module could be the following,
+where each row represents an integration for a given sample:</span></p>
 
 <p class=MsoNormal align=center style='text-align:center'><span lang=EN-US><img
 border=0 width=213 height=296 id="Picture 62"
@@ -2790,11 +2947,11 @@ c2a_sanxot1, c2a_sanxotsieve, c2a_sanxot2</span></p>
 
 <p class=MsoNormal><span lang=EN-US>WSPPG_SBT: level_creator, klibrate,
 s2p_sanxot1, s2p_sanxotsieve, s2p_sanxot2, p2q_sanxot1, p2q_sanxotsieve,
-p2q_sanxot2, p2g_sanxot1, p2g_sanxotsieve, p2g_sanxot2, q2g_sanxot1, q2g_sanxotsieve,
-q2g_sanxot2, g2c_sanxot1, g2c_sanxotsieve, g2c_sanxot2, p2a_sanxot1,
-p2a_sanxotsieve, p2a_sanxot2, q2a_sanxot1, q2a_sanxotsieve, q2a_sanxot2,
-g2a_sanxot1, g2a_sanxotsieve, g2a_sanxot2, c2a_sanxot1, c2a_sanxotsieve,
-c2a_sanxot2</span></p>
+p2q_sanxot2, p2g_sanxot1, p2g_sanxotsieve, p2g_sanxot2, q2g_sanxot1,
+q2g_sanxotsieve, q2g_sanxot2, g2c_sanxot1, g2c_sanxotsieve, g2c_sanxot2,
+p2a_sanxot1, p2a_sanxotsieve, p2a_sanxot2, q2a_sanxot1, q2a_sanxotsieve,
+q2a_sanxot2, g2a_sanxot1, g2a_sanxotsieve, g2a_sanxot2, c2a_sanxot1,
+c2a_sanxotsieve, c2a_sanxot2</span></p>
 
 <p class=MsoNormal><span lang=EN-US>WPP_SBT: level_creator, klibrate, p2q_sanxot1,
 p2q_sanxotsieve, p2q_sanxot2, q2c_sanxot1, q2c_sanxotsieve, q2c_sanxot2, p2a_sanxot1,
@@ -2869,14 +3026,14 @@ file</i>, which contains the identification and quantification data, or have the
 <i>Input Adaptor</i> prepare this file from the results obtained using any of
 the mainstream proteomics pipelines. Please indicate in the <i>Project folder</i>
 field the path to the folder where <i>iSanXoT</i> output files will be stored,
-then choose one of two options (Fig. 35):   </span></p>
+then choose one of two options (</span><span lang=EN-US><b>Figure 35</b></span><span
+lang=EN-US>):   </span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=485 height=418 id="Group 9"
 src="User_Guide_files/image050.png"></span></p>
 
-<p class=MsoCaption><b><span lang=EN-US>Figure </span></b><b><span
-lang=EN-US>35</span></b><b><span lang=EN-US>. Main view of the </span></b><b><span
+<p class=MsoCaption><a name="_Ref103468260"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>35</span></b><b><span lang=EN-US>. Main view of the </span></b><b><span
 lang=EN-US style='font-style:normal'>Input Adaptor</span><span lang=EN-US> menu.</span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
@@ -2886,8 +3043,7 @@ style='font-family:"Calibri",sans-serif'>User-provided
 Identification/Quantification file </span></h3>
 
 <p class=MsoNormal><span lang=EN-US>Choose this option if you already have an
-Identification/Quantification file that meets the following conditions (Fig.
-36):</span></p>
+Identification/Quantification file that meets the following conditions (</span><span lang=EN-US><b>Figure 36</b></span><span lang=EN-US>):</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2915,8 +3071,7 @@ means an alphanumeric identifier.</span></p>
 lang=EN-US><img border=0 width=549 height=90 id="Picture 74"
 src="User_Guide_files/image051.png"></span></p>
 
-<p class=MsoCaption><b><span lang=EN-US>Figure </span></b><b><span
-lang=EN-US>36</span></b><b><span lang=EN-US>. The </span></b><b><span
+<p class=MsoCaption><a name="_Ref103468273"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>36</span></b><b><span lang=EN-US>. The </span></b><b><span
 lang=EN-US style='font-style:normal'>User-provided
 Identification/Quantification file</span><span lang=EN-US> option.</span></b></p>
 
@@ -2929,23 +3084,21 @@ pipelines </span></h3>
 file required by <i>iSanXoT</i> based on the output from any proteomics
 pipeline (so far it has been tested with <i>Trans-Proteomic Pipeline</i>, <i>FragPipe</i>,
 <i>MaxQuant</i>, and <i>Proteome Discoverer</i>) provided that quantitative
-values (e.g. intensities) are given for the items to be integrated .</span></p>
+values (e.g. intensities) are given for the items to be integrated.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>First, click the <i>Choose folder + Add
-annots</i> button to indicate the folder that contains the results (Fig. 37).</span></p>
+annots</i> button to indicate the folder that contains the results (</span><span lang=EN-US><b>Figure 37</b></span><span lang=EN-US>).</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=581 height=175 id="Picture 1"
 src="User_Guide_files/image052.png"></span></p>
 
-<p class=MsoCaption><b><span lang=EN-US>Figure </span></b><b><span
-lang=EN-US>37</span></b><b><span lang=EN-US>. Preparing the
+<p class=MsoCaption><a name="_Ref103468288"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>37</span></b><b><span lang=EN-US>. Preparing the
 Identification/Quantification file from proteomics pipelines.</span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Then a three-panel window will pop-up (Fig.
-38):</span></p>
+<p class=MsoNormal><span lang=EN-US>Then a three-panel window will pop-up (</span><span lang=EN-US><b>Figure 38</b></span><span lang=EN-US>):</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2986,8 +3139,7 @@ file.</span></p>
 lang=EN-US><img border=0 width=579 height=523 id="Picture 11"
 src="User_Guide_files/image053.png"></span></p>
 
-<p class=MsoCaption><b><span lang=EN-US>Figure </span></b><b><span
-lang=EN-US>38</span></b><b><span lang=EN-US>. Adapting proteomics pipeline
+<p class=MsoCaption><a name="_Ref103468299"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>38</span></b><b><span lang=EN-US>. Adapting proteomics pipeline
 results.</span></b><span lang=EN-US> The top panel shows output files from </span><span
 lang=EN-US style='font-style:normal'>FragPipe</span><span lang=EN-US>. On the
 middle panel, the </span><span lang=EN-US style='font-style:normal'>psm.tsv</span><span
@@ -3050,9 +3202,9 @@ analysis of high-throughput proteomics experiments. Bioinformatics. 35,
 Systems-Biology Algorithm for the Analysis of Coordinated Protein Responses
 Using Quantitative Proteomics. Mol Cell Proteomics, 2016. 15(5): p. 1740-60.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>[3] Navarro, P., et al., General statistical
-framework for quantitative proteomics by stable isotope labeling. J Proteome
-Res, 2014. 13(3): p. 1234-47.</span></p>
+<p class=MsoNormal><span lang=EN-US>[3] Navarro, P., et al., General
+statistical framework for quantitative proteomics by stable isotope labeling. J
+Proteome Res, 2014. 13(3): p. 1234-47.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>[4] Kong, A. T., Leprevost, F. V.,
 Avtonomov, D. M., Mellacheruvu, D., &amp; Nesvizhskii, A. I. (2017). MSFragger:
@@ -3063,9 +3215,13 @@ proteomics. Nature Methods, 14(5), 513-520.</span></p>
 Comet - Implementation and Features. J Am Soc Mass Spectrom. 2015 Jun 27. doi:
 10.1007/s13361-015-1179-x</span></p>
 
+<p class=MsoNormal><span lang=EN-US>[6] SanXoT wiki: <a
+href="https://www.cnic.es/wiki/proteomica/index.php/SanXoT_software_package">https://www.cnic.es/wiki/proteomica/index.php/SanXoT_software_package</a></span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
 </div>
 
 </body>
 
 </html>
-</template>

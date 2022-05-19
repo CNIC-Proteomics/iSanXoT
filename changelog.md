@@ -1,13 +1,24 @@
 ___
-## 0.4.5
+## 1.0.1
 ```
-DATE: 2022_03
+DATE: 2022_05
 ```
 
 ### Highlights
 
++ New general adapter to handle the results from proteomics pipelines: TPP, FragPipe, MaxQuant, Proteome Discoverer, etc.
+
++ New CNIC adapter to habdles the results from search engines and to calculate the pRatio, add the quantificacions, and calculate the most probable protein.
+
++ LEVEL_CALIBRATOR accepts the K-constant, the variance, and 'More params'
+
++ iSanXoT Wiki: https://github.com/CNIC-Proteomics/iSanXoT/wiki
 
 ### Changes in the Graphical User Interface
+
++ New General Adapter to handle the results from proteomics pipelines: TPP, FragPipe, MaxQuant, ProteomeDiscoverer, etc.
+
++ New CNIC adapter to habdles the results from search engines and to calculate the pRatio, add the quantificacions, and calculate the most probable protein.
 
 + We have created some case studies to ilustrade the type of workflows:
 	- WSPP: Work by González-Amor M, et al. Cardiovasc Res. 2021
@@ -34,21 +45,52 @@ DATE: 2022_03
 			- Npep2prot_Quanprot: Zq,  FDRq, Nq(npeptides/prot)
 			- Npep2prot_Quanprot: Zpq, FDRpq, Ns(nscans/pep)
 
-	- TODO!!! Incluir un WorkFlow LABELFREE!!
++ 'More params", the 'more params' has been improved.
 
-+ TODO!! Complete documentation.
-	- Indicar en la documentación que debe coger configurar las búsquedas para que cojan el "Search Rank Hit" == 1
-
++ LEVEL_CALIBRATOR accepts the K-constant, the variance, and 'More params'.
 
 ### Changes in the Code Workflow
 
++ TABLETOCFG:
+	- Fixing the file that forces the variance in the integrations.
+	- Print all processes but forced or not.
 
-+ TODO:
-- Hacer el ADAPTADOR GENERAL basado en las salidas de los PROGRAMAS QUE PROCESAN LAS SALIDAS DE LOS IDENTIFICADORES: TPP, MaxQuant, FragPipe (), PD.
++ SANSON: Fixing a bug in the filter of SANSON. The filter needs the parenthsis:
+	([FDR] < 0.05) & ([n_rel] >= 10) & ([n_rel] <= 100) 
 
-+ TODO!! Si fuerzas, que aparezcan todos los procesos en la ejecucción (mysnake)
++ Integrations: force the parameters and create a file with the variance when the vatiance has been forced by the user in the task-table.
 
-+ TODO!!! Arreglar el LEVEL_CREATOR. Que sea PARALELO.
++ RELS_CREATOR: Admits the ID-q.tsv files as default.
+
++ New general adapter to handle the results from proteomics pipelines: TPP, FragPipe, MaxQuant, Proteome Discoverer, etc.
+
++ Improved the program that reports the integrated variances.
+
++ New program that reports the K-constant and the graphs of calibration.
+
++ New program that retrieves the times of workflow execution.
+
++ Fixing a problem with the Linux and Mac distribution.
+
+Comments from Jesús:
+
++ In Create new project, in the first menu you should put Name of the Project Folder and the second Path to locate the Project Folder.
+
++ In Open Project, change to Open Project Folder.
+
++ In project logs table it should be indicated (press the process to see the workflow logs).
+
++ In workflow logs it should be indicated (press the command to see the command logs).
+
++ Instead of Start, put Save and Run.
+
++ Menu name to Project.
+
++ Change the 'Adapter' tab to 'Input File'.
+
++ The getVariances program will return "sample/integration/Variance/TotNElems/ElemExcluded/IntegratedNElems..."
+
+
 
 
 ___
@@ -79,7 +121,7 @@ DATE: 2022_02
 
 + Now, the modules of adaptors are independent.
 
-+ TABLE2CFG: fixing a problem with the unique function. We want the unique list bbut without sort.
++ TABLE2CFG: fixing a problem with the unique function. We want the unique list but without sort.
 
 + General Adaptors for Proteome Discoverer, MSFragger, Comet, and MaxQuant:
 	- These adaptors only create the columns: Experiment, Scan_Id, and Peptide_Id.
