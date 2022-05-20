@@ -9,7 +9,7 @@ This application executes several kind of workflows for **quantitative high-thro
 iSanXoT was developed by the Cardiovascular Proteomics Lab/Proteomic Unit at **The National Centre for Cardiovascular Research** (CNIC, [https://www.cnic.es](https://www.cnic.es/)).
 
 This application is licensed under a **Creative Commons Attribution-NonCommercial-NoDerivs 4.0 Unported License**
-https://creativecommons.org/licenses/by-nc-nd/4.0/ (for more detail, read the [LICENSE](LICENSE.md) file).
+https://creativecommons.org/licenses/by-nc-nd/4.0/ (for further details, read the [LICENSE](LICENSE.md) file).
 
 
 ## Download 
@@ -29,27 +29,15 @@ iSanXoT maintains the following operating systems and architectures and may add 
 + **MacOs High Sierra** (10.13.6)
 + **Ubuntu 20.04** (x64)
 
-For more details, read the [INSTALL](INSTALL.md) file.
+For more details, read the [INSTALL](https://github.com/CNIC-Proteomics/iSanXoT/wiki/User-Guide#Installation){:target="_blank" rel="noopener"} file.
 
-### Windows distribution
+## Help and Documentations
 
-The iSanXoT application for Windows distribution is packaged in a NSIS Launcher (exe file).
+You can read the help and the user guide in the [iSanXoT Wiki](https://github.com/CNIC-Proteomics/iSanXoT/wiki)
 
-For more details, read the [Windows distribution](INSTALL.md#windows-distribution) section in the INSTALL file.
+In addition, you can download the iSanXoT User Guides for each release in PDF format:
 
-### MacOS distribution
-
-The iSanXoT application for macOS distribution is packaged in a DMG container.
-
-For more details, read the [macOS distribution](INSTALL.md#macos-distribution) section in the INSTALL file.
-
-### Linux distribution
-
-The iSanXoT application for Linux distribution is packaged in an AppImage container.
-
-For more details, read the [linux distribution](INSTALL.md#linux-distribution) section in the INSTALL file.
-
-<!-- # Get started -->
++ [User_Guide_iSanXoT-1.0.1.pdf](docs/user_guides/User_Guide_iSanXoT-1.0.1.pdf)
 
 ---
 
