@@ -16,7 +16,7 @@ For further details, read the <a href="https://creativecommons.org/licenses/by-n
 
 The multiple releases are available in the "release" section, located in the following link:
 
-https://github.com/CNIC-Proteomics/iSanXoT/releases
+[https://github.com/CNIC-Proteomics/iSanXoT/releases](https://github.com/CNIC-Proteomics/iSanXoT/releases)
 
 
 ## Installation

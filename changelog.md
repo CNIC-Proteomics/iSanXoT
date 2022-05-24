@@ -72,7 +72,7 @@ DATE: 2022_05
 
 + Fixing a problem with the Linux and Mac distribution.
 
-Comments from Jesús:
+Comments:
 
 + In Create new project, in the first menu you should put Name of the Project Folder and the second Path to locate the Project Folder.
 
