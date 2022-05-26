@@ -1,4 +1,15 @@
 ___
+## 1.0.2
+```
+DATE: 2022_05
+```
+
+### Changes in the Graphical User Interface
+
++ Bug fixed: the window in the adaptor was not displayed correctly.
+
+
+___
 ## 1.0.1
 ```
 DATE: 2022_05
