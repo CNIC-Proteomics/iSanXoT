@@ -71,7 +71,7 @@ def extract_and_join_columns(idf, header_inf, header_sup, header_thr, cols_inf, 
                 if ':' in header:
                     out = [":".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
                 else:
-                    out = ["||".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
+                    out = ["//".join([str(j) for j in s if not pd.isnull(j) and j != '']) for s in idf[cols].to_numpy()]
             elif len(cols) == 1:
                 # get the column
                 col = cols[0]
@@ -123,7 +123,7 @@ def exploding_columns(idf):
         # Exploding into multiple cells
         # We start with creating a new dataframe from the series with  as the index
         # df = pd.DataFrame(idf[x].str.split(';').tolist(), index=idf[y]).stack().rename(x)
-        df = pd.DataFrame(idf[x].str.split('\|\|').tolist(), index=idf[y]).stack().rename(x)
+        df = pd.DataFrame(idf[x].str.split('//').tolist(), index=idf[y]).stack().rename(x)
         df = df.reset_index()
         # convert the index, which is a list of tuple, into columns
         a = df.iloc[:,0].tolist()
@@ -141,8 +141,8 @@ def exploding_columns(idf):
         y = [i for i in cols if i != x]
         #  Can only use .str accessor with string values!
         if df[x].dtype == 'object':
-            # check if '||' exits in column
-            if any(df[x].str.contains('\|\|')): df = _exploding_columns(df, x, y)
+            # check if '//' exits in column
+            if any(df[x].str.contains('//')): df = _exploding_columns(df, x, y)
     return df
 
 
