@@ -6,7 +6,13 @@ DATE: 2022_05
 
 ### Changes in the Graphical User Interface
 
-+ Bug fixed: the window in the adaptor was not displayed correctly.
++ Adaptor: Bug fixed: the window in the adaptor was not displayed correctly.
+
++ Adaptor: Allow the read of large files size.
+
+### Changes in the Code Workflow
+
++ RELS_CREATOR: Now the delimiter in category files is '//'.
 
 
 ___

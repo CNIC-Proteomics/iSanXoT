@@ -3,6 +3,8 @@
  */
 
 let fs = require('fs');
+let path = require('path');
+const nread = require( path.join(process.env.ISANXOT_NODE_MODULES,'n-readlines') );
 
 /*
  * Local functions
@@ -60,14 +62,15 @@ function sortFilesByExt(files) {
 function readHeaderFile(file) {
     let header = undefined;
     try {
-        data = fs.readFileSync(file, 'utf8').toString().split('\n');
-        for ( let i=0; i < data.length; i++) {
-            if ( data[i] != '' ) {
-                headers = data[i].split('\t');
+        let liner = new nread(file);     
+        let line;
+        while (line = liner.next()) {
+            let l = line.toString('utf8');
+            if ( l != '' ) {
+                header = l.split('\t');
                 break;
             }
         }
-        return headers;
     } catch (e) {
         console.log(`reading the headers: ${e}`);
     }

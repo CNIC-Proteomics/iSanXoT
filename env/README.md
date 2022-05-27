@@ -50,13 +50,23 @@ xcopy /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
 
 1) Execute:
 ```
+cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
+```
+```
 set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64&& env\com.env.win.bat "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
 ```
 Note: You have to write in this way:
 ...\env\node-win-x64&& (without space)
 Note: The frontend folder (node) has to be in local because otherwise the "OpenDevTools" does not work.
 
-4) Add the Node path into environment variable:
+2) Copy the multiple node modules that are not within npm packages to the app folder:
+Open CMD
+```
+cd "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\node_modules"
+set O=S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\node_modules&& for %a in ("ps-tree" "n-readlines") do (mkdir "%O%/%~a"&& xcopy /E /I "%~a" "%O%/%~a")
+```
+
+3) Add the Node path into environment variable:
 Open CMD
 ```
 setx PATH "%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64"

@@ -8,4 +8,5 @@ install --global	ps-tree@1.2.0
 install --global	xlsx@0.17.3
 install --global	js-yaml@4.1.0
 install --global	fs-extra@10.0.0
-install --global	electron-builder@22.13.1
+install --global	electron-builder@23.0.3
+install --global	n-readlines@1.0.1
