@@ -124,9 +124,15 @@ def main(args):
     '''
     Main function
     '''
+    # GET THE IDQ ---
     
-    # PROVIDE_IDQ module ---
-    if args.infile and not args.indir and not args.intbl_exp:
+    # provide the IDq and there are any CNIC adaptor: quant, fdr, protein assigner
+    if args.infile and not args.indir and not args.intbl_exp and (args.intbl_quant or args.intbl_fdr or args.intbl_mpp):
+        logging.info("reading PROVIDE_IDQ module ---")
+        # read the idq to then, the operators work on it
+        df = pd.read_csv(args.infile, sep="\t")
+    # provide the IDq but there are not any CNIC adaptor
+    elif args.infile and not args.indir and not args.intbl_exp and not (args.intbl_quant or args.intbl_fdr or args.intbl_mpp):
         logging.info("executing PROVIDE_IDQ module ---")
         try:
             logging.info("coping the identification/quantification file")
@@ -138,13 +144,11 @@ def main(args):
         except Exception as exc:
             sms = "ERROR!! Copying file: {}".format(exc)
             logging.error(sms)
-            sys.exit(sms)
-    
+            sys.exit(sms)    
         # exit main
         return None
-    
-    # CREATE_IDQ module ---
-    if args.indir and args.intbl_exp and not args.infile:
+    # create the IDq from the proteomic pipelines
+    elif args.indir and args.intbl_exp and not args.infile:
         logging.info("executing CREATE_IDQ module ---")
         logging.info("reading the experiment task-table")
         indata = common.read_task_table(args.intbl_exp)
@@ -153,26 +157,28 @@ def main(args):
             logging.error(sms)
             sys.exit(sms)
         logging.info("processing the input file: read, add exp")
+        # add the experiment columns
         if args.intbl_quant or args.intbl_fdr:
-            # in addition, add 'Spectrum_File' columns
+            # in addition, add 'Spectrum_File' columns if the adaptors are then executed
             df = add_experiments(args.n_workers, args.indir, indata, True)
         else:
             df = add_experiments(args.n_workers, args.indir, indata)
+        # add level ids
+        if args.intbl_lev:
+            logging.info("reading the level task-table")
+            indata = common.read_task_table(args.intbl_lev)
+            if indata.empty:
+                sms = "There is not level task-table"
+                logging.error(sms)
+                sys.exit(sms)
+            logging.info("adding level identifiers")
+            df = add_levelids(df, indata)
     else:
         sms = "You have to provide one of two type of inputs: prividing ID-q by user or creating the ID-q from proteomic pipelines"
         logging.error(sms)
         sys.exit(sms)       
 
 
-    if args.intbl_lev:
-        logging.info("reading the level task-table")
-        indata = common.read_task_table(args.intbl_lev)
-        if indata.empty:
-            sms = "There is not level task-table"
-            logging.error(sms)
-            sys.exit(sms)
-        logging.info("adding level identifiers")
-        df = add_levelids(df, indata)
 
 
 
