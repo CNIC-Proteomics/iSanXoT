@@ -99,11 +99,11 @@ def main(args):
     
     logging.info(f"getting values for every file in parallel ({args.n_workers})...")
     cols = ['sample','integration','kvalue','variance','vvalue_graph','rank_graph']
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-    #     ddf = executor.map( get_values, infiles, repeat(cols) )
-    # ddf = pd.concat(ddf)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
+        ddf = executor.map( get_values, infiles, repeat(cols) )
+    ddf = pd.concat(ddf)
     # begin: for debugging in Spyder
-    ddf = get_values( infiles[2], cols)
+    # ddf = get_values( infiles[2], cols)
     # end: for debugging in Spyder
     
     logging.info("sorting by...")
