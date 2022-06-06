@@ -8,7 +8,8 @@ This application executes several kind of workflows for **quantitative high-thro
 
 iSanXoT was developed by the Cardiovascular Proteomics Lab/Proteomic Unit at **The National Centre for Cardiovascular Research** (CNIC, [https://www.cnic.es](https://www.cnic.es/)).
 
-This application is licensed under a **Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0) License**
+This application is licensed under a **Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0) License**.
+
 For further details, read the <a href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank">https://creativecommons.org/licenses/by-nd/4.0/</a>.
 
 
