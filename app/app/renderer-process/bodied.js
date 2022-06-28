@@ -145,8 +145,8 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
       // create html page
       if ( $(`#page-work-${wk_id} #page-cmd-${cmd_id}`).length == 0 ) $(`#page-work-${wk_id}`).append(`<div id="page-cmd-${cmd_id}"></div>`);
 
-      // extract the task-table
-      if ( 'tasktable' in cmd ) {
+      // extract the task-table if it has params!!
+      if ( 'tasktable' in cmd && commoner.checkAttrInListObj(cmd['tasktable'], 'params') ) {
         // create html page for...
         for (let k=0; k < cmd['tasktable'].length; k++) { // go through ttables
           let ttable = cmd['tasktable'][k];

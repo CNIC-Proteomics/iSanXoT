@@ -6,24 +6,18 @@
 - name: RELS_CREATOR
   description: Creates relation tables
   force: 0
+  rule_outfiles: multiple
   rules:
   - name: createrels
     infiles:
-      --rels_infiles: __IDQFILE__
-      # optional input files
-      --sup_infiles: ''
-      --thr_infiles: ''
+      -i: __EXPDIR__/ID-q.tsv
+      -t: __TTABLEFILE_RELS_CREATOR__
     outfiles:
-      -o: __RELDIR__/__WF_OUTPUT__.tsv
+      -x: __RELDIR__/__WF_OUTPUT__.tsv
     parameters:
-      inf_headers:
-        -i: ''
-      sup_headers:
-        -j: ''
-      thr_headers:
-        -k: ''
-      filter:
-        -f: ''
+      outdir:
+        -o: __RELDIR__
     more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/createRels.py" __WF_VERBOSE__ '
+
+    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/createRels.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################

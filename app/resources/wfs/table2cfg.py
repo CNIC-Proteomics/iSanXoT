@@ -435,29 +435,31 @@ def add_cmd(row, icmd):
     
     return cmd
 
-def add_unique_cmd_from_table(df, icmd):
+def add_params_from_ttable(icmd, indat):
     '''
-    Create rule list for each command
+    Add the parameters to cmd from task-table list
     '''
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
-        
-    # lookthrough all columns and add the parameters
-    for col in df.columns:
-        # join the unique values
-        vals = ",".join(df[col].unique()).replace(" ", "")
-        # go through the rules of cmd
-        for i in range(len(cmd['rules'])):
-            trule = cmd['rules'][i]
-            # add only the given parameters for each rule
-            add_datparams(col, trule, vals)
-
-    # Add the label of forced execution
-    if 'force' in df:
-        cmd['force'] = int(df['force'].any(skipna=False))
-
-    return [cmd]
     
+    if 'ttables' in indat:
+        for df in indat['ttables']:
+            # lookthrough all columns and add the parameters
+            for col in df.columns:
+                # join the unique values
+                vals = ",".join(df[col].unique()).replace(" ", "")
+                # go through the rules of cmd
+                for i in range(len(cmd['rules'])):
+                    trule = cmd['rules'][i]
+                    # add only the given parameters for each rule
+                    add_datparams(col, trule, vals)
+        
+            # Add the label of forced execution
+            if 'force' in df:
+                cmd['force'] = int(df['force'].any(skipna=False))
+        
+    return cmd
+        
 def _param_str_to_dict(s):
     s = s.replace('=',' ')
     cprs = shlex.split(s)
@@ -731,6 +733,8 @@ def main(args):
         if uniq_exec:
             # read the templates of commands
             cmd_tpl = read_tpl_command(args.intpl, cmd)
+            # add the parameters from task-ables if apply
+            cmd_tpl = add_params_from_ttable(cmd_tpl, indat)
             # replace constant within command tpls
             cmd_tpl = replace_val_rec(cmd_tpl, repl)
             # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
@@ -774,7 +778,9 @@ def main(args):
             # get the outputs of commands that have been ejecuted before. Not all
             for k in range(len(tpl['commands'][i][j]['rules'])):
                 trule = tpl['commands'][i][j]['rules'][k]
-                OUTFILES += [ofile for ofile in trule['outfiles'].values() if '*' not in ofile]
+                ofiles = [ofile.split(';') for ofile in trule['outfiles'].values() if '*' not in ofile]
+                ofiles = [ o for i in ofiles for o in i if o != '' ]
+                OUTFILES += ofiles
             cmd = tpl['commands'][i][j]
             cmd = add_recursive_cmds(cmd) # and also update the OUTFILES
 

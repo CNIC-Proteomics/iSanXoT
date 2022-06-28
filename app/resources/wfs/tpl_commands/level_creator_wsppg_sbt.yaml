@@ -3,19 +3,18 @@
 ###################
 # COMMAND TEMPLATE 
 # Description: 
-- name: LEVEL_CREATOR
+- name: LEVEL_CREATOR_WSPPG_SBT
   description: Calculate the log2-ratios and get the level
   force: 0
-  rule_outfiles: multiple
   rules:
 
   # Rule: ratios and creates level ---
   - name: level_creator
     infiles:
       -i: __EXPDIR__/ID-q.tsv
-      -t: __TTABLEFILE_LEVEL_CREATOR__
+      -t: __TTABLEFILE_WSPPG_SBT__
     outfiles:
-      -x: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
+      -x: __NAMDIR__/__WF_OUTPUT__/uscan.tsv
     parameters:
       outdir:
         -o: __NAMDIR__

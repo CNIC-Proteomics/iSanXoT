@@ -93,7 +93,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wspp_sbt.html",
       "visible": true,
-      "cmds": ["WSPP_SBT"]
+      "cmds": ["LEVEL_CREATOR_WSPP_SBT","WSPP_SBT"]
     },{
       "id": "wsppg_sbt",
       "label": "WSPPG - SBT",
@@ -102,7 +102,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wsppg_sbt.html",
       "visible": true,
-      "cmds": ["WSPPG_SBT"]
+      "cmds": ["LEVEL_CREATOR_WSPPG_SBT","WSPPG_SBT"]
     },{
       "id": "wpp_sbt",
       "label": "WPP - SBT",
@@ -111,7 +111,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wpp_sbt.html",
       "visible": true,
-      "cmds": ["WPP_SBT"]
+      "cmds": ["LEVEL_CREATOR_WPP_SBT","WPP_SBT"]
     },{
       "id": "wppg_sbt",
       "label": "WPPG - SBT",
@@ -120,7 +120,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wppg_sbt.html",
       "visible": true,
-      "cmds": ["WPPG_SBT"]
+      "cmds": ["LEVEL_CREATOR_WPPG_SBT","WPPG_SBT"]
     }]
   },{
     "id": "reports",
@@ -148,6 +148,7 @@
   "commands": [{
     "id": "RELS_CREATOR",
     "sdesc": "Creates relation tables",
+    "unique_exec": true,
     "tasktable": [{
       "id": "rels_creator",
       "file": "rels_creator.tsv",
@@ -159,6 +160,38 @@
         { "type": "required", "id": "thr_headers", "name": "Column name of 3rd column" },
         { "type": "required", "id": "rels_infiles", "name": "Table from which RT is extracted" }
       ]}]
+  },{
+    "id": "LEVEL_CREATOR_WSPP_SBT",
+    "sdesc": "Calculate the log2-ratios and get the level",
+    "unique_exec": true,
+    "tasktable": [{
+      "id": "wspp_sbt",
+      "file": "wspp_sbt.tsv"
+    }]
+  },{
+    "id": "LEVEL_CREATOR_WSPPG_SBT",
+    "sdesc": "Calculate the log2-ratios and get the level",
+    "unique_exec": true,
+    "tasktable": [{
+      "id": "wsppg_sbt",
+      "file": "wsppg_sbt.tsv"
+    }]
+  },{
+    "id": "LEVEL_CREATOR_WPP_SBT",
+    "sdesc": "Calculate the log2-ratios and get the level",
+    "unique_exec": true,
+    "tasktable": [{
+      "id": "wpp_sbt",
+      "file": "wpp_sbt.tsv"
+    }]
+  },{
+    "id": "LEVEL_CREATOR_WPPG_SBT",
+    "sdesc": "Calculate the log2-ratios and get the level",
+    "unique_exec": true,
+    "tasktable": [{
+      "id": "wppg_sbt",
+      "file": "wppg_sbt.tsv"
+    }]  
   },{
     "id": "WSPP_SBT",
     "sdesc": "Calculation of WPP and SBT",
@@ -237,7 +270,7 @@
     "id": "WPPG_SBT",
     "sdesc": "Calculation of WSPPG and SBT",
     "tasktable": [{
-      "id": "wpp_sbt",
+      "id": "wppg_sbt",
       "file": "wppg_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -262,6 +295,7 @@
   },{
     "id": "LEVEL_CREATOR",
     "sdesc": "Calculate the log2-ratios and get the level",
+    "unique_exec": true,
     "tasktable": [{
       "id": "level_creator",
       "file": "level_creator.tsv",
@@ -273,7 +307,7 @@
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },
         { "type": "required", "id": "level", "name": "Level to be created", "dropdown": ["u_scan","u_peptide", "u_protein", "u_gene", "u_category"] },
         { "type": "required", "id": "output", "name": "Output Sample folder" }
-    ]}]
+    ]}]  
   },{
     "id": "LEVEL_CALIBRATOR",
     "sdesc": "This module calibrates the V values of a level by performing the specified integration. Calibration converts raw V values into inverses of variances.",

@@ -13,6 +13,7 @@ __status__ = "Development"
 import os
 import sys
 import argparse
+from argparse import RawTextHelpFormatter
 import logging
 import pandas as pd
 import concurrent.futures
@@ -189,11 +190,10 @@ if __name__ == '__main__':
         epilog='''
         Example:
             python createID.py
-
-        ''')
+        ''', formatter_class=RawTextHelpFormatter)
     parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
     parser.add_argument('-i',  '--indir', required=True, help='Input Directory')
-    parser.add_argument('-t',  '--intbl', required=True, help='File with the input data: filename, experiments')
+    parser.add_argument('-t',  '--intbl', required=True, help='Table with the parameters: filename, experiments')
     parser.add_argument('-o',  '--outdir',  required=True, help='Output directory')
     parser.add_argument('-x',  '--phantom_files',  help='Phantom output files needed for the handle of iSanXoT workflow (snakemake)')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")

@@ -103,13 +103,13 @@ def read_task_table(ifile):
     with open(ifile, "r") as file:
         idta = file.read()
     # read table
-    # discard the rows when the first empty columns
     # add if the parameter if the command is executed in one time for all table
     d = pd.read_csv(io.StringIO(idta), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')
-    if not d.empty:
-        l = list(d[d.iloc[:,0] == 'nan'].index)
-        d = d.drop(l)
-        indata = d
+    # # discard the rows when the first empty columns
+    # if not d.empty:
+    #     l = list(d[d.iloc[:,0] == 'nan'].index)
+    #     d = d.drop(l)
+    indata = d
     return indata
 
 
@@ -300,6 +300,7 @@ def rename_tmpfile(f):
         os.remove(ofile)
     # rename the temporal file
     os.rename(f, ofile)
+    return ofile
 
 
 

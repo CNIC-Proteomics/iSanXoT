@@ -8,24 +8,6 @@
   force: 0
   rules:
 
-  # Rule: ratios and creates level ---
-  - name: level_creator
-    infiles:
-      -i: __EXPDIR__/ID-q.tsv
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/upeptide.tsv
-    parameters:
-      experiment:
-        -e: __WF_EXPERIMENT__
-      feat_col:
-        -f: __WF_FEAT_COL__
-      ratio_numerator:
-        -n: __WF_RATIO_NUMERATOR__
-      ratio_denominator:
-        -d: __WF_RATIO_DENOMINATOR__
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/level_creator.py" __WF_VERBOSE__ '
-
   # Rule: calibrates the level
   - name: klibrate
     infiles:

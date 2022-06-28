@@ -126,9 +126,22 @@ function getObjectFromID(data, id) {
     return rst;
 }
 
+// Check if the attribute is in the list of object
+function checkAttrInListObj(array, ke) {
+    let out = false;
+    if (array === undefined) return out;
+    for(var i = 0; i < array.length; i += 1) {
+        if(ke in array[i]) {
+            out = true;
+            break;
+        }
+    }
+    return out;
+}
+
 // Get the list of index from a given attribute value
 function getIndexParamsWithAttr(data, key, attr) {
-    function findWithAttr(array, ke, at) {
+    function _findWithAttr(array, ke, at) {
         let rst = [];
         if (array === undefined) return rst;
         for(var i = 0; i < array.length; i += 1) {
@@ -138,7 +151,7 @@ function getIndexParamsWithAttr(data, key, attr) {
         }
         return rst;
     }
-    let rst = findWithAttr(data, key, attr);
+    let rst = _findWithAttr(data, key, attr);
     if ( !rst || rst.length == 0 ) {
         return undefined;
     }
@@ -147,7 +160,7 @@ function getIndexParamsWithAttr(data, key, attr) {
 
 // Get the list of index and values from a given key
 function getIndexParamsWithKey(data, key) {
-    function findWithAttr(array, ke) {
+    function _findWithAttr(array, ke) {
         let [rst,cnt] = [ [],[] ];
         if (array === undefined) return [rst,cnt];
         for(var i = 0; i < array.length; i += 1) {
@@ -158,7 +171,7 @@ function getIndexParamsWithKey(data, key) {
         }
         return [rst,cnt];
     }
-    let [rst,cnt] = findWithAttr(data, key);
+    let [rst,cnt] = _findWithAttr(data, key);
     if ( !rst || rst.length == 0 || !cnt || cnt.length == 0 ) {
         return [undefined,undefined];
     }
@@ -235,6 +248,7 @@ module.exports = {
     readHeaderFile:             readHeaderFile,
     getColumnValuesFromFile:    getColumnValuesFromFile,
     getObjectFromID:            getObjectFromID,
+    checkAttrInListObj:         checkAttrInListObj,
     getIndexParamsWithAttr:     getIndexParamsWithAttr,
     getIndexParamsWithKey:      getIndexParamsWithKey,
     isEqual:                    isEqual,
