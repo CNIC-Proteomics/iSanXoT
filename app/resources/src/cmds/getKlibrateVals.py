@@ -69,7 +69,7 @@ def get_values(infile,cols):
         # get integration name
         iname = os.path.splitext(fname)[0]
         iname = re.sub('\_[^\_]*$','',iname)
-        # get variance from _infoFile.txt
+        # get variance from _infoK.txt
         fh = open(infile, "r").read()
         k = re.findall("K = (.*)", fh)
         k = k[0] if k else np.nan
@@ -92,7 +92,7 @@ def main(args):
     Main function
     '''
     logging.info("getting the list of info files...")
-    infiles = glob.glob(os.path.join(args.indir,'**/*_kinfoFile.txt'), recursive = True)
+    infiles = glob.glob(os.path.join(args.indir,'**/*_infoK.txt'), recursive = True)
     if not infiles:
         sys.exit("ERROR!! There are not input files")
     

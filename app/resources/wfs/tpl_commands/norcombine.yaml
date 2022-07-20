@@ -42,8 +42,8 @@
       -r: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___Rels.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__
@@ -62,7 +62,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___infoSSieve.txt
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__
@@ -85,6 +85,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__2comb__WF_NORM___infoSanXoT.txt
     parameters:
       anal:
         -a: __WF_LEVEL__2comb__WF_NORM__

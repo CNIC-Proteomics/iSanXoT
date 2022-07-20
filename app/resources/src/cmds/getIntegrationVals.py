@@ -69,7 +69,7 @@ def get_values(infile,cols):
         # get integration name
         iname = os.path.splitext(fname)[0]
         iname = re.sub('\_[^\_]*$','',iname)
-        # get variance from _infoFile.txt
+        # get variance from _infoSanXoT.txt
         fh = open(infile, "r").read()
         v = re.findall("Variance = (.*)", fh)
         v = v[0] if v else np.nan
@@ -95,7 +95,7 @@ def main(args):
     Main function
     '''
     logging.info("getting the list of info files...")
-    infiles = glob.glob(os.path.join(args.indir,'**/*_infoFile.txt'), recursive = True)
+    infiles = glob.glob(os.path.join(args.indir,'**/*_infoSanXoT.txt'), recursive = True)
     if not infiles:
         sys.exit("ERROR!! There are not input files")
     # only accepts the files with the structure "low_level2high_level"

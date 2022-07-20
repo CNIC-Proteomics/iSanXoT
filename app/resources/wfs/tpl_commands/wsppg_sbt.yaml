@@ -15,7 +15,7 @@
       -r: __RELDIR__/uscan2peptide.tsv
     outfiles:
       -o: __NAMDIR__/__WF_OUTPUT__/scan.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/uscan_kinfoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/uscan_infoK.txt
     parameters:
       anal:
         -a: uscan
@@ -29,8 +29,8 @@
       -r: __RELDIR__/scan2peptide.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
     parameters:
       anal:
         -a: scan2peptide
@@ -47,7 +47,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/scan2peptide_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/scan2peptide_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_infoSSieve.txt
     parameters:
       anal:
         -a: scan2peptide
@@ -66,6 +66,7 @@
       -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
       -z: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outStats.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/scan2peptide_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/scan2peptide_infoSanXoT.txt
     parameters:
       anal:
         -a: scan2peptide
@@ -81,8 +82,8 @@
       -r: __RELDIR__/peptide2protein.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     parameters:
       anal:
         -a: peptide2protein
@@ -101,7 +102,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoSSieve.txt
     parameters:
       anal:
         -a: peptide2protein
@@ -124,6 +125,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoSanXoT.txt
     parameters:
       anal:
         -a: peptide2protein
@@ -139,8 +141,8 @@
       -r: __RELDIR__/peptide2gene.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_variance.txt
     parameters:
       anal:
         -a: peptide2gene
@@ -159,7 +161,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/peptide2gene_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2gene_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_infoSSieve.txt
     parameters:
       anal:
         -a: peptide2gene
@@ -182,6 +184,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2gene_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2gene_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/peptide2gene_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2gene_infoSanXoT.txt
     parameters:
       anal:
         -a: peptide2gene
@@ -198,8 +201,8 @@
       -r: __RELDIR__/protein2gene.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2gene_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_variance.txt
     parameters:
       anal:
         -a: protein2gene
@@ -217,7 +220,7 @@
       -r: __RELDIR__/protein2gene.tsv
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/protein2gene_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_infoSSieve.txt
     parameters:
       anal:
         -a: protein2gene
@@ -239,6 +242,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2gene_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/protein2gene_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/protein2gene_infoSanXoT.txt
     parameters:
       anal:
         -a: protein2gene
@@ -255,8 +259,8 @@
       -r: __RELDIR__/gene2category.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/gene2category_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
     parameters:
       anal:
         -a: gene2category
@@ -273,7 +277,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/gene2category_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/gene2category_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/gene2category_infoSSieve.txt
     parameters:
       anal:
         -a: gene2category
@@ -294,6 +298,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/gene2category_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/gene2category_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/gene2category_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/gene2category_infoSanXoT.txt
     parameters:
       anal:
         -a: gene2category
@@ -310,8 +315,8 @@
       -r: __RELDIR__/peptide2peptideall.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     parameters:
       anal:
         -a: peptide2peptideall
@@ -328,7 +333,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoSSieve.txt
     parameters:
       anal:
         -a: peptide2peptideall
@@ -349,6 +354,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/peptide2peptideall_infoSanXoT.txt
     parameters:
       anal:
         -a: peptide2peptideall
@@ -365,8 +371,8 @@
       -r: __RELDIR__/protein2proteinall.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     parameters:
       anal:
         -a: protein2proteinall
@@ -383,7 +389,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoSSieve.txt
     parameters:
       anal:
         -a: protein2proteinall
@@ -404,6 +410,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoSanXoT.txt
     parameters:
       anal:
         -a: protein2proteinall
@@ -420,8 +427,8 @@
       -r: __RELDIR__/gene2geneall.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_variance.txt
     parameters:
       anal:
         -a: gene2geneall
@@ -438,7 +445,7 @@
       -V: __NAMDIR__/__WF_OUTPUT__/gene2category_variance.txt
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/gene2geneall_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_infoSSieve.txt
     parameters:
       anal:
         -a: gene2geneall
@@ -459,6 +466,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/gene2geneall_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/gene2geneall_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/gene2geneall_infoSanXoT.txt
     parameters:
       anal:
         -a: gene2geneall
@@ -475,8 +483,8 @@
       -r: __RELDIR__/category2categoryall.tsv
     outfiles:
       -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats1.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
       -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph1.png
+      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
     parameters:
       anal:
         -a: category2categoryall
@@ -494,7 +502,7 @@
       -r: __RELDIR__/category2categoryall.tsv
     outfiles:
       -n: __NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoFile.txt
+      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoSSieve.txt
     parameters:
       anal:
         -a: category2categoryall
@@ -516,6 +524,7 @@
       -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
       -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
       -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
+      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoSanXoT.txt
     parameters:
       anal:
         -a: category2categoryall
