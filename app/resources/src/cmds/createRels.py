@@ -55,6 +55,8 @@ def check_cols_exist(df, cols, ttable):
     col_vals = sorted(list(set(itertools.chain(*col_vals))))
     # discard the values with []
     col_vals = [c for c in col_vals if '[' not in c and ']' not in c ]
+    # remove 'nan' or empty values
+    col_vals = [c for c in col_vals if '' != c and not pd.isna(c) and 'nan' not in c ]
     # check if all values are in the columns of input file. Otherwise, error message
     if not all([True if c in df.columns else False for c in col_vals]):
         c = [c for c in col_vals if c not in df.columns]
@@ -87,6 +89,8 @@ def create_relationtables(rt_ttable, cols, df, outdir):
     col_vals = [ ttable[c].values.tolist() for c in cols if c in ttable.columns ]
     # flat the list of list with unique values
     col_vals = [v for va in col_vals for v in va]
+    # remove 'nan' or empty values
+    col_vals = [c for c in col_vals if '' != c and not pd.isna(c) and 'nan' not in c ]
     # extract the columns
     for c in col_vals:
         if '[' in c and ']' in c:
@@ -141,7 +145,7 @@ def main(args):
     # groupby the task-table on input files
     # list of tuple (input file, task-table df)
     # the list is sorted and the 'nan' file (for ID-q) it is at the end
-    task_table = list(ttable.groupby('rels_infiles'))
+    task_table = list(ttable.groupby('rels_infiles')) if 'rels_infiles' in ttable.columns else [('nan', ttable)]
     # add the id-q file (input file) for empty/nan input (by default)
     task_table = [ (args.infile, t[1]) if t[0] == 'nan' else t for t in task_table ]
     
