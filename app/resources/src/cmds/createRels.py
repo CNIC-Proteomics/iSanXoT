@@ -107,9 +107,9 @@ def create_relationtables(rt_ttable, cols, df, outdir):
     outdat = outdat[cs]
     # remove duplicates and remove row with any empty column
     outdat.drop_duplicates(inplace=True)
-    # remove row with any empty columns
+    # remove row with any empty columns based on the 2 first columns
     outdat.replace('', np.nan, inplace=True)
-    outdat.dropna(inplace=True)
+    outdat.dropna(subset=list(outdat.columns[0:2]), inplace=True)
     # print tmp output file
     outfile = os.path.join(outdir, f"{output}.tsv")
     ofile = common.print_tmpfile(outdat, outfile)
@@ -178,7 +178,6 @@ def main(args):
                                 itertools.repeat(df),
                                 itertools.repeat(args.outdir)
                             )
-        # rts = pd.concat(rts)
         # begin: for debugging in Spyder
         # rts = create_relationtables(list(ttable.groupby('output'))[0], cols, df, args.outdir)
         # end: for debugging in Spyder
