@@ -77,7 +77,7 @@ def get_values(infile,cols):
         sfile = os.path.join(dname, f"{iname}_outStats.tsv")
         df = pd.read_csv(sfile, sep="\t", index_col=False)
         nt = len(df) # total N elems
-        ne = df[df['tags'] != '']['tags'].count() # excluded N elems
+        ne = df[df['FDR'] == 'excluded']['FDR'].count() # excluded N elems
         ni = nt - ne # integrated N elems
         # get the link to sigmoide... Important: The sigmoide with outliers (first sanxot)
         sgraph = os.path.join(dname, f"{iname}_outGraph1.png")
