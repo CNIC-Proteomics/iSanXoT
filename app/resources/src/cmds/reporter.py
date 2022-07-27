@@ -64,6 +64,9 @@ def read_infiles(file):
     # read file
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
+    # drop rows when the tags contains the 'out' word
+    df = df[df['tags'].str.contains('out', na=False) == False]
+    
     # get the name of 'job' until the root folder
     df[COL_EXP] = common.get_job_name(file)
 
