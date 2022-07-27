@@ -65,7 +65,7 @@ def read_infiles(file):
     df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     
     # drop rows when the Z-score and FDR is excluded or NaN
-    df = df[(df['Z'].notna()) | (df['FDR'].notna())]
+    df = df[(df['Z'].notna()) & (df['FDR'].notna())]
     
     # get the name of 'job' until the root folder
     df[COL_EXP] = common.get_job_name(file)
