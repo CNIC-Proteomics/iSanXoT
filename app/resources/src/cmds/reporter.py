@@ -315,9 +315,10 @@ def main(args):
         df = common.filter_dataframe_multiindex(df, args.filter)
 
 
-    # RETRIEVE AND SORT the columns ----
+
+    # GET THE MAX NUMBER OF INTEGRATIONS ----
     
-    logging.info("show the given cols, reorder and remove duplicates")
+    logging.info("get the columns in order")
     # get the LEVEL columns
     # get the levels to show. By default, get all LEVEL columns
     if args.show_cols:
@@ -325,35 +326,40 @@ def main(args):
         cols_level = [(c,'LEVEL') for c in show_cols]
     else:
         cols_level = [c for c in df.columns if c[1] == 'LEVEL']
-    # sort VARS based on inputs. if var does not exist, then goes to the end of columns
-    cols_vars = [c for c in df.columns if c[1] != 'LEVEL' and c[1] != 'REL']
-    # try:
-    #     s = {v: i for i, v in enumerate(SORTED_EXP_COLS)} # first!! map sorted columns to indexes
-    #     cols_vars_sorted = sorted(cols_vars, key=lambda x: s[x[0]] if x[1] in s else float('inf'))
-    # except:
-    #     cols_vars_sorted = sorted(cols_vars)
-    cols_vars_sorted = sorted(cols_vars)
-    # the rest of columns (REL)
+    # Get the REPORTED VARS columns
+    # Get two list: one with the 'n_' and another with the rest
+    cols_vars = []
+    cols_vars_n = []
+    for c in [c for c in df.columns if c[1] != 'LEVEL' and c[1] != 'REL']:
+        if c[0].startswith('n_'):
+            cols_vars_n.append(c)
+        else:
+            cols_vars.append(c)
+    # Get the REL columns
     cols_rel = [c for c in df.columns if c[1] == 'REL']
-    # reindex based on the new order of columns
-    cols = cols_level + cols_vars_sorted + cols_rel
-    df = df.reindex(columns=cols)
-        
-    # Exception: if all column with variables are 'n_'
-    all_vars_withN = all([True if c[0].startswith('n_') else False for c in cols_vars])
-    if all_vars_withN:
-        # group by all 'n_' columns and aggregate the maximun
-        df[cols_level] = df[cols_level].replace(np.nan, '') # because the index does not accept NaN
-        df_n = df.groupby(cols_level)[cols_vars].agg('max')
-        df_n = df_n.reset_index()
-        # merge with the rest of columns dropping the old
-        df = df_n.merge(df, on=cols_level, how='left', suffixes=('', '_old'))
-        df.drop([ c for c in df.columns if c[0].endswith('_old')] ,axis=1, inplace=True)
-
-    # Remove duplicates
-    df.drop_duplicates(inplace=True)
-
     
+    logging.info("get the max number of integrations and remove duplicates")
+    # if apply, get the max number of integrations
+    if len(cols_vars_n) > 0 :
+        # determine the columns to group
+        g = cols_level + cols_vars
+        # group by all 'n_' columns and aggregate the maximun
+        df[g] = df[g].replace(np.nan, '') # because the index does not accept NaN
+        df = df.groupby(g)[cols_vars_n].agg('max')
+        df = df.reset_index()
+    else:
+        # Remove duplicates
+        df.drop_duplicates(inplace=True)
+
+
+    logging.info("sort the columns")
+    # reindex based on the new order of columns
+    cols = cols_level + sorted(cols_vars) + sorted(cols_vars_n) + cols_rel
+    df = df.reindex(columns=cols)
+
+
+
+
     logging.info("print output file")
     # print to tmp file
     f = f"{args.outfile}.tmp"
