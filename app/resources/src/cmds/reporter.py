@@ -269,7 +269,8 @@ def main(args):
         param_vars = [COL_VARS[v.lower()] for v in re.split(r'\s*,\s*', args.vars.strip()) if v.lower() in COL_VARS]
 
 
-
+    # CREATE THE REPORT ----
+    
     logging.info("create outStats df from list of input files")
     col_levels = [prefix_i] + [prefix_s] # provide the levels to extract
     df = create_statsDF(listfiles, prefix, col_levels, param_vars)
@@ -290,6 +291,7 @@ def main(args):
         df = merge_dfs(df, df2)
 
 
+    # MERGE WITH OTHER REPORT ----
     
     # if apply and there is a relationship, we add an intermediate report
     # check if given additional file exits
@@ -303,20 +305,7 @@ def main(args):
             df = merge_intermediate(rep_file, df)
 
  
-    if args.rel_files:
-        logging.info(f"add the relationship values {args.rel_files}")
-        for file in re.split(r'\s*;\s*', args.rel_files.strip()):
-            if os.path.isfile(file):
-                df = add_relation(df, file, prefix)
-
-
-    if args.filter:
-        logging.info(f"filter the report {args.filter}")
-        df = common.filter_dataframe_multiindex(df, args.filter)
-
-
-
-    # GET THE MAX NUMBER OF INTEGRATIONS ----
+    # DETERMINE THE TYPE OF COLUMNS ----
     
     logging.info("get the columns in order")
     # get the LEVEL columns
@@ -335,9 +324,12 @@ def main(args):
             cols_vars_n.append(c)
         else:
             cols_vars.append(c)
-    # Get the REL columns
-    cols_rel = [c for c in df.columns if c[1] == 'REL']
+    # Init the REL columns
+    cols_rel = []
+
     
+    # GET THE MAX NUMBER OF INTEGRATIONS ----
+
     logging.info("get the max number of integrations and remove duplicates")
     # if apply, get the max number of integrations
     if len(cols_vars_n) > 0 :
@@ -350,6 +342,25 @@ def main(args):
     else:
         # Remove duplicates
         df.drop_duplicates(inplace=True)
+
+
+    # ADD THE RELATION TABLES ----
+
+    if args.rel_files:
+        logging.info(f"add the relationship values {args.rel_files}")
+        for file in re.split(r'\s*;\s*', args.rel_files.strip()):
+            if os.path.isfile(file):
+                df = add_relation(df, file, prefix)
+        # Get the REL columns
+        cols_rel = [c for c in df.columns if c[1] == 'REL']
+
+
+    # FILTER THE TABLE ----
+
+    if args.filter:
+        logging.info(f"filter the report {args.filter}")
+        df = common.filter_dataframe_multiindex(df, args.filter)
+
 
 
     logging.info("sort the columns")
