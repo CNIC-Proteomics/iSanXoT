@@ -27,7 +27,7 @@ from itertools import repeat
 #########################
 sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
-import extractQuant
+import extractquant
 import fdr
 import ProteinAssigner_v3
 
@@ -206,7 +206,7 @@ def main(args):
             logging.error(sms)
             sys.exit(sms)
         logging.info("extracting the quantification")
-        df = extractQuant.add_quantification(args.n_workers, args.indir_mzml, se, df, indata)
+        df = extractquant.add_quantification(args.n_workers, args.indir_mzml, se, df, indata)
         logging.info("printing quantification file")
         f = os.path.join( os.path.dirname(args.outfile), 'Q-all.tsv' )
         df.to_csv(f, index=False, sep="\t", line_terminator='\n')           

@@ -198,8 +198,8 @@ $('#add-identifiers').click(function() {
   if ( headers.length > 0 ) {
     // loading...
     exceptor.loadingWorkflow();
-    // remove the starting and begining quotes
-    for (let i=0;i<headers.length;i++) headers[i] = headers[i].replace(/^\"|\"$/g,'');
+    // remove the starting and begining quotes and carriage return
+    for (let i=0;i<headers.length;i++) headers[i] = headers[i].replace(/^\"|\"|\r|\n$/g,'');
     // append new data to table removing the quotes
     // 1. joining the headers
     // get current data from table
