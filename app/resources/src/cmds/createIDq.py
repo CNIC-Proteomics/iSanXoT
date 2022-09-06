@@ -207,14 +207,13 @@ def main(args):
             sys.exit(sms)
         logging.info("extracting the quantification")
         df = extractquant.add_quantification(args.n_workers, args.indir_mzml, se, df, indata)
+        if df is None or df.empty:
+            sms = "There was a problem extacting the quantification"
+            logging.error(sms)
+            sys.exit(sms)
         logging.info("printing quantification file")
         f = os.path.join( os.path.dirname(args.outfile), 'Q-all.tsv' )
         df.to_csv(f, index=False, sep="\t", line_terminator='\n')           
-        # logging.info("printing quantification file (in background)")
-        # f = os.path.join( os.path.dirname(args.outfile), 'Q-all.tsv' )
-        # thread = threading.Thread(target=print_in_background, name="Printer", args=(df, f))
-        # thread.start()
-
 
 
 

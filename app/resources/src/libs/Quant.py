@@ -117,12 +117,15 @@ def array_decoder(a, ctype, dtypea):
     '''
     Decode bin64
     '''
-    a = base64.b64decode(a)
-    if ctype == "zlib compression":
-        a = np.frombuffer(zlib.decompress(a), dtype=dtypea)
+    if a is not None:
+        a = base64.b64decode(a)
+        if ctype == "zlib compression":
+            a = np.frombuffer(zlib.decompress(a), dtype=dtypea)
+        else:
+            a = np.frombuffer(a, dtype=dtypea)
+        return a.astype('float32')
     else:
-        a = np.frombuffer(a, dtype=dtypea)
-    return a.astype('float32')
+        return np.array([])
 
 def get_spectrum_values(elem, label, isotag, isocorrm):
     '''
@@ -163,7 +166,7 @@ def get_spectrum_values(elem, label, isotag, isocorrm):
     
     if spec["mslevel"] == 1:
         return None
-    else: 
+    else:
         for i,a in enumerate( get_quant(spec["mz"], spec["i"], label, isotag, isocorrm) ): spec[i] = a        
         del spec["mz"]
         del spec["i"]
@@ -239,7 +242,7 @@ def parser_mz(file, spec_name, label, isotag, isoname, isocorrm, scan_list=None)
 
 ######################## main functions ############
 
-def prepare_params(ieddf, inddf):
+def prepare_params(tpl):
     '''
     Prepare the parameters to get the quantification. It will be a list of spectrum file (for each experiment)
 
@@ -258,14 +261,16 @@ def prepare_params(ieddf, inddf):
     ]
     '''
     # get the input parameters based on the experiment in tuple df=(exp,df)
-    idedf = ieddf[1]
-    indata = inddf[1]
+    spec = tpl[0]
+    idedf = tpl[1]
+    indata = tpl[2]
 
     # extract the quantification files and the experiemnt name
-    # q => [['spectrum_file','mzfile','experiment','quan_method']]
-    q = indata[['mzfile','experiment','quan_method']]
-    s = list(indata['infile'])
-    q.insert(0,'Spectrum_File', [os.path.basename(x) for x in s])
+    # q => [['spectrum_file','mzfile','quan_method']]
+    q = indata[['spectrum_file','mzfile','quan_method']]
+    q.rename(columns={'spectrum_file': 'Spectrum_File'}, inplace=True)
+    # s = list(indata['infile'])
+    # q.insert(0,'Spectrum_File', [os.path.basename(x) for x in s])
     q = sorted(q.drop_duplicates().values.tolist(), key=lambda x: x[0]) # sort by the Spectrum_File
 
     # get the list of scans (for each Spectrum file)
@@ -276,10 +281,9 @@ def prepare_params(ieddf, inddf):
     i = sorted(i.values.tolist(), key=lambda x: x[0]) # sort by the Spectrum_File
     
     # add the table of isotopic distrution depending from the input file (Ion distribution file)
-    qff = [ x+[y[1]]+[pd.read_csv(x[3], sep="\t", comment='#', na_values=['NA'], low_memory=False)] for x,y in zip(q,i) if x[0]==y[0] ]
+    qff = [ x+[y[1]]+[pd.read_csv(x[2], sep="\t", comment='#', na_values=['NA'], low_memory=False)] for x,y in zip(q,i) if x[0]==y[0] ]
     
     return qff
-
 
 def extract_quantification(params):
     '''
@@ -314,9 +318,9 @@ def extract_quantification(params):
     # get params values
     spec_basename = params[0]
     mzfile = params[1]
-    ion_file = params[3]
-    scan_list = params[4]
-    isom = params[5]
+    ion_file = params[2]
+    scan_list = params[3]
+    isom = params[4]
     
     type_tmt,isocorrm = correcmatrix(isom)
     isoname, isotag = isobaric_labelling(isom)

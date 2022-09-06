@@ -76,37 +76,49 @@ def add_quantification(n_workers, indir, se, ddf, indata):
         indata['mzfile'] = [common.get_path_file(i, indir) for i in list(indata['mzfile']) if not pd.isna(i)]
         logging.debug(indata['mzfile'].values.tolist())
 
-        logging.info("prepare the parameters for each experiment/spectrum file")
-        # one experiment can be multiple spectrum files
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
-            params = executor.map( Quant.prepare_params,
-                                  list(ddf.groupby("Experiment")),
-                                  list(indata.groupby("experiment")) )
-        # params = list(params)
-        params = [i for s in list(params) for i in s]
-        # begin: for debugging in Spyder
-        # params = Quant.prepare_params(list(ddf.groupby("Experiment"))[0], list(indata.groupby("experiment"))[0])
-        # params = Quant.prepare_params(list(ddf.groupby("Experiment"))[7], list(indata.groupby("experiment"))[7])
-        # end: for debugging in Spyder
+        logging.info("compare spectrum_file/mzfile from the input_data and param_data")
+        # convert groupby 'Spectrum_File' to dict for the input_data and param_data        
+        ie_spec = dict(tuple(ddf.groupby("Spectrum_File")))
+        in_spec = dict(tuple(indata.groupby("spectrum_file")))
+        # check if all spectrum_files from inpu_data have a pair with  mzml coming from param_data        
+        ie_spec_keys = list(ie_spec.keys())
+        in_spec_keys = list(in_spec.keys())
+        a = [ x for x in ie_spec_keys if not x in in_spec_keys ]
+        if len(a) == 0:
+            # for the 'spec_file' of input_data, get the mzMl of param_data
+            pair_spec_ie_in = [ (k,v,in_spec[k]) for k,v in ie_spec.items() if k in in_spec]
+    
+            logging.info("prepare the params for each spectrum_file/mzfile pair")
+            # one experiment can be multiple spectrum files
+            with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
+                params = executor.map( Quant.prepare_params, pair_spec_ie_in )
+            params = [i for s in list(params) for i in s]
+            # begin: for debugging in Spyder
+            # params = Quant.prepare_params(pair_spec_ie_in[0])
+            # end: for debugging in Spyder
+    
+            logging.info("extract the quantification")
+            with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
+                quant = executor.map( Quant.extract_quantification, params )
+            quant = pd.concat(quant)
+            # begin: for debugging in Spyder
+            # quant = Quant.extract_quantification(params[0])
+            # end: for debugging in Spyder
+    
+    
+            logging.info("merge the quantification")
+            with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
+                ddf = executor.map( Quant.merge_quantification,
+                                        list(ddf.groupby("Spectrum_File")),
+                                        list(quant.groupby("Spectrum_File")) )
+            ddf = pd.concat(ddf)
+            # begin: for debugging in Spyder
+            # ddf = Quant.merge_quantification( list(ddf.groupby("Spectrum_File"))[0], list(quant.groupby("Spectrum_File"))[0] )
+            # end: for debugging in Spyder
+        else:
+            logging.error(f"The following Spectrum_Files have not mzML files: {a}")
+            return None
 
-        logging.info("extract the quantification")
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
-            quant = executor.map( Quant.extract_quantification, params )
-        quant = pd.concat(quant)
-        # begin: for debugging in Spyder
-        # quant = Quant.extract_quantification(params[0])
-        # end: for debugging in Spyder
-
-
-        logging.info("merge the quantification")
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
-            ddf = executor.map( Quant.merge_quantification,
-                                    list(ddf.groupby("Spectrum_File")),
-                                    list(quant.groupby("Spectrum_File")) )
-        ddf = pd.concat(ddf)
-        # begin: for debugging in Spyder
-        # ddf = Quant.merge_quantification( list(ddf.groupby("Spectrum_File"))[0], list(quant.groupby("Spectrum_File"))[0] )
-        # end: for debugging in Spyder
     return ddf
     
 def print_by_experiment(df, outdir, outfname):

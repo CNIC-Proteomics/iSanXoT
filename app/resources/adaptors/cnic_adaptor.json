@@ -63,8 +63,7 @@
         "height": "150px"
       },
       "params": [
-        { "type": "required", "id": "infile", "name": "Identification file" },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "spectrum_file", "name": "Spectrum filename" },
         { "type": "required", "id": "mzfile", "name": "Quantification File (in mzML format)" },
         { "type": "required", "id": "quan_method", "name": "Quan Method" }
       ]
