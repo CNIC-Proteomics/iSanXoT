@@ -241,21 +241,11 @@ $('#submit-annots').click(function() {
     table_exp = []
     for (let i=0;i<files.length;i++) table_exp.push( [files[i],""] );  
   }
-  else {
-    if ( table_exp.some(commoner.anyBlank) ) {
-      exceptor.showMessageBox('error', "All values of experiment table have to be defined", title='Adding metadata', end=true);
-    }
-  }
   // check the identifiers values
   // convert the data for the creation of final table
   let table_ide = $('#select-identifiers .tasktable').handsontable('getData');
   if (  table_ide.every(commoner.allBlanks) ) {
     exceptor.showMessageBox('warning', "The identifiers for the levels have not been defined", title='Adding metadata');
-  }
-  else {
-    if ( table_ide.some(commoner.anyBlank) ) {
-      exceptor.showMessageBox('error', "All values of identifier table have to be defined", title='Adding metadata', end=true);
-    }
   }
   // Everything all right, send the variables
   ipcRenderer.send('submitmetadata', {
