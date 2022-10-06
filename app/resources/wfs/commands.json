@@ -363,8 +363,8 @@
       "file": "ratios_int.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator column" },
-        { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },
+        { "type": "required", "id": "ratio_numerator", "name": "Numerator Sample folder" },
+        { "type": "required", "id": "ratio_denominator", "name": "Denominator Sample folder(s)" },
         { "type": "required", "id": "level", "name": "Level", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "v_method", "name": "V Method", "select": ["form", "max", "avg"] },
         { "type": "required", "id": "output", "name": "Output Sample folder" }
