@@ -351,8 +351,6 @@ def main(args):
         for file in re.split(r'\s*;\s*', args.rel_files.strip()):
             if os.path.isfile(file):
                 df = add_relation(df, file, prefix)
-        # Get the REL columns
-        cols_rel = [c for c in df.columns if c[1] == 'REL']
 
 
     # FILTER THE TABLE ----
@@ -364,6 +362,8 @@ def main(args):
 
 
     logging.info("sort the columns")
+    # get the REL columns
+    cols_rel = [c for c in df.columns if c[1] == 'REL']
     # reindex based on the new order of columns
     cols = cols_level + sorted(cols_vars) + sorted(cols_vars_n) + cols_rel
     df = df.reindex(columns=cols)
