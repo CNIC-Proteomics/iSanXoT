@@ -312,9 +312,9 @@ def main(args):
     # get the levels to show. By default, get all LEVEL columns
     if args.show_cols:
         show_cols = re.split(r'\s*,\s*', args.show_cols.strip())
-        cols_level = [(c,'LEVEL') for c in show_cols]
+        cols_levels = [(c,'LEVEL') for c in show_cols]
     else:
-        cols_level = [c for c in df.columns if c[1] == 'LEVEL']
+        cols_levels = [c for c in df.columns if c[1] == 'LEVEL']
     # Get the REPORTED VARS columns
     # Get two list: one with the 'n_' and another with the rest
     cols_vars = []
@@ -325,24 +325,28 @@ def main(args):
         else:
             cols_vars.append(c)
     # Init the REL columns
-    cols_rel = []
+    cols_rels = [c for c in df.columns if c[1] == 'REL']
+    # get the columns based on the columns (show cols)
+    cols = cols_levels + sorted(cols_vars) + sorted(cols_vars_n) + cols_rels
+    df = df.reindex(columns=cols)
+    # remove duplicates
+    df.drop_duplicates(inplace=True)
+
 
     
     # GET THE MAX NUMBER OF INTEGRATIONS ----
 
     logging.info("get the max number of integrations and remove duplicates")
+    
     # if apply, get the max number of integrations
     if len(cols_vars_n) > 0 :
         # determine the columns to group
-        g = cols_level + cols_vars
+        g_v = cols_levels + cols_vars + cols_rels
         # group by all 'n_' columns and aggregate the maximun
-        df[g] = df[g].replace(np.nan, '') # because the index does not accept NaN
-        df = df.groupby(g)[cols_vars_n].agg('max')
+        df[g_v] = df[g_v].replace(np.nan, '') # because the index does not accept NaN
+        df = df.groupby(g_v)[cols_vars_n].agg('max')
         df = df.reset_index()
-    else:
-        # Remove duplicates
-        df.drop_duplicates(inplace=True)
-
+    
 
     # ADD THE RELATION TABLES ----
 
@@ -351,6 +355,8 @@ def main(args):
         for file in re.split(r'\s*;\s*', args.rel_files.strip()):
             if os.path.isfile(file):
                 df = add_relation(df, file, prefix)
+        # update the REL columns
+        cols_rels = [c for c in df.columns if c[1] == 'REL']
 
 
     # FILTER THE TABLE ----
@@ -360,12 +366,11 @@ def main(args):
         df = common.filter_dataframe_multiindex(df, args.filter)
 
 
+    # SORT THE COLUMNS AGAIN ----
 
-    logging.info("sort the columns")
-    # get the REL columns
-    cols_rel = [c for c in df.columns if c[1] == 'REL']
+    logging.info("sort again columns")
     # reindex based on the new order of columns
-    cols = cols_level + sorted(cols_vars) + sorted(cols_vars_n) + cols_rel
+    cols = cols_levels + sorted(cols_vars) + sorted(cols_vars_n) + cols_rels
     df = df.reindex(columns=cols)
 
 
