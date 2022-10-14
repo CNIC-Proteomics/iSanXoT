@@ -93,7 +93,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wspp_sbt.html",
       "visible": true,
-      "cmds": ["LEVEL_CREATOR_WSPP_SBT","WSPP_SBT"]
+      "cmds": ["WSPP_SBT"]
     },{
       "id": "wsppg_sbt",
       "label": "WSPPG - SBT",
@@ -102,7 +102,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wsppg_sbt.html",
       "visible": true,
-      "cmds": ["LEVEL_CREATOR_WSPPG_SBT","WSPPG_SBT"]
+      "cmds": ["WSPPG_SBT"]
     },{
       "id": "wpp_sbt",
       "label": "WPP - SBT",
@@ -111,7 +111,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wpp_sbt.html",
       "visible": true,
-      "cmds": ["LEVEL_CREATOR_WPP_SBT","WPP_SBT"]
+      "cmds": ["WPP_SBT"]
     },{
       "id": "wppg_sbt",
       "label": "WPPG - SBT",
@@ -120,7 +120,7 @@
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/wppg_sbt.html",
       "visible": true,
-      "cmds": ["LEVEL_CREATOR_WPPG_SBT","WPPG_SBT"]
+      "cmds": ["WPPG_SBT"]
     }]
   },{
     "id": "reports",
@@ -148,7 +148,6 @@
   "commands": [{
     "id": "RELS_CREATOR",
     "sdesc": "Creates relation tables",
-    "unique_exec": true,
     "tasktable": [{
       "id": "rels_creator",
       "file": "rels_creator.tsv",
@@ -160,38 +159,6 @@
         { "type": "required", "id": "thr_headers", "name": "Column name of 3rd column" },
         { "type": "required", "id": "rels_infiles", "name": "Table from which RT is extracted" }
       ]}]
-  },{
-    "id": "LEVEL_CREATOR_WSPP_SBT",
-    "sdesc": "Calculate the log2-ratios and get the level",
-    "unique_exec": true,
-    "tasktable": [{
-      "id": "wspp_sbt",
-      "file": "wspp_sbt.tsv"
-    }]
-  },{
-    "id": "LEVEL_CREATOR_WSPPG_SBT",
-    "sdesc": "Calculate the log2-ratios and get the level",
-    "unique_exec": true,
-    "tasktable": [{
-      "id": "wsppg_sbt",
-      "file": "wsppg_sbt.tsv"
-    }]
-  },{
-    "id": "LEVEL_CREATOR_WPP_SBT",
-    "sdesc": "Calculate the log2-ratios and get the level",
-    "unique_exec": true,
-    "tasktable": [{
-      "id": "wpp_sbt",
-      "file": "wpp_sbt.tsv"
-    }]
-  },{
-    "id": "LEVEL_CREATOR_WPPG_SBT",
-    "sdesc": "Calculate the log2-ratios and get the level",
-    "unique_exec": true,
-    "tasktable": [{
-      "id": "wppg_sbt",
-      "file": "wppg_sbt.tsv"
-    }]  
   },{
     "id": "WSPP_SBT",
     "sdesc": "Calculation of WPP and SBT",
@@ -289,7 +256,6 @@
   },{
     "id": "LEVEL_CREATOR",
     "sdesc": "Calculate the log2-ratios and get the level",
-    "unique_exec": true,
     "tasktable": [{
       "id": "level_creator",
       "file": "level_creator.tsv",
@@ -432,7 +398,6 @@
   },{
     "id": "GET_VARIANCES",
     "sdesc": "Retrieves the reports",
-    "unique_exec": true,
     "params": ["__OUTDIR__"]
   }]
 }

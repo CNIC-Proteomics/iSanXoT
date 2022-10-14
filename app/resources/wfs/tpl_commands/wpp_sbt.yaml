@@ -5,251 +5,266 @@
 # Description: 
 - name: WPP_SBT
   description: Calculation of WPP and SBT (Systems Biology Triangle)
-  force: 0
-  rules:
+  cmds:
+    - name: LEVEL_CREATOR
+      unique_exec: true
+      force: 0
+      rule_outfiles: multiple
+      rules:
+        # Rule: ratios and creates level ---
+        - name: level_creator
+          infiles:
+            -i: __EXPDIR__/ID-q.tsv
+            -t: __TTABLEFILE_WPP_SBT__
+          outfiles:
+            -x: __NAMDIR__/__WF_OUTPUT__/uscan.tsv
+          parameters:
+            outdir:
+              -o: __NAMDIR__
+          more_params: ''
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/createLevels.py" -w __NCPU__ __WF_VERBOSE__ '
 
-  # Rule: calibrates the level
-  - name: klibrate
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/upeptide.tsv
-      -r: __RELDIR__/upeptide2protein.tsv
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/upeptide_infoK.txt
-    parameters:
-      anal:
-        -a: upeptide
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g '
-
-  # Rule: peptide2protein ---
-  - name: p2q_sanxot1
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __RELDIR__/peptide2protein.tsv
-    outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats1.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph1.png
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
-    parameters:
-      anal:
-        -a: peptide2protein
-      maxiterations:
-        -m: 600
-      p>q_var(x):
-        -v: ''
-      p>q_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: p2q_sanxotsieve
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __RELDIR__/peptide2protein.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
-    outfiles:
-      -n: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoSSieve.txt
-    parameters:
-      anal:
-        -a: peptide2protein
-      p>q_fdr:
-        -f: 0.01
-      p>q_var(x):
-        -v: ''
-      p>q_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: p2q_sanxot2
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
-      -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
-      -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
-      -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoSanXoT.txt
-    parameters:
-      anal:
-        -a: peptide2protein
-      p>q_tag:
-        --tags: '!out'
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
-
-  # Rule: protein2category ---
-  - name: q2c_sanxot1
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __RELDIR__/protein2category.tsv
-    outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats1.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph1.png
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
-    parameters:
-      anal:
-        -a: protein2category
-      maxiterations:
-        -m: 600
-      q>c_var(x):
-        -v: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: q2c_sanxotsieve
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __RELDIR__/protein2category.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
-    outfiles:
-      -n: __NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2category_infoSSieve.txt
-    parameters:
-      anal:
-        -a: protein2category
-      q>c_fdr:
-        -f: 0.01
-      q>c_var(x):
-        -v: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: q2c_sanxot2
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/category.tsv
-      -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats.tsv
-      -u: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormW.tsv
-      -U: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormV.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph.png
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2category_infoSanXoT.txt
-    parameters:
-      anal:
-        -a: protein2category
-      q>c_tag:
-        --tags: '!out'
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
-
-    # Rule: protein2all ---
-    # ! outliers. Var = Var_q2c. FDR = 0
-  - name: q2a_sanxot1
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __RELDIR__/protein2proteinall.tsv
-    outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats1.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph1.png
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
-    parameters:
-      anal:
-        -a: protein2proteinall
-      maxiterations:
-        -m: 600
-      q>a_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: q2a_sanxotsieve
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __RELDIR__/protein2proteinall.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
-    outfiles:
-      -n: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoSSieve.txt
-    parameters:
-      anal:
-        -a: protein2proteinall
-      q>a_fdr:
-        -f: 0
-      q>a_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: q2a_sanxot2
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/proteinall.tsv
-      -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
-      -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
-      -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
-      -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoSanXoT.txt
-    parameters:
-      anal:
-        -a: protein2proteinall
-      q>a_tag:
-        --tags: '!out'
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
-
-    # Rule: category2all ---
-    # With-outliers. Var = 0. FDR = 0
-  - name: c2a_sanxot1
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
-      -r: __RELDIR__/category2categoryall.tsv
-    outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats1.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph1.png
-      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
-    parameters:
-      anal:
-        -a: category2categoryall
-      maxiterations:
-        -m: 600
-      c>a_var(x):
-        -v: 0
-      c>a_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s -f '
-  - name: c2a_sanxotsieve
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
-      -r: __RELDIR__/category2categoryall.tsv
-    outfiles:
-      -n: __NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoSSieve.txt
-    parameters:
-      anal:
-        -a: category2categoryall
-      c>a_fdr:
-        -f: 0
-      c>a_var(x):
-        -v: 0
-      c>a_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: c2a_sanxot2
-    infiles:
-      -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/categoryall.tsv
-      -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats.tsv
-      -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
-      -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
-      -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoSanXoT.txt
-    parameters:
-      anal:
-        -a: category2categoryall
-      c>a_var(x):
-        -v: 0
-      c>a_tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
+    - name: WPP_SBT
+      force: 0
+      rules:
+      # Rule: calibrates the level
+      - name: klibrate
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/upeptide.tsv
+          -r: __RELDIR__/upeptide2protein.tsv
+        outfiles:
+          -o: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
+          -L: __NAMDIR__/__WF_OUTPUT__/upeptide_infoK.txt
+        parameters:
+          anal:
+            -a: upeptide
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g '
+      # Rule: peptide2protein ---
+      - name: p2q_sanxot1
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
+          -r: __RELDIR__/peptide2protein.tsv
+        outfiles:
+          -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats1.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph1.png
+          -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+        parameters:
+          anal:
+            -a: peptide2protein
+          maxiterations:
+            -m: 600
+          p>q_var(x):
+            -v: ''
+          p>q_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
+      - name: p2q_sanxotsieve
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
+          -r: __RELDIR__/peptide2protein.tsv
+          -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+        outfiles:
+          -n: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
+          -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoSSieve.txt
+        parameters:
+          anal:
+            -a: peptide2protein
+          p>q_fdr:
+            -f: 0.01
+          p>q_var(x):
+            -v: ''
+          p>q_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+      - name: p2q_sanxot2
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/peptide.tsv
+          -r: __NAMDIR__/__WF_OUTPUT__/peptide2protein_tagged.tsv
+          -V: __NAMDIR__/__WF_OUTPUT__/peptide2protein_variance.txt
+        outfiles:
+          -o: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -z: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outStats.tsv
+          -u: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormW.tsv
+          -U: __NAMDIR__/__WF_OUTPUT__/peptide2protein_lowerNormV.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/peptide2protein_outGraph.png
+          -L: __NAMDIR__/__WF_OUTPUT__/peptide2protein_infoSanXoT.txt
+        parameters:
+          anal:
+            -a: peptide2protein
+          p>q_tag:
+            --tags: '!out'
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
+      # Rule: protein2category ---
+      - name: q2c_sanxot1
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -r: __RELDIR__/protein2category.tsv
+        outfiles:
+          -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats1.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph1.png
+          -L: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+        parameters:
+          anal:
+            -a: protein2category
+          maxiterations:
+            -m: 600
+          q>c_var(x):
+            -v: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
+      - name: q2c_sanxotsieve
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -r: __RELDIR__/protein2category.tsv
+          -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+        outfiles:
+          -n: __NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
+          -L: __NAMDIR__/__WF_OUTPUT__/protein2category_infoSSieve.txt
+        parameters:
+          anal:
+            -a: protein2category
+          q>c_fdr:
+            -f: 0.01
+          q>c_var(x):
+            -v: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+      - name: q2c_sanxot2
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -r: __NAMDIR__/__WF_OUTPUT__/protein2category_tagged.tsv
+          -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+        outfiles:
+          -o: __NAMDIR__/__WF_OUTPUT__/category.tsv
+          -z: __NAMDIR__/__WF_OUTPUT__/protein2category_outStats.tsv
+          -u: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormW.tsv
+          -U: __NAMDIR__/__WF_OUTPUT__/protein2category_lowerNormV.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/protein2category_outGraph.png
+          -L: __NAMDIR__/__WF_OUTPUT__/protein2category_infoSanXoT.txt
+        parameters:
+          anal:
+            -a: protein2category
+          q>c_tag:
+            --tags: '!out'
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
+        # Rule: protein2all ---
+        # ! outliers. Var = Var_q2c. FDR = 0
+      - name: q2a_sanxot1
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -r: __RELDIR__/protein2proteinall.tsv
+        outfiles:
+          -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats1.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph1.png
+          -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_variance.txt
+        parameters:
+          anal:
+            -a: protein2proteinall
+          maxiterations:
+            -m: 600
+          q>a_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
+      - name: q2a_sanxotsieve
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -r: __RELDIR__/protein2proteinall.tsv
+          -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+        outfiles:
+          -n: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
+          -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoSSieve.txt
+        parameters:
+          anal:
+            -a: protein2proteinall
+          q>a_fdr:
+            -f: 0
+          q>a_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+      - name: q2a_sanxot2
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/protein.tsv
+          -r: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_tagged.tsv
+          -V: __NAMDIR__/__WF_OUTPUT__/protein2category_variance.txt
+        outfiles:
+          -o: __NAMDIR__/__WF_OUTPUT__/proteinall.tsv
+          -z: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outStats.tsv
+          -u: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormW.tsv
+          -U: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_lowerNormV.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_outGraph.png
+          -L: __NAMDIR__/__WF_OUTPUT__/protein2proteinall_infoSanXoT.txt
+        parameters:
+          anal:
+            -a: protein2proteinall
+          q>a_tag:
+            --tags: '!out'
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
+        # Rule: category2all ---
+        # With-outliers. Var = 0. FDR = 0
+      - name: c2a_sanxot1
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
+          -r: __RELDIR__/category2categoryall.tsv
+        outfiles:
+          -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats1.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph1.png
+          -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_variance.txt
+        parameters:
+          anal:
+            -a: category2categoryall
+          maxiterations:
+            -m: 600
+          c>a_var(x):
+            -v: 0
+          c>a_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s -f '
+      - name: c2a_sanxotsieve
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
+          -r: __RELDIR__/category2categoryall.tsv
+        outfiles:
+          -n: __NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
+          -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoSSieve.txt
+        parameters:
+          anal:
+            -a: category2categoryall
+          c>a_fdr:
+            -f: 0
+          c>a_var(x):
+            -v: 0
+          c>a_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+      - name: c2a_sanxot2
+        infiles:
+          -d: __NAMDIR__/__WF_OUTPUT__/category.tsv
+          -r: __NAMDIR__/__WF_OUTPUT__/category2categoryall_tagged.tsv
+        outfiles:
+          -o: __NAMDIR__/__WF_OUTPUT__/categoryall.tsv
+          -z: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outStats.tsv
+          -u: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormW.tsv
+          -U: __NAMDIR__/__WF_OUTPUT__/category2categoryall_lowerNormV.tsv
+          -G: __NAMDIR__/__WF_OUTPUT__/category2categoryall_outGraph.png
+          -L: __NAMDIR__/__WF_OUTPUT__/category2categoryall_infoSanXoT.txt
+        parameters:
+          anal:
+            -a: category2categoryall
+          c>a_var(x):
+            -v: 0
+          c>a_tag:
+            --tags: ''
+        more_params: ''
+        cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
 # END: WPP_SBT
 ###################

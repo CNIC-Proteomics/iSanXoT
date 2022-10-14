@@ -5,71 +5,72 @@
 # Description:
 - name: INTEGRATE
   description: Performs an integration from an existing lower level to a higher level using a created Relation Table
-  force: 0
-  rules:
-
-    # Rule: sanxot integration: obtain integrated Z and FDR values ---
-  - name: sanxot1
-    infiles:
-      -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
-      -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
-    outfiles:
-      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats1.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph1.png
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
-    parameters:
-      anal:
-        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
-      place:
-        -p: __NAMDIR__/__WF_OUTPUT__
-      var(x):
-        -v: ''
-      maxiterations:
-        -m: 600
-      tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
-  - name: sanxotsieve
-    infiles:
-      -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
-      -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
-    outfiles:
-      -n: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___infoSSieve.txt
-    parameters:
-      anal:
-        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
-      place:
-        -p: __NAMDIR__/__WF_OUTPUT__
-      fdr:
-        -f: 0.01
-      var(x):
-        -v: ''
-      tag:
-        --tags: ''
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
-  - name: sanxot2
-    infiles:
-      -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
-      -r: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
-      -V: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
-    outfiles:
-      -o: __NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__.tsv
-      -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
-      -u: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormW.tsv
-      -U: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormV.tsv
-      -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph.png
-      -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___infoSanXoT.txt
-    parameters:
-      anal:
-        -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
-      place:
-        -p: __NAMDIR__/__WF_OUTPUT__
-      tag:
-        --tags: '!out'
-    more_params: ''
-    cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
+  cmds:
+    - name: INTEGRATE
+      force: 0
+      rules:
+        # Rule: sanxot integration: obtain integrated Z and FDR values ---
+        - name: sanxot1
+          infiles:
+            -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
+            -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+          outfiles:
+            -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats1.tsv
+            -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph1.png
+            -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
+          parameters:
+            anal:
+              -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+            place:
+              -p: __NAMDIR__/__WF_OUTPUT__
+            var(x):
+              -v: ''
+            maxiterations:
+              -m: 600
+            tag:
+              --tags: ''
+          more_params: ''
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -b -s '
+        - name: sanxotsieve
+          infiles:
+            -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
+            -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+            -V: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
+          outfiles:
+            -n: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
+            -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___infoSSieve.txt
+          parameters:
+            anal:
+              -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+            place:
+              -p: __NAMDIR__/__WF_OUTPUT__
+            fdr:
+              -f: 0.01
+            var(x):
+              -v: ''
+            tag:
+              --tags: ''
+          more_params: ''
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+        - name: sanxot2
+          infiles:
+            -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
+            -r: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___tagged.tsv
+            -V: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___variance.txt
+          outfiles:
+            -o: __NAMDIR__/__WF_OUTPUT__/__WF_HIG_LEVEL__.tsv
+            -z: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outStats.tsv
+            -u: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormW.tsv
+            -U: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___lowerNormV.tsv
+            -G: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___outGraph.png
+            -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL___infoSanXoT.txt
+          parameters:
+            anal:
+              -a: __WF_LOW_LEVEL__2__WF_HIG_LEVEL__
+            place:
+              -p: __NAMDIR__/__WF_OUTPUT__
+            tag:
+              --tags: '!out'
+          more_params: ''
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxot.py" -g -f '
 ###################

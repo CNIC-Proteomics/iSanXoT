@@ -149,11 +149,11 @@ def replace_val_rec(data, repl):
     else:
         return data
 
-def remove_ttable_param(data, comp):
+def remove_ttable_param(cmd, comp):
     '''
     Remove the parameter whose ttables param have not been added
     '''
-    for rule in data['rules']:
+    for rule in cmd['rules']:
         # use 'list' to force a copy of keys to be made
         # and avoid the "dictionary changed size during iteration" error
         for i in ['infiles','outfiles']:
@@ -167,7 +167,7 @@ def remove_ttable_param(data, comp):
                     for k in list(rule[i][j].keys()):
                         if re.search(comp, rule[i][j][k]):
                             del rule[i][j][k]
-    return data
+    return cmd
 
 def check_val_in_dict(data, stxt):
     '''
@@ -355,12 +355,12 @@ def add_datparams(p, trule, val):
 
 
 
-def _add_rules(row, irules):
+def _add_cmd(row, icmd):
     '''
     add rules
     '''
     # deep copy the input cmd
-    rules = copy.deepcopy(irules)
+    cmd = copy.deepcopy(icmd)
 
     # if 'output' folder does not exits, then we copy the value of 'input' folder
     # append at the begining of serie the new output value
@@ -389,35 +389,14 @@ def _add_rules(row, irules):
     data_params = list(row.index.values)
 
     # go through the rules of cmd
-    for i in range(len(rules)):
-        trule = rules[i]
+    for i in range(len(cmd['rules'])):
+        trule = cmd['rules'][i]
         # add data parameters in the inpfiles/outfiles
         # add data_parameters into the parameters section for each rule
         for p in data_params:
             add_datparams(p, trule, row.loc[p])
             
-    return rules
-
-def add_rules(row, cmd_rules):
-    '''
-    add rules
-    '''
-    # if theres is a list of inputs...
-    if 'input' in row:
-        # exlode the rows based the list of inputs
-        row['input'] = re.split(r'\s*,\s*', row['input'])
-        row_df = pd.DataFrame(row)
-        row_df = row_df.transpose().explode('input').reset_index(drop=True).transpose()
-        # create a list of rules for each input
-        rules = []
-        for row in row_df.to_dict(orient='series').values():
-            rule = _add_rules(row, cmd_rules)
-            rules.append(rule)
-        rules = [i for sublist in rules for i in sublist]
-    else:
-        rules = _add_rules(row, cmd_rules)
-    return rules
-
+    return cmd
 
 def add_cmd(row, icmd):
     '''
@@ -425,15 +404,27 @@ def add_cmd(row, icmd):
     '''
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
-    
+
     # Add the label of forced execution
     if 'force' in row and row['force'] == '1':
         cmd['force'] = int(row['force'])
 
-    # add rules
-    cmd['rules'] = add_rules(row, cmd['rules'])
+    # create a list of cmds for each input
+    # if theres is a list of inputs...
+    cmds = []
+    if 'input' in row:
+        # exlode the rows based the list of inputs
+        row['input'] = re.split(r'\s*,\s*', row['input'])
+        row_df = pd.DataFrame(row)
+        row_df = row_df.transpose().explode('input').reset_index(drop=True).transpose()
+        for row in row_df.to_dict(orient='series').values():
+            c = _add_cmd(row, cmd)
+            cmds.append(c)
+    else:
+        c = _add_cmd(row, cmd)
+        cmds.append(c)
     
-    return cmd
+    return cmds
 
 def add_params_from_ttable(icmd, indat):
     '''
@@ -442,22 +433,19 @@ def add_params_from_ttable(icmd, indat):
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
     
-    if 'ttables' in indat:
-        for df in indat['ttables']:
-            # lookthrough all columns and add the parameters
-            for col in df.columns:
-                # join the unique values
-                vals = ",".join(df[col].unique()).replace(" ", "")
-                # go through the rules of cmd
-                for i in range(len(cmd['rules'])):
-                    trule = cmd['rules'][i]
-                    # add only the given parameters for each rule
-                    add_datparams(col, trule, vals)
-        
-            # Add the label of forced execution
-            if 'force' in df:
-                cmd['force'] = int(df['force'].any(skipna=False))
-        
+    for df in indat['ttables']:
+        # lookthrough all columns and add the parameters
+        for col in df.columns:
+            # join the unique values
+            vals = ",".join(df[col].unique()).replace(" ", "")
+            # go through the rules
+            for i in range(len(cmd['rules'])):
+                trule = cmd['rules'][i]
+                # add only the given parameters for each rule
+                add_datparams(col, trule, vals)        
+        # Add the label of forced execution
+        if 'force' in df:
+            cmd['force'] = int(df['force'].any(skipna=False))
     return cmd
         
 def _param_str_to_dict(s):
@@ -489,31 +477,25 @@ def _str_cline(k,v):
         c = '{} "{}" '.format(k,str(v).replace('"','\\"')) if str(v) != '' else ''
     return c
     
-def add_params_cline(cmds):
+def add_params_cline(icmd):
     '''
     Add the whole parametes (infiles, outfiles, params) to command line
     Add the command suffix and rule suffix
     Add the log file for each rule
     '''
-    cmd_suffix = 1
     # work with the global suffix
-    global RULE_SUFFIX
     # go through each cmd
-    for cmd in cmds:
-        # Add suffix in the name and increase the value
-        cmd['name'] = f"{cmd['name']}_{cmd_suffix}"
-        cmd_suffix += 1
+    for cmd_index in range(len(icmd['cmds'])):
+        cmd = icmd['cmds'][cmd_index]
+        # Add index as suffix in the cmd name
+        cmd['name'] = f"{cmd['name']}_{cmd_index+1}"
+        # Add the log file
+        lname = f"{cmd['name']}.log"
+        cmd['logfile'] = "{}/{}/{}".format(__LOGDIR__, TPL_DATE, lname)
         # For each rule...
         # create string for the command line with the infiles, outfiles and parameters
         for rule in cmd['rules']:
             cparams = ''
-            # Add suffix in the name and increase the value
-            rname = f"{rule['name']}_{RULE_SUFFIX}"
-            lname = f"{cmd['name']}#rule{RULE_SUFFIX}#{rule['name']}"
-            rule['name'] = rname
-            RULE_SUFFIX += 1
-            # Add the log file
-            rule['logfile'] = "{}/{}/{}".format(__LOGDIR__, TPL_DATE, f"{lname}.log")
             # Create command line with the input, output files and the parameters
             for p in ['infiles','outfiles','parameters']:
                 if rule[p] is not None:
@@ -585,10 +567,16 @@ def add_recursive_files(trule, outfiles):
                 trule[k] = ";".join(l)
     return trule
 
-def add_recursive_cmds(cmd):
+def add_recursive_cmds(icmd):
     '''
     if '*' is in the path, add multiple commands based on the outputs that are intrinsic of workflow.
     '''
+    # deep copy the input cmd
+    cmd = copy.deepcopy(icmd)
+
+    # the new list of cmds
+    cmds_new = []
+    
     if 'rule_infiles' not in cmd:
         trules = cmd['rules']
         global OUTFILES
@@ -599,29 +587,27 @@ def add_recursive_cmds(cmd):
             folders_exp = []
             for file in np.unique(files_ast):
                 folders_exp += _get_unmatch_folder(file, OUTFILES)
-            # for each unmatched folder, create a list of rules and replace the '*' to unmatched folder
+            # for each unmatched folder, create a list of cmds and replace the '*' to unmatched folder
             # get the unique folders but keeping the original orders
-            rules_new = []
-            # for folder_exp in np.unique(folders_exp):
             for folder_exp in list(dict.fromkeys(folders_exp)):
-                rules_new.append( replace_val_rec(trules, {'\*': folder_exp}) )
-            # assign the new rules to the command
-            # update the output files
-            if len(rules_new) > 0:                
-                rules_new = [i for sublist in rules_new for i in sublist]
-                OUTFILES += [ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()]
+                cmds_new.append( replace_val_rec(cmd, {'\*': folder_exp}) )
+            # assign the new list of cmds
+            if len(cmds_new) > 0:                
+                # update the output files
+                OUTFILES += [ofile for cmds in cmds_new for rule_new in cmds['rules'] for ofile in rule_new['outfiles'].values()]
                 OUTFILES = list(dict.fromkeys(OUTFILES)) # get unique without sort
-                # of = np.array([ofile for rule_new in rules_new for ofile in rule_new['outfiles'].values()])
-                # OUTFILES = np.unique( np.concatenate((OUTFILES, of)) )
-                cmd['rules'] = rules_new
+        # the new list is equal than the input
+        else:
+            cmds_new.append(cmd)
     elif cmd['rule_infiles'] == 'multiple':
         # replace the input files that contains the "multiple infiles" (except its own outfiles)
         for k in range(len(cmd['rules'])):
             trule = cmd['rules'][k]
             ofiles =  [i for i in OUTFILES if i not in trule['outfiles'].values()]
             trule['infiles'] = add_recursive_files(trule['infiles'], ofiles)
+        cmds_new.append(cmd)
 
-    return cmd
+    return cmds_new
 
 
 
@@ -728,72 +714,67 @@ def main(args):
     logging.info("create a command for each tasktable row")
     tpl['commands'] = []
     for cmd,indat in indata.items():
-        uniq_exec = indat['unique_exec']
-        # the unique_exec use the tables as parameters. don't create multiple jobs from the table rows
-        if uniq_exec:
-            # read the templates of commands
-            cmd_tpl = read_tpl_command(args.intpl, cmd)
-            # add the parameters from task-ables if apply
-            cmd_tpl = add_params_from_ttable(cmd_tpl, indat)
-            # replace constant within command tpls
-            cmd_tpl = replace_val_rec(cmd_tpl, repl)
-            # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
-            cmd_tpl = remove_ttable_param(cmd_tpl, '^__')
-            # add the template
-            tpl['commands'].append([cmd_tpl])
-        # multiple executions from the row tables
-        else:
-            for df in indat['ttables']:
-                # read the templates of commands
-                cmd_tpl = read_tpl_command(args.intpl, cmd)
-                # replace constant within command tpls
-                cmd_tpl = replace_val_rec(cmd_tpl, repl)
-                if cmd_tpl:
-                    # create a command for each row
-                    # add the parameters for each rule
-                    tpl['commands'].append( list(df.apply( add_cmd, args=(cmd_tpl, ), axis=1)) )
-
-        # replace constants
-        tpl['commands'] = replace_val_rec(tpl['commands'], repl)
-
-
-
-    # # ------
-    # logging.info("get the list of outfiles")
-    # global OUTFILES
-    # for i in range(len(tpl['commands'])):
-    #     for j in range(len(tpl['commands'][i])):
-    #         for k in range(len(tpl['commands'][i][j]['rules'])):
-    #             trule = tpl['commands'][i][j]['rules'][k]
-    #             OUTFILES += [ofile for ofile in trule['outfiles'].values() if '*' not in ofile]
-    # OUTFILES = np.array(OUTFILES)
+        # read the templates of commands
+        cmd_tpl = read_tpl_command(args.intpl, cmd)
+        # replace constant within command tpls
+        cmd_tpl = replace_val_rec(cmd_tpl, repl)
+        # go through every cmd and create the list of cmds
+        cmds = []
+        for cmd in cmd_tpl['cmds']:
+            if 'unique_exec' in cmd and cmd['unique_exec']:
+                # add the parameters from task-ables if apply
+                if 'ttables' in indat:
+                    cmd = add_params_from_ttable(cmd, indat)
+                # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
+                cmd = remove_ttable_param(cmd, '^__')
+                # add into cmd
+                cmds.append(cmd)
+            else:            
+                if 'ttables' in indat:
+                    # create a new list of cmds based on the values for each row
+                    for df in indat['ttables']:
+                        c = list(df.apply( add_cmd, args=(cmd, ), axis=1))
+                        c = [i for sublist in c for i in sublist]
+                        cmds = cmds + c
+        # add the list of cmds into cmd template
+        cmd_tpl['cmds'] = cmds
+        # add the template
+        tpl['commands'].append(cmd_tpl)
 
 
 
     # ------
-    logging.info("add the commands based on the '*' input files")
-    global OUTFILES
+    logging.info("update the list of commands for '*' inputs based on the outputs")
+    # update the list of commands for '*' inputs based on the outputs
+    global OUTFILES    
     for i in range(len(tpl['commands'])):
-        for j in range(len(tpl['commands'][i])):
-            # get the outputs of commands that have been ejecuted before. Not all
-            for k in range(len(tpl['commands'][i][j]['rules'])):
-                trule = tpl['commands'][i][j]['rules'][k]
+        cmds_new = []
+        # get the list of output files
+        for j in range(len(tpl['commands'][i]['cmds'])):
+            for k in range(len(tpl['commands'][i]['cmds'][j]['rules'])):
+                trule = tpl['commands'][i]['cmds'][j]['rules'][k]
                 ofiles = [ofile.split(';') for ofile in trule['outfiles'].values() if '*' not in ofile]
                 ofiles = [ o for i in ofiles for o in i if o != '' ]
                 OUTFILES += ofiles
-            cmd = tpl['commands'][i][j]
-            cmd = add_recursive_cmds(cmd) # and also update the OUTFILES
+            # get the new list of commands for '*' inputs (and also update the OUTFILES)
+            cmds = add_recursive_cmds(tpl['commands'][i]['cmds'][j])
+            cmds_new.append(cmds)
+        # update with the new list of commands
+        cmds_new = [i for sublist in cmds_new for i in sublist]
+        tpl['commands'][i]['cmds'] = cmds_new
+                
+            
 
 
 
     # ------
     logging.debug("validate the inputs/outputs for the command/rules")
     # get the whole list of infiles
-    infiles_cmd = [ (tpl['commands'][i][j]['name'], o.replace('\\','/').split(';')) for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['infiles'].values() ]
+    infiles_cmd = [ (tpl['commands'][i]['name'], o.replace('\\','/').split(';')) for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i]['cmds'])) for k in range(len(tpl['commands'][i]['cmds'][j]['rules'])) for o in tpl['commands'][i]['cmds'][j]['rules'][k]['infiles'].values() ]
     infiles_cmd = [ (i[0],o) for i in infiles_cmd for o in i[1] if o != '' ]
     infiles = np.unique([ o[1] for o in infiles_cmd ])
     # get the whole list of outfiles including the files coming from the user
-    outfiles = [ o.replace('\\','/').split(';') for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i])) for k in range(len(tpl['commands'][i][j]['rules'])) for o in tpl['commands'][i][j]['rules'][k]['outfiles'].values() ]
+    outfiles = [ o.replace('\\','/').split(';')                                  for i in range(len(tpl['commands'])) for j in range(len(tpl['commands'][i]['cmds'])) for k in range(len(tpl['commands'][i]['cmds'][j]['rules'])) for o in tpl['commands'][i]['cmds'][j]['rules'][k]['outfiles'].values() ]
     outfiles = np.unique([ o for i in outfiles for o in i if o != '' ])
     # check if infiles is a subset of outfiles
     xx = [ x for x in infiles if x not in outfiles and not os.path.exists(x) ]
@@ -801,11 +782,7 @@ def main(args):
     # write error sms getting the name of rule from the input that is not defined
     sms = ''
     for x in xx:
-        # get the name of 'job' until the root folder
-        job_name = common.get_job_name(x)
-        # get the filename
-        name = os.path.basename(x)
-        sms += f'> The input file "{job_name}/{name}" '
+        sms += f'> The input file "{x}" '
         name_rules = np.unique([i[0] for i in infiles_cmd if x in i[1]])
         if name_rules.size != 0:
             sms += f'for the rule(s) "{",".join(name_rules)}" '

@@ -122,7 +122,6 @@ def read_commands_from_tables(ttablefiles):
     for ttablefile in ttablefiles:
         c = ttablefile['name']
         indata[c] = {}
-        indata[c]['unique_exec'] = True if 'unique_exec' in ttablefile else False
         # if ttable exists, it includes it
         if 'ttables' in ttablefile:
             indata[c]['ttables']=[]
