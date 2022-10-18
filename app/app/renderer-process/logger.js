@@ -74,18 +74,17 @@ class logger {
                 let cmds = [];
                 // get the list of commands and the execution label
                 for (var j = 0; j < cfg_cmds.length; j++) {
-                    let c = cfg_cmds[j].map(a => ({
-                        command: a.name,
-                        execution_label: 'exec',
-                        status: 'waiting',
-                        perc: '0%',
-                        stime: '-',
-                        etime: '-',
-                        nrule: 0,
-                        nrules: 0
-        
-                    }));
-                    cmds.push(c);
+                    for (var k = 0; k < cfg_cmds[j]['cmds'].length; k++) {
+                        let c = cfg_cmds[j]['cmds'][k]
+                        cmds.push({
+                            command: c.name,
+                            execution_label: 'exec',
+                            status: 'waiting',
+                            perc: '0%',
+                            stime: '-',
+                            etime: '-'
+                        });
+                    }
                 }
                 // convert list of lists to list
                 if (cmds) {
@@ -118,15 +117,13 @@ class logger {
         });
         // get log variables for the root process
         if ( lines.length >= 1 ) { data.status = 'preparing' }
-        data.perc   = '0%';
         data.message    = '';
         data.stime  = '-';
         data.etime  = '-';
+        data.perc   = '0%';
         for (var i = 0; i < data.cmds.length; i++) {
             data.cmds[i].stime = '-';
             data.cmds[i].etime = '-';
-            data.cmds[i].nrule = 0;
-            data.cmds[i].nrules = 0;
         }
         data.path  = path.dirname(data.logfile);
         // get log variables for the sub-processes
@@ -143,17 +140,17 @@ class logger {
                     data.message = `${lines.slice(i).join('\n')}`;
                 }
                 // save the intermediante steps
-                else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
+                else if (line.startsWith('MYSNAKE_LOG_STARTING')) {
                     let l = line.split('\t');
                     let time = l[1];
+                    data.status = 'starting';
+                    data.stime = this._parseDate(time);
+                }
+                else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
                     data.status = 'preparing';
-                    data.stime = this._parseDate(time)
                 }
                 else if (line.startsWith('MYSNAKE_LOG_VALIDATING')) {
                     data.status = 'validating';
-                }
-                else if (line.startsWith('MYSNAKE_LOG_STARTING')) {
-                    data.status = 'starting';
                 }
                 // parse for the project log table
                 else if (line.startsWith('MYSNAKE_LOG_EXECUTING')) {
@@ -166,7 +163,7 @@ class logger {
                     let time = l[1];
                     data.status = 'finished';
                     data.perc   = '100%';
-                    data.etime = this._parseDate(time)
+                    data.etime = this._parseDate(time);
                 }
                 // parse log file for the workflow table (commands) ----
                 // parse the start log
@@ -174,52 +171,50 @@ class logger {
                     let l = line.split('\t');
                     let time = l[1];
                     let cmd = l[2];
-                    let cmd_exec = l[3];
+                    let forced_exec = l[3];
                     let rule_name = l[4];
-                    let rule_perc = l[5];
-                    // get the number of rule and the total of rules
-                    // count the number of rules
-                    let r = rule_perc.split('/');
-                    let rule_num = r[0];
-                    let rule_ntotal = r[1];
+                    let proj_perc = l[5];
+                    let rule_perc = l[6];
+                    let status = l[7];
                     // get the index from the name
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data: get the first values from the the first started rule
-                    data.cmds[cmd_index].status = 'running';
-                    if ( data.cmds[cmd_index].stime == '-') data.cmds[cmd_index].stime = time;
-                    if ( data.cmds[cmd_index].nrules == 0 ) data.cmds[cmd_index].nrules = rule_ntotal;
-                    data.cmds[cmd_index].nrule += 1; // count the number of rules
-                    let perc = ( (data.cmds[cmd_index].nrule / (data.cmds[cmd_index].nrules*2))*100 ).toFixed(2)+'%';
-                    data.cmds[cmd_index].perc = perc;
-                    data.cmds[cmd_index].path = data.path;
+                    if ( cmd_index !== undefined ) {
+                        data.cmds[cmd_index].status = 'running';
+                        if ( data.cmds[cmd_index].stime == '-') data.cmds[cmd_index].stime = time;
+                        data.cmds[cmd_index].path = data.path;    
+                    }
                 }
                 else if (line.startsWith('MYSNAKE_LOG_END_RULE_EXEC')) {
                     let l = line.split('\t');
                     let time = l[1];
                     let cmd = l[2];
-                    let cmd_exec = l[3];
+                    let forced_exec = l[3];
                     let rule_name = l[4];
-                    let rule_perc = l[5];
-                    let status = l[6];
+                    let proj_perc = l[5];
+                    let rule_perc = l[6];
+                    let status = l[7];
                     // get the index from the name
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update the data
-                    data.cmds[cmd_index].nrule += 1; // count the number of rules
-                    if ( status == 'error' ) { // prority the error status
-                        data.cmds[cmd_index].status = status;
-                        data.cmds[cmd_index].perc = '-';
-                        data.cmds[cmd_index].etime = time;
-                        data.status = 'cmd error'; // for the project table
-                    }
-                    else { // then, the rest of status
-                        let perc = ( (data.cmds[cmd_index].nrule / (data.cmds[cmd_index].nrules*2))*100 ).toFixed(2)+'%';
-                        if ( perc == '100.00%' ) {
-                            data.cmds[cmd_index].status = 'finished';
-                            data.cmds[cmd_index].perc = '100%';
-                            data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
+                    if ( cmd_index !== undefined ) {
+                        // get the percentage of executed rules within a command
+                        let perc = eval(rule_perc).toFixed(2)*100+'%';
+                        if ( status == 'error' ) { // prority the error status
+                            data.cmds[cmd_index].status = status;
+                            data.cmds[cmd_index].perc = '-';
+                            data.cmds[cmd_index].etime = time;
+                            data.status = 'cmd error'; // for the project table
                         }
-                        else {
-                            data.cmds[cmd_index].perc = perc;
+                        else { // then, the rest of status
+                            if ( perc == '100%' ) {
+                                data.cmds[cmd_index].status = status;
+                                data.cmds[cmd_index].perc = '100%';
+                                data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
+                            }
+                            else {
+                                data.cmds[cmd_index].perc = perc;
+                            }
                         }
                     }
                 }
@@ -227,26 +222,31 @@ class logger {
                     let l = line.split('\t');
                     let time = l[1];
                     let cmd = l[2];
-                    let cmd_exec = l[3];
+                    let forced_exec = l[3];
                     let rule_name = l[4];
-                    let rule_perc = l[5];
-                    let status = l[6];
+                    let cmd_perc = l[5];
+                    let rule_perc = l[6];
+                    let status = l[7];
                     // get the index from the name
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
-                    // update data only when all processes of command have already finished (100%)
-                    let perc = eval(rule_perc).toFixed(2)*100+'%';
-                    if ( perc == '100%' ) {
-                        // update cached data
-                        if ( status == 'cached' ) {
+                    // update the data
+                    if ( cmd_index !== undefined ) {
+                        if ( status == 'error' ) { // prority the error status
+                            data.cmds[cmd_index].status = status;
+                            data.cmds[cmd_index].perc = '-';
+                            data.cmds[cmd_index].etime = time;
+                            data.status = 'cmd error'; // for the project table
+                        }
+                        else if ( status == 'cached' ) {
                             data.cmds[cmd_index].status = status;
                             data.cmds[cmd_index].stime = time;
                             data.cmds[cmd_index].etime = time;
-                            data.cmds[cmd_index].perc = perc;
+                            data.cmds[cmd_index].perc = '100%';
                         }
-                        // calculate the percentage for the statistic of project log table
-                        num_cmds += 1;
-                        let proj_perc = ((num_cmds/total_cmds)*100).toFixed(2)+'%';
-                        data.perc = proj_perc    
+                        // update the percentage of executed commands if incrises the value
+                        cmd_perc = eval(cmd_perc).toFixed(2)*100;
+                        let proj_perc = parseFloat(data.perc.replace('%',''));
+                        if ( cmd_perc > proj_perc ) data.perc = cmd_perc+'%';
                     }
                 }
             }
