@@ -214,14 +214,18 @@ def executor(cmd, n_cmd, n_total_cmds):
                 except:
                     raise Exception("Caught KeyboardInterrupt, terminating workers")
             
-            # It is the moment of the execution
+            # Forcing the executing...
             if cmd_force == 1 and _all_ready(ifiles):
                 proc = _exec(rule['cline'], cmd_logfile, cmd_name, cmd_force, rule['name'], cmd_pos, rule_pos)
                 if proc != 0:
                     raise Exception("error")
                 state = 'successfully'
+            # Executing without force
             elif (cmd_force == 0 or cmd_force == '') and not _all_ready(ofiles):
-                _exec(rule['cline'], cmd_logfile, cmd_name, cmd_force, rule['name'], cmd_pos, rule_pos)
+                proc = _exec(rule['cline'], cmd_logfile, cmd_name, cmd_force, rule['name'], cmd_pos, rule_pos)
+                if proc != 0:
+                    raise Exception("error")
+                state = 'successfully'
             elif (cmd_force == 0 or cmd_force == '') and _all_ready(ifiles) and _all_ready(ofiles):
                 state = 'cached'
     except Exception as exc:

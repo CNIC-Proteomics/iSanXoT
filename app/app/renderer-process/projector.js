@@ -151,8 +151,6 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
                     }
                     if ( cmd_ttables.length > 0 ) incmds['ttables'] = cmd_ttables;
                 }
-                // add parameter unique_exec for the command
-                if ( Object.keys(incmds).length !== 0 && incmds.constructor === Object && 'unique_exec' in cmd ) incmds['unique_exec'] = true;
                 // add to cfg
                 if ( Object.keys(incmds).length > 0 ) {                    
                     cfg['inpcmds'].push(Object.assign({'name': cmd_id}, incmds));
