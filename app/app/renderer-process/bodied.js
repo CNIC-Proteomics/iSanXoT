@@ -95,209 +95,212 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
   let tab = wf['tabs'][h];
   let tab_id = tab['id'];
   let tab_label = tab['label'];
-  
-  // add the tabs and content
-  // active the first tab content
-  let active = ( h == 0 ) ? 'active' : '';
-  $(`#bodied .nav.nav-tabs`).append(`<li class="nav-item"><a class="nav-link ${active}" id="${tab_id}-tab" name="${tab_id}" data-toggle="tab" href="#${tab_id}" role="tab" aria-controls="${tab_id}">${tab_label}</a></li>`);
+  let tab_visible = ( 'visible' in tab ) ? tab['visible'] : true;
+  if ( tab_visible ) {  
 
-  // add html template of sidebars and content (import html template)
-  // add the event collapse/expand to the sidebar
-  $(`#bodied .tab-content.main`).append(`<div class="tab-pane ${active}" id="${tab_id}" role="tabpanel" aria-labelledby="${tab_id}-tab"></div>`);
-  importer.importHTMLtemplate(`${__dirname}/../sections/page.html`, `#bodied #${tab_id}`);
+    // add the tabs and content
+    // active the first tab content
+    let active = ( h == 0 ) ? 'active' : '';
+    $(`#bodied .nav.nav-tabs`).append(`<li class="nav-item"><a class="nav-link ${active}" id="${tab_id}-tab" name="${tab_id}" data-toggle="tab" href="#${tab_id}" role="tab" aria-controls="${tab_id}">${tab_label}</a></li>`);
 
-  // create html page for...
-  for (var i = 0; i < tab['works'].length; i++) { // go through works
-    // get variables
-    let wk = tab['works'][i];
-    let wk_id = wk['id'];
-    let wk_label = wk['label'];
-    let wk_title = wk['title'];
-    let wk_visible = ( 'visible' in wk ) ? wk['visible'] : false;
-
-    // create html sidebar
-    // create main div for the tasktable frames
-    // If the command is not visible, we don't show the sidebar menu
-    if ( wk_visible && wk_label && wk_title ) {
-      $(`#${tab_id} #sidebar .works`).append(`<li><a id="${wk_id}" title="${wk_title}">${wk_label}</a></li>`);
-      $(`#${tab_id} #page-content`).append(`<div id="page-work-${wk_id}"></div>`);
-    }
-    // add create tasktable panel
-    if ( tab_id == 'inputs' && 'panel' in wk ) {
-      importer.importHTMLtemplate(path.join(adpDir, wk['panel']), `#page-work-${wk_id}`);
-    } else if ( 'panel' in wk ) {
-      importer.importHTMLtemplate(`${__dirname}/../${wk['panel']}`, `#page-work-${wk_id}`);
-    }
-    // add the help modal of the tasktable/command
-    if ( tab_id == 'inputs' && 'hmodal' in wk ) {
-      importer.importHTMLtemplate(path.join(adpDir, wk['hmodal']), `#page-work-${wk_id} .help_modal`);
-    } else if ( 'hmodal' in wk ) {
-      importer.importHTMLtemplate(`${__dirname}/../${wk['hmodal']}`, `#page-work-${wk_id} .help_modal`);
-    }
-    // add the short description
-    $(`#page-work-${wk_id} .sdesc p`).html(wk['sdesc']);
+    // add html template of sidebars and content (import html template)
+    // add the event collapse/expand to the sidebar
+    $(`#bodied .tab-content.main`).append(`<div class="tab-pane ${active}" id="${tab_id}" role="tabpanel" aria-labelledby="${tab_id}-tab"></div>`);
+    importer.importHTMLtemplate(`${__dirname}/../sections/page.html`, `#bodied #${tab_id}`);
 
     // create html page for...
-    for (var j = 0; j < wk['cmds'].length; j++) { // go through cmds
-      let cmd = wk['cmds'][j];
-      let cmd_id = cmd['id'];
+    for (var i = 0; i < tab['works'].length; i++) { // go through works
+      // get variables
+      let wk = tab['works'][i];
+      let wk_id = wk['id'];
+      let wk_label = wk['label'];
+      let wk_title = wk['title'];
+      let wk_visible = ( 'visible' in wk ) ? wk['visible'] : false;
 
-      // create html page
-      if ( $(`#page-work-${wk_id} #page-cmd-${cmd_id}`).length == 0 ) $(`#page-work-${wk_id}`).append(`<div id="page-cmd-${cmd_id}"></div>`);
+      // create html sidebar
+      // create main div for the tasktable frames
+      // If the command is not visible, we don't show the sidebar menu
+      if ( wk_visible && wk_label && wk_title ) {
+        $(`#${tab_id} #sidebar .works`).append(`<li><a id="${wk_id}" title="${wk_title}">${wk_label}</a></li>`);
+        $(`#${tab_id} #page-content`).append(`<div id="page-work-${wk_id}"></div>`);
+      }
+      // add create tasktable panel
+      if ( tab_id == 'inputs' && 'panel' in wk ) {
+        importer.importHTMLtemplate(path.join(adpDir, wk['panel']), `#page-work-${wk_id}`);
+      } else if ( 'panel' in wk ) {
+        importer.importHTMLtemplate(`${__dirname}/../${wk['panel']}`, `#page-work-${wk_id}`);
+      }
+      // add the help modal of the tasktable/command
+      if ( tab_id == 'inputs' && 'hmodal' in wk ) {
+        importer.importHTMLtemplate(path.join(adpDir, wk['hmodal']), `#page-work-${wk_id} .help_modal`);
+      } else if ( 'hmodal' in wk ) {
+        importer.importHTMLtemplate(`${__dirname}/../${wk['hmodal']}`, `#page-work-${wk_id} .help_modal`);
+      }
+      // add the short description
+      $(`#page-work-${wk_id} .sdesc p`).html(wk['sdesc']);
 
-      // extract the task-table if it has params!!
-      if ( 'tasktable' in cmd && commoner.checkAttrInListObj(cmd['tasktable'], 'params') ) {
-        // create html page for...
-        for (let k=0; k < cmd['tasktable'].length; k++) { // go through ttables
-          let ttable = cmd['tasktable'][k];
-          let ttable_id = ttable['id'];
-          let ttable_file = `${wkf_dir}/${ttable['file']}`;
+      // create html page for...
+      for (var j = 0; j < wk['cmds'].length; j++) { // go through cmds
+        let cmd = wk['cmds'][j];
+        let cmd_id = cmd['id'];
 
-          // create html page if not apply
-          if ( $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).length == 0 ) $(`#page-cmd-${cmd_id} `).append(`<div id="page-ttable-${ttable_id}"></div>`);
+        // create html page
+        if ( $(`#page-work-${wk_id} #page-cmd-${cmd_id}`).length == 0 ) $(`#page-work-${wk_id}`).append(`<div id="page-cmd-${cmd_id}"></div>`);
 
-          // get task-table data
-          let ttable_data = {};          
-          if ( ttable_file !== undefined && fs.existsSync(`${ttable_file}`) ) {
-            let ttable_raw = [];
-            try {
-            // Split the lines and tabular lines
-            // Then, for each cell, it replaces the "{2,} and " at the begining and the end.
-            // convert command file into a dictionary
-              let s = fs.readFileSync(`${ttable_file}`).toString();
-              ttable_raw = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
-              if ( !ttable_raw || ttable_raw === undefined || ttable_data.length === 0 ) {
-                exceptor.showErrorMessageBox('Error Message', `Reading the task-table file: ${ttable_file}`, end=false);
+        // extract the task-table if it has params!!
+        if ( 'tasktable' in cmd && commoner.checkAttrInListObj(cmd['tasktable'], 'params') ) {
+          // create html page for...
+          for (let k=0; k < cmd['tasktable'].length; k++) { // go through ttables
+            let ttable = cmd['tasktable'][k];
+            let ttable_id = ttable['id'];
+            let ttable_file = `${wkf_dir}/${ttable['file']}`;
+
+            // create html page if not apply
+            if ( $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).length == 0 ) $(`#page-cmd-${cmd_id} `).append(`<div id="page-ttable-${ttable_id}"></div>`);
+
+            // get task-table data
+            let ttable_data = {};          
+            if ( ttable_file !== undefined && fs.existsSync(`${ttable_file}`) ) {
+              let ttable_raw = [];
+              try {
+              // Split the lines and tabular lines
+              // Then, for each cell, it replaces the "{2,} and " at the begining and the end.
+              // convert command file into a dictionary
+                let s = fs.readFileSync(`${ttable_file}`).toString();
+                ttable_raw = s.split('\n').map( row => row.split('\t').map(r => r.replace(/^["']\s*(.*)\s*["']\s*\n*$/mg, '$1').trim().replace(/"{2,}/g,'"')) )
+                if ( !ttable_raw || ttable_raw === undefined || ttable_data.length === 0 ) {
+                  exceptor.showErrorMessageBox('Error Message', `Reading the task-table file: ${ttable_file}`, end=false);
+                  ttable_data = return_empty_tttable(ttable);
+                }
+              } catch (ex) {
+                exceptor.showErrorMessageBox('Error Message', `Reading the task-table: ${ttable_file}`, end=false);
                 ttable_data = return_empty_tttable(ttable);
               }
-            } catch (ex) {
-              exceptor.showErrorMessageBox('Error Message', `Reading the task-table: ${ttable_file}`, end=false);
-              ttable_data = return_empty_tttable(ttable);
-            }
-            try {
-              ttable_data = extract_tasktable_info(ttable, ttable_raw);
-              if ( !ttable_data || ttable_data === undefined || Object.keys(ttable_data).length === 0 ) {
+              try {
+                ttable_data = extract_tasktable_info(ttable, ttable_raw);
+                if ( !ttable_data || ttable_data === undefined || Object.keys(ttable_data).length === 0 ) {
+                  exceptor.showErrorMessageBox('Error Message', `Extracting the data of task-table: ${ttable_file}`, end=false);
+                  ttable_data = return_empty_tttable(ttable);
+                }
+              } catch (ex) {
                 exceptor.showErrorMessageBox('Error Message', `Extracting the data of task-table: ${ttable_file}`, end=false);
                 ttable_data = return_empty_tttable(ttable);
               }
-            } catch (ex) {
-              exceptor.showErrorMessageBox('Error Message', `Extracting the data of task-table: ${ttable_file}`, end=false);
+            }
+            else {
+              // create empty table
               ttable_data = return_empty_tttable(ttable);
             }
-          }
-          else {
-            // create empty table
-            ttable_data = return_empty_tttable(ttable);
-          }
 
-          // if the data table is empty or not
-          if (!ttable_data['data'] || ttable_data['data'].length == 0) {
-            ttable_data['data'] = [[]]; // init the data table
-          }
-          else {
-            // update the sidebar
-            $(`#sidebar #${wk_id}`).text(`${wk_label}*`);
-          }
-                
-          // get the index of optional parameters
-          let cmd_params_opt_index = commoner.getIndexParamsWithAttr(ttable['params'], 'type', 'optional');
+            // if the data table is empty or not
+            if (!ttable_data['data'] || ttable_data['data'].length == 0) {
+              ttable_data['data'] = [[]]; // init the data table
+            }
+            else {
+              // update the sidebar
+              $(`#sidebar #${wk_id}`).text(`${wk_label}*`);
+            }
+                  
+            // get the index of optional parameters
+            let cmd_params_opt_index = commoner.getIndexParamsWithAttr(ttable['params'], 'type', 'optional');
 
-          // get the index of Columns with readOnly parameter
-          let cmd_params_readonlycol_index = commoner.getIndexParamsWithAttr(ttable['params'], 'readOnly', true);
+            // get the index of Columns with readOnly parameter
+            let cmd_params_readonlycol_index = commoner.getIndexParamsWithAttr(ttable['params'], 'readOnly', true);
 
-          // // get the index of DropDown parameters
-          // let [cmd_params_hottable_index, cmd_params_hottable] = commoner.getIndexParamsWithKey(ttable['params'], 'hottable');
+            // // get the index of DropDown parameters
+            // let [cmd_params_hottable_index, cmd_params_hottable] = commoner.getIndexParamsWithKey(ttable['params'], 'hottable');
 
-          // get the index of select parameters
-          let [cmd_params_select_index, cmd_params_select] = commoner.getIndexParamsWithKey(ttable['params'], 'select');
-          
-          // get the index of dropdown parameters
-          let [cmd_params_dropdown_index, cmd_params_dropdown] = commoner.getIndexParamsWithKey(ttable['params'], 'dropdown');
+            // get the index of select parameters
+            let [cmd_params_select_index, cmd_params_select] = commoner.getIndexParamsWithKey(ttable['params'], 'select');
+            
+            // get the index of dropdown parameters
+            let [cmd_params_dropdown_index, cmd_params_dropdown] = commoner.getIndexParamsWithKey(ttable['params'], 'dropdown');
 
-          // get the index of checkbox parameters
-          let [cmd_params_checkbox_index, cmd_params_checkbox] = commoner.getIndexParamsWithKey(ttable['params'], 'checkbox');
+            // get the index of checkbox parameters
+            let [cmd_params_checkbox_index, cmd_params_checkbox] = commoner.getIndexParamsWithKey(ttable['params'], 'checkbox');
 
-          // create html optional button
-          if ( cmd_params_opt_index && cmd_params_opt_index.length > 0 ) {
-            $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).append(`<input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show advanced options" data-off="Hide advanced options" data-onstyle="light" data-offstyle="dark" data-width="150px" data-height="30px" data-size="sm" checked></input>`);
-          }
+            // create html optional button
+            if ( cmd_params_opt_index && cmd_params_opt_index.length > 0 ) {
+              $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).append(`<input class="toggleadv" type="checkbox" data-toggle="toggle" data-on="Show advanced options" data-off="Hide advanced options" data-onstyle="light" data-offstyle="dark" data-width="150px" data-height="30px" data-size="sm" checked></input>`);
+            }
 
-          // create html tasktable based on the id
-          $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
-          $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable({
-              data: ttable_data['data'],
-              width: 'auto',
-              height: 'auto',
-              rowHeights: 23,
-              rowHeaders: true,
-              colHeaders: ttable_data['header'],
-              minRows: 2,
-              minCols: ttable_data['header'].length,
-              maxCols: ttable_data['header'].length,
-              minSpareRows: 1,
-              contextMenu: true,
-              manualColumnResize: true,
-              autoColumnSize: true,
-              hiddenColumns: {
-                'columns': cmd_params_opt_index,
-                'indicators': false
-              },
-              cells: function (row, col) {
-                var cellProperties = {};
-                // readOnly column (coming from the wortkflow.json config file)
-                if (cmd_params_readonlycol_index && cmd_params_readonlycol_index.length > 0 && cmd_params_readonlycol_index.includes(col)) {
-                  cellProperties.readOnly = true;
-                }
-                // // column with handsontables inside (coming from the wortkflow.json config file)
-                // if (cmd_params_hottable_index && cmd_params_hottable_index.length > 0 && cmd_params_hottable_index.includes(col)) {
-                //   let hottable_header = cmd_params_hottable[col].header;
-                //   let hottable_data = [];
-                //   for ( k in cmd_params_hottable[col].data) {
-                //     hottable_data.push( [ k, cmd_params_hottable[col].data[k] ] );
-                //   }
-                //   this.type = 'handsontable';
-                //   this.handsontable = {
-                //     colHeaders: hottable_header,
-                //     autoColumnSize: true,
-                //     data: hottable_data,
-                //     getValue: function() {
-                //       var selection = this.getSelectedLast();
-                //       return this.getSourceDataAtRow(selection[0])[0]; // return the first column
-                //     },
-                //   };
-                // }
-                // column with handsontables inside (coming from the wortkflow.json config file)
-                if (cmd_params_select_index && cmd_params_select_index.length > 0 && cmd_params_select_index.includes(col)) {
-                  this.editor = 'select';
-                  this.selectOptions = cmd_params_select[col];
-                }
-                // column with dropdown inside (coming from the wortkflow.json config file)
-                if (cmd_params_dropdown_index && cmd_params_dropdown_index.length > 0 && cmd_params_dropdown_index.includes(col)) {
-                  this.source = cmd_params_dropdown[col];
-                  this.type = "autocomplete";
-                  this.strict = false;
-                  this.trimDropdown = false;              
-                }
-                // column with checkbox inside (coming from the wortkflow.json config file)
-                if (cmd_params_checkbox_index && cmd_params_checkbox_index.length > 0 && cmd_params_checkbox_index.includes(col)) {
-                  this.type = "checkbox";
-                  this.checkedTemplate = 1;
-                  this.uncheckedTemplate = "";
-                }
-                return cellProperties;
-              },
-              licenseKey: 'non-commercial-and-evaluation'    
-          });
-          // add handsontable settings
-          if ( 'settings' in ttable ) {
-            $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('updateSettings', ttable['settings'] );
+            // create html tasktable based on the id
+            $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
+            $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable({
+                data: ttable_data['data'],
+                width: 'auto',
+                height: 'auto',
+                rowHeights: 23,
+                rowHeaders: true,
+                colHeaders: ttable_data['header'],
+                minRows: 2,
+                minCols: ttable_data['header'].length,
+                maxCols: ttable_data['header'].length,
+                minSpareRows: 1,
+                contextMenu: true,
+                manualColumnResize: true,
+                autoColumnSize: true,
+                hiddenColumns: {
+                  'columns': cmd_params_opt_index,
+                  'indicators': false
+                },
+                cells: function (row, col) {
+                  var cellProperties = {};
+                  // readOnly column (coming from the wortkflow.json config file)
+                  if (cmd_params_readonlycol_index && cmd_params_readonlycol_index.length > 0 && cmd_params_readonlycol_index.includes(col)) {
+                    cellProperties.readOnly = true;
+                  }
+                  // // column with handsontables inside (coming from the wortkflow.json config file)
+                  // if (cmd_params_hottable_index && cmd_params_hottable_index.length > 0 && cmd_params_hottable_index.includes(col)) {
+                  //   let hottable_header = cmd_params_hottable[col].header;
+                  //   let hottable_data = [];
+                  //   for ( k in cmd_params_hottable[col].data) {
+                  //     hottable_data.push( [ k, cmd_params_hottable[col].data[k] ] );
+                  //   }
+                  //   this.type = 'handsontable';
+                  //   this.handsontable = {
+                  //     colHeaders: hottable_header,
+                  //     autoColumnSize: true,
+                  //     data: hottable_data,
+                  //     getValue: function() {
+                  //       var selection = this.getSelectedLast();
+                  //       return this.getSourceDataAtRow(selection[0])[0]; // return the first column
+                  //     },
+                  //   };
+                  // }
+                  // column with handsontables inside (coming from the wortkflow.json config file)
+                  if (cmd_params_select_index && cmd_params_select_index.length > 0 && cmd_params_select_index.includes(col)) {
+                    this.editor = 'select';
+                    this.selectOptions = cmd_params_select[col];
+                  }
+                  // column with dropdown inside (coming from the wortkflow.json config file)
+                  if (cmd_params_dropdown_index && cmd_params_dropdown_index.length > 0 && cmd_params_dropdown_index.includes(col)) {
+                    this.source = cmd_params_dropdown[col];
+                    this.type = "autocomplete";
+                    this.strict = false;
+                    this.trimDropdown = false;              
+                  }
+                  // column with checkbox inside (coming from the wortkflow.json config file)
+                  if (cmd_params_checkbox_index && cmd_params_checkbox_index.length > 0 && cmd_params_checkbox_index.includes(col)) {
+                    this.type = "checkbox";
+                    this.checkedTemplate = 1;
+                    this.uncheckedTemplate = "";
+                  }
+                  return cellProperties;
+                },
+                licenseKey: 'non-commercial-and-evaluation'    
+            });
+            // add handsontable settings
+            if ( 'settings' in ttable ) {
+              $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('updateSettings', ttable['settings'] );
+              $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
+            }
             $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
+
           }
-          $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
 
-        }
-
-      } // end tasktable in cmd
+        } // end tasktable in cmd
+      }
     } // end loop of commands
 
     /* Init the Work tab */

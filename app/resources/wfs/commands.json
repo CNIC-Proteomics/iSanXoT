@@ -14,6 +14,7 @@
   "tabs": [{
     "id": "rels_creator",
     "label": "Relation tables",
+    "visible": true,
     "works": [{
       "id": "rels_creator",
       "label": "RELS CREATOR",
@@ -27,6 +28,7 @@
   },{
     "id": "basic_commands",
     "label": "Basic modules",
+    "visible": true,
     "works": [{
       "id": "level_creator",
       "label": "LEVEL CREATOR",
@@ -85,6 +87,7 @@
   },{
     "id": "complete_commands",
     "label": "Compound modules",
+    "visible": true,
     "works": [{
       "id": "wspp_sbt",
       "label": "WSPP - SBT",
@@ -125,6 +128,7 @@
   },{
     "id": "reports",
     "label": "Reports",
+    "visible": true,
     "works": [{
       "id": "report",
       "label": "REPORT",
