@@ -309,12 +309,12 @@ def main(args):
     
     logging.info("get the columns in order")
     # get the LEVEL columns
-    # get the levels to show. By default, get all LEVEL columns
-    if args.show_cols:
-        show_cols = re.split(r'\s*,\s*', args.show_cols.strip())
-        cols_levels = [(c,'LEVEL') for c in show_cols]
-    else:
-        cols_levels = [c for c in df.columns if c[1] == 'LEVEL']
+    # get the discarded levels columns. to show. By default, get all LEVEL columns
+    discard_levels = []
+    if args.discard_levels:
+        discard_levels = re.split(r'\s*,\s*', args.discard_levels.strip())
+    # get the column levels discarding the given columns
+    cols_levels = [c for c in df.columns if c[1] == 'LEVEL' and c[0] not in discard_levels]
     # Get the REPORTED VARS columns
     # Get two list: one with the 'n_' and another with the rest
     cols_vars = []
@@ -401,7 +401,7 @@ if __name__ == "__main__":
     parser.add_argument('-v',   '--vars',          help='List of reported variables separated by comma')
     parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
     parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
-    parser.add_argument('-s',   '--show_cols',     help='Which columns do you want to show in the output')
+    parser.add_argument('-d',   '--discard_levels',help='Headers of columns to eliminate separated by comma')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args()

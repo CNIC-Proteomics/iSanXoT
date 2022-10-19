@@ -24,7 +24,7 @@
             vars:
               -v: __WF_REPORTED_VARS__
             show_level:
-              -s: ''
+              -d: ''
             filter:
               -f: ''
           more_params: ''
