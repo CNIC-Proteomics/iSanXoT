@@ -14,7 +14,12 @@ main#bodied {
     padding: 5px;
 }
 
-section.executor, section.processor {
+section#logger {
+    height: 700px;
+    overflow: auto;
+}
+
+section.executor, section.immobilizer {
     position: fixed;
     left: 0;
     bottom: 1.7em;
@@ -183,14 +188,11 @@ input:disabled, button:disabled {
  *   EXECUTOR
  * ---------------------------------------------------
  */
-#executor button#start {
+#executor button#start, #immobilizer button#stop {
     color: #fff;
     background-color: slategray;
     border-color: black;
     margin-left: 0.3em;
-}
-#processor button#stop {
-    margin-left: 0.1em;
 }
 
 /*

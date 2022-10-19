@@ -105,10 +105,13 @@ class logger {
         let d2 = `${d.getFullYear()}-${(d.getMonth()+1)}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
         return d2;
     }
+    // update the Project status depending on if has been killed or not
+    _updateProjectStatus(status, new_status) {
+        if ( status == 'stopped' || status == 'killed' ) return status
+        else return new_status
+    }
     // parse the log file
     updateLogDataFromLogFile(data, cont) {
-        // don't update date if project has been stopped
-        if ( data.status == 'stopped' ) return 
         // get the log content
         let lines = cont.match(/(.*)/mg);
         // remove empty values
@@ -116,7 +119,7 @@ class logger {
             return (el != null) && (el != '');
         });
         // get log variables for the root process
-        if ( lines.length >= 1 ) { data.status = 'preparing' }
+        if ( lines.length >= 1 ) { data.status = this._updateProjectStatus(data.status, 'preparing') }
         data.message    = '';
         data.stime  = '-';
         data.etime  = '-';
@@ -135,7 +138,7 @@ class logger {
                 // parse log file for the project table ----
                 // parse the error messages
                 if (line.startsWith('ERROR')) {
-                    data.status = 'wf error';
+                    data.status = this._updateProjectStatus(data.status, 'wf error');
                     data.perc = '-';
                     data.message = `${lines.slice(i).join('\n')}`;
                 }
@@ -143,25 +146,22 @@ class logger {
                 else if (line.startsWith('MYSNAKE_LOG_STARTING')) {
                     let l = line.split('\t');
                     let time = l[1];
-                    data.status = 'starting';
+                    data.status = this._updateProjectStatus(data.status, 'starting');
                     data.stime = this._parseDate(time);
                 }
                 else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
-                    data.status = 'preparing';
-                }
-                else if (line.startsWith('MYSNAKE_LOG_VALIDATING')) {
-                    data.status = 'validating';
+                    data.status = this._updateProjectStatus(data.status, 'preparing');
                 }
                 // parse for the project log table
                 else if (line.startsWith('MYSNAKE_LOG_EXECUTING')) {
                     let l = line.split('\t');
                     total_cmds = l[2];
-                    data.status = 'running';
+                    data.status = this._updateProjectStatus(data.status, 'running');
                 }
                 else if (line.startsWith('MYSNAKE_LOG_FINISHED')) {
                     let l = line.split('\t');
                     let time = l[1];
-                    data.status = 'finished';
+                    data.status = this._updateProjectStatus(data.status, 'finished');
                     data.perc   = '100%';
                     data.etime = this._parseDate(time);
                 }
@@ -204,7 +204,7 @@ class logger {
                             data.cmds[cmd_index].status = status;
                             data.cmds[cmd_index].perc = '-';
                             data.cmds[cmd_index].etime = time;
-                            data.status = 'cmd error'; // for the project table
+                            data.status = this._updateProjectStatus(data.status, 'cmd error'); // for the project table
                         }
                         else { // then, the rest of status
                             if ( perc == '100%' ) {
@@ -235,7 +235,7 @@ class logger {
                             data.cmds[cmd_index].status = status;
                             data.cmds[cmd_index].perc = '-';
                             data.cmds[cmd_index].etime = time;
-                            data.status = 'cmd error'; // for the project table
+                            data.status = this._updateProjectStatus(data.status, 'cmd error'); // for the project table
                         }
                         else if ( status == 'cached' ) {
                             data.cmds[cmd_index].status = status;
@@ -390,7 +390,6 @@ class logger {
             });
             importer.doneResizing();
             $(`#projectlogs .logtable`).handsontable('render');
-            // $(`#workflowlogs .logtable`).handsontable('render');
         }
     }
    

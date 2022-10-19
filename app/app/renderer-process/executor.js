@@ -38,7 +38,7 @@ function execProcess(script, cmd, cfg, log, wfname) {
     proc = cProcess.exec(cmd);
 
     // save the process id in the session storage
-    sessioner.addProcessesToSession(proc.pid, cfg, log, wfname, `${__dirname}/../processes.html`);
+    sessioner.addProcessesToSession('starting', proc.pid, cfg, log, wfname, `${__dirname}/../processes.html`);
 
     // Handle on stderr
     proc.stderr.on('data', (data) => {

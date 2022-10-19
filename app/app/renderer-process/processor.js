@@ -32,54 +32,54 @@ window.onload = function(e) {
     sendChildProcesses();
 
     // create the list of log data based on the session info: pids and current outdir
-    let status = 1; // init the status
     let ldata = []; // refresh the ids of child process from the pids
 
     // get the list of PIDs running
     let pids = JSON.parse( window.sessionStorage.getItem("pids") );
     if ( pids !== null ) {
         for (var i = 0; i < pids.length; i++) {
-            let cfgfile = pids[i][0];
-            let logfile = pids[i][1];
-            let pid = parseInt(pids[i][2]);
+            let pstatus = pids[i][0];
+            let cfgfile = pids[i][1];
+            let logfile = pids[i][2];
+            let pid = parseInt(pids[i][3]);
             let c_pids = pids[i].slice(3);
             ldata.push({
                 'pid': pid,
                 'c_pids': c_pids.join(","),
-                'status': status,
+                'status': pstatus,
                 'cfgfile': cfgfile,
                 'logfile': logfile,
             });
         }
     }
 
-    // get the outdir of the current project
-    let outdir = window.sessionStorage.getItem("outdir");
-    if ( outdir !== null ) {
-        // get the files/dirs in directory sorted by name
-        let logdirs = commoner.getDirectories(`${outdir}/logs`);
-        let cfgdirs = commoner.getDirectories(`${outdir}/.isanxot`);
-        // get the intersection of two list. We need both files (logfile and config file)
-        let comdirs = logdirs.filter(x => cfgdirs.indexOf(x) !== -1)
-        // add only the files (logfile and config file) that have not already in the log-data
-        for (let i = 0; i < comdirs.length; i++) {
-            let cfgfile = `${outdir}/.isanxot/${comdirs[i]}/config.yaml`;
-            let logfile = `${outdir}/logs/${comdirs[i]}/isanxot.log`;
-            // get the list of index with the given attribute value to know if the files are in the log-data list
-            let isinCfg = commoner.getIndexParamsWithAttr(ldata, 'cfgfile', cfgfile);
-            let isinLog = commoner.getIndexParamsWithAttr(ldata, 'logfile', logfile);
-            // if both files are not in log-data, we included.
-            if ( isinCfg === undefined && isinLog === undefined ) {
-                ldata.push({
-                    'pid': '-',
-                    'c_pids': '-',
-                    'status': status,
-                    'cfgfile': cfgfile,
-                    'logfile': logfile,
-                });    
-            }
-        }
-    }
+    // // get the outdir of the current project
+    // let outdir = window.sessionStorage.getItem("outdir");
+    // if ( outdir !== null ) {
+    //     // get the files/dirs in directory sorted by name
+    //     let logdirs = commoner.getDirectories(`${outdir}/logs`);
+    //     let cfgdirs = commoner.getDirectories(`${outdir}/.isanxot`);
+    //     // get the intersection of two list. We need both files (logfile and config file)
+    //     let comdirs = logdirs.filter(x => cfgdirs.indexOf(x) !== -1)
+    //     // add only the files (logfile and config file) that have not already in the log-data
+    //     for (let i = 0; i < comdirs.length; i++) {
+    //         let cfgfile = `${outdir}/.isanxot/${comdirs[i]}/config.yaml`;
+    //         let logfile = `${outdir}/logs/${comdirs[i]}/isanxot.log`;
+    //         // get the list of index with the given attribute value to know if the files are in the log-data list
+    //         let isinCfg = commoner.getIndexParamsWithAttr(ldata, 'cfgfile', cfgfile);
+    //         let isinLog = commoner.getIndexParamsWithAttr(ldata, 'logfile', logfile);
+    //         // if both files are not in log-data, we included.
+    //         if ( isinCfg === undefined && isinLog === undefined ) {
+    //             ldata.push({
+    //                 'pid': '-',
+    //                 'c_pids': '-',
+    //                 'status': status,
+    //                 'cfgfile': cfgfile,
+    //                 'logfile': logfile,
+    //             });    
+    //         }
+    //     }
+    // }
 
     // create logger object with the list of logdata
     logObject = new logger(ldata);
@@ -151,33 +151,32 @@ function refreshLogger() {
     // get the data log of selected row
     let logtable = $("#projectlogs .logtable").data('handsontable');
     if (logtable !== undefined) {
-        // get the selected Row
-        let [selRow,selIdx] = getSelectedRow(logtable);
-        if ( selRow !== undefined ) {
-            // get data from selected selected row (PID project)
-            let pid = selRow[0];
-            let log_index = commoner.getIndexParamsWithAttr(logObject.data, 'pid', pid);
-            let logData = logObject.data[log_index];
-            let logfile = logData.logfile;
-            // get the log content
-            let s = fs.readFileSync(logfile);
-            let cont = s.toString();
-            // update the log tables (project and workflow)
-            logObject.updateLogDataFromLogFile(logData, cont);
-            logObject.createWorkflowLogsTable(logData);
-            // render log tables
-            logObject.renderLogTables()
-        }
-        // if there is not selected row of project table, the project log is refresh only
-        else {
-            // update project log table
-            // extract the session info
-            let pids = JSON.parse( window.sessionStorage.getItem("pids") );
-            // refresh the ids of child process from the pids
-            if ( pids !== null ) {
-                for (var i = 0; i < pids.length; i++) {
+        // extract the session info
+        let session_pids = JSON.parse( window.sessionStorage.getItem("pids") );
+        if ( session_pids !== null ) {
+            // get the selected Row
+            let [selRow,selIdx] = getSelectedRow(logtable);
+            if ( selRow !== undefined ) {
+                // get data from selected selected row (PID project)
+                let pid = selRow[0];
+                let log_index = commoner.getIndexParamsWithAttr(logObject.data, 'pid', pid);
+                let logData = logObject.data[log_index];
+                let logfile = logData.logfile;
+                // get the log content
+                let s = fs.readFileSync(logfile);
+                let cont = s.toString();
+                // update the log tables (project and workflow)
+                logObject.updateLogDataFromLogFile(logData, cont);
+                logObject.createWorkflowLogsTable(logData);
+                // render log tables
+                logObject.renderLogTables()
+            }
+            // if there is not selected row of project table, the project log is refresh only
+            else {
+                // refresh the ids of child process from the pids
+                for (var i = 0; i < session_pids.length; i++) {
                     let logData = logObject.data[i];
-                    let logfile = pids[i][1];
+                    let logfile = session_pids[i][2];
                     // get the log content
                     let s = fs.readFileSync(logfile);
                     let cont = s.toString();
@@ -187,16 +186,16 @@ function refreshLogger() {
                 // render log tables
                 logObject.renderLogTables(logObject.data)
             }
-        }
-        // if all project's in the table has finished...
-        // then stop the setTimeout
-        // otherwise, set the time out
-        stopTimeOut = true;
-        let statusProj = logtable.getDataAtCol(1);
-        for (let i = 0; i < statusProj.length; i++) {
-            if ( statusProj[i] != 'finished' ) {
-                stopTimeOut = false;
-                break;
+            // if all project's in the table has finished...
+            // then stop the setTimeout
+            // otherwise, set the time out
+            stopTimeOut = true;
+            let statusProj = logtable.getDataAtCol(1);
+            for (let i = 0; i < statusProj.length; i++) {
+                if ( statusProj[i] != 'finished' ) {
+                    stopTimeOut = false;
+                    break;
+                }
             }
         }
     }
@@ -215,9 +214,9 @@ function refreshLogger() {
  */
 
 // Kill processes
-if ( document.querySelector('#processor #stop') !== null ) {
+if ( document.querySelector('#immobilizer #stop') !== null ) {
     // kill process and subprocess of selected project
-    document.querySelector('#processor #stop').addEventListener('click', function() {
+    document.querySelector('#immobilizer #stop').addEventListener('click', function() {
         // get the data log of selected row
         let logtable = $("#projectlogs .logtable").data('handsontable');
         if (logtable !== undefined) {
@@ -233,16 +232,19 @@ if ( document.querySelector('#processor #stop') !== null ) {
                   };
                 let response = dialog.showMessageBoxSync(null, options);
                 if ( response === 0 ) {
-                    // we get the child processes from the list of pids (session variable)
-                    // kill the all processes
-                    // we start from the end (reverse)
+                    let status = 'killed';
+                    // We get the child processes from the list of pids (session variable)
+                    // Upadte the session
                     let session_pids = JSON.parse( window.sessionStorage.getItem("pids") );
                     let pids = [];
                     for (let i = 0; i < session_pids.length; i++) {
-                        if ( pid == session_pids[i][2]) {
+                        if ( pid == session_pids[i][3]) {
+                            session_pids[i][0] = status;
+                            window.sessionStorage.setItem("pids", JSON.stringify(session_pids));
                             pids = session_pids[i].slice(2);
                         }
                     }                
+                    // kill the all processes. We start from the end (reverse)
                     pids.reverse().forEach(function (pid) {
                         console.log(`Look for child processes from sms ${pid}`);
                         psTree(pid, function (err, children, callback) {  // check if it works always
@@ -263,7 +265,7 @@ if ( document.querySelector('#processor #stop') !== null ) {
                         });    
                     });
                     // indicated in the project log table that the project has been stopped
-                    logObject.data[selIdx].status = "stopped";
+                    logObject.data[selIdx].status = status;
                     // render log tables
                     logObject.renderLogTables(logObject.data);
                 }

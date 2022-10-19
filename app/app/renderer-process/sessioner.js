@@ -28,7 +28,7 @@ function addProcToSession(a_pids, wf) {
 };
 
 // Save the process id in the session storage
-function addProcessesToSession(pid, cfg, log, wfname, page=false) {
+function addProcessesToSession(status, pid, cfg, log, wfname, page=false) {
     // when all the processes have been saved, then, we jump to another page
     var jumpToPage = function (page) {
         // go to procceses section
@@ -46,10 +46,11 @@ function addProcessesToSession(pid, cfg, log, wfname, page=false) {
         }
     }
     // save the whole list of process of ids at the moment
-    var addProcesses = function (pid, cfg, log, page, callback) {
+    var addProcesses = function (status, pid, cfg, log, page, callback) {
         // get the children processes from the given main PID
         psTree(pid, function (err, children) {
             let pids = [];
+            pids.push(status);
             pids.push(cfg);
             pids.push(log);
             for (var i = 0; i < children.length; i++) {
@@ -62,7 +63,7 @@ function addProcessesToSession(pid, cfg, log, wfname, page=false) {
         });
     };
     // call the function using the callback
-    addProcesses(pid, cfg, log, page, jumpToPage);
+    addProcesses(status, pid, cfg, log, page, jumpToPage);
 };
 
 // Save the project info into the session storage

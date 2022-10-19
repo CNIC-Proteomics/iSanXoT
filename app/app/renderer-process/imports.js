@@ -16,14 +16,18 @@ const { dialog } = require('electron').remote;
 var resizeId = null;
 function doneResizing() {
     let winheight = $(window).height();
-    let outerheight = $('.tab-content').outerHeight(); // content height
     if ( $('.tab-content').length ) {
         let newheight = winheight - 142;
         $(`.tab-content`).height(newheight);
         // get the maximum height for sideber
+        let outerheight = $('.tab-content').outerHeight(); // content height
         if ( outerheight > $(`#sidebar`).height() ) $(`#sidebar`).height(outerheight);
     }
-
+    // update the section logger
+    if ( $('section#logger').length ) {
+        let newheight = winheight - 90;
+        $(`section#logger`).height(newheight);
+    }
 }
 
 // Function when the windows is resize
@@ -190,6 +194,7 @@ importHTMLtemplate(`${__dirname}/../sections/footer.html`);
 importHTMLtemplate(`${__dirname}/../sections/executor.html`);
 importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
+importHTMLtemplate(`${__dirname}/../sections/immobilizer.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
 importHTMLtemplate(`${__dirname}/../User_Guide.html`);
 
