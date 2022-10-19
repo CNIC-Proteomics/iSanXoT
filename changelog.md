@@ -1,4 +1,182 @@
 ___
+## 1.2.6-cnic
+```
+DATE: 2022_10
+```
+
+### Highlights
+
++ iSanXoT is multiprocessing when the '*' (asterisk) is within task table.
+
++ Improve the log tables.
+
++ Important!! The REPORT module has changed. Now the module discards levels that we don't want to show. The new column called 'Headers of columns to eliminate'.
+
+### Changes in the Graphical User Interface
+
++ Improve the log tables:
+    modified:   app/app/renderer-process/logger.js
+
++ Include (again) the killed button in the Process page:
+	modified:   app/app/assets/css/main.css
+	modified:   app/app/processes.html
+	modified:   app/app/renderer-process/executor.js
+	modified:   app/app/renderer-process/imports.js
+	modified:   app/app/renderer-process/logger.js
+	modified:   app/app/renderer-process/processor.js
+	modified:   app/app/renderer-process/sessioner.js
+
++ REPORT: Now the module discards levels that we don't want to show. The new column called 'Headers of columns to eliminate'.
+	modified:   app/resources/src/cmds/reporter.py
+	modified:   app/resources/wfs/commands.json
+	modified:   app/resources/wfs/tpl_commands/report.yaml
+
++ LOG: Display in the project log table the step that gets the variance statistics.
+
+### Changes in the Code Workflow
+
++ iSanXoT is multiprocessing when the '*' (asterisk) is within task table:
+	modified:   app/resources/src/libs/common.py
+	modified:   app/resources/wfs/commands.json
+	modified:   app/resources/wfs/mysnake.py
+	modified:   app/resources/wfs/table2cfg.py
+	modified:   app/resources/wfs/tpl_commands/create_idq.yaml
+	modified:   app/resources/wfs/tpl_commands/get_idstats.yaml
+	modified:   app/resources/wfs/tpl_commands/integrate.yaml
+	modified:   app/resources/wfs/tpl_commands/level_calibrator.yaml
+	modified:   app/resources/wfs/tpl_commands/level_creator.yaml
+	deleted:    app/resources/wfs/tpl_commands/level_creator_wpp_sbt.yaml
+	deleted:    app/resources/wfs/tpl_commands/level_creator_wppg_sbt.yaml
+	deleted:    app/resources/wfs/tpl_commands/level_creator_wspp_sbt.yaml
+	deleted:    app/resources/wfs/tpl_commands/level_creator_wsppg_sbt.yaml
+	modified:   app/resources/wfs/tpl_commands/norcombine.yaml
+	modified:   app/resources/wfs/tpl_commands/ratios_int.yaml
+	modified:   app/resources/wfs/tpl_commands/rels_creator.yaml
+	modified:   app/resources/wfs/tpl_commands/report.yaml
+	modified:   app/resources/wfs/tpl_commands/sanson.yaml
+	modified:   app/resources/wfs/tpl_commands/sbt.yaml
+	modified:   app/resources/wfs/tpl_commands/wpp_sbt.yaml
+	modified:   app/resources/wfs/tpl_commands/wppg_sbt.yaml
+	modified:   app/resources/wfs/tpl_commands/wspp_sbt.yaml
+	modified:   app/resources/wfs/tpl_commands/wsppg_sbt.yaml
+	modified:   app/app/renderer-process/projector.js
+
++ REPORT: The REPORT module has changed. Now the module discards levels that we don't want to show. The new column called 'Headers of columns to eliminate'.
+	modified:   app/resources/src/cmds/reporter.py
+	modified:   app/resources/wfs/commands.json
+	modified:   app/resources/wfs/tpl_commands/report.yaml
+
++ Allow that tabs could be visibles or not.
+        modified:   app/app/renderer-process/bodied.js
+        modified:   app/resources/wfs/commands.json
+
+
+___
+## 1.2.5-cnic
+```
+DATE: 2022_10
+```
+
+### Highlights
+
+
+### Changes in the Graphical User Interface
+
++ RATIOS_INT:
+	- Rename column names.
+
+### Changes in the Code Workflow
+
++ reporter.py:
+	- Fixing the concatenation of REL columns.
+	- Fixing a problem getting the maximum number per integration for the 'n_' columns.
+
+___
+## 1.2.4-cnic
+```
+DATE: 2022_09
+```
+
+### Highlights
+
++ Change the license to **Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0) License**
+
++ The modules: WSPP-SBT, WSPPG-SBT, WPP-SBT, and WPPG-SBT are not compatible with older versiones.
+
++ The CNIC adaptor is not compatible with older versiones.
+
+### Changes in the Graphical User Interface
+
++ LEVEL_CREATOR: Comments from Jesús: Experiment column. The program should work when nothing is put in Experiment, taking all the data from the table. Ideally, there should not even need to be an experiment column when you only work with one experiment, so that if the program does not find the column, it works with the whole file and that's it. The reason for this is that when there is no experiment column the file contains only one experiment and therefore there is no need for that column.
+
++ WSPP-SBT: discard the integration; peptide2peptideall.
+
++ WSPPG-SBT: discard the integration; peptide2peptideall, protein2proteinall.
+
++ WPP-SBT: discard the integration; peptide2peptideall.
+
++ WPPG-SBT: discard the integration; peptide2peptideall, protein2proteinall.
+
++ Remove the carriage return from the columns in the cnic adaptor.
+
++ The creation of 'Experiment' column is not mandatory in the CNIC adaptor.
+
++ The 'addQuant' of CNIC adaptor works pairing the 'Spectrum File' and the 'mzML'. The file name has to be equal. Therefore, the 'Spectrum_File' column is required to obtain the quantification from the mzML files.
+
+### Changes in the Code Workflow
+
++ createIDq: Now the adaptors works on the IDq provided by the user.
+
++ getKlibrateVals: Uncomment a debugging sentence.
+
++ createLevels: Improved the program to accept the whole task-table, read one time the input file, and then, execute each row in parallel internally.
+  The program should work when nothing is within Experiment column.
+
++ createRels:
+	- Improve the program to accept the whole task-table, read one time the input file, and then, execute each row in parallel internally.
+	- Discard 'nan' values one one row has the Third column empty.
+	- Take into account only the two first columns to check NaN values.
+
++ Tpl_Commands:
+	- The name of log files have changed:
+		- SanxotSieve log name changes to '_infoSSieve.txt'
+		- SanXoT (the second) log name changes to '_infoSanXoT.txt'		
+		Note: the first SanXoT still reporting the varaince and log in the '_variance.txt'
+		- Klibrate log name changes to '_infoK.txt'
+
++ getIntegrationVals:
+	- Get the number of excluded elements from the 'excluded' value in the FDR column.
+
++ reporter:
+	- Drop rows when the tags contains the 'out' word.
+	- If the 'n_' columns exist, get the maximum number per integration.
+	- Fixing the concatenation of REL columns.
+
++ We have created some case studies to ilustrade the type of workflows:
+	- WSPP_NORCOMBINE_RATIOS_SBT: Work by González-Amor M, et al. Cardiovasc Res. 2021
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+		* Report using the asterisk (the jack of all trades) (1 sample)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
+			- Zprot2cat_Quanprot_Quancat: Zq, Zc
+		* Report produced by the merge of the sample reports with the ratios sample report (SBT)
+	- WSPP-SBT: Work by García-Marqués F, et al. Mol Cell Proteomics. 2016:
+		* Biology Systems: WSPP-SBT
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
+	- WSPP_PTM: Work by Bonzon-Kulichenko E, et al. J Proteomics. 2020
+		* WSPP step by step using asterisks (the jack of all trades)
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq,  FDRq, Nq(npeptides/prot)
+			- Npep2prot_Quanprot: Zpq, FDRpq, Ns(nscans/pep)
+	- WSPP_LabelFree: Work by ProteoRed and Navarro , et al. Nature Biotech. 2016
+		* WSPP step by step without asterisks (the jack of all trades)
+		* Report:
+			- Npep2prot_Quanprot: Zq, Nq(npeptides/prot)
+
+___
 ## 1.0.2
 ```
 DATE: 2022_05
@@ -13,7 +191,6 @@ DATE: 2022_05
 ### Changes in the Code Workflow
 
 + RELS_CREATOR: Now the delimiter in category files is '//'.
-
 
 ___
 ## 1.0.1
@@ -42,12 +219,6 @@ DATE: 2022_05
 		* WSPP step by step without asterisks (the jack of all trades)
 		* Report:
 			- Npep2prot_Quanprot: Zq, Nq(npeptides/prot)
-	- WSPP-SBT: Work by García-Marqués F, et al. Mol Cell Proteomics. 2016:
-		* Biology Systems: WSPP-SBT
-		* Report using the asterisk (the jack of all trades)
-			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
-			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
-			- Zprot2cat_Quanprot_Quancat: Zq, Zc
 	- WSPP_NORCOMBINE_RATIOS_SBT: Work by González-Amor M, et al. Cardiovasc Res. 2021
 		* Report using the asterisk (the jack of all trades)
 			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
@@ -56,6 +227,12 @@ DATE: 2022_05
 			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
 			- Zprot2cat_Quanprot_Quancat: Zq, Zc
 		* Report produced by the merge of the sample reports with the ratios sample report (SBT)
+	- WSPP-SBT: Work by García-Marqués F, et al. Mol Cell Proteomics. 2016:
+		* Biology Systems: WSPP-SBT
+		* Report using the asterisk (the jack of all trades)
+			- Npep2prot_Quanprot: Zq, FDRq, Nq(npeptides/prot)
+			- Nprot2cat_Quancat: Zc, FDRc, Nc(nprots/cat)
+			- Zprot2cat_Quanprot_Quancat: Zq, Zc
 	- WSPP_PTM: Work by Bonzon-Kulichenko E, et al. J Proteomics. 2020
 		* WSPP step by step using asterisks (the jack of all trades)
 		* Report using the asterisk (the jack of all trades)
