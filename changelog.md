@@ -15,60 +15,60 @@ DATE: 2022_10
 ### Changes in the Graphical User Interface
 
 + Improve the log tables:
-    modified:   app/app/renderer-process/logger.js
+    	modified:   app/app/renderer-process/logger.js
 
 + Include (again) the killed button in the Process page:
-	modified:   app/app/assets/css/main.css
-	modified:   app/app/processes.html
-	modified:   app/app/renderer-process/executor.js
-	modified:   app/app/renderer-process/imports.js
-	modified:   app/app/renderer-process/logger.js
-	modified:   app/app/renderer-process/processor.js
-	modified:   app/app/renderer-process/sessioner.js
+		modified:   app/app/assets/css/main.css
+		modified:   app/app/processes.html
+		modified:   app/app/renderer-process/executor.js
+		modified:   app/app/renderer-process/imports.js
+		modified:   app/app/renderer-process/logger.js
+		modified:   app/app/renderer-process/processor.js
+		modified:   app/app/renderer-process/sessioner.js
 
 + REPORT: Now the module discards levels that we don't want to show. The new column called 'Headers of columns to eliminate'.
-	modified:   app/resources/src/cmds/reporter.py
-	modified:   app/resources/wfs/commands.json
-	modified:   app/resources/wfs/tpl_commands/report.yaml
+		modified:   app/resources/src/cmds/reporter.py
+		modified:   app/resources/wfs/commands.json
+		modified:   app/resources/wfs/tpl_commands/report.yaml
 
 + LOG: Display in the project log table the step that gets the variance statistics.
 
 ### Changes in the Code Workflow
 
 + iSanXoT is multiprocessing when the '*' (asterisk) is within task table:
-	modified:   app/resources/src/libs/common.py
-	modified:   app/resources/wfs/commands.json
-	modified:   app/resources/wfs/mysnake.py
-	modified:   app/resources/wfs/table2cfg.py
-	modified:   app/resources/wfs/tpl_commands/create_idq.yaml
-	modified:   app/resources/wfs/tpl_commands/get_idstats.yaml
-	modified:   app/resources/wfs/tpl_commands/integrate.yaml
-	modified:   app/resources/wfs/tpl_commands/level_calibrator.yaml
-	modified:   app/resources/wfs/tpl_commands/level_creator.yaml
-	deleted:    app/resources/wfs/tpl_commands/level_creator_wpp_sbt.yaml
-	deleted:    app/resources/wfs/tpl_commands/level_creator_wppg_sbt.yaml
-	deleted:    app/resources/wfs/tpl_commands/level_creator_wspp_sbt.yaml
-	deleted:    app/resources/wfs/tpl_commands/level_creator_wsppg_sbt.yaml
-	modified:   app/resources/wfs/tpl_commands/norcombine.yaml
-	modified:   app/resources/wfs/tpl_commands/ratios_int.yaml
-	modified:   app/resources/wfs/tpl_commands/rels_creator.yaml
-	modified:   app/resources/wfs/tpl_commands/report.yaml
-	modified:   app/resources/wfs/tpl_commands/sanson.yaml
-	modified:   app/resources/wfs/tpl_commands/sbt.yaml
-	modified:   app/resources/wfs/tpl_commands/wpp_sbt.yaml
-	modified:   app/resources/wfs/tpl_commands/wppg_sbt.yaml
-	modified:   app/resources/wfs/tpl_commands/wspp_sbt.yaml
-	modified:   app/resources/wfs/tpl_commands/wsppg_sbt.yaml
-	modified:   app/app/renderer-process/projector.js
+		modified:   app/resources/src/libs/common.py
+		modified:   app/resources/wfs/commands.json
+		modified:   app/resources/wfs/mysnake.py
+		modified:   app/resources/wfs/table2cfg.py
+		modified:   app/resources/wfs/tpl_commands/create_idq.yaml
+		modified:   app/resources/wfs/tpl_commands/get_idstats.yaml
+		modified:   app/resources/wfs/tpl_commands/integrate.yaml
+		modified:   app/resources/wfs/tpl_commands/level_calibrator.yaml
+		modified:   app/resources/wfs/tpl_commands/level_creator.yaml
+		deleted:    app/resources/wfs/tpl_commands/level_creator_wpp_sbt.yaml
+		deleted:    app/resources/wfs/tpl_commands/level_creator_wppg_sbt.yaml
+		deleted:    app/resources/wfs/tpl_commands/level_creator_wspp_sbt.yaml
+		deleted:    app/resources/wfs/tpl_commands/level_creator_wsppg_sbt.yaml
+		modified:   app/resources/wfs/tpl_commands/norcombine.yaml
+		modified:   app/resources/wfs/tpl_commands/ratios_int.yaml
+		modified:   app/resources/wfs/tpl_commands/rels_creator.yaml
+		modified:   app/resources/wfs/tpl_commands/report.yaml
+		modified:   app/resources/wfs/tpl_commands/sanson.yaml
+		modified:   app/resources/wfs/tpl_commands/sbt.yaml
+		modified:   app/resources/wfs/tpl_commands/wpp_sbt.yaml
+		modified:   app/resources/wfs/tpl_commands/wppg_sbt.yaml
+		modified:   app/resources/wfs/tpl_commands/wspp_sbt.yaml
+		modified:   app/resources/wfs/tpl_commands/wsppg_sbt.yaml
+		modified:   app/app/renderer-process/projector.js
 
 + REPORT: The REPORT module has changed. Now the module discards levels that we don't want to show. The new column called 'Headers of columns to eliminate'.
-	modified:   app/resources/src/cmds/reporter.py
-	modified:   app/resources/wfs/commands.json
-	modified:   app/resources/wfs/tpl_commands/report.yaml
+		modified:   app/resources/src/cmds/reporter.py
+		modified:   app/resources/wfs/commands.json
+		modified:   app/resources/wfs/tpl_commands/report.yaml
 
 + Allow that tabs could be visibles or not.
-        modified:   app/app/renderer-process/bodied.js
-        modified:   app/resources/wfs/commands.json
+		modified:   app/app/renderer-process/bodied.js
+		modified:   app/resources/wfs/commands.json
 
 
 ___
