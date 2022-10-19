@@ -152,6 +152,9 @@ class logger {
                 else if (line.startsWith('MYSNAKE_LOG_PREPARING')) {
                     data.status = this._updateProjectStatus(data.status, 'preparing');
                 }
+                else if (line.startsWith('MYSNAKE_STATS_EXECUTING')) {
+                    data.status = this._updateProjectStatus(data.status, 'getting stats');
+                }
                 // parse for the project log table
                 else if (line.startsWith('MYSNAKE_LOG_EXECUTING')) {
                     let l = line.split('\t');
