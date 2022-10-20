@@ -136,8 +136,10 @@ function KillProcceses(all_pids) {
   console.log(`   kill child processes: ${all_pids['c_pids']}`);
   all_pids['c_pids'].reverse().forEach(function(pid) {
     try {
-      console.log(`${pid} has been killed!`);
-      process.kill(pid);
+      if ( Number.isInteger(Number(pid)) ) {
+        process.kill(pid);
+        console.log(`${pid} has been killed!`);  
+      }
     }
     catch (e) {
       console.log(`error killing ${pid}: ${e}`);
@@ -148,8 +150,10 @@ function KillProcceses(all_pids) {
     let log = pids[0];
     pids.slice(1).reverse().forEach(function(pid) {
       try {
-        console.log(`${pid} has been killed!`);
-        process.kill(pid);
+        if ( Number.isInteger(Number(pid)) ) {
+          process.kill(pid);
+          console.log(`${pid} has been killed!`);
+        }
       }
       catch (e) {
         console.log(`error killing ${pid}: ${e}`);

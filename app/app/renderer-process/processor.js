@@ -99,11 +99,12 @@ function sendChildProcesses() {
     function sendCPIDs(list_pids) {
         // look throught the list of list of PIDs coming from the session varaible
         list_pids.forEach( function(pids, i) {
-            let cfg = pids[0];
-            let log = pids[1];
-            let pid = pids[2];
+            let sratus = pids[0];
+            let cfg = pids[1];
+            let log = pids[2];
+            let pid = pids[3];
             console.log(`get child_projectlogs from ${pid}`);
-            pids.slice(3).forEach( function(c_pid) {
+            pids.slice(4).forEach( function(c_pid) {
                 // update the list of PIDs with the new child pids
                 psTree(parseInt(c_pid), function (err, children) {
                     for (var i = 0; i < children.length; i++) {
