@@ -119,11 +119,10 @@ class logger {
             return (el != null) && (el != '');
         });
         // get log variables for the root process
-        if ( lines.length >= 1 ) { data.status = this._updateProjectStatus(data.status, 'preparing') }
         data.message    = '';
         data.stime  = '-';
         data.etime  = '-';
-        data.perc   = '0%';
+        if ( !('perc' in data) ) { data.perc   = '0%'; }
         for (var i = 0; i < data.cmds.length; i++) {
             data.cmds[i].stime = '-';
             data.cmds[i].etime = '-';
@@ -247,8 +246,8 @@ class logger {
                             data.cmds[cmd_index].perc = '100%';
                         }
                         // update the percentage of executed commands if incrises the value
-                        cmd_perc = eval(cmd_perc).toFixed(2)*100;
-                        let proj_perc = parseFloat(data.perc.replace('%',''));
+                        cmd_perc = parseFloat((eval(cmd_perc)*100).toFixed(2))
+                        let proj_perc = parseFloat((data.perc.replace('%','')*1).toFixed(2))
                         if ( cmd_perc > proj_perc ) data.perc = cmd_perc+'%';
                     }
                 }
