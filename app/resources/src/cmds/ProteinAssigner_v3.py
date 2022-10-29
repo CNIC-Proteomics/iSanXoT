@@ -210,7 +210,10 @@ def getMostProbableProtein(dffile, paramsDict):
     '''
     # Sort alphabetically candidate proteins using paramsDict["column_params"]['prot_column'][0] as reference
     tmp = [dffile[i].to_list() for i in paramsDict["column_params"]['prot_column']]
-    tmp = [[[elem.strip() for elem in row.split(paramsDict["column_params"]['sep_char'])] for row in col] for col in tmp]
+    # begin: jmrc
+    # tmp = [[[elem.strip() for elem in row.split(paramsDict["column_params"]['sep_char'])] for row in col] for col in tmp]
+    tmp = [[[elem.strip() for elem in str(row).split(paramsDict["column_params"]['sep_char'])] for row in col] for col in tmp]
+    # end: jmrc
     tmp = [list(zip(*zipped_row)) for zipped_row in zip(*tmp)]
     tmp = [sorted(row, key=lambda x: x[0]) for row in tmp]
     tmp = list(zip(*[[paramsDict["column_params"]['sep_char'].join(col) for col in list(zip(*row))] for row in tmp]))
