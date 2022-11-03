@@ -782,7 +782,7 @@ def main(args):
     # write error sms getting the name of rule from the input that is not defined
     sms = ''
     for x in xx:
-        sms += f'> The input file "{x}" '
+        sms += f'> The input file "{os.path.basename(x)}" '
         name_rules = np.unique([i[0] for i in infiles_cmd if x in i[1]])
         if name_rules.size != 0:
             sms += f'for the rule(s) "{",".join(name_rules)}" '
