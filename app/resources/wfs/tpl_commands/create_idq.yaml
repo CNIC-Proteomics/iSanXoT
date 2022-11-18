@@ -8,7 +8,7 @@
   cmds:
     - name: CREATE_IDQ
       unique_exec: true
-      force: 0
+      force: 1
       rules:
         - name: create_idq
           infiles:
