@@ -1,12 +1,5 @@
 #!/usr/bin/python
 
-# import global modules
-import os
-import sys
-import argparse
-import logging
-
-
 # Module metadata variables
 __author__ = "Jose Rodriguez"
 __credits__ = ["Jose Rodriguez", "Jesus Vazquez"]
@@ -15,6 +8,21 @@ __version__ = "1.0.1"
 __maintainer__ = "Jose Rodriguez"
 __email__ = "jmrodriguezc@cnic.es"
 __status__ = "Development"
+
+
+# import global modules
+import os
+import sys
+import argparse
+import logging
+
+
+#########################
+# Import local packages #
+#########################
+sys.path.append(f"{os.path.dirname(__file__)}/../libs")
+import common
+
 
 ###################
 # Local functions #
@@ -31,7 +39,10 @@ def main(args):
         with open(args.outfile, 'w') as outfile:
             outfile.write( "{}\t{}\n".format("Tag","File path") )            	
             for i,infile in enumerate(infiles):
-                outfile.write( "{}EXP\t{}\n".format(i+1,infile) )
+                # get the name of 'job' until the root folder
+                exp_name = common.get_job_name(infile)
+                # write file for cardenio
+                outfile.write( "{}{}\t{}\n".format(i+1,exp_name,infile) )
 
 
 
