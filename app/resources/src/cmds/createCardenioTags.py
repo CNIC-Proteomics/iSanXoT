@@ -42,7 +42,7 @@ def main(args):
                 # get the name of 'job' until the root folder
                 exp_name = common.get_job_name(infile)
                 # write file for cardenio
-                outfile.write( "{}{}\t{}\n".format(i+1,exp_name,infile) )
+                outfile.write( "{}\t{}\n".format(exp_name,infile) )
 
 
 
