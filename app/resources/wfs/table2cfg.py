@@ -362,11 +362,13 @@ def _add_cmd(row, icmd):
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
 
-    # if 'output' folder does not exits, then we copy the value of 'input' folder
-    # append at the begining of serie the new output value
+    # 'output' folder exists but is empty or nan, remove old output and copy the 'input'
     if 'output' in row:
-        if 'input' in row:
-            row = pd.concat([ pd.Series({'output': row['output']}), row ]) if row['output'] != 'nan' and row['output'] != '' else row['input']
+        if 'output' in row and (row['output'] == 'nan' or row['output'] == ''):
+            if 'input' in row:
+                row = row.drop('output')
+                row = pd.concat([ pd.Series({'output': row['input']}), row ])
+    # if 'output' folder does not exits, then we copy the value of 'input' folder
     else:
         if 'input' in row:
             row = pd.concat([ pd.Series({'output': row['input']}), row ])
@@ -413,10 +415,18 @@ def add_cmd(row, icmd):
     # if theres is a list of inputs...
     cmds = []
     if 'input' in row:
-        # exlode the rows based the list of inputs
+        # convert the 'input' string into list
         row['input'] = re.split(r'\s*,\s*', row['input'])
-        row_df = pd.DataFrame(row)
-        row_df = row_df.transpose().explode('input').reset_index(drop=True).transpose()
+        # convert the 'output' string into list
+        # exlode the rows based the list of 'inputs' and 'outputs'
+        if 'output' in row and row['output'] != 'nan' and row['output'] != '':
+            row['output'] = re.split(r'\s*,\s*', row['output'])
+            row_df = pd.DataFrame(row)
+            row_df = row_df.transpose().explode(['input','output']).reset_index(drop=True).transpose()
+        # exlode the rows based the list of inputs
+        else:
+            row_df = pd.DataFrame(row)
+            row_df = row_df.transpose().explode('input').reset_index(drop=True).transpose()
         for row in row_df.to_dict(orient='series').values():
             c = _add_cmd(row, cmd)
             cmds.append(c)
@@ -714,32 +724,38 @@ def main(args):
     logging.info("create a command for each tasktable row")
     tpl['commands'] = []
     for cmd,indat in indata.items():
-        # read the templates of commands
-        cmd_tpl = read_tpl_command(args.intpl, cmd)
-        # replace constant within command tpls
-        cmd_tpl = replace_val_rec(cmd_tpl, repl)
-        # go through every cmd and create the list of cmds
-        cmds = []
-        for cmd in cmd_tpl['cmds']:
-            if 'unique_exec' in cmd and cmd['unique_exec']:
-                # add the parameters from task-ables if apply
-                if 'ttables' in indat:
-                    cmd = add_params_from_ttable(cmd, indat)
-                # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
-                cmd = remove_ttable_param(cmd, '^__')
-                # add into cmd
-                cmds.append(cmd)
-            else:            
-                if 'ttables' in indat:
-                    # create a new list of cmds based on the values for each row
-                    for df in indat['ttables']:
-                        c = list(df.apply( add_cmd, args=(cmd, ), axis=1))
-                        c = [i for sublist in c for i in sublist]
-                        cmds = cmds + c
-        # add the list of cmds into cmd template
-        cmd_tpl['cmds'] = cmds
-        # add the template
-        tpl['commands'].append(cmd_tpl)
+        try:  
+            # read the templates of commands
+            cmd_tpl = read_tpl_command(args.intpl, cmd)
+            # replace constant within command tpls
+            cmd_tpl = replace_val_rec(cmd_tpl, repl)
+            # go through every cmd and create the list of cmds
+            cmds = []
+            for cmd in cmd_tpl['cmds']:
+                if 'unique_exec' in cmd and cmd['unique_exec']:
+                    # add the parameters from task-ables if apply
+                    if 'ttables' in indat:
+                        cmd = add_params_from_ttable(cmd, indat)
+                    # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
+                    cmd = remove_ttable_param(cmd, '^__')
+                    # add into cmd
+                    cmds.append(cmd)
+                else:
+                    if 'ttables' in indat:
+                        # create a new list of cmds based on the values for each row
+                        for df in indat['ttables']:
+                            c = list(df.apply( add_cmd, args=(cmd, ), axis=1))
+                            c = [i for sublist in c for i in sublist]
+                            cmds = cmds + c
+            # add the list of cmds into cmd template
+            cmd_tpl['cmds'] = cmds
+            # add the template
+            tpl['commands'].append(cmd_tpl)            
+        except Exception as exc:
+            sms = "ERROR!! Creating the {}: {}".format(cmd['name'], exc)
+            print(sms) # message to stdout with logging output
+            sys.exit(sms)
+
 
 
 
@@ -782,10 +798,10 @@ def main(args):
     # write error sms getting the name of rule from the input that is not defined
     sms = ''
     for x in xx:
-        sms += f'> The input file "{os.path.basename(x)}" '
+        sms += f'> The sample/level "{common.get_job_name(x)}" '
         name_rules = np.unique([i[0] for i in infiles_cmd if x in i[1]])
         if name_rules.size != 0:
-            sms += f'for the rule(s) "{",".join(name_rules)}" '
+            sms += f'in the module "{",".join(name_rules)}" '
         sms += "is not defined\n\n"
     if sms != '':
         print(sms) # message to stdout with logging output
