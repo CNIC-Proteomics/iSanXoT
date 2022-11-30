@@ -1,5 +1,4 @@
 <template class="task-template" id="User_Guide">
-
 <html>
 
 <head>
@@ -125,9 +124,6 @@
 @font-face
 	{font-family:"Segoe UI Emoji";
 	panose-1:2 11 5 2 4 2 4 2 2 3;}
-@font-face
-	{font-family:Cambria;
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
 @font-face
 	{font-family:"Segoe UI";
 	panose-1:2 11 5 2 4 2 4 2 2 3;}
@@ -462,7 +458,7 @@ class=MsoBookTitle><span lang=EN-US style='font-size:36.0pt'>Help and
 documentation</span></span></p>
 
 <p class=MsoTitleCxSpLast align=center style='text-align:center'><span
-class=MsoBookTitle><span lang=EN-US>(1.2.x)</span></span></p>
+class=MsoBookTitle><span lang=EN-US>(1.2.7)</span></span></p>
 
 <p class=MsoNormal align=center style='text-align:center'><span lang=EN-US>&nbsp;</span></p>
 
@@ -1476,9 +1472,9 @@ This checkbox field indicates whether to force the execution or not.</span></p>
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><i><span lang=EN-US>Relation Table to be created</span></i><span
 lang=EN-US> specifies relation table filenames. As commented above, the naming
-convention for these files is <i>lower level + “2” + higher level</i>; e.g.
-whether an integration is from the “peptide” level to the “protein” level, a
-relation table called “peptide2protein” will be necessary.</span></p>
+convention for these files is <i>lower level + “2” + higher level</i>; e.g. whether
+an integration is from the “peptide” level to the “protein” level, a relation
+table called “peptide2protein” will be necessary.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2180,8 +2176,7 @@ lang=EN-US> indicates the name of the intermediate level (e.g. category).</span>
 mean of the lower level elements.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
-lang=EN-US><img border=0 width=292 height=66 id="Picture 13"
-src="User_Guide_files/image030.png"></span></p>
+lang=EN-US><img border=0 width=292 height=66 src="User_Guide_files/image030.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103094105"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>21</span></b><b><span lang=EN-US>. A sample task table in the SBT
 module.</span></b></p>
@@ -3110,6 +3105,35 @@ src="User_Guide_files/image048.png"></span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
+<h3><span lang=EN-US>Multiple samples in the inputs and outputs</span></h3>
+
+<p class=MsoNormal><span lang=EN-US>In the cases we have multiple input samples
+separated by comma but we want to save the results in another output sample
+folder, we indicate them in the same way giving the output folders separated by
+comma. It is required to provide the same number of folders:</span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span lang=EN-US><img
+border=0 width=567 height=224 id="Picture 13"
+src="User_Guide_files/image049.png"></span></p>
+
+<p class=MsoNormal><span lang=EN-US>In the same way happens with the asterisk
+character (jack of all trades). In the “Output Sample folder(s)” we can add a
+suffix in the input samples. The following task-table illustrate that the
+output sample folders would be contain the “_New” suffix:</span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span lang=EN-US><img
+border=0 width=475 height=146 id="Picture 30"
+src="User_Guide_files/image050.png"></span></p>
+
+<p class=MsoNormal><span lang=EN-US>In addition, we can rename the subfolder
+adding the new name in the “Output Sample folder(s)” or add a new subfolder:</span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span lang=EN-US><img
+border=0 width=387 height=169 id="Picture 33"
+src="User_Guide_files/image051.png"></span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
 <h3><a name="_More_params"></a><span lang=EN-US>More params</span></h3>
 
 <p class=MsoNormal><span lang=EN-US>Some modules accept a column parameter in
@@ -3136,7 +3160,8 @@ lang=EN-US>&quot;sanxot1&quot;: &quot; -m 300 -g &quot;, &quot;sanxot2&quot;:
 
 <p class=MsoNormal><span lang=EN-US>In above example the first “sanxot” program
 that compose the INTEGRATE module, receives the “-m 300 -g” as parameter, and
-the second “sanxot” receives also the parameter &quot;-s --sweepdecimals=2.5&quot;.</span></p>
+the second “sanxot” receives also the parameter &quot;-s
+--sweepdecimals=2.5&quot;.</span></p>
 
 <p class=MsoNormal style='margin-left:35.4pt'><span lang=EN-US>WSPP-SBT:</span></p>
 
@@ -3250,7 +3275,7 @@ lang=EN-US>):   </span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=485 height=418 id="Group 9"
-src="User_Guide_files/image049.png"></span></p>
+src="User_Guide_files/image052.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103468260"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>35</span></b><b><span lang=EN-US>. Main view of the </span></b><b><span
 lang=EN-US style='font-style:normal'>Input Adaptor</span><span lang=EN-US> menu.</span></b></p>
@@ -3266,11 +3291,11 @@ Identification/Quantification file that meets the following conditions (</span><
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=549 height=90 id="Picture 74"
-src="User_Guide_files/image050.png"></span></p>
+src="User_Guide_files/image053.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103468273"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>36</span></b><b><span lang=EN-US>. The </span></b><b><span
-lang=EN-US style='font-style:normal'>User-provided Identification/Quantification
-file</span><span lang=EN-US> option.</span></b></p>
+lang=EN-US style='font-style:normal'>User-provided
+Identification/Quantification file</span><span lang=EN-US> option.</span></b></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -3296,7 +3321,7 @@ means an alphanumeric identifier.</span></p>
 
 <p class=MsoNormal style='page-break-after:avoid'><span lang=EN-US><img
 border=0 width=566 height=142 id="Picture 39"
-src="User_Guide_files/image051.png"></span></p>
+src="User_Guide_files/image054.png"></span></p>
 
 <p class=MsoCaption style='text-align:justify'><b><span lang=EN-US>Figure </span></b><b><span lang=EN-US>37</span></b><b><span lang=EN-US>. Screenshot of one example of “ID-q.tsv”
 file.</span></b><span lang=EN-US> It shows the quantification columns, an
@@ -3319,7 +3344,7 @@ annots</i> button to indicate the folder that contains the results (</span><span
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=581 height=175 id="Picture 1"
-src="User_Guide_files/image052.png"></span></p>
+src="User_Guide_files/image055.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103468288"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>38</span></b><b><span lang=EN-US>. Preparing the
 Identification/Quantification file from proteomics pipelines.</span></b></p>
@@ -3365,7 +3390,7 @@ file.</span></p>
 
 <p class=MsoNormal align=center style='text-align:center;page-break-after:avoid'><span
 lang=EN-US><img border=0 width=579 height=523 id="Picture 11"
-src="User_Guide_files/image053.png"></span></p>
+src="User_Guide_files/image056.png"></span></p>
 
 <p class=MsoCaption><a name="_Ref103468299"><b><span lang=EN-US>Figure </span></b></a><b><span lang=EN-US>39</span></b><b><span lang=EN-US>. Adapting proteomics pipeline
 results.</span></b><span lang=EN-US> The top panel shows output files from </span><span
@@ -3439,8 +3464,9 @@ as long as you follow the license terms.</span></p>
 <h4><span lang=EN-US>Attribution:</span></h4>
 
 <p class=MsoNormal><span lang=EN-US>You must give appropriate credit, provide a
-link to the license, and indicate if changes were made. You may do so in any reasonable
-manner, but not in any way that suggests the licensor endorses you or your use.</span></p>
+link to the license, and indicate if changes were made. You may do so in any
+reasonable manner, but not in any way that suggests the licensor endorses you
+or your use.</span></p>
 
 <h4><span lang=EN-US>NonCommercial:</span></h4>
 
@@ -3496,10 +3522,10 @@ Using Quantitative Proteomics. Mol Cell Proteomics, 2016. 15(5): p. 1740-60.</sp
 statistical framework for quantitative proteomics by stable isotope labeling. J
 Proteome Res, 2014. 13(3): p. 1234-47.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>[4] Kong, A. T., Leprevost, F. V.,
-Avtonomov, D. M., Mellacheruvu, D., &amp; Nesvizhskii, A. I. (2017). MSFragger:
-ultrafast and comprehensive peptide identification in mass spectrometry–based
-proteomics. Nature Methods, 14(5), 513-520.</span></p>
+<p class=MsoNormal><span lang=EN-US>[4] Kong, A. T., Leprevost, F. V., Avtonomov,
+D. M., Mellacheruvu, D., &amp; Nesvizhskii, A. I. (2017). MSFragger: ultrafast
+and comprehensive peptide identification in mass spectrometry–based proteomics.
+Nature Methods, 14(5), 513-520.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>[5] Eng, J.K., et al., A Deeper Look into
 Comet - Implementation and Features. J Am Soc Mass Spectrom. 2015 Jun 27. doi:
@@ -3514,13 +3540,14 @@ redox proteome using filter-aided sample preparation. </span>J Proteomics 2020,
 214, 103624, doi:10.1016/j.jprot.2019.103624.</p>
 
 <p class=MsoNormal><span lang=ES>[8] Gonzalez-Amor, M., <i>et al.</i> </span><span
-lang=EN-US>Interferon stimulated gene 15 pathway is a novel mediator of endothelial
-dysfunction and aneurysms development in angiotensin II infused mice through
-increased oxidative stress. Cardiovasc Res 2021, doi:10.1093/cvr/cvab321.</span></p>
+lang=EN-US>Interferon stimulated gene 15 pathway is a novel mediator of
+endothelial dysfunction and aneurysms development in angiotensin II infused
+mice through increased oxidative stress. Cardiovasc Res 2021,
+doi:10.1093/cvr/cvab321.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>[9] Navarro, P., <i>et al.</i> A
-multicenter study benchmarks software tools for label-free proteome quantification.
-Nat Biotechnol 2016, 34, 1130-1136, doi:10.1038/nbt.3685.</span></p>
+multicenter study benchmarks software tools for label-free proteome
+quantification. Nat Biotechnol 2016, 34, 1130-1136, doi:10.1038/nbt.3685.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
