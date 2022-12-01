@@ -20,6 +20,7 @@ import numpy as np
 import re
 import concurrent.futures
 import itertools
+import json
 
 
 #########################
@@ -39,6 +40,8 @@ def check_cols_exist(df, ttable):
         '''
         # get unique values from the serie of tags
         tags = tags.unique().tolist()
+        # remove the brackets from the posible tags
+        tags = [ re.sub('\s*\[\s*|\s*\]\s*', '', t) for t in tags ]
         # split by comma if there are multiple tags
         tags = [re.split('\s*,\s*', t) for t in tags if t != '']
         # flat the list of list with unique values
@@ -93,20 +96,33 @@ def preparing_data(df, ttable):
         ttable = tt_sample[1]
         exp = ttable['experiment'].values[0] if 'experiment' in ttable.columns else None
         feat = ttable['feat_col'].values[0] 
+        
         # If level is not in the task-table (WSPP_SBT modules), then 'uscan' is by default.
         level = ttable['level'].values[0] if 'level' in ttable else 'uscan'
         label = ttable['ratio_numerator'].values[0]
         label = re.split('\s*,\s*', label.strip())
         controlTag = ttable['ratio_denominator'].values[0]
-        controlTag = re.split('\s*,\s*', controlTag.strip())
-        flagVab = False
-        # get the unique values for tags
-        params = [ re.split('\s*,\s*', p.strip()) for p in label+controlTag ]
+        
+        # get list of list of samples. For that...
+        # add bracket into string list of not exits
+        controlTag = controlTag if '[' in controlTag and ']' in controlTag else f'[{controlTag}]'
+        # add quotes among elements
+        controlTag = re.sub('\s*\[\s*', '["', controlTag)
+        controlTag = re.sub('\s*\]\s*', '"]', controlTag)
+        controlTag = re.sub('(?!\])\s*,\s*(?!\[)', '","', controlTag)
+        controlTag = f'[{controlTag}]'
+        # get the list of list from json
+        controlTag = json.loads(controlTag)
+        
         # flat the list of list with unique values
-        params = list(set(itertools.chain.from_iterable(params)))
+        params = list(set(itertools.chain.from_iterable([label]+controlTag)))
+        
         # extract the columns from input file
         cols = ['Experiment']+[feat]+params if 'Experiment' in df.columns else [feat]+params
         indata = df[cols]
+        # flag absolute value
+        flagVab = False
+        # create output
         out.append((
             sample,
             exp,
@@ -133,21 +149,28 @@ def calculate_ratio(sample_ttable):
     controlTag = sample_ttable[5]
     flagVab = sample_ttable[6]
     df = sample_ttable[7]
+    # declare tmp df
+    tmpout = pd.DataFrame()
+    
     # filter by experiment
     if exp is not None:
         df = df[df['Experiment']==exp] if 'Experiment' in df.columns else df
-    # declare tmp df
-    tmpout = pd.DataFrame()
-    # if apply, calculate the mean for the numerator tags (list)
-    if len(label) > 1:
-        lb = "-".join(label)+"_Mean"
-        tmpout[lb] = df[label].mean(axis=1)
-    else:
-        lb = label
-        tmpout[lb] = df[label]
+    
+    # get the labels
+    lb = label
+    tmpout[lb] = df[label]
+    
     # calculate the mean for the control tags (denominator)
-    ct = "-".join(controlTag)+"_Mean"
-    tmpout[ct] = df[controlTag].mean(axis=1)
+    # ct = "-".join(controlTag)+"_Mean"
+    # tmpout[ct] = df[controlTag].mean(axis=1)
+    # IS = if( or(count(a1…a4)=0, count(b1…b4)=0), “”, Average(average(a1…a4), average(b1…b4)))
+    ct = "_".join(["Mean_"+"-".join(c) for c in controlTag])
+    tmp = pd.concat([df[c].mean(axis=1) for c in controlTag], axis=1)
+    tmpout[ct] = tmp.mean(axis=1)
+    # apply or(count(a1…a4)=0, count(b1…b4)=0)
+    # get the minimum valuue for each group of mean
+    count_grp = pd.concat([df[c].count(axis=1) for c in controlTag], axis=1).min(axis=1)
+    
     # calculate the Xs
     Xs = tmpout[lb].divide(tmpout[ct], axis=0).applymap(np.log2)
     Xs_header = f"Xs_{Xs.columns.values[0]}_vs_{ct}"
@@ -158,13 +181,17 @@ def calculate_ratio(sample_ttable):
     Vs = (Vs*Xs.notna().values).replace(0,"")
     Vs_header = f"Vs_{Vs.columns.values[0]}_vs_{ct}"
     Vs.columns.values[0] = 'Vs'
-    #calculate the absolute values for all
+    # calculate the absolute values for all
     if flagVab:
         Vab = tmpout[lb]
         Vab = Vab.add_prefix("Vs_").add_suffix("_ABS")
         Vs = Vab
     # extract values
     out = pd.concat([df[feat],Xs,Vs], axis=1)
+    
+    # filter by the mean group of denominator that is equal 0
+    # discard when or(count(a1…a4)=0, count(b1…b4)=0)
+    out = out[count_grp != 0]
     # remove row with any empty columns
     out.replace('', np.nan, inplace=True)
     out.dropna(inplace=True)
@@ -175,6 +202,7 @@ def calculate_ratio(sample_ttable):
     # add the Xs and Vs headers
     out['Xs_header'] = Xs_header
     out['Vs_header'] = Vs_header
+    
     return out
 
 def print_per_sample(df, outdir):
@@ -222,28 +250,47 @@ def main(args):
     df = pd.read_csv(args.infile, sep="\t", low_memory=False)
     
     logging.info("check if the given parameters are available in the input file")
-    ttable = check_cols_exist(df, ttable)
+    try:
+        ttable = check_cols_exist(df, ttable)
+    except Exception as exc:
+        sms = f"ERROR! Checking the column headers: {exc}"
+        logging.error(sms)
+        sys.exit(sms)        
 
     logging.info("preparing the ttable and input file")
-    indata_samples = preparing_data(df, ttable)
+    try:
+        indata_samples = preparing_data(df, ttable)
+    except Exception as exc:
+        sms = f"ERROR! Preparing the data: {exc}"
+        logging.error(sms)
+        sys.exit(sms)
 
     logging.info("calculate the log2-ratios")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:    
-        ddf = executor.map(calculate_ratio, indata_samples )
-    ddf = pd.concat(ddf)
-    # begin: for debugging in Spyder
-    # ddf = calculate_ratio(indata_samples[0])
-    # end: for debugging in Spyder
+    try:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
+            ddf = executor.map(calculate_ratio, indata_samples )
+        ddf = pd.concat(ddf)
+        # begin: for debugging in Spyder
+        # ddf = calculate_ratio(indata_samples[1])
+        # end: for debugging in Spyder
+    except Exception as exc:
+        sms = f"ERROR! Calculating the log2-ratios: {exc}"
+        logging.error(sms)
+        sys.exit(sms)
     
     logging.info('print ratios per sample output')
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
-        executor.map( print_per_sample,
-                                list(ddf.groupby(['sample','level','Xs_header','Vs_header'])),
-                                itertools.repeat(args.outdir) )
-    # begin: for debugging in Spyder
-    # print_per_sample(list(ddf.groupby(['sample','level','Xs_header','Vs_header']))[0], args.outdir)
-    # end: for debugging in Spyder
-
+    try:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
+            executor.map( print_per_sample,
+                                    list(ddf.groupby(['sample','level','Xs_header','Vs_header'])),
+                                    itertools.repeat(args.outdir) )
+        # begin: for debugging in Spyder
+        # print_per_sample(list(ddf.groupby(['sample','level','Xs_header','Vs_header']))[0], args.outdir)
+        # end: for debugging in Spyder
+    except Exception as exc:
+        sms = f"ERROR! Printing the ratios: {exc}"
+        logging.error(sms)
+        sys.exit(sms)
 
 
 
