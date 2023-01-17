@@ -1,4 +1,90 @@
 ___
+## 1.2.7
+```
+DATE: 2023_01
+```
+
+### Highlights
+
++ Improve the User Guide documentation in the iSanXoT help:
+	- Update the documentation.
+	- Divide by sections the documentation in multiple files.
+
++ Update the iSanXoT Wiki:
+	- Add the user guide files.
+ 	- Add the Case studies.
+	- Add the adaptor cases.
+
++ NORCOMBINE:
+	- Changes in the output file names.
+	- Cardenio will recognize the experiment by the name of sample.
+
+### Changes in the Graphical User Interface
+
++ Improve the User Guide documentation in the iSanXoT help.
+		renamed:    app/app/User_Guide.html -> app/app/User_Guide.htm
+		modified:   app/app/User_Guide_files/image002.jpg
+		modified:   app/app/User_Guide_files/image003.png
+		modified:   app/app/User_Guide_files/image004.jpg
+		modified:   app/app/User_Guide_files/image005.png
+		modified:   app/app/User_Guide_files/image006.png
+		modified:   app/app/User_Guide_files/image007.png
+		modified:   app/app/User_Guide_files/image009.png
+		modified:   app/app/User_Guide_files/image010.png
+		modified:   app/app/User_Guide_files/image013.png
+		modified:   app/app/User_Guide_files/image014.png
+		modified:   app/app/User_Guide_files/image019.png
+		modified:   app/app/User_Guide_files/image020.png
+		modified:   app/app/User_Guide_files/image023.png
+		modified:   app/app/User_Guide_files/image024.png
+		modified:   app/app/User_Guide_files/image027.png
+		modified:   app/app/User_Guide_files/image029.png
+		modified:   app/app/User_Guide_files/image031.png
+		modified:   app/app/User_Guide_files/image033.png
+		modified:   app/app/User_Guide_files/image036.png
+		modified:   app/app/User_Guide_files/image039.png
+		modified:   app/app/User_Guide_files/image040.png
+		modified:   app/app/User_Guide_files/image041.png
+		modified:   app/app/User_Guide_files/image044.png
+		modified:   app/app/User_Guide_files/image045.png
+		modified:   app/app/User_Guide_files/image046.png
+		modified:   app/app/User_Guide_files/image047.png
+		modified:   app/app/User_Guide_files/image048.png
+		modified:   app/app/User_Guide_files/image049.png
+		modified:   app/app/User_Guide_files/image050.png
+		modified:   app/app/User_Guide_files/image051.png
+		modified:   app/app/renderer-process/imports.js
+		deleted:    app/app/sections/helps/help_cmds.html
+		deleted:    app/app/sections/helps/help_get-started.html
+		deleted:    app/app/sections/helps/help_intro.html
+		deleted:    app/app/sections/helps/help_wf-basic.html
+		deleted:    app/app/sections/helps/help_wf-lblfree.html
+		deleted:    app/app/sections/helps/help_wf-ptm.html
+
++ LEVEL_CREATOR: Accepts the following operation for the ratio denominator: IS = if( or(count(a1…a4)=0, count(b1…b4)=0), '', Average(average(a1…a4), average(b1…b4)))
+	[Intensity A_01 , Intensity A_02 , Intensity A_03 , Intensity A_04] , [Intensity B_01 , Intensity B_02 , Intensity B_03 , Intensity B_04]
+		modified:   app/resources/src/cmds/createLevels.py
+
+### Changes in the Code Workflow
+
++ Come back in the 'problem': Fix a problem in ProteinAssigner when the pandas does not interpreted the Protein Accessions column as string.
+		renamed:    app/resources/src/cmds/extractQuant.py -> app/resources/src/cmds/extractquant.py
+		modified:   app/resources/src/cmds/ProteinAssigner_v3.py
+
++ Reducing the path in the log report.
+		modified:   app/resources/wfs/table2cfg.py
+
++ NORCOMBINE:
+	- Changes in the file names.
+		modified:   app/resources/wfs/tpl_commands/norcombine.yaml
+	- Cardenio will recognize the experiment by the name of sample.
+		modified:   app/resources/src/cmds/createCardenioTags.py
+
++ Add the option to have multiple samaples in the inputs and the outpus.
+		modified:   app/resources/wfs/table2cfg.py
+
+
+___
 ## 1.2.6-cnic
 ```
 DATE: 2022_10

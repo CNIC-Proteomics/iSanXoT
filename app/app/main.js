@@ -51,7 +51,15 @@ let template = [
       { id: 'help_cmd-wpp-sbt', label: 'WPP-SBT', click() { mainWindow.webContents.send('openHelper', '_WPP-SBT') } },
       { id: 'help_cmd-wppG-sbt', label: 'WPPG-SBT', click() { mainWindow.webContents.send('openHelper', '_WPPG-SBT') } }
     ]},
-    { id: 'input_adaptor', label: 'Input Adaptor', click() { mainWindow.webContents.send('openHelper', '_Adaptors') } },
+    { label: 'Sample Workflows', submenu: [
+      { id: 'help_cmd-wkf-1', label: 'WKF 1: One-step in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_1:_One-step') } },
+      { id: 'help_cmd-wkf-2', label: 'WKF 2: Step-by-step in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_2:_Step-by-step') } },
+      { id: 'help_cmd-wkf-3', label: 'WKF 3: Posttranslationally in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_3:_Quantification') } },
+      { id: 'help_cmd-wkf-4', label: 'WKF 4: Label-free', click() { mainWindow.webContents.send('openHelper', '_Workflow_4:_Label-free') } }
+    ]},
+    { id: 'help_exec-wkf-template', label: 'Executing a workflow template', click() { mainWindow.webContents.send('openHelper', '_Executing_a_workflow') } },
+    { id: 'help_preparing-input', label: 'Creating the input from proteomic pipeline', click() { mainWindow.webContents.send('openHelper', '_Creating_the_identification/quantif') } },
+    { id: 'help_adapting-input', label: 'Input Adaptor', click() { mainWindow.webContents.send('openHelper', '_Adapting_the_results') } },
     { id: 'special_params', label: 'Special Parameters', click() { mainWindow.webContents.send('openHelper', '_Special_parameters') } },
     { id: 'license', label: 'License', click() { mainWindow.webContents.send('openHelper', '_License') } }
   ]},

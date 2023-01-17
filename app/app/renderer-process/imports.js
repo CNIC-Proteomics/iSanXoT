@@ -196,7 +196,7 @@ importHTMLtemplate(`${__dirname}/../sections/processor.html`);
 importHTMLtemplate(`${__dirname}/../sections/logger.html`);
 importHTMLtemplate(`${__dirname}/../sections/immobilizer.html`);
 importHTMLtemplate(`${__dirname}/../sections/loader.html`);
-importHTMLtemplate(`${__dirname}/../User_Guide.htm`, '#User_Guide');
+importHTMLtemplate(`${__dirname}/../sections/help/User_Guide.htm`, '#User_Guide');
 
 // Import scripts
 let exceptor = require('./exceptor');
