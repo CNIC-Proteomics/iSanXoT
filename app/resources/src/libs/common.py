@@ -302,6 +302,18 @@ def rename_tmpfile(f):
     return ofile
 
 
+def create_workspace_from_file(f):
+    '''
+    Create a directory from a file path
+    '''
+    try:
+        d = os.path.dirname(f)
+        if not os.path.exists(d):
+            os.makedirs(d, exist_ok=False)
+    except:
+        return None
+    return None
+
 
 if __name__ == "__main__":
 	print("It is a library used by SanXoT and its adaptor modules")

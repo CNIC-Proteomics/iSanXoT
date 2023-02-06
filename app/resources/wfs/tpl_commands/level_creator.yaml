@@ -22,5 +22,9 @@
             outdir:
               -o: __NAMDIR__
           more_params: ''
-          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/cmds/createLevels.py" -w __NCPU__ __WF_VERBOSE__ '
+          # depending how the parameters are provided:
+          # pfile, the parameters are provided using a file. For that, 'exec_prog.py' is used as a proxy script.
+          # inline, the parameters are provided in the command line. By default.
+          cline_type: 'pfile'
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_WFS_HOME__/exec_prog.py"  "__ISANXOT_SRC_HOME__/cmds/createLevels.py" -w __NCPU__ __WF_VERBOSE__ '
 ###################

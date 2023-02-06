@@ -37,6 +37,41 @@ def read_relfiles(file):
     indat = pd.read_csv(file, sep="\t", usecols=['idinf','idsup','n','tags'], na_values=['NA'], low_memory=False)
     return indat
 
+def parse_arguments(argv):
+    # parse arguments
+    parser = argparse.ArgumentParser(
+        description='Create a file with the list of files by experiment',
+        epilog='''Examples:
+        python  src/SanXoT/createSansonHighLevel.py
+          -ii w1/c2a_outStats.tsv;wt2/c2a_outStats.tsv
+          -o c2a_levels.tsv
+        ''',
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
+    parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple outStats files separated by comma')
+    parser.add_argument('-rr',  '--refiles',  required=True, help='Multiple Relationship file separated by comma')
+    parser.add_argument('-o',   '--outfile',  required=True, help='Output file with the relationship table')
+    parser.add_argument('-t',   '--tags',     help='Multiple Relationship file separated by comma')
+    parser.add_argument('-f',   '--filters',  help='Boolean expression for the filtering of report')
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
+    args = parser.parse_args(argv)
+    
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+
+    # logging debug level. By default, info level
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    else:
+        logging.basicConfig(level=logging.INFO,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    return args
+
 #################
 # Main function #
 #################
@@ -51,11 +86,14 @@ def read_relfiles(file):
 # iv ) Remove all the information (including all the headings) except for the
 #         names of the relevant categories.
 # END: OLD DESCRIPTION --
-def main(args):
+def main(argv):
     '''
     Main function
     '''
     
+    # PARSE ARGUMENTS ---
+    args = parse_arguments(argv)
+
     logging.info("read stats files")
     # indat = pd.read_csv(args.infiles, sep="\t", na_values=['NA'], low_memory=False)
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
@@ -107,38 +145,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    # parse arguments
-    parser = argparse.ArgumentParser(
-        description='Create a file with the list of files by experiment',
-        epilog='''Examples:
-        python  src/SanXoT/createSansonHighLevel.py
-          -ii w1/c2a_outStats.tsv;wt2/c2a_outStats.tsv
-          -o c2a_levels.tsv
-        ''',
-        formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    parser.add_argument('-ii',  '--infiles',  required=True, help='Multiple outStats files separated by comma')
-    parser.add_argument('-rr',  '--refiles',  required=True, help='Multiple Relationship file separated by comma')
-    parser.add_argument('-o',   '--outfile',  required=True, help='Output file with the relationship table')
-    parser.add_argument('-t',   '--tags',     help='Multiple Relationship file separated by comma')
-    parser.add_argument('-f',   '--filters',  help='Boolean expression for the filtering of report')
-    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
-    args = parser.parse_args()
-
-    # get the name of script
-    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
-
-    # logging debug level. By default, info level
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=logging.INFO,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-
     # start main function
     logging.info('start script: '+"{0}".format(" ".join([x for x in sys.argv])))
-    main(args)
+    main(sys.argv[1:])
     logging.info('end script')

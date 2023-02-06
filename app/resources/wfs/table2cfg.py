@@ -530,8 +530,23 @@ def add_params_cline(icmd):
                 cparams = ''
                 for kv,vv in ccprs.items():
                     cparams += '{} "{}" '.format(kv,str(vv)) if str(vv) != '' else '{} '.format(kv)
-            # add the command line
-            rule['cline'] += " "+cparams
+            # depending how the parameters are provided:
+            # the parameters are provided using a file
+            if 'cline_type' in rule and rule['cline_type'] == 'pfile':
+                # create input file with the input arguments
+                pname = f"{cmd['name']}.{rule['name']}.txt"
+                pfile = "{}/{}/{}".format(__CFGDIR__, 'pfiles', pname)
+                # prepare the workspace
+                common.create_workspace_from_file(pfile)
+                with open(pfile, 'w') as file:
+                    file.write(cparams)
+                # provide the file that contains the parameters inside
+                rule['cline'] += f' "{pfile}"'
+            # the parameters are provided in the command line
+            else:
+                # provide the command line parameters
+                rule['cline'] += f" {cparams}"
+
         
 def _get_unmatch_folder(file, outfiles):
     '''
@@ -641,6 +656,7 @@ def main(args):
             sys.exit(sms)
 
     # assign the global variables
+    global __CFGDIR__
     global __EXPDIR__
     global __JOBDIR__
     global __RELDIR__
@@ -649,6 +665,7 @@ def main(args):
     global __STADIR__
     global __IDQFILE__
     global TPL_DATE
+    __CFGDIR__ = args.indir
     __EXPDIR__ = tpl['prj_workspace']['expdir'].replace('\\','/')
     __JOBDIR__ = tpl['prj_workspace']['jobdir'].replace('\\','/')
     __RELDIR__ = tpl['prj_workspace']['reldir'].replace('\\','/')
@@ -693,6 +710,7 @@ def main(args):
     logging.info("replace the constants for the config template and the command templates")
     repl = {        
             '__ISANXOT_SRC_HOME__':       gvars.ISANXOT_SRC_HOME,
+            '__ISANXOT_WFS_HOME__':       gvars.ISANXOT_WFS_HOME,
             '__ISANXOT_PYTHON_EXEC__':    gvars.ISANXOT_PYTHON_EXEC,
             '__ISANXOT_PYTHON_PARAMS__':  gvars.ISANXOT_PYTHON_PARAMS,
             '__ISANXOT_JAVA_EXEC__':      gvars.ISANXOT_JAVA_EXEC,

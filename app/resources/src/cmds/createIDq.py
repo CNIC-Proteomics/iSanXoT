@@ -118,11 +118,60 @@ def print_in_background(df, file):
     df.to_csv(file, index=False, sep="\t", line_terminator='\n')
 
     
+def parse_arguments(argv):
+    # parse arguments
+    parser = argparse.ArgumentParser(
+        description='Create the ID-q (identification and quantification) file for iSanXoT',
+        epilog='''
+        Join the results in a file and include the experiment column. If apply:
+            - Add the level identifiers.
+            - Extract and add the quantifications.
+            - Execute the pRatio: calculate the cXCorr, FDR.
+            - Calculate the most probable protein.
+        ''')
+    parser.add_argument('-w',   '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
+    # input files:
+    # Identification/Quantification input file
+    parser.add_argument('-ii',  '--infile', help='Input Identification/Quantification file')
+    # or
+    # create ID-q from proteomics pipelines
+    parser.add_argument('-id',  '--indir', help='Input Directory where identifications are saved')
+    parser.add_argument('-te',  '--intbl-exp', help='File has the params for the input experiments')
+    parser.add_argument('-tl',  '--intbl-lev', help='File has the params for the level identifiers')
+    # optional parameters:
+    parser.add_argument('-iz',  '--indir-mzml', help='Input Directory where mzML are saved')
+    parser.add_argument('-tq',  '--intbl-quant', help='File has the params for the quantification extraction')
+    parser.add_argument('-tf',  '--intbl-fdr', help='File has the pRatio params')
+    parser.add_argument('-tp',  '--intbl-mpp', help='File has the MPP params')
+    parser.add_argument('-o',   '--outfile', required=True, help='Output file')
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
+    args = parser.parse_args(argv)
+    
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    
+    # logging debug level. By default, info level
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    else:
+        logging.basicConfig(level=logging.INFO,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    return args
 
-def main(args):
+def main(argv):
     '''
     Main function
     '''
+    
+    # PARSE ARGUMENTS ---
+    args = parse_arguments(argv)
+
+
     # GET THE IDQ ---
     
     # provide the IDq and there are any CNIC adaptor: quant, fdr, protein assigner
@@ -284,50 +333,8 @@ def main(args):
 
 
 
-if __name__ == '__main__':    
-    # parse arguments
-    parser = argparse.ArgumentParser(
-        description='Create the ID-q (identification and quantification) file for iSanXoT',
-        epilog='''
-        Join the results in a file and include the experiment column. If apply:
-            - Add the level identifiers.
-            - Extract and add the quantifications.
-            - Execute the pRatio: calculate the cXCorr, FDR.
-            - Calculate the most probable protein.
-        ''')
-    parser.add_argument('-w',   '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    # input files:
-    # Identification/Quantification input file
-    parser.add_argument('-ii',  '--infile', help='Input Identification/Quantification file')
-    # or
-    # create ID-q from proteomics pipelines
-    parser.add_argument('-id',  '--indir', help='Input Directory where identifications are saved')
-    parser.add_argument('-te',  '--intbl-exp', help='File has the params for the input experiments')
-    parser.add_argument('-tl',  '--intbl-lev', help='File has the params for the level identifiers')
-    # optional parameters:
-    parser.add_argument('-iz',  '--indir-mzml', help='Input Directory where mzML are saved')
-    parser.add_argument('-tq',  '--intbl-quant', help='File has the params for the quantification extraction')
-    parser.add_argument('-tf',  '--intbl-fdr', help='File has the pRatio params')
-    parser.add_argument('-tp',  '--intbl-mpp', help='File has the MPP params')
-
-    parser.add_argument('-o',   '--outfile', required=True, help='Output file')
-    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
-    args = parser.parse_args()
-
-    # get the name of script
-    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
-    
-    # logging debug level. By default, info level
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=logging.INFO,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-
+if __name__ == '__main__':
     # start main function
     logging.info('start script: '+"{0}".format(" ".join([x for x in sys.argv])))
-    main(args)
+    main(sys.argv[1:])
     logging.info('end script')

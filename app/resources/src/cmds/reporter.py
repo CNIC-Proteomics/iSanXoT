@@ -236,13 +236,52 @@ def add_relation(idf, file, prefix):
         idf = pd.merge(idf, df, on=[(r,'LEVEL')], how='left')
     return idf
 
+def parse_arguments(argv):
+    # parse arguments
+    parser = argparse.ArgumentParser(
+        description='Program that retrieves the results of iSanXoT',
+        epilog='''
+        Example:
+            python reporter.py
+        ''')
+    parser.add_argument('-ii',  '--infiles',       required=True, help='Multiple input files separated by semicolon')
+    parser.add_argument('-o',   '--outfile',       required=True, help='Output file with the reports')
+    parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
+    parser.add_argument('-v',   '--vars',          help='List of reported variables separated by comma')
+    parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
+    parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
+    parser.add_argument('-d',   '--discard_levels',help='Headers of columns to eliminate separated by comma')
+    parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
+    args = parser.parse_args(argv)
+    
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+
+    # logging debug level. By default, info level
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    else:
+        logging.basicConfig(level=logging.INFO,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    return args
+
 #################
 # Main function #
 #################
-def main(args):
+def main(argv):
     '''
     Main function
     '''
+    
+    # PARSE ARGUMENTS ---
+    args = parse_arguments(argv)
+    
     
     # HANDLE with the parameters ----
     
@@ -377,6 +416,8 @@ def main(args):
 
 
     logging.info("print output file")
+    # create workspace
+    common.create_workspace_from_file(args.outfile)
     # print to tmp file
     f = f"{args.outfile}.tmp"
     df.to_csv(f, sep="\t", index=False)
@@ -388,38 +429,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    # parse arguments
-    parser = argparse.ArgumentParser(
-        description='Program that retrieves the results of iSanXoT',
-        epilog='''
-        Example:
-            python reporter.py
-        ''')
-    parser.add_argument('-ii',  '--infiles',       required=True, help='Multiple input files separated by semicolon')
-    parser.add_argument('-o',   '--outfile',       required=True, help='Output file with the reports')
-    parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
-    parser.add_argument('-v',   '--vars',          help='List of reported variables separated by comma')
-    parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
-    parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
-    parser.add_argument('-d',   '--discard_levels',help='Headers of columns to eliminate separated by comma')
-    parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
-    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
-    args = parser.parse_args()
-
-    # get the name of script
-    script_name = os.path.splitext(os.path.basename(__file__))[0].upper()
-
-    # logging debug level. By default, info level
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=logging.INFO,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-
     # start main function
     logging.info('start script: '+"{0}".format(" ".join([x for x in sys.argv])))
-    main(args)
+    main(sys.argv[1:])
     logging.info('end script')

@@ -31,14 +31,50 @@ col_names = ['idsup', "Xsup", "Vsup"]
 def read_infiles(file):
     indat = pd.read_csv(file, sep="\t", na_values=['NA'], low_memory=False)
     return indat
+
+def parse_arguments(argv):
+    # parse arguments
+    parser = argparse.ArgumentParser(
+        description='Calculate the ratios',
+        epilog='''
+        Example:
+            python calculateRatios.py
+        ''')
+    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
+    parser.add_argument('-ii', '--numfiles',  required=True, help='Input files for the numerator ratio')
+    parser.add_argument('-dd', '--denfiles',  required=True, help='Input files for the denominator ratio')
+    parser.add_argument('-v',  '--v_method', required=True, choices=['form','max','avg'], default='max', help='Type of operation ["form" (Vq = 1/(1/V1+1/V2)), "max ("Vq = Max(V1,V2)), "avg" (Vq = Avg(V1,V2))] (default: %(default)s)')
+    parser.add_argument('-o',  '--outfile',  required=True, help='Output file with the reports')
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
+    args = parser.parse_args(argv)
     
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+
+    # logging debug level. By default, info level
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    else:
+        logging.basicConfig(level=logging.INFO,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    return args
+
+
 #################
 # Main function #
 #################
-def main(args):
+def main(argv):
     '''
     Main function
     '''
+    # PARSE ARGUMENTS ---
+    args = parse_arguments(argv)
+
     logging.info("read 'numaretor' files")
     # df_num = indat = pd.read_csv(args.numfiles, sep="\t", na_values=['NA'], low_memory=False)
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
@@ -101,35 +137,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    # parse arguments
-    parser = argparse.ArgumentParser(
-        description='Calculate the ratios',
-        epilog='''
-        Example:
-            python calculateRatios.py
-        ''')
-    parser.add_argument('-w',  '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    parser.add_argument('-ii', '--numfiles',  required=True, help='Input files for the numerator ratio')
-    parser.add_argument('-dd', '--denfiles',  required=True, help='Input files for the denominator ratio')
-    parser.add_argument('-v',  '--v_method', required=True, choices=['form','max','avg'], default='max', help='Type of operation ["form" (Vq = 1/(1/V1+1/V2)), "max ("Vq = Max(V1,V2)), "avg" (Vq = Avg(V1,V2))] (default: %(default)s)')
-    parser.add_argument('-o',  '--outfile',  required=True, help='Output file with the reports')
-    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
-    args = parser.parse_args()
-
-    # get the name of script
-    script_name = os.path.splitext(os.path.basename(__file__))[0].upper()
-
-    # logging debug level. By default, info level
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-    else:
-        logging.basicConfig(level=logging.INFO,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-
     # start main function
     logging.info('start script: '+"{0}".format(" ".join([x for x in sys.argv])))
-    main(args)
+    main(sys.argv[1:])
     logging.info('end script')
