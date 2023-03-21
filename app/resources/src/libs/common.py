@@ -172,7 +172,7 @@ def filter_dataframe(df, flt):
             idx = pd.eval(flt)
             # extract the dataframe from the index
             if not idx.empty:
-                df_new = df.iloc[idx.index.to_list(),:]
+                df_new = df.loc[idx.index.to_list(),:]
                 df_new = df_new.reset_index()
                 ok = True
             else:
