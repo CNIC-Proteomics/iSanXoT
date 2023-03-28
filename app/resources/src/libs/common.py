@@ -222,7 +222,7 @@ def filter_dataframe_multiindex(df, flt):
             # trim whitespaces and parenthesis
             cmp_str = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_str)
             # extract the variable/operator/values from the logical condition
-            x = re.match(rf"^(.*)\s+({rc})\s+(.*)$", cmp_str)
+            x = re.match(rf"^(.*)\s*({rc})\s*(.*)$", cmp_str)
             if x:
                 var = x.group(1).strip()
                 cmp = x.group(2).strip()
@@ -238,6 +238,10 @@ def filter_dataframe_multiindex(df, flt):
             # remember the columns are multiindex. For example, ('n_protein2category, '126_vs_Mean')
             # This is the reason we have included \(' in the regex
             d = df.filter(regex=f"{vs}", axis=1)
+            # replace empty values with nan
+            d = d.mask(d == '')
+            # fill nan with inf
+            d = d.fillna(np.inf)
         except Exception as exc:
             # not filter
             logging.error(f"It is not filtered. There was a problem getting the columns: {cmp_str}\n{exc}")
