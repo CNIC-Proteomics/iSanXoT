@@ -25,6 +25,7 @@ plat = platform.system()
 ISANXOT_RESOURCES         = os.environ['ISANXOT_RESOURCES']
 ISANXOT_PYTHON_EXEC       = os.environ['ISANXOT_PYTHON_EXEC']
 ISANXOT_SRC_HOME          = os.environ['ISANXOT_SRC_HOME']
+ISANXOT_WFS_HOME          = os.environ['ISANXOT_WFS_HOME']
 
 # Important: We have ignore the warnings because in MacOS appears the followinf messages:
 # UserWarning: Could not import the lzma module. Your installed Python is incomplete. Attempting to use lzma compression will result in a RuntimeError.
@@ -36,18 +37,13 @@ if plat == 'Windows':
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java.exe"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz-2.50.0/bin/dot.exe"
 
-    ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
-
 elif plat == 'Darwin':
     ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz-2.50.0/bin/dot"
     
-    ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
-
 elif plat == 'Linux':
     ISANXOT_LIB_COMMON        = f"{ISANXOT_RESOURCES}/src/libs/"
     ISANXOT_JAVA_EXEC         = f"{ISANXOT_RESOURCES}/exec/java/bin/java"
     ISANXOT_DOT_EXEC          = f"{ISANXOT_RESOURCES}/exec/graphviz-2.50.0/bin/dot"
     
-    ISANXOT_STATS_GETVAR_PY   = f"{ISANXOT_SRC_HOME}/stats/getVariances.py"
