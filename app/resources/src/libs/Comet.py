@@ -27,10 +27,8 @@ def preprocessing_data(df):
     '''
     Pre-processing the data
     '''
-    # rename columns for Quant module
-    df.rename(columns={
-        'scan': 'Scan',
-    }, inplace=True)
+    # add columns for Quant module
+    df['Scan'] = df['scan']
     return df
 
 def targetdecoy(df, tagDecoy, sep):

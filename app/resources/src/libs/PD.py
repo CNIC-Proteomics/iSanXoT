@@ -35,6 +35,8 @@ def preprocessing_data(df):
         'Theo MHplus in Da': 'Theo. MH+ [Da]',
         'Delta M in ppm': 'DeltaM [ppm]',
     }, inplace=True)
+    # add columns for Quant module
+    df['Scan'] = df['First Scan']
     return df
 
 def targetdecoy(df, tagDecoy, sep):

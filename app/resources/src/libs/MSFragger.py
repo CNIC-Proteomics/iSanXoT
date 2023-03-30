@@ -25,10 +25,8 @@ def preprocessing_data(df):
     '''
     Pre-processing the data
     '''
-    # rename columns for Quant module
-    df.rename(columns={
-        'scannum': 'Scan',
-    }, inplace=True)
+    # add columns for Quant module
+    df['Scan'] = df['scannum']
     return df
 
 
