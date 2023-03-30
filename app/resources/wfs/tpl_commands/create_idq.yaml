@@ -25,8 +25,10 @@
               -tq: __TTABLEFILE_ADD_QUANT__
             tt_add_fdr:
               -tf: __TTABLEFILE_FDR__
-            tt_add_mpp:
-              -tp: __TTABLEFILE_PROTEIN_ASSIGNER__
+            tt_add_mpp_fas:
+              -tp: __TTABLEFILE_PROTEIN_ASSIGNER_FASTA__
+            tt_add_mpp_col:
+              -tp: __TTABLEFILE_PROTEIN_ASSIGNER_COLS__
           more_params: ''
           # depending how the parameters are provided:
           # pfile, the parameters are provided using a file. For that, 'exec_prog.py' is used as a proxy script.

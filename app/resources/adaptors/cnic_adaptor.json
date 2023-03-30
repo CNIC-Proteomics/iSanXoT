@@ -83,8 +83,29 @@
         { "type": "required", "id": "lab_decoy", "name": "Decoy label" }
       ]
     },{
-      "id": "protein_assigner",
-      "file": "protein_assigner.tsv",
+      "id": "protein_assigner_fasta",
+      "file": "protein_assigner_fasta.tsv",
+      "settings": {
+        "autoColumnSize": true,
+        "contextMenu": false,
+        "rowHeaders": false,
+        "minRows": 1,
+        "maxRows": 1,
+        "height": "70px"
+      },
+      "params": [
+        { "type": "required", "id": "peptide_col", "name": "Peptide column header" },
+        { "type": "required", "id": "output_col", "name": "Output Protein column header" },
+        { "type": "required", "id": "output_desc_col", "name": "Output Prot. Desc. column header" },
+        { "type": "required", "id": "fasta_file", "name": "Fasta file" },
+        { "type": "required", "id": "label_decoy", "name": "Decoy label" },
+        { "id": "iso_leucine", "name": "Convert the isoleucine to" },
+        { "id": "regex", "name": "Regex to filter in case of ties" },
+        { "id": "len_seq", "name": "Prioritize shortest/longest sequence" }
+      ]
+    },{
+      "id": "protein_assigner_cols",
+      "file": "protein_assigner_cols.tsv",
       "settings": {
         "autoColumnSize": true,
         "contextMenu": false,
@@ -97,9 +118,11 @@
         { "type": "required", "id": "peptide_col", "name": "Peptide column header" },
         { "type": "required", "id": "protein_col", "name": "Protein column header" },
         { "type": "required", "id": "output_col", "name": "Output Protein column header" },
-        { "type": "required", "id": "prot_sep", "name": "Protein separator" },
         { "type": "required", "id": "prot_desc_col", "name": "Prot. Description column header" },
-        { "type": "required", "id": "output_desc_col", "name": "Output Prot. Desc. column header" }
+        { "type": "required", "id": "output_desc_col", "name": "Output Prot. Desc. column header" },
+        { "id": "prot_sep", "name": "Protein separator" },
+        { "id": "regex", "name": "Regex to filter in case of ties" },
+        { "id": "len_seq", "name": "Prioritize shortest/longest sequence" }
       ]
     }]
   }]

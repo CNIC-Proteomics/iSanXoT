@@ -98,7 +98,20 @@
         <label class="form-check-label" for="protein_assigner_check">Run ProteinAssigner</label>
       </div>
       <div class="form-control process-panel">
-        <div id="page-ttable-protein_assigner"></div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="protein_assigner_radio" id="protein_assigner_fasta_radio" checked>
+          <label class="form-check-label" for="protein_assigner_fasta_radio">
+            Using the FASTA mode
+          </label>
+          <div id="page-ttable-protein_assigner_fasta"></div>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="protein_assigner_radio" id="protein_assigner_cols_radio">
+          <label class="form-check-label" for="protein_assigner_cols_radio">
+            Using the Column mode
+          </label>
+          <div id="page-ttable-protein_assigner_cols"></div>
+        </div>
       </div>
     </fieldset> <!-- end MPP panel -->
   </div> <!-- end CREATE_IDQ -->
@@ -365,8 +378,10 @@ function checkAdaptorInputs(exceptor) {
   let c2 = checkInputFile(`#__INDIR__`, `Input folder has not been included`);
   let te = $('#page-ttable-add_expcol .tasktable').handsontable('getData');
   let tq = $('#page-ttable-add_quant .tasktable').handsontable('getData');
-  let tf = $('#page-ttable-fdr .tasktable').handsontable('getData');
-  let tp = $('#page-ttable-protein_assigner .tasktable').handsontable('getData');
+  let tf = $('#page-ttable-fdr .tasktable').handsontable('getData');  
+  let tpf = $('#page-ttable-protein_assigner_fasta .tasktable').handsontable('getData');
+  let tpc = $('#page-ttable-protein_assigner_cols .tasktable').handsontable('getData');
+
   // check the output parameter (mandatory)
   let o = $(`#__OUTDIR__`).val();
   if ( o === undefined || o === '' ) {
@@ -427,9 +442,15 @@ $(document).ready(function() {
   if ( t && t.every(commoner.allBlanks) ) $('#fdr_check').prop("checked",false).trigger('change');
   else $('#fdr_check').prop("checked",true).trigger('change');
 
-  t = $('#page-ttable-protein_assigner .tasktable').handsontable('getData');
-  if ( t && t.every(commoner.allBlanks) ) $('#protein_assigner_check').prop("checked",false).trigger('change');
-  else $('#protein_assigner_check').prop("checked",true).trigger('change');
+  t = $('#page-ttable-protein_assigner_fasta .tasktable').handsontable('getData');
+  t2 = $('#page-ttable-protein_assigner_cols .tasktable').handsontable('getData');
+  if ( t && t.every(commoner.allBlanks) && t2 && t2.every(commoner.allBlanks) ) $('#protein_assigner_check').prop("checked",false).trigger('change');
+  else {    
+    $('#protein_assigner_check').prop("checked",true).trigger('change');
+    if ( !(t && t.every(commoner.allBlanks)) ) $('#protein_assigner_fasta_radio').prop("checked",true).trigger('click');
+    else if ( !(t2 && t2.every(commoner.allBlanks)) ) $('#protein_assigner_cols_radio').prop("checked",true).trigger('click');
+  }
+  
 });
 
 $('button.__MZML_INDIR__').click(function() {
@@ -488,23 +509,48 @@ $('#fdr_check').change(function() {
   }
 });
 $('#protein_assigner_check').change(function() {
-  // get the task-table id
   // get the elem of process-panel
-  let i = 'page-ttable-protein_assigner';
   let e = $(this).parent().next();
   if ( this.checked ) {
     // enable
     $(e).css('pointer-events','inherit').css('opacity','1');
-    $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1'); // task-table
-    // add class to save the table
-    $(`#${i} .hot`).addClass('tasktable');
   }
   else {
     // disable
     $(e).css('pointer-events','none').css('opacity','0.6');
-    $(`#${i} .wtHider`).css('pointer-events','none').css('opacity','0.6'); // task-table
-    // remove class to don't save tbe table
-    $(`#${i} .hot`).removeClass('tasktable');
+  }
+});
+
+$('#protein_assigner_fasta_radio').click(function() {
+  // get the task-table id
+  // get the elem of process-panel
+  let i = 'page-ttable-protein_assigner_fasta';
+  let i2 = 'page-ttable-protein_assigner_cols';
+  let e = $(this).next().next();
+  if ( this.checked ) {
+    // enable this task-table
+    $(e).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .hot`).addClass('tasktable');
+    // disable the OTHER task-table
+    $(`#${i2} .wtHider`).css('pointer-events','none').css('opacity','0.6');
+    $(`#${i2} .hot`).removeClass('tasktable');
+}
+});
+$('#protein_assigner_cols_radio').click(function() {
+  // get the task-table id
+  // get the elem of process-panel
+  let i = 'page-ttable-protein_assigner_cols';
+  let i2 = 'page-ttable-protein_assigner_fasta';
+  let e = $(this).next().next();
+  if ( this.checked ) {
+    // enable this task-table
+    $(e).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1');
+    $(`#${i} .hot`).addClass('tasktable');
+    // disable the OTHER task-table
+    $(`#${i2} .wtHider`).css('pointer-events','none').css('opacity','0.6');
+    $(`#${i2} .hot`).removeClass('tasktable');
   }
 });
 

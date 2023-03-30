@@ -1,4 +1,25 @@
 ___
+## 1.2.8
+```
+DATE: 2023_02
+```
+
+### Highlights
+
++ iSanXoT accepts projects with a huge number of experiments.
+
++ The CNIC adaptor also includes the ProteinAssigner using the FASTA mode with the complete params (regex, len option, etc).
+
++ The addQuantification module of CNIC adaptor accepts more types of TMTs (TMT16plex, TMT18, etc) for the isotopic correction.
+
+### Changes in the Graphical User Interface
+
+
+### Changes in the Code Workflow
+
+
+
+___
 ## 1.2.7
 ```
 DATE: 2023_01

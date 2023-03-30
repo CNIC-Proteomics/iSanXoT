@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 # Module metadata variables
-__author__ = ["Ricardo Magni", "Jose Rodriguez"]
-__credits__ = ["Ricardo Magni", "Jose Rodriguez", "Jesus Vazquez"]
+__author__ = ["Jose Rodriguez", "Ricardo Magni"]
+__credits__ = ["Jose Rodriguez", "Ricardo Magni", "Jesus Vazquez"]
 __license__ = "Creative Commons Attribution-NonCommercial-NoDerivs 4.0 Unported License https://creativecommons.org/licenses/by-nc-nd/4.0/"
 __version__ = "1.0.1"
 __maintainer__ = "Jose Rodriguez"
@@ -18,6 +18,7 @@ import shutil
 import pandas as pd
 import concurrent.futures
 from itertools import repeat
+import re
 
 
 
@@ -28,7 +29,7 @@ sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 import extractquant
 import fdr
-import ProteinAssigner_v3
+import ProteinAssigner_v4
 
 
 
@@ -88,7 +89,7 @@ def add_experiments(n_workers, indir, indata, addSpecFile=False):
             ddf = executor.map( add_exps, indata.values.tolist(), repeat(indir))
     ddf = pd.concat(ddf)
     # begin: for debugging in Spyder
-    # ddf = add_exps(infiles[0], Expt[0] )
+    # ddf = add_exps_specfile(indata.values.tolist()[0], indir )
     # end: for debugging in Spyder
     return ddf
 
@@ -293,36 +294,68 @@ def main(argv):
             sys.exit(sms)
         logging.info("preparing the parametes for protein assigner")
         indata = indata.to_dict('list')
-        if 'peptide_col' in indata and 'protein_col' in indata and 'output_col' in indata:
+        # fasta mode
+        if 'peptide_col' in indata and 'fasta_file' in indata and 'label_decoy' in indata and 'output_col' in indata:
             seq_col = indata['peptide_col'][0]
-            prot_col = indata['protein_col']
-            if 'prot_desc_col' in indata: prot_col += indata['prot_desc_col']
-            prot_col_mpp = indata['output_col']
-            if 'output_desc_col' in indata: prot_col_mpp += indata['output_desc_col']
-            sep_chr = indata['prot_sep'][0] if 'prot_sep' in indata else ';'
-            # {'infile': ['S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/studies/adaptors/BAK_specific_adapters/Comet_CNIC/exps/ID.tsv'], 
-            #  'outfile': ['S:/U_Proteomica/UNIDAD/DatosCrudos/jmrodriguezc/projects/iSanXoT/studies/adaptors/BAK_specific_adapters/Comet_CNIC/exps/ID-mpp.tsv'], 
-            #  'seq_column': 'plain_peptide', 
-            #  'mode': 'column', 
-            #  'n_cores': 8, 
-            #  'column_params': {
-            #      'prot_column': ['Protein_Accessions', 'Protein_Descriptions'],
-            #      'prot_column_mpp': ['Protein_MPP', 'Protein_Desc_MPP'],
-            #      'sep_char': ';'}}
+            fasta_file = indata['fasta_file'][0]
+            prot_col = indata['protein_col'][0] if 'protein_col' in indata else 'PA_accession_candidates'
+            prot_col_dsc = indata['prot_desc_col'][0] if 'prot_desc_col' in indata else 'PA_description_candidates'
+            prot_col_mpp = indata['output_col'][0]
+            prot_col_dsc_mpp = indata['output_desc_col'][0] if 'output_desc_col' in indata else ''
+            label_decoy = indata['label_decoy'][0]
+            isoleu = indata['iso_leucine'][0] if 'iso_leucine' in indata else 'L'
+            regex = indata['regex'][0] if 'regex' in indata else '//'
+            regex = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex.strip('/ '))] # this is heredity from ProteinAssigner program
+            len_seq = int(indata['len_seq'][0]) if 'len_seq' in indata else 0
             paramsDict = {
                 "infile": [tmpfile],
                 "outfile": [tmpfile],
-                "seq_column": seq_col,
-                "mode": "column",
                 "n_cores": args.n_workers,
+                "seq_column": seq_col,                
+                "regex": regex,
+                "len_seq": len_seq,
+                "mpp_a": prot_col_mpp,
+                "mpp_d": prot_col_dsc_mpp,
+                "mode": "fasta",
+                "fasta_params": {
+                    "fasta": fasta_file,
+                    "decoy_prefix": label_decoy,
+                    "iso_leucine": isoleu,
+                    "candidate_a": prot_col,
+                    "candidate_d": prot_col_dsc
+                }
+            }
+        # columns mode
+        elif 'peptide_col' in indata and 'protein_col' in indata and 'output_col' in indata:
+            seq_col = indata['peptide_col'][0]
+            prot_col = indata['protein_col'][0]
+            prot_col_dsc = indata['prot_desc_col'][0] if 'prot_desc_col' in indata else ''
+            sep_chr = indata['prot_sep'][0] if 'prot_sep' in indata else ';'
+            prot_col_mpp = indata['output_col'][0]
+            prot_col_dsc_mpp = indata['output_desc_col'][0] if 'output_desc_col' in indata else ''
+            regex = indata['regex'][0] if 'regex' in indata else '//'
+            regex = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex.strip('/ '))] # this is heredity from ProteinAssigner program
+            len_seq = int(indata['len_seq'][0]) if 'len_seq' in indata else 0
+            paramsDict = {
+                "infile": [tmpfile],
+                "outfile": [tmpfile],
+                "n_cores": args.n_workers,
+                "seq_column": seq_col,
+                "regex": regex,
+                "len_seq": len_seq,
+                "mpp_a": prot_col_mpp,
+                "mpp_d": prot_col_dsc_mpp,
+                "mode": "column",
                 "column_params": {
-                    "prot_column": prot_col,
-                    "prot_column_mpp": prot_col_mpp,
+                    "candidate_a": prot_col,
+                    "candidate_d": prot_col_dsc,
                     "sep_char": sep_chr
                 }
             }
+        if paramsDict:
             logging.info("calculating the MPP")
-            ProteinAssigner_v3.main(paramsDict)
+            logging.debug(paramsDict)
+            ProteinAssigner_v4.main(paramsDict)
 
 
     # rename tmp file deleting before the original file 
