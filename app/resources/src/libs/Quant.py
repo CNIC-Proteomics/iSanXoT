@@ -33,24 +33,78 @@ def correcmatrix(df):
     '''
     if not df.empty:
         try:
+            # get the columns with ONLY the percentage values and tags
+            cols = [c for c in df.columns if c not in ['type_tmt', 'tag', 'reporter_ion']]
+            m = df[cols]
+            # get the tags
+            tags = df[['tag']]
+            
             # extract the type of TMT. Remove leading and trailing whitespaces. Uppercase
             tmt = df['type_tmt'].unique()[0].strip().upper()
-            ### TMT 10plex reporter isotopic Distributions matrix###
-            if tmt == 'TMT10':
-                m = df[["-2","-1","1","2"]].values.T
-                isocorrm = np.array([
-                    [100    , 0      , m[1][2], 0      , m[0][4], 0      , 0      , 0      , 0      , 0      ],
-                    [0      , 100    , 0      , m[1][3], 0      , m[0][5], 0      , 0      , 0      , 0      ],
-                    [m[2][0], 0      , 100    , 0      , m[1][4], 0      , m[0][6], 0      , 0      , 0      ],
-                    [0      , m[2][1], 0      , 100    , 0      , m[1][5], 0      , m[0][7], 0      , 0      ],
-                    [m[3][0], 0      , m[2][2], 0      , 100    , 0      , m[1][6], 0      , m[0][8], 0      ],
-                    [0      , m[3][1], 0      , m[2][3], 0      , 100    , 0      , m[1][7], 0      , m[0][9]],
-                    [0      , 0      , m[3][2], 0      , m[2][4], 0      , 100    , 0      , m[1][8], 0      ],
-                    [0      , 0      , 0      , m[3][3], 0      , m[2][5], 0      , 100    , 0      , m[1][9]],
-                    [0      , 0      , 0      , 0      , m[3][4], 0      , m[2][6], 0      , 100    , 0      ],
-                    [0      , 0      , 0      , 0      , 0      , m[3][5], 0      , m[2][7], 0      , 100    ]
-                ])/100
-            isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
+
+            # create an object that compare the ison distribution and the positions up or down
+            # that determines the tag that wins or loose the interference
+            dist_pos = None
+            if tmt == 'TMT10' or tmt == 'TMT11':
+                # distribution column and the number of cells up or down.
+                # eg. -2 column the cells going 4 position up 4; '1' columns, the cells going 2 positions down
+                dist_pos = {'-2': 4, '-1': 2, 'monoisotopic': 0, '1': -2, '2': -4}
+            elif tmt == 'TMT16' or tmt == 'TMT18':
+                # distribution column and the number of cells up or down.
+                # eg. -2 column the cells going 4 position up 4; '1' columns, the cells going 2 positions down
+                dist_pos = {'-13C_-13C': 4,
+                            '-13C_-15N': 3,
+                            '-13C': 2,
+                            '-15N': 1,
+                            'monoisotopic': 0,
+                            '+15N': -1,
+                            '+13C': -2,
+                            '+15N_+13C': -3,
+                            '+13C_+13C': -4 }
+
+            if dist_pos is not None:
+                # add the tags in the cells where the percentage full down on tag
+                for k,v in dist_pos.items():
+                    tags[k] = tags['tag'].shift(v)
+                # concat the tag labels and the percentage values (in this order!!)
+                m = pd.concat([tags, m], axis=1)
+                
+                # create a matrix with the following pairs: tag_x, tag_y, percentage
+                # for the all comparisons
+                # the column name of tag_y and percentage has the same name
+                ms = []
+                for k in dist_pos.keys():
+                    # get tag_x, tag_y (from key), percentage (from key)
+                    a = m[['tag',k]]
+                    # drop the row with nan
+                    a.dropna(how='any',axis=0, inplace=True)
+                    # rename columns
+                    a.columns = ['tag_y', 'tag_x', 'corr']
+                    # change order columns
+                    a = a[['tag_x', 'tag_y', 'corr']]
+                    # create a list
+                    ms.append(a)
+                m_pos = pd.concat(ms, axis=0)
+                m_pos = m_pos.reset_index(drop=True)
+                
+                # make symetric matrix from list of pairs
+                isocorrm = m_pos.pivot(*m_pos)
+                # sort the index and columns fron the list of tags
+                t = tags['tag'].values
+                isocorrm = isocorrm.reindex(t)
+                isocorrm = isocorrm[t]
+                # fill Nan to 0
+                isocorrm = isocorrm.fillna(0)
+                
+                # convert numpy list of list
+                isocorrm = isocorrm.to_numpy()
+                # percentage to [0,1]
+                isocorrm = isocorrm / 100
+                # normalize
+                isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
+
+            else:
+                tmt,isocorrm = None,[None]
             pass
         except Exception:
             tmt,isocorrm = None,[None]
@@ -81,7 +135,7 @@ def monoisocorrec(b1, isocorrm):
     b1 = nnls(isocorrm, b1.astype("float32"))[0]   
     return b1
 
-def get_quant(spec_mz, spec_int, label, isotag, isocorrm):
+def get_quant(spec_mz, spec_int, isotag, isocorrm):
     '''
     Get ion quantification
     '''
@@ -105,7 +159,7 @@ def get_quant(spec_mz, spec_int, label, isotag, isocorrm):
         else:
             b1.append(b2[0])
     
-    if label == "TMT10":
+    if isinstance(isocorrm, np.ndarray):
         b1 = monoisocorrec(b1, isocorrm)
     
     return b1
@@ -127,7 +181,7 @@ def array_decoder(a, ctype, dtypea):
     else:
         return np.array([])
 
-def get_spectrum_values(elem, label, isotag, isocorrm):
+def get_spectrum_values(elem, isotag, isocorrm):
     '''
     Get the values of spectrum
     '''
@@ -167,19 +221,19 @@ def get_spectrum_values(elem, label, isotag, isocorrm):
     if spec["mslevel"] == 1:
         return None
     else:
-        for i,a in enumerate( get_quant(spec["mz"], spec["i"], label, isotag, isocorrm) ): spec[i] = a        
+        for i,a in enumerate( get_quant(spec["mz"], spec["i"], isotag, isocorrm) ): spec[i] = a        
         del spec["mz"]
         del spec["i"]
         return list(spec.values())
             
 
-def fast_iter(file, label, isotag, isocorrm):
+def fast_iter(file, isotag, isocorrm):
     '''
     For each spectrum element, we get the wanted values.
     '''
     fh = []
     for _, elem in ET.iterparse(file, events=("end",), tag="{http://psi.hupo.org/ms/mzml}spectrum", remove_blank_text=True):
-        fha = get_spectrum_values(elem, label, isotag, isocorrm)        
+        fha = get_spectrum_values(elem, isotag, isocorrm)        
         if fha != None:
             fh.append(fha)
         # It's safe to call clear() here because no descendants will be accessed
@@ -192,40 +246,21 @@ def fast_iter(file, label, isotag, isocorrm):
 
 
     
-def parser_mzML(file, label, isotag, isoname, isocorrm):
+def parser_mzML(file, isotag, isoname, isocorrm):
     '''
     Parse the Mass Espectometry outputs in mzML format.
     '''
-    fh = fast_iter(file, label, isotag, isocorrm)
+    fh = fast_iter(file, isotag, isocorrm)
     return fh
 
-def parser_mz(file, spec_name, label, isotag, isoname, isocorrm, scan_list=None):
+def parser_mz(file, spec_name, isotag, isoname, isocorrm, scan_list=None):
     '''    
     Parse the Mass Espectometry outputs in several formats.
-    
-    Parameters
-    ----------
-    file : TYPE
-        DESCRIPTION.
-    label : TYPE
-        DESCRIPTION.
-    isotag : TYPE
-        DESCRIPTION.
-    isoname : TYPE
-        DESCRIPTION.
-    isocorrm : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    fh : TYPE
-        DESCRIPTION.
-
     '''
     # parse the mz file
     fh = []
     if file is not None and file.strip().endswith('.mzML'):
-        fh = parser_mzML(file, label, isotag, isoname, isocorrm)
+        fh = parser_mzML(file, isotag, isoname, isocorrm)
 
     # create df with the columns of tags
     columns = ["Scan","Quant level"]+isoname
@@ -265,16 +300,12 @@ def prepare_params(tpl):
     idedf = tpl[1]
     indata = tpl[2]
 
-    # extract the quantification files and the experiemnt name
-    # q => [['spectrum_file','mzfile','quan_method']]
+    # extract the files from the spectrum, quantification files and correction
     q = indata[['spectrum_file','mzfile','quan_method']]
     q.rename(columns={'spectrum_file': 'Spectrum_File'}, inplace=True)
-    # s = list(indata['infile'])
-    # q.insert(0,'Spectrum_File', [os.path.basename(x) for x in s])
     q = sorted(q.drop_duplicates().values.tolist(), key=lambda x: x[0]) # sort by the Spectrum_File
 
     # get the list of scans (for each Spectrum file)
-    # a => [['spectrum_file','scan_list']]
     i = idedf[['Scan','Spectrum_File']]
     i = i.drop_duplicates()
     i = i.groupby('Spectrum_File')['Scan'].apply(list).reset_index()
@@ -322,10 +353,10 @@ def extract_quantification(params):
     scan_list = params[3]
     isom = params[4]
     
-    type_tmt,isocorrm = correcmatrix(isom)
+    label_tmt,isocorrm = correcmatrix(isom)
     isoname, isotag = isobaric_labelling(isom)
     if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
-        quant = parser_mz(mzfile, spec_basename, type_tmt, isotag, isoname, isocorrm, scan_list)
+        quant = parser_mz(mzfile, spec_basename, isotag, isoname, isocorrm, scan_list)
     
     return quant
 

@@ -67,9 +67,9 @@ def add_quantification(n_workers, indir, se, ddf, indata):
     # pre-processing the df
     ddf = preprocessing_data(ddf, se)
     
-    # check if mzfile and quan_method columns are fillin. Otherwise, the program does nothing.
+    # check if spectrum_file, mzfile and quan_method columns are fillin. Otherwise, the program does nothing.
     c = indata.columns.tolist()
-    if 'mzfile' in c and 'quan_method' in c and not all(indata['mzfile'].str.isspace()) and not all(indata['quan_method'].str.isspace()):
+    if 'spectrum_file' in c and 'mzfile' in c and 'quan_method' in c and not all(indata['spectrum_file'].str.isspace()) and not all(indata['mzfile'].str.isspace()) and not all(indata['quan_method'].str.isspace()):
         
         
         # if apply, append input directory to file list
