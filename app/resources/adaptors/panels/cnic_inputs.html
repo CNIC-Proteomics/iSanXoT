@@ -509,15 +509,24 @@ $('#fdr_check').change(function() {
   }
 });
 $('#protein_assigner_check').change(function() {
+  // get the task-table id
   // get the elem of process-panel
+  let i = 'page-ttable-protein_assigner_fasta';
+  let i2 = 'page-ttable-protein_assigner_cols';
   let e = $(this).parent().next();
   if ( this.checked ) {
     // enable
     $(e).css('pointer-events','inherit').css('opacity','1');
+    // add class to save the table
+    if ( $('#protein_assigner_fasta_radio').is(':checked') ) $(`#${i} .hot`).addClass('tasktable');
+    if ( $('#protein_assigner_cols_radio').is(':checked') ) $(`#${i2} .hot`).addClass('tasktable');
   }
   else {
     // disable
     $(e).css('pointer-events','none').css('opacity','0.6');
+    // remove class to don't save both table
+    $(`#${i} .hot`).removeClass('tasktable');
+    $(`#${i2} .hot`).removeClass('tasktable');
   }
 });
 
@@ -531,9 +540,11 @@ $('#protein_assigner_fasta_radio').click(function() {
     // enable this task-table
     $(e).css('pointer-events','inherit').css('opacity','1');
     $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1');
+    // add class to save the table
     $(`#${i} .hot`).addClass('tasktable');
     // disable the OTHER task-table
     $(`#${i2} .wtHider`).css('pointer-events','none').css('opacity','0.6');
+    // remove class to don't save tbe table
     $(`#${i2} .hot`).removeClass('tasktable');
 }
 });
@@ -547,9 +558,11 @@ $('#protein_assigner_cols_radio').click(function() {
     // enable this task-table
     $(e).css('pointer-events','inherit').css('opacity','1');
     $(`#${i} .wtHider`).css('pointer-events','inherit').css('opacity','1');
+    // add class to save the table
     $(`#${i} .hot`).addClass('tasktable');
     // disable the OTHER task-table
     $(`#${i2} .wtHider`).css('pointer-events','none').css('opacity','0.6');
+    // remove class to don't save tbe table
     $(`#${i2} .hot`).removeClass('tasktable');
   }
 });
