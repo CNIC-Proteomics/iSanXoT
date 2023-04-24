@@ -206,21 +206,8 @@ def filter_dataframe_multiindex(df, flt):
     Filtered dataframe.
 
     '''
-    # variable with the boolean operators
-    comparisons = ['>=', '<=', '!=', '<>', '==', '>', '<']
-    # logicals = ['\|', '&', '~']
-    logicals = ['&'] # for the moment only works with AND
-    rc = r'|'.join(comparisons)
-    rl = r'|'.join(logicals)
-    # variable with index
-    idx = pd.Series([])
-    
-    # go throught the comparisons
-    comps = re.split(rl,flt)
-    for cmp_str in comps:
+    def _crumble_condition(df, cmp_str):
         try:
-            # trim whitespaces and parenthesis
-            cmp_str = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_str)
             # extract the variable/operator/values from the logical condition
             x = re.match(rf"^(.*)\s*({rc})\s*(.*)$", cmp_str)
             if x:
@@ -244,15 +231,30 @@ def filter_dataframe_multiindex(df, flt):
             d = d.fillna(np.inf)
         except Exception as exc:
             # not filter
-            logging.error(f"It is not filtered. There was a problem getting the columns: {cmp_str}\n{exc}")
-            df_new = df
-            break
+            logging.error(f"There was a problem crumbling the condition: {cmp_str}\n{exc}")
+            d = df
+        return (d, var, cmp, val)
+
+    def _eval_or_condition(df, idx, cmp_str):
+        # crumble the simplest condition (var operator value)
+        (d, var, cmp, val) = _crumble_condition(df, cmp_str)
         try:
-            # evaluate condition
+            # evaluate the condition getting any value
             ix = pd.eval(f"(d {cmp} {val})").any(axis=1)
-            # comparison between two index Series
-            # all -> &
-            # any -> |
+            # comparison between given serie and calculated
+            if not idx.empty:
+                if not ix.empty:
+                    idx = pd.eval("(idx | ix)")
+            else:
+                idx = ix
+        except Exception as exc:
+            # not filter
+            logging.error(f"There was a problem evaling the condition: {cmp_str}\n{exc}")
+        return idx
+
+    def _eval_and_condition(idx, ix):
+        try:
+            # comparison between given serie and calculated
             if not idx.empty:
                 if not ix.empty:
                     idx = pd.eval("(idx & ix)")
@@ -260,21 +262,40 @@ def filter_dataframe_multiindex(df, flt):
                 idx = ix
         except Exception as exc:
             # not filter
-            logging.error(f"It is not filtered. There was a problem evaluating the condition: {cmp_str}\n{exc}")
-            df_new = df
-            break
+            logging.error(f"There was a problem evaling the 'and' condition:\n{exc}")
+        return idx
 
+    # variable with the boolean operators
+    comparisons = ['>=', '<=', '!=', '<>', '==', '>', '<']
+    rc = r'|'.join(comparisons)
+    # variable with index
+    idx_a = pd.Series([])
+    
+    # split the conditions by & operator
+    comps_and = re.split('\&',flt)
+    for cmp_a in comps_and:
+        cmp_a = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_a) # trim whitespaces and parenthesis
+
+        # split the conditions by | operator        
+        comps_or = re.split('\|',cmp_a)
+        idx_o = pd.Series([]) # variable with index for 'or' conditions
+        for cmp_o in comps_or:
+            cmp_o = re.sub(r"^\s*\(\s*|\s*\)\s*$", '', cmp_o) # trim whitespaces and parenthesis
+            # evaluate the 'or' condition
+            idx_o = _eval_or_condition(df, idx_o, cmp_o)
+        # evaluate the 'and' condition
+        idx_a = _eval_and_condition(idx_a, idx_o)
+    
     # extract the dataframe from the index
     try:        
-        if not idx.empty:
-            df_new = df[idx]
+        if not idx_a.empty:
+            df_new = df[idx_a]
     except Exception as exc:
         # not filter
         logging.error(f"It is not filtered. There was a problem extracting the datafram from the index rows: {exc}")
         df_new = df
 
     return df_new
-
 
 def print_tmpfile(df, outfile):
     '''
