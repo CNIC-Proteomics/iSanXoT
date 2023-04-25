@@ -248,7 +248,7 @@ def parse_arguments(argv):
     parser.add_argument('-o',   '--outfile',       required=True, help='Output file with the reports')
     parser.add_argument('-l',   '--level',         required=True, help='Prefix of level. For example, peptide2protein, protein2category, protein2all, etc.')
     parser.add_argument('-v',   '--vars',          help='List of reported variables separated by comma')
-    parser.add_argument('-rp',  '--rep_file',      help='Add intermediate report file')
+    parser.add_argument('-rp',  '--rep_files',     help='Add intermediate report files')
     parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
     parser.add_argument('-d',   '--discard_levels',help='Headers of columns to eliminate separated by comma')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
@@ -334,14 +334,16 @@ def main(argv):
     
     # if apply and there is a relationship, we add an intermediate report
     # check if given additional file exits
-    if args.rep_file:
-        if os.path.isfile(args.rep_file):
-            rep_file = args.rep_file
-        elif os.path.isfile( os.path.join(os.path.dirname(args.outfile), args.rep_file) ):
-            rep_file = os.path.join(os.path.dirname(args.outfile), args.rep_file)
-        if rep_file:
-            logging.info(f"add an intermediate report {rep_file}")
-            df = merge_intermediate(rep_file, df)
+    if args.rep_files:
+        logging.info(f"add an intermediate report {args.rep_files}")
+        for file in re.split(r'\s*;\s*', args.rep_files.strip()):
+            if os.path.isfile(file):
+                rep_file = file
+            elif os.path.isfile( os.path.join(os.path.dirname(args.outfile), file) ):
+                rep_file = os.path.join(os.path.dirname(args.outfile), file)
+            if rep_file:
+                df = merge_intermediate(rep_file, df)
+                
 
  
     # DETERMINE THE TYPE OF COLUMNS ----
