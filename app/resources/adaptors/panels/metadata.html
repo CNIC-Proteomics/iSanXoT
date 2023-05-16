@@ -79,11 +79,15 @@ let inp_dir = url_params.get('inpdir');
 // Init tables
 let cols_tbl_exp = {
   headers: ['File', 'Experiment'],
-  params:   [{}, {readOnly: false}]
+  params:  {readOnly: false}
 };
-let cols_tbl_idi = {
+let cols_tbl_ide = {
   headers: ['Headers to join','Label name'],
-  params:   [{}, {readOnly: false}]
+  params:  {readOnly: false}
+};
+let cols_tbl_int = {
+  headers: ['Intensity Headers','Feature header'],
+  params:  {readOnly: false, minRows: 1, maxRows: 1}
 };
 
 /*
@@ -103,28 +107,30 @@ let exceptor = require( path.join(lib_dir, 'renderer-process/exceptor') );
  */
 
 // Initialize the tables
-function createtHandsonTable(id, headers, cols, data) {
+function createtHandsonTable(id, headers, iparams, data) {
   $(`#${id}`).empty();
   $(`#${id}`).append(`<div name="hot" class="tasktable hot handsontable htRowHeaders htColumnHeaders"></div>`);
-  $(`#${id} .tasktable`).handsontable({
+  let init_params = {
     data: data,
     width: '100%',
     height: '150px',
     colHeaders: headers,
     minCols: headers.length,
     maxCols: headers.length,
-    columns: cols,
+    columns: headers,
     contextMenu: true,
     manualColumnResize: true,
     autoColumnSize: true,
     readOnly: true,
     licenseKey: 'non-commercial-and-evaluation'
-  });
+  };
+  let params = Object.assign(init_params, iparams);
+  $(`#${id} .tasktable`).handsontable(params);
 }
 
 // Get the headers from list of files
 // The headers have to be the same. Otherwise, it is an error
-function getHeaders(files) {
+function getHeaders(files, flagSort=false) {
   let headers = []
   for ( let i=0; i < files.length; i++) {
     let f =  path.join(inp_dir, files[i])
@@ -140,6 +146,10 @@ function getHeaders(files) {
       }
     }
   }
+  // sort alphabetically with numbers at the end
+  if ( flagSort ) {
+    headers = headers.sort((a, b) => isFinite(a[0]) - isFinite(b[0]) || a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }) );
+  }
   return headers;
 };
 
@@ -152,7 +162,7 @@ $(window).on('load', function() {
   for (let i=0; i<files.length; i++) $('#select-input-files').append($('<option>').val(files[i]).text(files[i]));
   // create tables
   createtHandsonTable('select-experiments', cols_tbl_exp.headers, cols_tbl_exp.params, [[]]);
-  createtHandsonTable('select-identifiers', cols_tbl_idi.headers, cols_tbl_idi.params, [[]]);
+  createtHandsonTable('select-identifiers', cols_tbl_ide.headers, cols_tbl_ide.params, [[]]);
 });
 
 
@@ -174,7 +184,7 @@ $('#submit-input-files').click(function() {
     // loading...
     exceptor.loadingWorkflow();
     // get the headers from the list of files
-    let headers = getHeaders(files);
+    let headers = getHeaders(files, flagSort=true);
     // empty and add the files into select
     $('#select-headers').find('option').remove();
     // add headers into select (rebuild)
@@ -214,7 +224,7 @@ $('#add-identifiers').click(function() {
       data_old.push( [headers.join(','), ""] );
       data = data_old;
     }
-    createtHandsonTable('select-identifiers', cols_tbl_idi.headers, cols_tbl_idi.params, data);
+    createtHandsonTable('select-identifiers', cols_tbl_ide.headers, cols_tbl_ide.params, data);
     // stop loading
     exceptor.stopLoadingWorkflow();
   }
@@ -222,7 +232,7 @@ $('#add-identifiers').click(function() {
 
 // Reset identifiers ---
 $('#reset-identifiers').click(function() {
-  createtHandsonTable('select-identifiers', cols_tbl_idi.headers, cols_tbl_idi.params, [[]]);
+  createtHandsonTable('select-identifiers', cols_tbl_ide.headers, cols_tbl_ide.params, [[]]);
 });
 
 // Submit values ---

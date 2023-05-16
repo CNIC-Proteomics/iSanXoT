@@ -30,7 +30,7 @@
         "autoColumnSize": true,
         "contextMenu": true,
         "manualColumnResize": false,
-        "readOnly": true,
+        "readOnly": false,
         "rowHeaders": false,
         "minRows": 0,
         "height": "150px"
@@ -47,7 +47,7 @@
         "autoColumnSize": true,
         "contextMenu": true,
         "manualColumnResize": false,
-        "readOnly": true,
+        "readOnly": false,
         "rowHeaders": false,
         "minRows": 0,
         "height": "150px"

@@ -53,11 +53,11 @@
         </div>
         <div class="row">
           <div class="col-6">
-            <label>Add and name the experiments (read-only table)</label>
+            <label>Add and name the experiments</label>
             <div id="page-ttable-add_expcol"></div>
           </div>
           <div class="col-6">
-            <label>Add the initial level identifiers (read-only table)</label>
+            <label>Add the initial level identifiers</label>
             <div id="page-ttable-add_levelid"></div>
           </div>
         </div>
@@ -255,7 +255,9 @@ $('button.__IDQ_FILE__ ').click(function() {
   });
 });
 $('button.__INDIR__').click(function() {
-  dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] }).then((dirs) => {
+  let param = { properties: ['openDirectory'] };
+  if ($('#__INDIR__').val() !== '') param = { properties: ['openDirectory'] , defaultPath: $('#__INDIR__').val() };
+  dialog.showOpenDialog(mainWindow, param).then((dirs) => {
     let inpt = extractInputDirectoryFile(dirs, `No input directory selected`);
     if ( inpt !== undefined ) {
       inpdir = inpt;
@@ -296,6 +298,7 @@ function newAnnotWindow(input_folder) {
         mainWindow.menuBarVisible = false;
     }
 
+    // debug window (developer tool)
     // annotWindow.webContents.openDevTools();
 
     // create the URL
@@ -313,7 +316,7 @@ function newAnnotWindow(input_folder) {
     });
     // Emitted when the window is starting to be close.
     annotWindow.on('close', function(event) {
-      // enamble the events in the document
+      // enable the events in the document
       document.body.style.pointerEvents = '';
       // show the menu
       mainWindow.menuBarVisible = true;

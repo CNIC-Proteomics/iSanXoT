@@ -16,6 +16,7 @@ import argparse
 import logging
 import shutil
 import pandas as pd
+import numpy as np
 import concurrent.futures
 from itertools import repeat
 import re
@@ -36,26 +37,7 @@ import ProteinAssigner_v4
 ###################
 # Local functions #
 ###################
-def add_exps(indata, indir):
-    '''
-    Pre-processing the data:
-    - add needed columns
-    '''
-    # read input file
-    try:
-        file = common.get_path_file(indata[0], indir)
-        df = pd.read_csv(file, sep="\t")
-    except Exception as exc:
-        sms = "At least, one of input files is wrong: {}".format(exc)
-        logging.error(sms)
-        sys.exit(sms)
-    # add Experiment column
-    if len(indata) > 1:
-        exp = indata[1]
-        df['Experiment'] = exp
-    return df
-
-def add_exps_specfile(indata, indir):
+def add_exps(indata, indir, addExp):
     '''
     Pre-processing the data for CNIC group
     - add needed columns
@@ -73,7 +55,7 @@ def add_exps_specfile(indata, indir):
         exp = indata[1]
         df['Experiment'] = exp
     # add the Spectrum File column from the input file name
-    if 'Spectrum_File' not in df.columns:
+    if addExp and 'Spectrum_File' not in df.columns:
         df['Spectrum_File'] = os.path.basename(file)
     return df
 
@@ -81,15 +63,11 @@ def add_experiments(n_workers, indir, indata, addSpecFile=False):
     '''
     Add experiment column
     '''
-    if addSpecFile:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
-            ddf = executor.map( add_exps_specfile, indata.values.tolist(), repeat(indir))        
-    else:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
-            ddf = executor.map( add_exps, indata.values.tolist(), repeat(indir))
+    with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
+        ddf = executor.map( add_exps, indata.values.tolist(), repeat(indir), repeat(addSpecFile))
     ddf = pd.concat(ddf)
     # begin: for debugging in Spyder
-    # ddf = add_exps_specfile(indata.values.tolist()[0], indir )
+    # ddf = add_exps(indata.values.tolist()[0], indir, addSpecFile)
     # end: for debugging in Spyder
     return ddf
 
@@ -99,7 +77,7 @@ def add_levelids(df, indata):
     - add needed columns
     '''    
     # extract the info of indata
-    hh = list(indata['headers_join'].str.split(','))
+    hh = list(indata['headers_join'].str.split('\s*,\s*'))
     ll = list(indata['label_name'])
     # concatenate multi columns (fast way):
     # extract the columns
@@ -139,6 +117,7 @@ def parse_arguments(argv):
     parser.add_argument('-id',  '--indir', help='Input Directory where identifications are saved')
     parser.add_argument('-te',  '--intbl-exp', help='File has the params for the input experiments')
     parser.add_argument('-tl',  '--intbl-lev', help='File has the params for the level identifiers')
+    parser.add_argument('-tlf', '--intbl-labelfree', help='File has the params for the creation intensity table from label-free')
     # optional parameters:
     parser.add_argument('-iz',  '--indir-mzml', help='Input Directory where mzML are saved')
     parser.add_argument('-tq',  '--intbl-quant', help='File has the params for the quantification extraction')
@@ -197,14 +176,16 @@ def main(argv):
         # exit main
         return None
     # create the IDq from the proteomic pipelines
-    elif args.indir and args.intbl_exp and not args.infile:
+    elif args.indir and not args.infile:
         logging.info("executing CREATE_IDQ module ---")
-        logging.info("reading the experiment task-table")
-        indata = common.read_task_table(args.intbl_exp)
-        if indata.empty:
-            sms = "There is not experiment task-table"
-            logging.error(sms)
-            sys.exit(sms)
+        # add exp cols
+        if args.intbl_exp:
+            logging.info("reading the experiment task-table")
+            indata = common.read_task_table(args.intbl_exp)
+            if indata.empty:
+                sms = "There is not experiment task-table"
+                logging.error(sms)
+                sys.exit(sms)
         logging.info("processing the input file: read, add exp")
         # add the experiment columns
         if args.intbl_quant or args.intbl_fdr:
@@ -222,6 +203,28 @@ def main(argv):
                 sys.exit(sms)
             logging.info("adding level identifiers")
             df = add_levelids(df, indata)
+        # create pivot table based on the intensities (for Label-Free results)
+        if args.intbl_labelfree:
+            logging.info("reading the label-free task-table")
+            indata = common.read_task_table(args.intbl_labelfree)
+            if indata.empty:
+                sms = "There is not labelfree task-table"
+                logging.error(sms)
+                sys.exit(sms)
+            logging.info("creating the pivot table from label-free results")
+            
+            # create the pivot table based on the given parameters
+            given_vals = re.split(r'\s*,\s*', indata.loc[0,'headers_intensities'])
+            given_index = indata.loc[0,'feature_id']
+            # given_cols = re.split(r'\s*,\s*', indata.loc[0,'feature_exp'])
+            given_cols = ['Experiment']
+            # pivot table
+            int_df = pd.pivot_table(df, values=given_vals, index=given_index, columns=given_cols, aggfunc=np.sum, fill_value=0)
+            int_df = int_df.reset_index()
+            # rename columns taking into account the first column is the "index" column from pivot table
+            int_df.columns = [ c[0] if i == 0 else c[1] for i,c in enumerate(int_df.columns)]
+            # merge df's based on "Index" column
+            df = pd.merge(df, int_df, on=given_index)
     else:
         sms = "You have to provide one of two type of inputs: prividing ID-q by user or creating the ID-q from proteomic pipelines"
         logging.error(sms)

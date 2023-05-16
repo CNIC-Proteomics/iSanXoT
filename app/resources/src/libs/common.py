@@ -216,9 +216,8 @@ def filter_dataframe_multiindex(df, flt):
                 val = x.group(3).strip()
                 # use the multi-variables to filter the multiple columns
                 if '@' in var:
-                    v = var.split('@')
-                    var0 = v[1]
-                    vs = r'|'.join([rf"^\('{var0}',\s*'{v}'\)" for v in re.split(r'\s*,\s*', v[0])])
+                    vv = var.split('@')
+                    vs = r'|'.join([rf"^\('{vv[0]}',\s*'{v}'\)" for v in re.split(r'\s*,\s*', vv[1])])
                 else:
                     vs = rf"^\('{var}"
             # filter the column names
@@ -228,7 +227,9 @@ def filter_dataframe_multiindex(df, flt):
             # replace empty values with nan
             d = d.mask(d == '')
             # fill nan with inf
-            d = d.fillna(np.inf)
+            # d = d.fillna(np.inf)
+            # drop will all nana
+            # d = d.dropna(how='all')
         except Exception as exc:
             # not filter
             logging.error(f"There was a problem crumbling the condition: {cmp_str}\n{exc}")

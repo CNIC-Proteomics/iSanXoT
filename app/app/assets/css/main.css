@@ -495,8 +495,8 @@ div[id^="help_"] {
  * ---------------------------------------------------
  */
 
-#page-ttable-add_expcol .wtHider, 
-#page-ttable-add_levelid .wtHider,
+/* #page-ttable-add_expcol .wtHider, 
+#page-ttable-add_levelid .wtHider, */
 #page-ttable-add_quant .wtHider,
 #page-ttable-fdr .wtHider,
 #page-ttable-protein_assigner_fasta .wtHider,
