@@ -218,20 +218,17 @@ def merge_intermediate(file, df):
     
 def add_relation(idf, file, prefix):
     
-    # read relationship file
-    df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
+    # read relationship file using skipinitial attribute which will remove extra space
+    df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], skipinitialspace = True, low_memory=False)
     
-    # get the lower and higher levels
-    (prefix_i,prefix_s) = re.findall(r'^([^2]+)2([^\.]+)', prefix)[0]
+    # get the columns that are LEVELS from the current df
+    cols_idx = [ c[0] for c in idf.columns if c[1] == 'LEVEL' ]
 
-    # check if lower_level is in the RT, or then check if higher_level is in the RT
+    # check if one level is in the RT. If there are multiple, takes the first one
     # then create multiindex for the merging with RT
-    if prefix_i in df.columns:
-        r = prefix_i
-        df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == r else (c,'REL') for c in df.columns])
-        idf = pd.merge(idf, df, on=[(r,'LEVEL')], how='left')
-    elif prefix_s in df.columns:
-        r = prefix_s
+    r = list(set(cols_idx) & set(df.columns))
+    if len(r) > 0:
+        r = r[0] 
         df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == r else (c,'REL') for c in df.columns])
         idf = pd.merge(idf, df, on=[(r,'LEVEL')], how='left')
     return idf
