@@ -110,6 +110,9 @@ def create_relationtables(rt_ttable, cols, df, outdir):
     # remove row with any empty columns based on the 2 first columns
     outdat.replace('', np.nan, inplace=True)
     outdat.dropna(subset=list(outdat.columns[0:2]), inplace=True)
+    # strip whitespace from entire df
+    # create df from the list of series
+    outdat = pd.concat([outdat[c].str.strip() for c in outdat.columns], axis=1)
     # print tmp output file
     outfile = os.path.join(outdir, f"{output}.tsv")
     ofile = common.print_tmpfile(outdat, outfile)
@@ -165,10 +168,6 @@ def main(args):
         logging.info("check input headers exist")
         # check if values of columns exist
         check_cols_exist(df, cols, ttable)
-    
-        # logging.info("preparing the ttable and input file")
-        # rt_ttable = preparing_data(df, ttable)
-
     
         logging.info("create the relation tables")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:    
