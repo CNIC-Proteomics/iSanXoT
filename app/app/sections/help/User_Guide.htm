@@ -1965,7 +1965,8 @@ biological replicates.</b></p>
 <p class=MsoNormal>Experiment merging relies on the “Cardenio” program from the
 SanXoT software package [1],
 which is used to generate merged data files and relation tables that are later
-integrated to the grouped level using “SanXoT” and “SanXoTSieve” (<b>Figure 14</b>).</p>
+integrated to the grouped level using “SanXoT” and “SanXoTSieve” (<b>Figure
+14</b>).</p>
 
 <p class=MsoNormal>&nbsp;</p>
 
@@ -3142,9 +3143,8 @@ c2a_sanxotsieve, c2a_sanxot2</p>
 s2p_sanxotsieve, s2p_sanxot2, p2q_sanxot1, p2q_sanxotsieve, p2q_sanxot2,
 p2g_sanxot1, p2g_sanxotsieve, p2g_sanxot2, q2g_sanxot1, q2g_sanxotsieve,
 q2g_sanxot2, g2c_sanxot1, g2c_sanxotsieve, g2c_sanxot2, p2a_sanxot1,
-p2a_sanxotsieve, p2a_sanxot2, q2a_sanxot1, q2a_sanxotsieve, q2a_sanxot2,
-g2a_sanxot1, g2a_sanxotsieve, g2a_sanxot2, c2a_sanxot1, c2a_sanxotsieve,
-c2a_sanxot2</p>
+p2a_sanxotsieve, p2a_sanxot2, q2a_sanxot1, q2a_sanxotsieve, q2a_sanxot2, g2a_sanxot1,
+g2a_sanxotsieve, g2a_sanxot2, c2a_sanxot1, c2a_sanxotsieve, c2a_sanxot2</p>
 
 <p class=MsoNormal>WPP_SBT: level_creator, klibrate, p2q_sanxot1, p2q_sanxotsieve,
 p2q_sanxot2, q2c_sanxot1, q2c_sanxotsieve, q2c_sanxot2, p2a_sanxot1, p2a_sanxotsieve,
@@ -3168,8 +3168,8 @@ parameter filters the data based on some variables depending on the module.</p>
 <p class=MsoNormal>In the case of REPORT module, the filtered variables are the
 Reported vars: n, Z, FDR, etc. For instance:</p>
 
-<p class=MsoNormal><i>(FDR_category2category &lt; 0.05) &amp; (n_protein2category
-&gt;=5) &amp; (n_protein2category &lt;= 100)</i></p>
+<p class=MsoNormal><i>(FDR_category2category &lt; 0.05) &amp;
+(n_protein2category &gt;=5) &amp; (n_protein2category &lt;= 100)</i></p>
 
 <p class=MsoNormal><i>(FDR_category2category &lt; 0.05) &amp; (Z_protein2proteinall
 &gt;= 2 | Z_protein2proteinall &lt;= -2)</i></p>
@@ -3288,8 +3288,8 @@ alt="A picture containing text, screenshot, font, number&#10;&#10;Description au
 <p class=MsoNormal align=center style='margin-bottom:10.0pt;text-align:center;
 line-height:normal'><a name="_Ref123771182"></a><a name="_Ref129965819"><i><span
 style='color:#BF8F00'>Figure </span></i></a><i><span
-style='color:#BF8F00'>36</span></i><i><span style='color:#BF8F00'>. The
-WSPP-SBT task table for workflow 1.</span></i></p>
+style='color:#BF8F00'>36</span></i><i><span style='color:#BF8F00'>. The WSPP-SBT
+task table for workflow 1.</span></i></p>
 
 <p class=MsoNormal style='text-indent:.5in'>&nbsp;</p>
 
@@ -3366,9 +3366,9 @@ alt="A screenshot of a computer&#10;&#10;Description automatically generated wit
 <p class=MsoNormal align=center style='margin-bottom:10.0pt;text-align:center;
 line-height:normal'><a name="_Ref131431704"><i><span style='color:#BF8F00'>Figure
 </span></i></a><i><span style='color:#BF8F00'>38</span></i><i><span
-style='color:#BF8F00'>. Excerpt from the peptide2protein (A) and protein2category
-(B) relation tables that link peptides to proteins and proteins to categories,
-respectively.</span></i></p>
+style='color:#BF8F00'>. Excerpt from the peptide2protein (A) and
+protein2category (B) relation tables that link peptides to proteins and
+proteins to categories, respectively.</span></i></p>
 
 <p class=MsoNormal>&nbsp;</p>
 
@@ -3425,8 +3425,8 @@ entries. </p>
 
 <p class=MsoListParagraphCxSpMiddle style='margin-bottom:0in;text-indent:-.25in;
 line-height:normal'><span style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span>Add to this table an additional column with the complete
-description of the proteins. </p>
+</span></span>Add to this table an additional column with the complete description
+of the proteins. </p>
 
 <p class=MsoListParagraphCxSpMiddle style='margin-top:0in;margin-right:0in;
 margin-bottom:0in;margin-left:1.0in;text-indent:-.25in;line-height:normal'><span
@@ -3534,8 +3534,8 @@ Discovery Rates (FDR) of the lower level (category).</p>
 
 <p class=MsoListParagraphCxSpMiddle style='margin-bottom:0in;text-indent:-.25in;
 line-height:normal'><span style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span>Add to this table the number of proteins per category, the
-protein changes Zqa and the statistical significance FDRqa of these changes. </p>
+</span></span>Add to this table the number of proteins per category, the protein
+changes Zqa and the statistical significance FDRqa of these changes. </p>
 
 <p class=MsoListParagraphCxSpMiddle style='margin-top:0in;margin-right:0in;
 margin-bottom:0in;margin-left:1.0in;text-indent:-.25in;line-height:normal'><span
@@ -3736,9 +3736,7 @@ calibrates the Vs weights by performing a <i>u_scan-to-peptide integration </i>a
 generates the <i>scan</i> (<i>calibrated scan</i>) files, which contain true,
 calibrated statistical weights (defined in the WSPP model as the inverse of the
 estimated individual scan variances) (<i><span
-style='color:#BF8F00'>Figure 45</span></i><i><span
-style='color:#BF8F00'><b>Error! Reference source not found.</b></span></i>, Top).
-</p>
+style='color:#BF8F00'>Figure 45</span></i>, Top). </p>
 
 <p class=MsoNormal>&nbsp;</p>
 
@@ -3789,27 +3787,24 @@ task table for workflow 2.</p>
 <p class=MsoNormal style='text-indent:.5in'>The INTEGRATE module performs the <i>scan-to-peptide</i>,
 <i>peptide-to-protein</i> and <i>protein-to-proteinall</i> integrations
 according to the module task table (<i><span
-style='color:#BF8F00'>Figure 45</span></i><i><span
-style='color:#BF8F00'><b>Error! Reference source not found.</b></span></i>, Bottom).
-Note that for consistency all the files created for each sample are stored by
-default in the folder indicated in the task table of LEVEL CREATOR module,
-unless otherwise indicated in the Output Sample folder column.</p>
+style='color:#BF8F00'>Figure 45</span></i>, Bottom). Note that for consistency
+all the files created for each sample are stored by default in the folder
+indicated in the task table of LEVEL CREATOR module, unless otherwise indicated
+in the Output Sample folder column.</p>
 
 <p class=MsoNormal style='text-indent:.5in'>Note that the INTEGRATE module
 automatically generates a plot to check the accuracy of the GIA integration
 model in each one of the integration steps. This is done by comparing the
 distribution of Z values with that of the null hypothesis (standard normal
-distribution) (see <span
-style='color:#BF8F00'><b>Error! Reference source not found.</b></span> below,
-left panels). These graphs are stored in the corresponding sample folders (in
-“*_outGraph.png” files). </p>
+distribution) (see <i><span
+style='color:#BF9000'>Figure 49</span></i> below, left panels). These graphs
+are stored in the corresponding sample folders (in “*_outGraph.png” files). </p>
 
 <p class=MsoNormal style='text-indent:.5in'>By default, iSanXoT removes
 integration outliers. To prevent the removal of outlier elements in the <i>protein-to-proteinall</i>
 integration, as these are just the proteins which are significantly altered, a <i>0</i>
 <i>FDR</i> value was indicated in the INTEGRATE task table for this integration
-(<span style='color:#BF8F00'>Figure 45</span><i><span
-style='color:#BF8F00'><b>Error! Reference source not found.</b></span></i>, Bottom).</p>
+(<span style='color:#BF8F00'>Figure 45</span>, Bottom).</p>
 
 <p class=MsoNormal style='text-indent:.5in'>Once protein levels are created,
 workflow 2 uses the NORCOMBINE basic module (<i><span
@@ -3838,9 +3833,9 @@ assumption may not hold in all the cases, it can be easily checked by
 inspecting the test distributions. The NORCOMBINE module (like the INTEGRATE
 module) automatically generates graphs comparing the distribution of the
 integrated Z variables with those of the standard normal distribution. As shown
-in <i><span style='color:#BF8F00'><b>Error! Reference source not found.</b></span></i>
-right, the distribution of protein Z values estimated by the model in the case
-of the ISG15-AngII group agree very well with the null hypothesis,
+in <i><span style='color:#BF9000'>Figure 49</span></i><span style='color:#BF8F00'>
+</span>right, the distribution of protein Z values estimated by the model in
+the case of the ISG15-AngII group agree very well with the null hypothesis,
 demonstrating that the assumption of the model is a good approach to treat the
 biological variance of the samples within this group. Similar results were
 obtained in the other three groups (not shown).</p>
@@ -3935,8 +3930,8 @@ are to be included in the table. However, the “Npep2prot_Quanprot_ISG15_filter
 and “Npep2prot_Quanprot_WT_filtered” tables include the protein changes (Zqa),
 the statistical significance (FDRqa) of these changes, and the number of
 peptides per protein only from the samples indicated in the <i>Sample folder(s)</i>
-column. The report for the ISG15 samples is filtered by Zqa to show the most
-extreme values (greater than 1 or less than -1) but only for the “ISG15-AngIIvsISG15-C”
+column. The report for the ISG15 samples is filtered by Zqa to show the most extreme
+values (greater than 1 or less than -1) but only for the “ISG15-AngIIvsISG15-C”
 sample. Additional filters for the minimum number of peptides per protein are
 also used in these tables. The tables containing category values are filtered
 by Zca (greater than or equal to 2 or less than or equal to -2) and/or by the
@@ -4012,8 +4007,7 @@ instructions.<br clear=all style='page-break-before:always'>
 margin-left:0in;page-break-after:avoid'><a name="_Toc124328449"></a><a
 name="_Workflow_3:_Quantification"></a><b><span style='font-size:20.0pt;
 line-height:107%;font-family:"Calibri Light",sans-serif;color:#BF8F00'>Workflow
-3: Quantification of posttranslationally modified peptides in a labeled
-experiment</span></b></p>
+3: Quantification of posttranslationally modified peptides in a labeled experiment</span></b></p>
 
 <p class=MsoNormal><span lang=EN-GB>&nbsp;</span></p>
 
@@ -4042,9 +4036,10 @@ alt="A picture containing text, diagram, screenshot, line&#10;&#10;Description a
 <p class=MsoNormal align=center style='margin-bottom:10.0pt;text-align:center;
 line-height:normal'><a name="_Ref123772176"><i><span style='color:#BF8F00'>Figure
 </span></i></a><i><span style='color:#BF8F00'>55</span></i><i><span
-style='color:#BF8F00'>. Scheme of workflow 3 (quantification of posttranslationally
-modified peptides in a labeled experiment) showing module components: RELS
-CREATOR (A) and LEVEL CREATOR, LEVEL CALIBRATOR, INTEGRATE, and REPORT (B).</span></i></p>
+style='color:#BF8F00'>. Scheme of workflow 3 (quantification of
+posttranslationally modified peptides in a labeled experiment) showing module
+components: RELS CREATOR (A) and LEVEL CREATOR, LEVEL CALIBRATOR, INTEGRATE,
+and REPORT (B).</span></i></p>
 
 <p class=MsoNormal>&nbsp;</p>
 
@@ -4319,8 +4314,8 @@ statistical weights (right column).</p>
 <p class=MsoNormal>&nbsp;</p>
 
 <p class=MsoNormal style='text-indent:.5in'>The <i>u_peptide</i> level files
-are then calibrated with the LEVEL CALIBRATOR module by performing an integration
-to the protein level (<span
+are then calibrated with the LEVEL CALIBRATOR module by performing an
+integration to the protein level (<span
 class=MsoIntenseEmphasis>Figure 66</span><i>, Top</i>), generating calibrated <i>peptide</i>
 level files. The <i>peptide-to-protein</i> and <i>protein-to-proteinall</i>
 integrations are then performed by the INTEGRATE module according to the module
@@ -4430,12 +4425,11 @@ task table for workflow 4.</p>
 <p class=MsoNormal style='text-indent:.5in'>It is noteworthy that variance
 modelling, normalization, standardization and statistical weighting, according
 to the GIA algorithm, are performed automatically, without data filtering,
-pre-processing or missing value imputation [6]<i><span
-style='color:#BF8F00'><b>Error! Reference source not found.</b></span></i>,
-even in a situation where numerous proteins have highly imbalanced data. Moreover,
-the sigmoid plots automatically generated in each one of the integrations
-performed by INTEGRATE clearly demonstrate that the GIA algorithm accurately
-predicts the distribution of peptide quantifications around their proteins (<span class=MsoIntenseEmphasis>Figure 71</span><span class=MsoIntenseEmphasis>A</span>)
+pre-processing or missing value imputation [6], even in a situation where
+numerous proteins have highly imbalanced data. Moreover, the sigmoid plots
+automatically generated in each one of the integrations performed by INTEGRATE
+clearly demonstrate that the GIA algorithm accurately predicts the distribution
+of peptide quantifications around their proteins (<span class=MsoIntenseEmphasis>Figure 71</span><span class=MsoIntenseEmphasis>A</span>)
 and of protein quantifications around the grand mean (<span class=MsoIntenseEmphasis>Figure 71</span><span class=MsoIntenseEmphasis>B</span>).
 These results demonstrate that this statistical model is very suitable for the
 analysis of label-free data.</p>
