@@ -1,7 +1,7 @@
 ___
 ## 1.2.8
 ```
-DATE: 2023_02
+DATE: 2023_05
 ```
 
 ### Highlights
@@ -10,12 +10,19 @@ DATE: 2023_02
 
 + The CNIC adaptor also includes the ProteinAssigner using the FASTA mode with the complete params (regex, len option, etc).
 
-+ The addQuantification module of CNIC adaptor accepts more types of TMTs (TMT16plex, TMT18, etc) for the isotopic correction.
++ The addQuantification module of CNIC adaptor accepts more types of TMTs (TMT16 and TMT18) for the isotopic correction.
+
++ The REPORT module can filter OR conditions and it also merges multiple report tables at the same time.
+
++ New documentation for the workflow samples.
 
 ### Changes in the Graphical User Interface
 
 
+
+
 ### Changes in the Code Workflow
+
 
 
 
