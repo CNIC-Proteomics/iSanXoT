@@ -28,7 +28,7 @@ iSanXoT maintains the following operating systems and architectures and may add 
 + **MacOs High Sierra** (10.13.6)
 + **Ubuntu 20.04** (x64)
 
-For more details, read the <a href="https://github.com/CNIC-Proteomics/iSanXoT/wiki/User-Guide#Installation" target="_blank">INSTALL</a> file.
+For more details, read the <a href="https://github.com/CNIC-Proteomics/iSanXoT/wiki/Installation" target="_blank">INSTALL</a> file.
 
 ## Help and Documentations
 
