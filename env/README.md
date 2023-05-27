@@ -14,6 +14,24 @@ git clone https://github.com/CNIC-Proteomics/iSanXoT.git
 cd iSanXoT
 ```
 
+<!--
+### Create a new branch with git and manage branches
+	Before creating a new branch, pull the changes from upstream. Your master needs to be up to date.
+	$ git pull
+
+	Create the branch on your local machine and switch in this branch :
+	$ git checkout -b [name_of_your_new_branch]
+
+	Push the branch on github :
+	$ git push origin [name_of_your_new_branch]
+
+### How do I safely merge a Git branch into master?
+	git checkout master
+	git pull origin master
+	git merge develop
+	git push origin master  
+-->
+
 ## Execute iSanXoT in debug mode for Windows distribution
 
 ### Create the python environment: Install just python in the resource folder

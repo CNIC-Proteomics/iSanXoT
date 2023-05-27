@@ -36,13 +36,13 @@ You can read the help and the user guide in the <a href="https://github.com/CNIC
 
 In addition, you can download the iSanXoT User Guides for each release in PDF format:
 
-+ [User_Guide_iSanXoT-1.0.1.pdf](https://github.com/CNIC-Proteomics/iSanXoT/wiki/docs/user_guides/User_Guide_iSanXoT-1.0.1.pdf)
++ [User_Guide_iSanXoT-1.2.8.pdf](https://github.com/CNIC-Proteomics/iSanXoT/wiki/docs/user_guides/User_Guide_iSanXoT-1.2.8.pdf)
 
-## Presentations
+<!-- ## Presentations
 
 You can download some presentations:
 
-+ [Input_Adaptor_iSanXoT_1.0.X.pdf](https://github.com/CNIC-Proteomics/iSanXoT/wiki/docs/presentations/Input_Adaptor_iSanXoT_1.0.X.pdf)
++ [Input_Adaptor_iSanXoT_1.0.X.pdf](https://github.com/CNIC-Proteomics/iSanXoT/wiki/docs/presentations/Input_Adaptor_iSanXoT_1.0.X.pdf) -->
 
 ---
 
