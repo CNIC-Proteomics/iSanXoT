@@ -404,6 +404,12 @@ def main(argv):
         df = common.filter_dataframe_multiindex(df, args.filter)
 
 
+    # REMOVE DUPLICATES ----
+
+    logging.debug("remove duplicates")
+    df.drop_duplicates(inplace=True)
+
+
     # SORT THE COLUMNS AGAIN ----
 
     logging.info("sort again columns")
