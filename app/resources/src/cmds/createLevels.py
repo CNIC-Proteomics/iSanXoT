@@ -94,6 +94,7 @@ def preparing_data(df, ttable):
         # get parameters from ttable
         sample = tt_sample[0]
         ttable = tt_sample[1]
+        forced = ttable['force'].values[0] if 'force' in ttable.columns else None
         exp = ttable['experiment'].values[0] if 'experiment' in ttable.columns else None
         feat = ttable['feat_col'].values[0] 
         
@@ -125,6 +126,7 @@ def preparing_data(df, ttable):
         # create output
         out.append((
             sample,
+            forced,
             exp,
             feat,
             level,
@@ -136,19 +138,43 @@ def preparing_data(df, ttable):
     return out
 
 
+def checking_cached_files(ttable_samples, outdir):
+    '''
+    Checks the cached files and the forced tasks
+    '''
+    # declare output
+    out = []
+    for sample_ttable in ttable_samples:
+        # get parameters from ttable
+        sample = sample_ttable[0]
+        forced = sample_ttable[1]
+        level = sample_ttable[4]
+        # add the task whether is forced
+        if str(forced) == '1':
+            out.append(sample_ttable)
+        else:
+            # add the task whether the output file (level file) does not exist
+            outdir_e = os.path.join(outdir, sample) # get experiment folder
+            ofile = f"{outdir_e}/{level}.tsv"
+            if not os.path.isfile(ofile):
+                out.append(sample_ttable)
+    return out
+
+
 def calculate_ratio(sample_ttable):
     '''
     Calculate ratios: Xs, Vs
     '''
     # get parameters from ttable
     sample = sample_ttable[0]
-    exp = sample_ttable[1]
-    feat = sample_ttable[2]
-    level = sample_ttable[3]
-    label = sample_ttable[4]
-    controlTag = sample_ttable[5]
-    flagVab = sample_ttable[6]
-    df = sample_ttable[7]
+    forced = sample_ttable[1]
+    exp = sample_ttable[2]
+    feat = sample_ttable[3]
+    level = sample_ttable[4]
+    label = sample_ttable[5]
+    controlTag = sample_ttable[6]
+    flagVab = sample_ttable[7]
+    df = sample_ttable[8]
     # declare tmp df
     tmpout = pd.DataFrame()
     
@@ -301,32 +327,43 @@ def main(argv):
         logging.error(sms)
         sys.exit(sms)
 
-    logging.info("calculate the log2-ratios")
+    logging.info("checking the cached files from the ttable")
     try:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
-            ddf = executor.map(calculate_ratio, indata_samples )
-        ddf = pd.concat(ddf)
-        # begin: for debugging in Spyder
-        # ddf = calculate_ratio(indata_samples[1])
-        # end: for debugging in Spyder
+        indata_samples = checking_cached_files(indata_samples, args.outdir)
     except Exception as exc:
-        sms = f"ERROR! Calculating the log2-ratios: {exc}"
+        sms = f"ERROR! Checking the cached files: {exc}"
         logging.error(sms)
         sys.exit(sms)
-    
-    logging.info('print ratios per sample output')
-    try:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
-            executor.map( print_per_sample,
-                                    list(ddf.groupby(['sample','level','Xs_header','Vs_header'])),
-                                    itertools.repeat(args.outdir) )
-        # begin: for debugging in Spyder
-        # print_per_sample(list(ddf.groupby(['sample','level','Xs_header','Vs_header']))[0], args.outdir)
-        # end: for debugging in Spyder
-    except Exception as exc:
-        sms = f"ERROR! Printing the ratios: {exc}"
-        logging.error(sms)
-        sys.exit(sms)
+
+    # execute the given sample data
+    if len(indata_samples) > 0:
+        
+        logging.info("calculate the log2-ratios")
+        try:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
+                ddf = executor.map(calculate_ratio, indata_samples )
+            ddf = pd.concat(ddf)
+            # begin: for debugging in Spyder
+            # ddf = calculate_ratio(indata_samples[1])
+            # end: for debugging in Spyder
+        except Exception as exc:
+            sms = f"ERROR! Calculating the log2-ratios: {exc}"
+            logging.error(sms)
+            sys.exit(sms)
+        
+        logging.info('print ratios per sample output')
+        try:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
+                executor.map( print_per_sample,
+                                        list(ddf.groupby(['sample','level','Xs_header','Vs_header'])),
+                                        itertools.repeat(args.outdir) )
+            # begin: for debugging in Spyder
+            # print_per_sample(list(ddf.groupby(['sample','level','Xs_header','Vs_header']))[0], args.outdir)
+            # end: for debugging in Spyder
+        except Exception as exc:
+            sms = f"ERROR! Printing the ratios: {exc}"
+            logging.error(sms)
+            sys.exit(sms)
 
 
 

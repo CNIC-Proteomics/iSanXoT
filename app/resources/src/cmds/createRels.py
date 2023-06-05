@@ -64,6 +64,30 @@ def check_cols_exist(df, cols, ttable):
         logging.error(sms)
         sys.exit(sms)
 
+
+def checking_cached_files(ttable_rts, outdir):
+    '''
+    Checks the cached relation tables
+    '''
+    # declare output
+    out = []
+    for rt_ttable in ttable_rts:
+        # get parameters from ttable
+        rt_name = rt_ttable[0]
+        ttable = rt_ttable[1]
+        forced = ttable['force'].values[0] if 'force' in ttable.columns else None
+        output = ttable['output'].values[0]
+        # add the task whether is forced
+        if str(forced) == '1':
+            out.append(rt_ttable)
+        else:
+            # add the task whether the output file (level file) does not exist
+            ofile = os.path.join(outdir, f"{output}.tsv")
+            if not os.path.isfile(ofile):
+                out.append(rt_ttable)
+    return out
+
+
 def create_relationtables(rt_ttable, cols, df, outdir):
     '''
     Create the Relation Table files from the task-table
@@ -81,7 +105,7 @@ def create_relationtables(rt_ttable, cols, df, outdir):
 
     '''
     # declare variablers
-    infile = rt_ttable[0]
+    rt_name = rt_ttable[0]
     ttable = rt_ttable[1]
     output = ttable['output'].values[0]
     outdat = pd.DataFrame()
@@ -136,7 +160,7 @@ def main(args):
     # dropping empty rows and empty columns
     # create a dictionary with the concatenation of dataframes for each command
     # {command} = concat.dataframes
-    logging.info("read the parameter table")
+    logging.info("reading the parameter table")
     ttable = common.read_task_table(args.intbl)
     if ttable.empty:
         sms = "There is not task-table"
@@ -144,7 +168,7 @@ def main(args):
         sys.exit(sms)
 
 
-    logging.info("prepare the task-table")
+    logging.info("preparing the task-table")
     # groupby the task-table on input files
     # list of tuple (input file, task-table df)
     # the list is sorted and the 'nan' file (for ID-q) it is at the end
@@ -154,7 +178,7 @@ def main(args):
     
 
 
-    logging.info("extract the columns for the relationship table")
+    logging.info("extracting the columns for the relationship table")
     for rt in task_table:
         # declare variablers
         infile = rt[0]
@@ -162,24 +186,35 @@ def main(args):
         rts = []
         cols = ['inf_headers','sup_headers','thr_headers']
         
-        logging.info(f"read input file: {infile}")
+        logging.info(f"reading input file: {infile}")
         df = pd.read_csv(infile, sep="\t", low_memory=False)
         
-        logging.info("check input headers exist")
+        logging.info("checking input headers exist")
         # check if values of columns exist
         check_cols_exist(df, cols, ttable)
+        
+        logging.info("checking the cached relation tables")
+        try:
+            indata_rts = checking_cached_files(list(ttable.groupby('output')), args.outdir)
+        except Exception as exc:
+            sms = f"ERROR! Checking the cached files: {exc}"
+            logging.error(sms)
+            sys.exit(sms)
     
-        logging.info("create the relation tables")
-        with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:    
-            rts = executor.map(create_relationtables,
-                                list(ttable.groupby('output')),
-                                itertools.repeat(cols),
-                                itertools.repeat(df),
-                                itertools.repeat(args.outdir)
-                            )
-        # begin: for debugging in Spyder
-        # rts = create_relationtables(list(ttable.groupby('output'))[0], cols, df, args.outdir)
-        # end: for debugging in Spyder
+        # execute the given relation tables data
+        if len(indata_rts) > 0:
+
+            logging.info(f"creating the relation tables: {','.join([r[0] for r in indata_rts])}")
+            with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:    
+                rts = executor.map(create_relationtables,
+                                    indata_rts,
+                                    itertools.repeat(cols),
+                                    itertools.repeat(df),
+                                    itertools.repeat(args.outdir)
+                                )
+            # begin: for debugging in Spyder
+            # rts = create_relationtables(list(ttable.groupby('output'))[0], cols, df, args.outdir)
+            # end: for debugging in Spyder
 
 
 
