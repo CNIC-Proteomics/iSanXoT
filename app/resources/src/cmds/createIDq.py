@@ -243,8 +243,8 @@ def main(argv):
         logging.debug(se)
         if not se:
             sms = "The search engines has not been recognized"
-            logging.error(sms)
-            sys.exit(sms)
+            logging.warning(sms)
+            # sys.exit(sms)
 
 
 

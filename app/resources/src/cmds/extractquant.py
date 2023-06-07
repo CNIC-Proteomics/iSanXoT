@@ -57,7 +57,7 @@ def preprocessing_data(df, se):
     elif se == "MSFragger":
         df = MSFragger.preprocessing_data(df)
     else:
-        return None
+        return df
     return df
 
 def add_quantification(n_workers, indir, se, ddf, indata):
