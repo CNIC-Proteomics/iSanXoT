@@ -104,13 +104,13 @@ def correcmatrix(df):
                 isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
 
             else:
-                tmt,isocorrm = None,[None]
+                tmt,isocorrm = None,np.array(None)
             pass
         except Exception:
-            tmt,isocorrm = None,[None]
+            tmt,isocorrm = None,np.array(None)
             pass
     else:
-        tmt,isocorrm = None,[None]
+        tmt,isocorrm = None,np.array(None)
     return tmt,isocorrm
 
 def isobaric_labelling(df):
