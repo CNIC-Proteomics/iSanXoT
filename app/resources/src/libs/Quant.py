@@ -104,13 +104,13 @@ def correcmatrix(df):
                 isocorrm = preprocessing.normalize(isocorrm, axis=0, norm='l1')
 
             else:
-                tmt,isocorrm = None,np.array(None)
+                tmt,isocorrm = None,[None]
             pass
         except Exception:
-            tmt,isocorrm = None,np.array(None)
+            tmt,isocorrm = None,[None]
             pass
     else:
-        tmt,isocorrm = None,np.array(None)
+        tmt,isocorrm = None,[None]
     return tmt,isocorrm
 
 def isobaric_labelling(df):
@@ -355,7 +355,8 @@ def extract_quantification(params):
     
     label_tmt,isocorrm = correcmatrix(isom)
     isoname, isotag = isobaric_labelling(isom)
-    if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
+    # if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
+    if isoname != [None] and isotag != [None]:
         quant = parser_mz(mzfile, spec_basename, isotag, isoname, isocorrm, scan_list)
     
     return quant
