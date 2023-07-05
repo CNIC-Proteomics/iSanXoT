@@ -182,9 +182,8 @@ def getMADDistribution(nextIdX,
 	counter = 0
 	
 	if len(newlist) < medianSide * 2:
-		if verbose:
-			print('Not enough data to perform statistics,')
-			print('len(newlist) = %s, while medianSide = %s' % (str(len(newlist)), str(medianSide)))
+		print('Not enough data to perform statistics,')
+		print('len(newlist) = %s, while medianSide = %s' % (str(len(newlist)), str(medianSide)))
 		sys.exit()
 	
 	for i in range(len(newlist))[medianSide:len(newlist) - medianSide]:
