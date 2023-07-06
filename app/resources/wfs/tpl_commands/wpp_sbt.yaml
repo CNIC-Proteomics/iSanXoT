@@ -79,6 +79,8 @@
             -f: 0.01
           p>q_var(x):
             -v: ''
+          p>q_perc:
+            -c: 10
           p>q_tag:
             --tags: ''
         more_params: ''
@@ -135,6 +137,8 @@
             -f: 0.01
           q>c_var(x):
             -v: ''
+          q>c_perc:
+            -c: 10
         more_params: ''
         cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
       - name: q2c_sanxot2
@@ -188,6 +192,8 @@
             -a: protein2proteinall
           q>a_fdr:
             -f: 0
+          q>a_perc:
+            -c: 10
           q>a_tag:
             --tags: ''
         more_params: ''
@@ -246,6 +252,8 @@
             -f: 0
           c>a_var(x):
             -v: 0
+          c>a_perc:
+            -c: 10
           c>a_tag:
             --tags: ''
         more_params: ''

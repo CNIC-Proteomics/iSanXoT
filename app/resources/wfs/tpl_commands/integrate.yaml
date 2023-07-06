@@ -48,6 +48,8 @@
               -f: 0.01
             var(x):
               -v: ''
+            perc:
+              -c: 10
             tag:
               --tags: ''
           more_params: ''

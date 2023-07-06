@@ -52,7 +52,7 @@
             l>i_tag:
               --tags: ''
           more_params: ''
-          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/sanxotsieve.py" '
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/" '
         - name: l2i_sanxot2
           infiles:
             -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
@@ -113,6 +113,8 @@
               -f: 0
             i>h_var(x):
               -v: 0
+            i>h_perc:
+              -c: 10
             i>h_tag:
               --tags: ''
           more_params: ''
@@ -175,6 +177,8 @@
               -p: __NAMDIR__/__WF_OUTPUT__
             l>h_fdr:
               -f: 0
+            l>h_perc:
+              -c: 10
             l>h_tag:
               --tags: ''
           more_params: ''
