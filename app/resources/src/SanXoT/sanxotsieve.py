@@ -8,17 +8,30 @@ import gc
 from time import strftime
 # begin: jmrc
 import math
+import pandas as pd
+import numpy as np
 # end: jmrc
 
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
+# begin: jmrc
+# TEMPORAL/DELETE!!
+# INFO_PATH = ""
+# end: jmrc
+
 #######################################################
 
 class mode:
-	onlyOne = 1
-	onePerHigher = 2
-
+    onlyOne = 1
+    onePerHigher = 2
+    byPercentage = 3
+    
+    def desc(x):
+        if x == 1: return 'onlyOne'
+        elif x == 2: return 'onePerHigher'
+        elif x == 3: return 'byPercentage'
+    
 #------------------------------------------------------
 
 class higherResult:
@@ -59,6 +72,22 @@ class statsResult:
 		self.nij = nij
 		self.Zij = Zij
 		self.FDRij = FDRij
+
+#------------------------------------------------------
+# begin: jmrc
+
+# Function that converts the list of statsResult To DataFrame
+def convert_outStats_To_DataFrame(outStats):
+    
+    # create a list of lists from the statsResults
+    ss = [ [s.id2,s.Xj,s.Vj,s.id1,s.Xi,s.Vi,s.Wij,s.nij,s.Zij,s.absZij,s.FDRij,s.tags] for s in outStats ]
+    
+    # create the dataframe from the list of lists
+    newOutStats = pd.DataFrame(ss, columns=['id2','Xj','Vj','id1','Xi','Vi','Wij','nij','Zij','absZij','FDRij','tags'])
+    
+    return newOutStats
+
+# end: jmrc
 
 #------------------------------------------------------
 
@@ -109,10 +138,75 @@ def detectRelationWithLeastFDR(statsData, FDRLimit = 0.01, modeUsed = mode.onlyO
 	
 	return relationsToRemove
 
+# begin: jmrc
+def detectRelationWithLeastFDR2(statsDataUnderFDR, modeUsed = mode.onlyOne, percUsed = 10):
+
+	# modes
+	# mode.onePerHigher -> removes one relation for each higher level element, if it has FDR < FDRLimit
+    # mode.byPercentage -> removes the number of outliers based on the percentage of higher elements
+	#***	
+	
+    # From the a list of relationships (lower-higher), mask the first N rows based on the given percentage
+    # capture the outlier relationships between lower-higher integrations.
+    def mask_first_outliers_by_percentage(x):
+        # Return an array of zeros with the same shape and type as a given array
+        relations = np.zeros_like(x)
+        # Get the number of relationships (nij under FDR)
+        num_relations_underFDR = len(relations)
+        # Get the number of total relationships (nij)
+        # The values have to be unique in the series.
+        # If there is not value, then we return 0. If there are multiple values, we return the minimum value.
+        num_relations_total = 0 if len(x.unique()) == 0 else x.unique()[0] if len(x.unique()) == 1 else x.min()
+        # Get the number of relationships based on the given percentage.
+        # If the maximum number is non-integer, there is no need to round it.
+        # For example, if we have 47 elements, the maximum number would be 4.7, 
+        # so we can eliminate up to 4 but cannot eliminate 5. We used "math.floor"
+        num_masks = math.floor(num_relations_total * (percUsed/100))
+        # At least one relationship is masked.
+        # If the number of masked relationships is less than 1, retrieve one.
+        num_masks = 1 if num_masks < 1 else num_masks
+        # The number of masks can not be higher than the number of relationships (nij under FDR)
+        num_masks = num_relations_underFDR if num_masks > num_relations_underFDR else num_masks
+        # These integrations will be masked to true. The rest will be removed.
+        # Assigns the first n elements of a list (relationships) with a value zero (false)
+        relations[:num_masks] = [1] * num_masks
+        # return
+        return relations
+        
+    # Adaptation of the old algorithm that removes one relationship per integration.
+    # To achieve this, we set the used percentage as 0. Therefore, we remove only one outlier per integration.
+    if modeUsed == mode.onePerHigher:
+        percUsed = 0
+    
+    # begin_DEPRECATED: jmrc
+    # # Count the number of lower level for each higher level
+    # count_lowers = statsDataUnderFDR.groupby('id2')['id1'].count()
+    # count_lowers = count_lowers.rename('nij_after_FDR')
+    # # Merge the number of lowe leves into global table
+    # statsDataUnderFDR = statsDataUnderFDR.merge(count_lowers, left_on='id2', right_on='id2')
+    # end_DEPRECATED: jmrc
+    
+    # Sort by higher level, FDR and absolute Z:
+    # The FDR values are ascending. Thus, lower values are at the top.
+    # The absZij values are descending. Thus, higher values are at the top.
+    statsDataUnderFDR = statsDataUnderFDR.sort_values(['id2','FDRij','absZij'], ascending=[True,True,False])
+    
+    # the integrations are grouped by the higher level
+    # for each group, mask the first N relationships based on the given percentage
+    # remember how the rows have been sorted
+    mask = statsDataUnderFDR.groupby(['id2'])['nij'].transform(mask_first_outliers_by_percentage).astype(bool)
+    relationsToRemove = statsDataUnderFDR.loc[mask]
+
+    # Retrieve a list with the relationships
+    relationsToRemove = relationsToRemove[['id2','id1']].values.tolist()
+
+    return relationsToRemove
+
+# end: jmrc
+
 #------------------------------------------------------
 
 def detectOutliers(statsData, FDRLimit = 0.01):
-	
 		
 	relationUnderFDR = []
 	
@@ -126,6 +220,18 @@ def detectOutliers(statsData, FDRLimit = 0.01):
 		# end: jmrc
 
 	return relationUnderFDR
+
+# begin: jmrc
+def detectOutliers2(statsData, FDRLimit = 0.01):
+	
+	# discard the records that has been excluded
+	statsData = statsData[statsData['FDRij'] != 'excluded']
+
+	# filter by the given FDR limit
+	statsDataUnderFDR = statsData[statsData['FDRij'] < FDRLimit]
+    
+	return statsDataUnderFDR
+# end: jmrc
 	
 #------------------------------------------------------
 
@@ -239,6 +345,103 @@ def tagRelationsWithoutOutliers(data, relations, variance, FDRLimit = 0.01, mode
 			
 	return newRelations, removedRelations, logResults
 
+# begin: jmrc
+def tagRelationsWithoutOutliers2(data, relations, variance, FDRLimit = 0.01, modeUsed = mode.onlyOne, percUsed = None, removeDuplicateUpper = False, tags = "!out", outlierTag = "out", logicOperatorsAsWords = False):
+    
+    import timeit	
+    starttime = timeit.default_timer()
+    
+    newRelations = relations[:]
+	
+    removedRelations = []
+    startingLoop = True
+    outliers = []
+    statsDataOutliers = pd.DataFrame()
+
+    # print(f"T0: {starttime}")
+    count = 1
+    while len(outliers) > 0 or startingLoop:
+		
+        sttime = timeit.default_timer()
+        newRelations = stats.addTagToRelations2(newRelations, outliers, outlierTag)
+        # print(f"T1: {timeit.default_timer() - sttime}")
+        
+        sttime = timeit.default_timer()
+        removedRelations.extend(outliers)
+        # print(f"T2: {timeit.default_timer() - sttime}")
+		
+        sttime = timeit.default_timer()
+        newVariance, dummyHigher, newStats, dummyLower, logResults, success = \
+                        sanxot.integrate(data = data,
+								relations = newRelations,
+								varianceSeed = variance,
+								forceParameters = True,
+								removeDuplicateUpper = removeDuplicateUpper,
+								tags = tags,
+								logicOperatorsAsWords = logicOperatorsAsWords)
+        # print(f"T3: {timeit.default_timer() - sttime}")
+        
+        # ---
+        # begin_DEPRECATED: jmrc Used to compare with the old results
+        # sttime = timeit.default_timer()
+        # totOutliers = detectOutliers(newStats, FDRLimit = FDRLimit)
+        # print(f"T4: {timeit.default_timer() - sttime}")
+        
+        # sttime = timeit.default_timer()
+        # outliers = detectRelationWithLeastFDR(newStats, FDRLimit = FDRLimit, modeUsed = modeUsed)
+        # print(f"T5: {timeit.default_timer() - sttime}")
+        
+        # print()
+        # if len(outliers) > 0:
+        #     print("%i outliers found, tagging %i of them as 'out', and recalculating..." % (len(totOutliers), len(outliers)))
+        # else:
+        #     print("No outliers found at %f FDR." % FDRLimit)
+        #     print()
+        # end_DEPRECATED: jmrc Used to compare with the old results
+        # ---
+        
+        sttime = timeit.default_timer()
+        newStats2 = convert_outStats_To_DataFrame(newStats)
+        # print(f"T6: {timeit.default_timer() - sttime}")
+		
+        # filter by FDR and remove the 'excluded' integrations
+        sttime = timeit.default_timer()
+        statsDataUnderFDR = detectOutliers2(newStats2, FDRLimit = FDRLimit)
+        # print(f"T7: {timeit.default_timer() - sttime}")
+        
+        # detect the outliers
+        sttime = timeit.default_timer()
+        outliers = detectRelationWithLeastFDR2(statsDataUnderFDR, modeUsed = modeUsed, percUsed = percUsed)
+        # print(f"T8: {timeit.default_timer() - sttime}")
+		
+        print()
+        if len(outliers) > 0:
+            print("%i outliers found, tagging %i of them as 'out', and recalculating..." % (len(statsDataUnderFDR.index), len(outliers)), flush=True)
+
+            # begin: jmrc
+            # TEMPORAL/DELETE!!
+            # df = pd.DataFrame(outliers)
+            # ofile = os.path.join(INFO_PATH,f"outliers_loop_{count}.tsv")
+            # df.to_csv(ofile, sep="\t", index=False)
+            # ofile2 = os.path.join(INFO_PATH,f"statsData_loop_{count}.tsv")
+            # statsDataUnderFDR.to_csv(ofile2, sep="\t", index=False)
+            # count += 1
+            # end: jmrc
+            
+        else:
+            print("No outliers found at %f FDR." % FDRLimit, flush=True)
+            print()		
+
+        startingLoop = False
+
+        dummyHigher = []
+        newStats = []
+        dummyLower = []
+        totOutliers = []
+        gc.collect()
+			
+    return newRelations, removedRelations, logResults
+
 #------------------------------------------------------
 	
 def printHelp(version = None, advanced = False):
@@ -300,10 +503,8 @@ Usage: sanxotsieve.py -d[data file] -r[relations file] -V[info file] [OPTIONS]""
                        Relations file, with identificators of the higher level
                        in the first column, and identificators of the lower
                        level in the second column.
-   -u, --one-to-one    Remove only one outlier per cycle. This is slightly more
-                       accurate than the default mode (where the outermost
-                       outlier of each category with outliers is removed in
-                       each cycle), but usually exacerbatingly slow.
+   -c, --perc-used     Remove the percentage of outliera per cycle.
+                       Default is 10(%).
    -v, --var, --varianceseed=double
                        Variance used in the concerning integration.
                        Default is 0.001.
@@ -341,7 +542,9 @@ Use -H or --advanced-help for more details.""")
 
 def main(argv):
 	
-	version = "v0.19"
+	# begin: jmrc
+	version = "v0.20"
+	# end: jmrc
 	analysisName = ""
 	analysisFolder = ""
 	varianceSeed = 0.001
@@ -368,11 +571,16 @@ def main(argv):
 	defaultGraphExtension = ".png"
 	verbose = True
 	oldWay = False # instead of tagging outliers, separating relations files, the old way
+	# begin: jmrc
 	modeUsed = mode.onePerHigher
+	percUsed = None
+# 	modeUsed = mode.byPercentage
+# 	percUsed = 10
+	# end: jmrc
 	logList = [["SanXoTSieve " + version], ["Start: " + strftime("%Y-%m-%d %H:%M:%S")]]
 
 	try:
-		opts, args = getopt.getopt(argv, "a:p:v:d:r:n:L:V:f:ubDhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "newrelfile=", "outlierrelfile=", "infofile=", "varfile=", "fdrlimit=", "one-to-one", "no-verbose", "randomise", "removeduplicateupper", "help", "advanced-help", "tags=", "outliertag=", "oldway", "word-operators"])
+		opts, args = getopt.getopt(argv, "a:p:v:d:r:n:L:V:c:f:ubDhH", ["analysis=", "folder=", "varianceseed=", "datafile=", "relfile=", "newrelfile=", "outlierrelfile=", "infofile=", "varfile=", "perc-used=", "fdrlimit=", "one-to-one", "no-verbose", "randomise", "removeduplicateupper", "help", "advanced-help", "tags=", "outliertag=", "oldway", "word-operators"])
 	except getopt.GetoptError:
 		logList.append(["Error while getting parameters."])
 		stats.saveFile(infoFile, logList, "INFO FILE")
@@ -402,8 +610,9 @@ def main(argv):
 			infoFile = arg
 		elif opt in ("-V", "--varfile"):
 			varFile = arg
-		elif opt in ("-u", "--one-to-one"):
-			modeUsed = mode.onlyOne
+		elif opt in ("-c", "--perc-used"):
+			modeUsed = mode.byPercentage
+			percUsed = int(arg)
 		elif opt in ("-b", "--no-verbose"):
 			verbose = False
 		elif opt in ("--oldway"):
@@ -498,9 +707,18 @@ def main(argv):
 		logList.append(["Relations file tagging outliers: " + newRelFile])
 		logList.append(["Tags to filter relations: " + tags])
 		logList.append(["Tag used for outliers: " + outlierTag])
+		logList.append(["Mode used for the detection of outliers: " + mode.desc(modeUsed)])
+		if modeUsed == mode.byPercentage:
+			logList.append(["Percentage used for the detection of outliers: " + str(percUsed)])
 
 	# pp.pprint(logList)
 	# sys.exit()
+
+    # begin: jmrc
+    # TEMPORAL/DELETE!!
+# 	global INFO_PATH
+# 	INFO_PATH = os.path.dirname(infoFile)
+    # end: jmrc
 
 # END REGION: FILE NAMES SETUP
 	
@@ -517,17 +735,29 @@ def main(argv):
 										modeUsed = modeUsed,
 										removeDuplicateUpper = removeDuplicateUpper)
 	else:
+		# begin: jmrc
+# 		newRelations, removedRelations, logResults = \
+# 								tagRelationsWithoutOutliers(data,
+# 										relations,
+# 										varianceSeed,
+# 										FDRLimit = FDRLimit,
+# 										modeUsed = modeUsed,
+# 										removeDuplicateUpper = removeDuplicateUpper,
+# 										tags = tags,
+# 										outlierTag = outlierTag,
+# 										logicOperatorsAsWords = logicOperatorsAsWords)
 		newRelations, removedRelations, logResults = \
-								tagRelationsWithoutOutliers(data,
+								tagRelationsWithoutOutliers2(data,
 										relations,
 										varianceSeed,
 										FDRLimit = FDRLimit,
 										modeUsed = modeUsed,
+										percUsed = percUsed,
 										removeDuplicateUpper = removeDuplicateUpper,
 										tags = tags,
 										outlierTag = outlierTag,
 										logicOperatorsAsWords = logicOperatorsAsWords)
-		
+		# end: jmrc
 	if oldWay:
 		stats.saveFile(newRelFile, newRelations, "idsup\tidinf")
 	else:

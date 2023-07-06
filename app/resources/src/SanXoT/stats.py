@@ -5,6 +5,7 @@ import operator
 import pprint
 import os
 # begin: jmrc
+import pandas as pd
 import matplotlib
 matplotlib.use("agg")
 #end: jmrc
@@ -1207,6 +1208,42 @@ def addTagToRelations(relations, relationsToTag, tagToAdd = "unspecifiedTag"):
 						newRelations[i].append(tagToAdd)
 	
 	return newRelations
+
+# begin: jmrc
+def addTagToRelations2(relations, relationsToTag, tagToAdd = "unspecifiedTag"):    
+    if len(relationsToTag) > 0:
+        # declare the name of columns: higher, lower, tags
+        hl = 'higher'
+        ll = 'lower'
+        tl = 'tags'
+        # convert the list of lists to df ---
+        # create rels
+        rels = pd.DataFrame(relations)
+        rels.columns = [hl,ll,tl] if len(rels.columns) == 3 else [hl,ll]
+        # create tags
+        tags = pd.DataFrame(relationsToTag, columns= [hl,ll])
+        tags[tl] = tagToAdd
+        # merge both df's ---
+        rels = pd.merge(rels, tags, how='left', left_on=[hl,ll], right_on = [hl,ll], suffixes=('_left', '_right'))        
+        # join the tag labels ---
+        # get tag columns        
+        tag_cols = [ t for t in rels.columns if t.startswith(tl) ]
+        if len(tag_cols) == 2:
+            # join the tags labels filling the nan with whitespace
+            rels[tl] = rels[tag_cols[0]].str.cat(rels[tag_cols[1]], sep=',', na_rep='')
+            # remove the last comma
+            rels[tl] = rels[tl].str.replace(',\s*$','',regex=True).replace('^\s*,','',regex=True)
+            # drop the temporal columns
+            rels.drop(columns=[f"{tl}_left", f"{tl}_right"], inplace=True)
+        # fill nan to whitespace ---
+        rels[tl] = rels[tl].fillna('') 
+        # convert the df to list of lists ---
+        newRelations = rels.values.tolist()
+    else:
+         newRelations = relations[:]
+    return newRelations
+
+# end: jmrc
 	
 #------------------------------------------------------
 
