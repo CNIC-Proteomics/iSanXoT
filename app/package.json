@@ -170,6 +170,6 @@
     "start": "electron  --trace-warnings ."
   },
   "devDependencies": {
-    "electron": "13.1.2"
+    "electron": "22.3.21"
   }
 }
