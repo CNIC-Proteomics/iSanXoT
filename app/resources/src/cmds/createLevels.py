@@ -179,8 +179,14 @@ def calculate_ratio(sample_ttable):
     tmpout = pd.DataFrame()
     
     # filter by experiment
-    if exp is not None:
-        df = df[df['Experiment']==exp] if 'Experiment' in df.columns else df
+    # if the task-table contains the experiment value (is not None) and the ID-q contains the 'Experiment' header
+    if exp is not None and 'Experiment' in df.columns:
+        df = df[df['Experiment']==exp]
+    # if the task-table contains the experiment value (is not None) but the ID-q does not contain the 'Experiment' header
+    elif exp is not None and 'Experiment' not in df.columns:
+        df = pd.DataFrame(columns=df.columns)
+    # else if the task-table does not contain the experiment value => do not filter, retrieve the same input dataframe
+        
     
     # get the labels
     lb = label
@@ -351,19 +357,24 @@ def main(argv):
             logging.error(sms)
             sys.exit(sms)
         
-        logging.info('print ratios per sample output')
-        try:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
-                executor.map( print_per_sample,
-                                        list(ddf.groupby(['sample','level','Xs_header','Vs_header'])),
-                                        itertools.repeat(args.outdir) )
-            # begin: for debugging in Spyder
-            # print_per_sample(list(ddf.groupby(['sample','level','Xs_header','Vs_header']))[0], args.outdir)
-            # end: for debugging in Spyder
-        except Exception as exc:
-            sms = f"ERROR! Printing the ratios: {exc}"
-            logging.error(sms)
-            sys.exit(sms)
+        if not ddf.empty:
+            logging.info('print ratios per sample output')
+            try:
+                with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:
+                    executor.map( print_per_sample,
+                                            list(ddf.groupby(['sample','level','Xs_header','Vs_header'])),
+                                            itertools.repeat(args.outdir) )
+                # begin: for debugging in Spyder
+                # print_per_sample(list(ddf.groupby(['sample','level','Xs_header','Vs_header']))[0], args.outdir)
+                # end: for debugging in Spyder
+            except Exception as exc:
+                sms = f"ERROR! Printing the ratios: {exc}"
+                logging.error(sms)
+                sys.exit(sms)
+        else:
+                sms = "ERROR! The levels are empty."
+                logging.error(sms)
+                sys.exit(sms)            
 
 
 
