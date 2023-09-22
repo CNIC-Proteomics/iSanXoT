@@ -81,7 +81,7 @@
             p>q_var(x):
               -v: ''
             p>q_perc:
-              -c: 10
+              -c: 20
             p>q_tag:
               --tags: ''
           more_params: ''
@@ -142,7 +142,7 @@
             q>g_var(x):
               -v: 0
             q>g_perc:
-              -c: 10
+              -c: 20
             q>g_tag:
               --tags: ''
           more_params: ''
@@ -201,7 +201,7 @@
             g>c_var(x):
               -v: ''
             g>c_perc:
-              -c: 10
+              -c: 20
           more_params: ''
           cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
         - name: g2c_sanxot2
@@ -255,7 +255,7 @@
             g>a_fdr:
               -f: 0
             g>a_perc:
-              -c: 10
+              -c: 20
           more_params: ''
           cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/src/SanXoT/sanxotsieve.py" '
         - name: g2a_sanxot2
@@ -314,7 +314,7 @@
             c>a_var(x):
               -v: 0
             c>a_perc:
-              -c: 10
+              -c: 20
             c>a_tag:
               --tags: ''
           more_params: ''
