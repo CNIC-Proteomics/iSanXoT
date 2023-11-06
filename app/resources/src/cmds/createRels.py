@@ -187,7 +187,7 @@ def main(args):
         cols = ['inf_headers','sup_headers','thr_headers']
         
         logging.info(f"reading input file: {infile}")
-        df = pd.read_csv(infile, sep="\t", low_memory=False)
+        df = pd.read_csv(infile, sep="\t", dtype=str, low_memory=False)
         
         logging.info("checking input headers exist")
         # check if values of columns exist
