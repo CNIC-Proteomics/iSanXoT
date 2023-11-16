@@ -1,4 +1,68 @@
 ___
+## 1.2.11
+```
+DATE: 2023_09
+```
+
+### Highlights
+
++ *sanxotsieve* has a new algorithm for tagging outliers based on a percentage. By default, the 20%.
+
+### Changes in the Graphical User Interface
+
+
+### Changes in the Code Workflow
+
++ Fixing a bug in createLevels: If the experiment header does not exist in the ID-q, then report a message log and retrieve an empty dataframe. If the task-table does not contain an experiment value, then do not filter.
+
++ Fixing a bug in createRels: All the columns read in the table files should be treated as 'string' data type. It does not accept float or integer columns.
+
+___
+## 1.2.10
+```
+DATE: 2023_08
+```
+
+### Highlights
+
++ Fixing a bug calling the *sanxotsieve*
+
+### Changes in the Graphical User Interface
+
+
+### Changes in the Code Workflow
+
+
+___
+## 1.2.9
+```
+DATE: 2023_07
+```
+
+### Highlights
+
++ *sanxotsieve* has a new algorithm for tagging outliers based on a percentage.
+
+### Changes in the Graphical User Interface
+
++ The parameter "by-percentage" mode in *sanxotsieve* has been added in the iSanXoT modules.
+
+### Changes in the Code Workflow
+
++ Bug fixed: The input files from the createRels and createLevels programs weren't cached correctly.
+
++ The selection of the type of search engine is now not mandatory. If the search engine is not detected, then we won't preprocess any columns.
+
++ Accept any type of experiment (iTRAQ4, iTRAQ8); however, there is no correction.
+
++ The one-to-one mode from *sanxotsieve* has been deprecated.
+
++ *sanxotsieve* has a new algorithm for tagging outliers based on a percentage.
+In each cycle, the outliers are removed based on a given percentage of each higher element (with outliers).
+
++ The "one-per-higher" mode in *sanxotsieve* has been redeveloped.
+
+___
 ## 1.2.8
 ```
 DATE: 2023_05
@@ -19,12 +83,7 @@ DATE: 2023_05
 ### Changes in the Graphical User Interface
 
 
-
-
 ### Changes in the Code Workflow
-
-
-
 
 ___
 ## 1.2.7
