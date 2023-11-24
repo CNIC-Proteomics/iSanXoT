@@ -179,11 +179,13 @@ function exportProjectCfg(prj_id, prj_dir, cfg_dir, wf) {
       
 // New project folder: open new window that saves the project name in a folder
 function newProject() {
+    // The Modal browser in MacOSX does not work correctly
+    let tmodal = (navigator.platform === "MacIntel") ? false : true;
     let win = new BrowserWindow({
         title: 'Create new project',
         width: 700,
         height: 250,
-        modal: true,
+        modal: tmodal,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
