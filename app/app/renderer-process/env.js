@@ -111,18 +111,21 @@ if (navigator.platform === "Win32") {
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'python.exe');
     requirements_python = path.join(process.env.ISANXOT_RESOURCES, 'env/python/requirements_python_win-x64.txt');
     requirements_exec = path.join(process.env.ISANXOT_RESOURCES, 'env/exec/requirements_exec_win-x64.txt');
+    process.env.ISANXOT_NEW_PROJECT_MODAL = true;
 }
 else if (navigator.platform === "MacIntel") {
     process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-darwin-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
     requirements_python = path.join(process.env.ISANXOT_RESOURCES, 'env/python/requirements_python_darwin-x64.txt');
     requirements_exec = path.join(process.env.ISANXOT_RESOURCES, 'env/exec/requirements_exec_darwin-x64.txt');
+    new_project_window_modal = false; // The Modal browser in MacOSX does not work correctly
 }
 else if (navigator.platform === "Linux x86_64") {
     process.env.ISANXOT_PYTHON_HOME = path.join(process.env.ISANXOT_RESOURCES, 'exec/python-3.9.7-linux-x64');
     process.env.ISANXOT_PYTHON_EXEC = path.join(process.env.ISANXOT_PYTHON_HOME, 'bin/python3');
     requirements_python = path.join(process.env.ISANXOT_RESOURCES, 'env/python/requirements_python_linux-x64.txt');
     requirements_exec = path.join(process.env.ISANXOT_RESOURCES, 'env/exec/requirements_exec_linux-x64.txt');
+    process.env.ISANXOT_NEW_PROJECT_MODAL = true;
 }
 else {
     ipcRenderer.send('get-install', {'code': 601, 'msg':  `Error setting the platform`});
@@ -134,6 +137,7 @@ if ( !fs.existsSync(process.env.ISANXOT_PYTHON_EXEC) ) {
 }
 ipcRenderer.send('send-env', { 'ISANXOT_PYTHON_HOME': process.env.ISANXOT_PYTHON_HOME });
 ipcRenderer.send('send-env', { 'ISANXOT_PYTHON_EXEC': process.env.ISANXOT_PYTHON_EXEC });
+ipcRenderer.send('send-env', { 'ISANXOT_NEW_PROJECT_MODAL': process.env.ISANXOT_NEW_PROJECT_MODAL });
 
 
 // Send environment variables
