@@ -216,6 +216,10 @@ if ( filename == "wf" ) {
     module.exports.prj_cfg = prj_cfg;
     module.exports.wf = wf;
 
+    // Export clipboard variables
+    module.exports.clipboardCache = '';
+    module.exports.sheetclip = new SheetClip();
+
     // add full-body
     require(`./bodied`);
 

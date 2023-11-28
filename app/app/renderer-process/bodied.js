@@ -21,6 +21,8 @@ let prj_dir = importer.prj_dir;
 let wkf_dir  = importer.wkf_dir;
 let prj_cfg  = importer.prj_cfg;
 let wf  = importer.wf;
+let clipboardCache = importer.clipboardCache;
+let sheetclip = importer.sheetclip;
 
 // get env variables
 let adpDir = process.env.ISANXOT_ADAPTOR_HOME;
@@ -237,7 +239,6 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
                 minCols: ttable_data['header'].length,
                 maxCols: ttable_data['header'].length,
                 minSpareRows: 1,
-                contextMenu: true,
                 manualColumnResize: true,
                 autoColumnSize: true,
                 hiddenColumns: {
@@ -295,6 +296,28 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
               $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('updateSettings', ttable['settings'] );
               $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
             }
+            // update the context menu
+            $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('updateSettings', {
+              afterCopy: function(changes) { clipboardCache = sheetclip.stringify(changes); },
+              afterCut: function(changes) { clipboardCache = sheetclip.stringify(changes); },
+              // we want to be sure that our cache is up to date, even if someone pastes data from another source than our tables.
+              afterPaste: function(changes) { clipboardCache = sheetclip.stringify(changes); },
+              contextMenu: ['undo','redo','make_read_only','---------','copy','cut',
+                {
+                  key: 'paste',
+                  name: 'Paste',
+                  disabled: function() {
+                    return clipboardCache.length === 0;
+                  },
+                  callback: function() {
+                    var plugin = this.getPlugin('copyPaste');
+          
+                    this.listen();
+                    plugin.paste(clipboardCache);
+                  }
+                }
+              ],  
+            });
             $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
 
           }
