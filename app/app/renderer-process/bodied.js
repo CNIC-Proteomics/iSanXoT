@@ -302,7 +302,7 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
               afterCut: function(changes) { clipboardCache = sheetclip.stringify(changes); },
               // we want to be sure that our cache is up to date, even if someone pastes data from another source than our tables.
               afterPaste: function(changes) { clipboardCache = sheetclip.stringify(changes); },
-              contextMenu: ['undo','redo','make_read_only','---------','copy','cut',
+              contextMenu: ['undo','redo','make_read_only','---------','remove_col','remove_row','---------','copy','cut',
                 {
                   key: 'paste',
                   name: 'Paste',
