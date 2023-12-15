@@ -109,6 +109,28 @@ ipcRenderer.on('importAdaptor', (event, data) => {
 ipcRenderer.on('openHelper',  (event, data) => {
     helper.openHelper(data);
 });
+ipcRenderer.on('openProcessedProject', function() {
+    // if logtable exists
+    if ( $('#projectlogs .logtable').length ) {
+        // get selected project from Processes section (Project logs table)
+        let logtable = $("#projectlogs .logtable").data('handsontable');
+        if (logtable !== undefined) {
+            // get the selected Row
+            let [selRow,selIdx] = getSelectedRow(logtable);
+            if ( selRow !== undefined ) {
+                // get path from selected selected row
+                let log_path = selRow[5];
+                // get the project dir. It is necessary to be an array
+                let prj_dir = [path.dirname(log_path).replace('/logs','')];
+                if ( prj_dir !== undefined ) {
+                    exceptor.loadingWorkflow(); // loading...
+                    projector.openProject(prj_dir);
+                    // stopLoadingWorkflow function done when the page is loaded
+                }
+            }
+        }
+    }
+});
 
 
 /*
@@ -139,6 +161,14 @@ function setEnableMenuItem(val) {
         mainMenu.getMenuItemById('processes').enabled = val;
         mainMenu.getMenuItemById('processes-main').enabled = val;    
     }
+};
+
+// Enable/Disable the menu items related to workflow
+function setEnableMenuItemSelectedProject(val) {
+    // enable/disable proccesses
+    const { Menu } = require('electron').remote;
+    let mainMenu = Menu.getApplicationMenu();
+    mainMenu.getMenuItemById('open-processed-project').enabled = val;
 };
 
 // Extract the main information from Workflow
@@ -174,11 +204,30 @@ function extractWorkflowAdaptorAttributes() {
 
     return [prj_dir, wkf_dir, adp_dir, prj_cfg, wf];
 }
+// get the Selected Row from a table
+function getSelectedRow(table) {
+    let selRow = undefined, selIdx = undefined;
+    // take into account the table has the restrinction only one row/column (selectionMode: 'single')
+    let selRange = table.getSelected();
+    if ( selRange !== undefined ) {
+        selRange = selRange[0];
+        let r = selRange[0], c = selRange[1], r2 = selRange[2], c2 = selRange[3];
+        // get the data log of selected row
+        if (r == r2) {
+            // get data from selected selected row
+            selRow = table.getDataAtRow(r);
+            selIdx = r;
+        }
+    }
+    return [selRow,selIdx];
+};
 
 // Export the In  the end of the day, calls to `require` returns exactly what `module.exports` is set to.
 module.exports = {
-    doneResizing:               doneResizing,
-    importHTMLtemplate:         importHTMLtemplate
+    doneResizing:                       doneResizing,
+    importHTMLtemplate:                 importHTMLtemplate,
+    setEnableMenuItemSelectedProject:   setEnableMenuItemSelectedProject,
+    getSelectedRow:                     getSelectedRow
 };
 
 
@@ -225,6 +274,10 @@ if ( filename == "wf" ) {
 
     // enable menu items related with workflow
     setEnableMenuItem(true);
+
+    // Disable the menu items related to workflow
+    setEnableMenuItemSelectedProject(false);
+
 }
 else if ( filename == "processes" ) {
     // add the module to process the jobs
@@ -232,6 +285,10 @@ else if ( filename == "processes" ) {
 
     // Disable the menu items related with workflow
     setEnableMenuItem(false);
+
+    // Disable the menu items related to workflow
+    setEnableMenuItemSelectedProject(false);
+
 }
 else if ( filename == "index" ) {
     // for init page (deprecated)
@@ -239,4 +296,8 @@ else if ( filename == "index" ) {
 
     // Disable the menu items related with workflow
     setEnableMenuItem(false);
+
+    // Disable the menu items related to workflow
+    setEnableMenuItemSelectedProject(false);
+
 }

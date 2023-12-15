@@ -127,23 +127,6 @@ function sendChildProcesses() {
     }
 };
 
-function getSelectedRow(logtable) {
-    let selRow = undefined, selIdx = undefined;
-    // take into account the table has the restrinction only one row/column (selectionMode: 'single')
-    let selRange = logtable.getSelected();
-    if ( selRange !== undefined ) {
-        selRange = selRange[0];
-        let r = selRange[0], c = selRange[1], r2 = selRange[2], c2 = selRange[3];
-        // get the data log of selected row
-        if (r == r2) {
-            // get data from selected selected row (PID project)
-            selRow = logtable.getDataAtRow(r);
-            selIdx = r;
-        }
-    }
-    return [selRow,selIdx];
-};
-
 function refreshLogger() {
     // send the new Child Process to IPC Render and save into Session calling callback function
     sendChildProcesses();
@@ -156,7 +139,7 @@ function refreshLogger() {
         let session_pids = JSON.parse( window.sessionStorage.getItem("pids") );
         if ( session_pids !== null ) {
             // get the selected Row
-            let [selRow,selIdx] = getSelectedRow(logtable);
+            let [selRow,selIdx] = importer.getSelectedRow(logtable);
             if ( selRow !== undefined ) {
                 // get data from selected selected row (PID project)
                 let pid = selRow[0];
@@ -222,7 +205,7 @@ if ( document.querySelector('#immobilizer #stop') !== null ) {
         let logtable = $("#projectlogs .logtable").data('handsontable');
         if (logtable !== undefined) {
             // get the selected Row
-            let [selRow,selIdx] = getSelectedRow(logtable);
+            let [selRow,selIdx] = importer.getSelectedRow(logtable);
             if ( selRow !== undefined ) {
                 let pid = selRow[0];
                 // ask to user to kill the processes

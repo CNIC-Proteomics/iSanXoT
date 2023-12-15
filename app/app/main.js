@@ -31,7 +31,8 @@ let template = [
     { id: 'exit', label: 'Exit', accelerator: 'Shift+Ctrl+Q', click() { mainWindow.close() } }
   ]},
   { id: "processes", label: "Processes", submenu: [
-    { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile(path.join(__dirname, 'processes.html')) } }
+    { id: "processes-main", label: 'Main page', enabled: false, click() { mainWindow.loadFile(path.join(__dirname, 'processes.html')) } },
+    { id: 'open-processed-project', label: 'Open Processed Project', enabled: false, click() { mainWindow.webContents.send('openProcessedProject') } }
   ]},
   { label: "Help", submenu: [
     { id: 'help_intro', label: 'Introduction', click() { mainWindow.webContents.send('openHelper', '_Introduction') } },

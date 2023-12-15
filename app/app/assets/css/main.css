@@ -216,9 +216,6 @@ input:disabled, button:disabled {
 #workflowlogs .logtable {
     margin-bottom: 5px;
 }
-#workflowlogs .logtable tbody {
-    cursor: pointer;
-}
 
 /*
  * ---------------------------------------------------

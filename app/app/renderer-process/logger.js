@@ -7,7 +7,7 @@ let path = require('path');
 
 let importer = require('./imports');
 let commoner = require('./common');
-const { waitForDebugger } = require('inspector');
+// const { waitForDebugger } = require('inspector');
 
 /*
  * Local functions
@@ -182,7 +182,7 @@ class logger {
                     let cmd_index = commoner.getIndexParamsWithAttr(data.cmds, 'command', cmd);
                     // update data: get the first values from the the first started rule
                     if ( cmd_index !== undefined ) {
-                        data.cmds[cmd_index].status = 'running';
+                        data.cmds[cmd_index].status = '<span status="running">running</span>';
                         if ( data.cmds[cmd_index].stime == '-') data.cmds[cmd_index].stime = time;
                         data.cmds[cmd_index].path = data.path;    
                     }
@@ -203,14 +203,14 @@ class logger {
                         // get the percentage of executed rules within a command
                         let perc = eval(rule_perc).toFixed(2)*100+'%';
                         if ( status == 'error' ) { // prority the error status
-                            data.cmds[cmd_index].status = status;
+                            data.cmds[cmd_index].status = `<span status="${status}">${status}</span>`;
                             data.cmds[cmd_index].perc = '-';
                             data.cmds[cmd_index].etime = time;
                             data.status = this._updateProjectStatus(data.status, 'cmd error'); // for the project table
                         }
                         else { // then, the rest of status
                             if ( perc == '100%' ) {
-                                data.cmds[cmd_index].status = status;
+                                data.cmds[cmd_index].status = `<span status="${status}">${status}</span>`;
                                 data.cmds[cmd_index].perc = '100%';
                                 data.cmds[cmd_index].etime = time; // get the last time (the last finished rule)
                             }
@@ -234,13 +234,13 @@ class logger {
                     // update the data
                     if ( cmd_index !== undefined ) {
                         if ( status == 'error' ) { // prority the error status
-                            data.cmds[cmd_index].status = status;
+                            data.cmds[cmd_index].status = `<span status="${status}">${status}</span>`;
                             data.cmds[cmd_index].perc = '-';
                             data.cmds[cmd_index].etime = time;
                             data.status = this._updateProjectStatus(data.status, 'cmd error'); // for the project table
                         }
                         else if ( status == 'cached' ) {
-                            data.cmds[cmd_index].status = status;
+                            data.cmds[cmd_index].status = `<span status="${status}">${status}</span>`;
                             data.cmds[cmd_index].stime = time;
                             data.cmds[cmd_index].etime = time;
                             data.cmds[cmd_index].perc = '100%';
@@ -278,7 +278,12 @@ class logger {
                     // create the commands logs for the selected project
                     let data = this.getDataAtRow(r);
                     if (!commoner.allBlanks(data)) {
+                        // enable the menu with "open selected project"
+                        importer.setEnableMenuItemSelectedProject(true);
+                        // create table for workflow logs
                         that.createWorkflowLogsTable(data);
+                        // render tables
+                        that.renderLogTables();
                     }
                 },
                 columns: [{            
@@ -363,6 +368,7 @@ class logger {
                     className: "htCenter",
                 },{
                     data: 'status',
+                    renderer: 'html',
                     readOnly: true,
                     className: "htCenter",
                 },{
@@ -402,8 +408,12 @@ class logger {
         if ( wktable !== undefined ) {
             if ( data !== undefined && 'cmds' in data ) {
                 $(`#workflowlogs .logtable`).handsontable({ data: data.cmds });
-                $(`#workflowlogs .logtable`).handsontable('render');    
+                $(`#workflowlogs .logtable`).handsontable('render');
             }
+            // change cursor style depending on status
+            document.querySelectorAll('#workflowlogs .logtable td.afterHiddenColumn > span[status="running"],[status="successfully"]').forEach(function(item) {
+                item.parentNode.parentNode.style.cursor = 'pointer'; // tr element
+            });
         }
         let prjtable = $("#projectlogs .logtable").data('handsontable');
         if ( prjtable !== undefined ) {
