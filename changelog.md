@@ -1,4 +1,26 @@
 ___
+## 1.2.12
+```
+DATE: 2023_12
+```
+
+### Highlights
+
++ Fixing a bug in the 'New Project' window: The modal parameter for ElectronJS does not work in MacOSX version.
+
++ Customize the context menu as the Copy and Paste commands do not work correctly in the MacOSX version.
+
++ Open the processed project from the 'Project logs' table.
+
+### Changes in the Graphical User Interface
+
++ Updated documentation.
+
+
+### Changes in the Code Workflow
+
+
+___
 ## 1.2.11
 ```
 DATE: 2023_09

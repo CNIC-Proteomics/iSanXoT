@@ -167,14 +167,7 @@ ls -1 > requirements_local.txt
 
 ### Create the frontend environment
 
-1) If it is from the Scratch, uncompress the node for MacOS
-```
-cd /Users/proteomica/projects/iSanXoT/env/node
-tar -xvf node-v14.16.0-darwin-x64.tar.gz && mv node-v14.16.0-darwin-x64 node-darwin-x64
-cd ../../
-```
-
-2) Execute program that creates the frontend enviroment
+1) Execute program that creates the frontend enviroment
 ```
 export PATH=/Users/proteomica/projects/iSanXoT/env/node/node-darwin-x64/bin:$PATH && ./env/com.env.darwin.sh /Users/proteomica/projects/iSanXoT/app/resources/exec/python-3.9.7-darwin-x64/bin/python3  /Users/proteomica/projects/iSanXoT/env/node
 ```

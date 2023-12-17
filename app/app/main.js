@@ -58,9 +58,9 @@ let template = [
       { id: 'help_cmd-wkf-3', label: 'WKF 3: Posttranslationally in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_3:_Quantification') } },
       { id: 'help_cmd-wkf-4', label: 'WKF 4: Label-free', click() { mainWindow.webContents.send('openHelper', '_Workflow_4:_Label-free') } }
     ]},
-    { id: 'help_exec-wkf-template', label: 'Importing a workflow template', click() { mainWindow.webContents.send('openHelper', '_Importing_a_workflow') } },
-    { id: 'help_preparing-input', label: 'Creating the identification/quantification file from proteomics pipelines', click() { mainWindow.webContents.send('openHelper', '_Creating_the_identification/quantif') } },
-    { id: 'help_adapting-input', label: 'Adapting the results from proteomics pipelines for iSanXoT', click() { mainWindow.webContents.send('openHelper', '_Adapting_the_results') } },
+    { id: 'help_exec-wkf-template', label: 'Importing a workflow template', click() { mainWindow.webContents.send('openHelper', '_Toc152521038') } },
+    { id: 'help_preparing-input', label: 'Creating the identification/quantification file from proteomics pipelines', click() { mainWindow.webContents.send('openHelper', '_Toc152521039') } },
+    { id: 'help_adapting-input', label: 'Adapting the results from proteomics pipelines for iSanXoT', click() { mainWindow.webContents.send('openHelper', '_Toc152521049') } },
     { id: 'license', label: 'License', click() { mainWindow.webContents.send('openHelper', '_License') } }
   ]},
 ]
