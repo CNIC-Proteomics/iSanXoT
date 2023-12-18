@@ -62,7 +62,8 @@ def get_all_statsfiles(prefix, folders, suffix):
 
 def read_infiles(file):
     # read file
-    df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
+    # df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
+    df = pd.read_csv(file, sep="\t", na_values=['NA'], low_memory=False)
     
     # drop rows when the tags contains the 'out' word
     # only works when the serie has string value, we check if not all values are nan
@@ -209,7 +210,8 @@ def merge_intermediate(file, df):
 
     '''
     logging.debug("read intermediate file")
-    df2 = pd.read_csv(file, sep="\t", header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
+    # df2 = pd.read_csv(file, sep="\t", header=[0,1], na_values=['NA', 'excluded'], low_memory=False) # two header rows
+    df2 = pd.read_csv(file, sep="\t", header=[0,1], na_values=['NA'], low_memory=False) # two header rows
     
     logging.debug("merge dataframes")
     df = merge_dfs(df, df2)
@@ -219,7 +221,8 @@ def merge_intermediate(file, df):
 def add_relation(idf, file, prefix):
     
     # read relationship file using skipinitial attribute which will remove extra space
-    df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], skipinitialspace = True, low_memory=False)
+    # df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], skipinitialspace = True, low_memory=False)
+    df = pd.read_csv(file, sep="\t", na_values=['NA'], skipinitialspace = True, low_memory=False)
     
     # get the columns that are LEVELS from the current df
     cols_idx = [ c[0] for c in idf.columns if c[1] == 'LEVEL' ]
@@ -295,7 +298,7 @@ def main(argv):
     logging.debug(folders)
 
 
-    logging.info("get all {prefix}_{SUFFIX_OUTSTATS} files")
+    logging.info(f"get all {prefix}_{SUFFIX_OUTSTATS} files")
     listfiles = get_all_statsfiles(prefix, folders, SUFFIX_OUTSTATS)
 
 
@@ -316,7 +319,7 @@ def main(argv):
     # if apply, we add the lowerNormW values
     if "X'inf" in param_vars or "Winf" in param_vars:
         
-        logging.info("get all {prefix}_{SUFFIX_LOWERNORMW} files")
+        logging.info(f"get all {prefix}_{SUFFIX_LOWERNORMW} files")
         listfiles = get_all_statsfiles(prefix, folders, SUFFIX_LOWERNORMW)
         
         logging.info("create lowerNormW df from list of input files")
