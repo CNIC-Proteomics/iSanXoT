@@ -94,11 +94,13 @@ Close CMD
 ### Build iSanXoT
 
 1) Prepare the environment for build packages
+Open CMD
 ```
 env\prepare_isanxot_build.win.bat
 ```
 
 2) Build iSanXoT
+Open CMD
 ```
 cd app
 "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\electron-builder"
