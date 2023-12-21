@@ -40,6 +40,9 @@ docs/templates/WPP_LabelFree/
 docs/templates/WSPP-SBT/
 docs/templates/WSPP_NORCOM_RATIOS_SBT/
 docs/templates/WSPP_PTM/
+docs/user_guides/*.docx
+docs/user_guides/User_Guide_iSanXoT.Data/
+docs/user_guides/User_Guide_iSanXoT.enl
 
 # SanXoT
 src/SanXoT/.svn
