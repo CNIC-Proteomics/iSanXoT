@@ -43,6 +43,8 @@ docs/templates/WSPP_PTM/
 docs/user_guides/*.docx
 docs/user_guides/User_Guide_iSanXoT.Data/
 docs/user_guides/User_Guide_iSanXoT.enl
+docs/user_guides/drafts
+
 
 # SanXoT
 src/SanXoT/.svn
