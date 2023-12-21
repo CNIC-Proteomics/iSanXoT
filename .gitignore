@@ -33,6 +33,14 @@ env/python/Python-3.9.7
 # discard the distribution folders
 releases
 
+# docs
+docs/presentations/
+docs/templates/PTM/
+docs/templates/WPP_LabelFree/
+docs/templates/WSPP-SBT/
+docs/templates/WSPP_NORCOM_RATIOS_SBT/
+docs/templates/WSPP_PTM/
+
 # SanXoT
 src/SanXoT/.svn
 src/SanXoT/help
