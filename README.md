@@ -28,22 +28,14 @@ iSanXoT maintains the following operating systems and architectures and may add 
 + **MacOs High Sierra** (10.13.6)
 + **Ubuntu 20.04** (x64)
 
-For more details, read the <a href="https://github.com/CNIC-Proteomics/iSanXoT/wiki/Installation" target="_blank">INSTALL</a> file.
+For more details, read the <a href="https://cnic-proteomics.github.io/iSanXoT/#_Installation" target="_blank">INSTALL</a> file.
 
 ## Help and Documentations
 
-You can read the help and the user guide in the <a href="https://github.com/CNIC-Proteomics/iSanXoT/wiki" target="_blank">iSanXoT Wiki</a>.
+You can read the help and the user guide in the <a href="https://cnic-proteomics.github.io/iSanXoT" target="_blank">iSanXoT web page</a>.
 
 In addition, you can download the iSanXoT User Guides for each release in PDF format:
 
-+ [User_Guide_iSanXoT-1.2.8.pdf](https://github.com/CNIC-Proteomics/iSanXoT/wiki/docs/user_guides/User_Guide_iSanXoT-1.2.8.pdf)
-
-<!-- ## Presentations
-
-You can download some presentations:
-
-+ [Input_Adaptor_iSanXoT_1.0.X.pdf](https://github.com/CNIC-Proteomics/iSanXoT/wiki/docs/presentations/Input_Adaptor_iSanXoT_1.0.X.pdf) -->
++ [User_Guide_iSanXoT-1.2.12.pdf](https://raw.githubusercontent.com/CNIC-Proteomics/iSanXoT/master/docs/user_guides/User_Guide_iSanXoT-1.2.12.pdf)
 
 ---
-
-<!-- ### [⇐ Previous](README.md) | [Next ⇒](1-environment.md) -->
