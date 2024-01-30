@@ -67,7 +67,7 @@ def read_infiles(file):
     
     # drop rows when the tags contains the 'out' word
     # only works when the serie has string value, we check if not all values are nan
-    if not df['tags'].isnull().all():
+    if 'tags' in df.columns and not df['tags'].isnull().all():
         df = df[df['tags'].str.contains('out', na=False) == False]
     
     # get the name of 'job' until the root folder
