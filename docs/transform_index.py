@@ -96,7 +96,7 @@ body {
 }
 #top-menu {
     padding: 5px;
-    background-color: #333;
+    background-color: black;
     color: #fff;
     text-align: center;
     width: 100%;
@@ -123,14 +123,13 @@ body {
     top: 59px;
     left: 0;
     background-color: #f4f4f4;
-    padding-left: 0 2px 20px 2px;
 	overflow-y: auto;
     z-index: 999;
 }
 #sidebar a {
-    padding: 8px 16px;
+    padding-left: 8px;
     text-decoration: none;
-    font-size: 12px;
+    font-size: 14px;
     color: #818181;
     display: block;
 }
@@ -138,14 +137,25 @@ body {
 #sidebar a:hover {
     color: #BF8F00;
 }
+#sidebar .menu {
+    padding: 0;
+    margin: 0;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
 #sidebar ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 #sidebar .submenu a {
     padding-left: 20px;
+}
+
+#sidebar .submenu2 ul {
+    padding-left: 40px;
+    list-style-type: square;
 }
 
 #main-content {
@@ -157,7 +167,9 @@ body {
 
 LAYER = '''
 <script>
+
 /* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+/*
 var dropdown = document.getElementsByClassName("dropdown-btn");
 var i;
 
@@ -172,6 +184,16 @@ for (i = 0; i < dropdown.length; i++) {
     }
   });
 }
+*/
+
+window.addEventListener('hashchange', offsetAnchor);
+window.setTimeout(offsetAnchor, 1);
+function offsetAnchor() {
+	if (location.hash.length !== 0) {
+		window.scrollTo(window.scrollX, window.scrollY - 70);
+	}
+}
+
 </script>
 
 <div id='top-menu'>
@@ -180,26 +202,29 @@ for (i = 0; i < dropdown.length; i++) {
 </div>
 <div id='sidebar'>
 
-<ul>
+<ul class='menu'>
   <li><a href="#_Introduction">Introduction</a></li>
   <li><a href="#_License">License</a></li>
-  <li class='submenu'><a href="#_Installation">Installation</a></li>
+  <li class='submenu'><a href="#_Installation">Installation</a>
     <ul>
       <li><a href="#_Download">Download</a></li>
-      <li><a href="#_Available_operating_systems">Available operating systems</a></li>
-      <li><a href="#_Windows_distribution">Windows distribution</a></li>
-      <li><a href="#_MacOS_distribution">MacOS distribution</a></li>
-      <li><a href="#_Linux_distribution">Linux distribution</a></li>
+      <li class='submenu2'><a href="#_Available_operating_systems">Available operating systems:</a>
+        <ul>
+          <li><a href="#_Windows_distribution">Windows distribution</a></li>
+          <li><a href="#_MacOS_distribution">MacOS distribution</a></li>
+          <li><a href="#_Linux_distribution">Linux distribution</a></li>
+        </ul>
+      </li>
     </ul>
   <li><a href="#_Get_Started">Getting Started</a></li>
   <li class='submenu'><a href="#_Modules">Modules</a>
     <ul>
-      <li class='submenu'><a href="#_RELS_CREATOR">Relation Tables Module</a>
+      <li class='submenu2'><a href="#_RELS_CREATOR">Relation Tables Module:</a>
         <ul>
           <li><a href="#_RELS_CREATOR">RELS CREATOR</a></li>
         </ul>
       </li>
-      <li class='submenu'><a href="#_Basic_modules">Basic Modules</a>
+      <li class='submenu2'><a href="#_Basic_modules">Basic Modules:</a>
         <ul>
           <li><a href="#_LEVEL_CREATOR">LEVEL CREATOR</a></li>
           <li><a href="#_LEVEL_CALIBRATOR">LEVEL CALIBRATOR</a></li>
@@ -209,7 +234,7 @@ for (i = 0; i < dropdown.length; i++) {
           <li><a href="#_SBT">SBT</a></li>
         </ul>
       </li>
-      <li class='submenu'><a href="#_Compound_modules">Compound Modules</a>
+      <li class='submenu2'><a href="#_Compound_modules">Compound Modules:</a>
         <ul>
           <li><a href="#_WSPP-SBT_1">WSPP-SBT</a></li>
           <li><a href="#_WSPPG-SBT_1">WSPPG-SBT</a></li>
@@ -217,13 +242,13 @@ for (i = 0; i < dropdown.length; i++) {
           <li><a href="#_WPPG-SBT_1">WPPG-SBT</a></li>
         </ul>
       </li>
-      <li class='submenu'><a href="#_Report_modules">Report Modules</a>
+      <li class='submenu2'><a href="#_Report_modules">Report Modules:</a>
         <ul>
           <li><a href="#_REPORT">REPORT</a></li>
           <li><a href="#_SANSON">SANSON</a></li>
         </ul>
       </li>
-      <li class='submenu'><a href="#_Special_parameters">Special parameters</a>
+      <li class='submenu2'><a href="#_Special_parameters">Special parameters:</a>
         <ul>
           <li><a href="#_Multiple_samples">Multiple samples</a></li>
           <li><a href="#_Asterisk_is_our">Multiple samples in the inputs and outputs</a></li>
@@ -234,23 +259,23 @@ for (i = 0; i < dropdown.length; i++) {
       </li>
     </ul>
   </li>
-  <li class='submenu'><a href="#_Sample_Workflows_with">Sample Workflows with Application to Case Studies</a>
+  <li class='submenu2'><a href="#_Sample_Workflows_with">Sample Workflows:</a>
     <ul>
-      <li><a href="#_Workflow_1:_One-step">Workflow 1: One-step quantification in a labeled experiment</a></li>
-      <li><a href="#_Workflow_2:_Step-by-step">Workflow 2: Step-by-step quantification and sample combination in a labeled experiment</a></li>
-      <li><a href="#_Workflow_3:_Quantification">Workflow 3: Quantification of posttranslationally modified peptides in a labeled experiment</a></li>
-      <li><a href="#_Workflow_4:_Label-free">Workflow 4: Label-free quantification</a></li>
+      <li><a href="#_Workflow_1:_One-step">Wkf 1: One-step quantification</a></li>
+      <li><a href="#_Workflow_2:_Step-by-step">Wkf 2: Step-by-step quantification and sample combination</a></li>
+      <li><a href="#_Workflow_3:_Quantification">Wkf 3: PTMs quantification</a></li>
+      <li><a href="#_Workflow_4:_Label-free">Wkf 4: Label-free quantification</a></li>
     </ul>
   </li>
-  <li><a href="#_Importing_a_workflow">Importing a workflow template</a></li>
-  <li class='submenu'><a href="#_Creating_the_identification/quantif">Creating the identification/quantification file from proteomics pipelines</a></li>
+  <li><a href="#_Toc152521038">Importing a workflow template</a></li>
+  <li class='submenu2'><a href="#_Creating_the_identification/quantif">Creating the ID-q file from </a>
     <ul>
-      <li><a href="#_Preparing_the_ID-q">Preparing the ID-q file from Proteome Discoverer output</a>
-      <li><a href="#_Preparing_the_ID-q_1">Preparing the ID-q file from MaxQuant output</a>
-      <li><a href="#_Preparing_the_ID-q_2">Preparing the ID-q file from FragPipe output</a>
+      <li><a href="#_Toc152521040">Proteome Discoverer</a>
+      <li><a href="#_Toc152521043">MaxQuant</a>
+      <li><a href="#_Toc124328462">FragPipe</a>
     </ul>
   </li>
-  <li><a href="#_Adapting_the_results">Adapting the results from proteomics pipelines for iSanXoT</a></li>
+  <li><a href="#_Toc152521049">Adapting the results from proteomics pipelines for iSanXoT</a></li>
   <li><a href="#_References">References</a></li>
 </ul>
 
