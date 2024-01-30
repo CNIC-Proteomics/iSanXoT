@@ -15,7 +15,7 @@ This application is licensed under a **Creative Commons Attribution-NoDerivative
 
 The multiple releases are available in the "release" section, located in the following link:
 
-[https://github.com/CNIC-Proteomics/iSanXoT/releases](https://github.com/CNIC-Proteomics/iSanXoT/releases){:target="_blank"}
+[https://github.com/CNIC-Proteomics/iSanXoT/releases](https://github.com/CNIC-Proteomics/iSanXoT/releases)
 
 
 ## Installation
