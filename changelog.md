@@ -1,4 +1,21 @@
 ___
+## 1.2.13
+```
+DATE: 2024_01
+```
+
+### Highlights
+
++ Fixing a bug in reporter: The X'inf and Winf variable are retrieved correctly.
+
+### Changes in the Graphical User Interface
+
++ Updated documentation.
+
+### Changes in the Code Workflow
+
++ Fixing a bug in reporter: The X'inf and Winf variable are retrieved correctly.
+___
 ## 1.2.12
 ```
 DATE: 2023_12
