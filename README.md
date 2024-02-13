@@ -28,11 +28,11 @@ iSanXoT maintains the following operating systems and architectures and may add 
 + **MacOs High Sierra** (10.13.6)
 + **Ubuntu 20.04** (x64)
 
-For more details, read the <a href="https://cnic-proteomics.github.io/iSanXoT/#_Installation" target="_blank">INSTALL</a> file.
+For more details, read the <a href="https://cnic-proteomics.github.io/iSanXoT/#_Installation" target="_blank">Installation</a> section in the web documentation.
 
 ## Help and Documentations
 
-You can read the help and the user guide in the <a href="https://cnic-proteomics.github.io/iSanXoT" target="_blank">iSanXoT web page</a>.
+You can read the help and the user guide in the <a href="https://cnic-proteomics.github.io/iSanXoT" target="_blank">iSanXoT web documentation</a>.
 
 In addition, you can download the iSanXoT User Guides for each release in PDF format:
 
