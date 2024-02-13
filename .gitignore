@@ -41,6 +41,9 @@ docs/templates/WSPP-SBT/
 docs/templates/WSPP_NORCOM_RATIOS_SBT/
 docs/templates/WSPP_PTM/
 
+# studies
+studies
+
 # SanXoT
 src/SanXoT/.svn
 src/SanXoT/help
