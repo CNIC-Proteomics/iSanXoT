@@ -30,7 +30,7 @@ sys.path.append(f"{os.path.dirname(__file__)}/../libs")
 import common
 import extractquant
 import fdr
-import ProteinAssigner_v4
+import ProteinAssigner_v5
 
 
 
@@ -307,6 +307,8 @@ def main(argv):
             prot_col_dsc_mpp = indata['output_desc_col'][0] if 'output_desc_col' in indata else ''
             label_decoy = indata['label_decoy'][0]
             isoleu = indata['iso_leucine'][0] if 'iso_leucine' in indata else 'L'
+            regex_previous = indata['regex_previous'][0] if 'regex_previous' in indata else '//'
+            regex_previous = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex_previous.strip('/ '))] # this is heredity from ProteinAssigner program
             regex = indata['regex'][0] if 'regex' in indata else '//'
             regex = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex.strip('/ '))] # this is heredity from ProteinAssigner program
             len_seq = int(indata['len_seq'][0]) if 'len_seq' in indata else 0
@@ -315,6 +317,7 @@ def main(argv):
                 "outfile": [tmpfile],
                 "n_cores": args.n_workers,
                 "seq_column": seq_col,                
+                "regex_previous": regex_previous,
                 "regex": regex,
                 "len_seq": len_seq,
                 "mpp_a": prot_col_mpp,
@@ -336,6 +339,8 @@ def main(argv):
             sep_chr = indata['prot_sep'][0] if 'prot_sep' in indata else ';'
             prot_col_mpp = indata['output_col'][0]
             prot_col_dsc_mpp = indata['output_desc_col'][0] if 'output_desc_col' in indata else ''
+            regex_previous = indata['regex_previous'][0] if 'regex_previous' in indata else '//'
+            regex_previous = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex_previous.strip('/ '))] # this is heredity from ProteinAssigner program            
             regex = indata['regex'][0] if 'regex' in indata else '//'
             regex = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex.strip('/ '))] # this is heredity from ProteinAssigner program
             len_seq = int(indata['len_seq'][0]) if 'len_seq' in indata else 0
@@ -344,6 +349,7 @@ def main(argv):
                 "outfile": [tmpfile],
                 "n_cores": args.n_workers,
                 "seq_column": seq_col,
+                "regex_previous": regex_previous,
                 "regex": regex,
                 "len_seq": len_seq,
                 "mpp_a": prot_col_mpp,
@@ -358,7 +364,7 @@ def main(argv):
         if paramsDict:
             logging.info("calculating the MPP")
             logging.debug(paramsDict)
-            ProteinAssigner_v4.main(paramsDict)
+            ProteinAssigner_v5.main(paramsDict)
 
 
     # rename tmp file deleting before the original file 
