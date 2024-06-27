@@ -257,6 +257,8 @@ def main(argv):
             sms = "There is not quantification task-table"
             logging.error(sms)
             sys.exit(sms)
+        # add the error ppm value. TODO! It would be nice to provide this value as parameter
+        indata['error_ppm'] = 10
         logging.info("extracting the quantification")
         df = extractquant.add_quantification(args.n_workers, args.indir_mzml, se, df, indata)
         if df is None or df.empty:
