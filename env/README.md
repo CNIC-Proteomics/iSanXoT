@@ -36,11 +36,11 @@ cd iSanXoT
 
 ### Create the python environment: Install just python in the resource folder
 
-<!-- python-3.9.7-amd64.exe /passive  InstallAllUsers=0  PrependPath=0  Include_pip=1  Include_lib=1  Include_tools=1  Include_symbols=0  Include_test=0  Include_tcltk=0  InstallLauncherAllUsers=0  Include_launcher=0 Include_doc=0  Shortcuts=0  AssociateFiles=0  TargetDir="S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\python\Python-3.9.7" -->
+<!-- python-3.9.7-amd64.exe /passive  InstallAllUsers=0  PrependPath=0  Include_pip=1  Include_lib=1  Include_tools=1  Include_symbols=0  Include_test=0  Include_tcltk=0  InstallLauncherAllUsers=0  Include_launcher=0 Include_doc=0  Shortcuts=0  AssociateFiles=0  TargetDir="S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT\env\python\Python-3.9.7" -->
 
 1) Create python folder
 ```
-mkdir "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\env\python\Python-3.9.7"
+mkdir "S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT\env\python\Python-3.9.7"
 ```
 
 2) Install just python in the resource folder
@@ -68,10 +68,10 @@ xcopy /E /I "env/python/Python-3.9.7"  "app/resources/exec/python-3.9.7-win-x64"
 
 1) Execute:
 ```
-cd "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT"
+cd "S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT"
 ```
 ```
-set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64&& env\com.env.win.bat "S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
+set %PATH%=%PATH%;C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64&& env\com.env.win.bat "S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT\app\resources\exec\python-3.9.7-win-x64\python.exe" "C:\Users\jmrodriguezc\iSanXoT\env"
 ```
 Note: You have to write in this way:
 ...\env\node-win-x64&& (without space)
@@ -81,7 +81,7 @@ Note: The frontend folder (node) has to be in local because otherwise the "OpenD
 Open CMD
 ```
 cd "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\node_modules"
-set O=S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\node_modules&& for %a in ("ps-tree" "n-readlines") do (mkdir "%O%/%~a"&& xcopy /E /I "%~a" "%O%/%~a")
+set O=S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT\app\resources\node_modules&& for %a in ("ps-tree" "n-readlines") do (mkdir "%O%/%~a"&& xcopy /E /I "%~a" "%O%/%~a")
 ```
 
 3) Add the Node path into environment variable:
@@ -132,9 +132,9 @@ set ISANXOT_MODE=debug&& .\iSanXoT.exe
 ### In the case there are new python packages: Download the Python packages
 1) Extract the Python packages
 ```
-"S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" freeze > app/resources/env/packages/win-x64/requirements.txt
+"S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" freeze > app/resources/env/packages/win-x64/requirements.txt
 cd app/resources/env/packages/win-x64
-"S:\U_Proteomica\UNIDAD\DatosCrudos\jmrodriguezc\projects\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" download -r requirements.txt
+"S:\U_Proteomica\UNIDAD\Softwares\jmrodriguezc\iSanXoT\app\resources\exec\python-3.9.7-win-x64\Scripts\pip3.9.exe" download -r requirements.txt
 ls -1 > requirements_local.txt
 ```
 
