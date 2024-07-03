@@ -146,6 +146,10 @@ def calibrate(inputRawData = None,
 			print('Polynomial order must be less than window_length.')
 			sys.exit()
 
+		if smoothedWindow % 2 == 0:
+			smoothedWindow -= 1
+			print(f"Smoothing window is even, decreased to the next odd number: {smoothedWindow}")
+
 		if verbose:
 			print("Smoothing window: " + str(smoothedWindow))
 			print("Smoothing polynomial order: " + str(smoothedPolynomialOrder))
