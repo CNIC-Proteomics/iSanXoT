@@ -1,20 +1,53 @@
 ___
 ## 1.2.13
 ```
-DATE: 2024_01
+DATE: 2024_07
 ```
 
 ### Highlights
 
-+ Fixing a bug in reporter: The X'inf and Winf variable are retrieved correctly.
++ New version for the ProteinAssigner (v5). In this version, the changes are:
+	- The parameter file has been transformed to INI format. This change was made because the ProteinAssigner is integrated into the PTM-workflow, and a consensus parameter file with the same format is required.
+	- A preliminary filter for redundant proteins identified has been developed. This filter is applied before any other operation by the ProteinAssigner.
+
++ New version of klibrate (v1.20):
+	- Savitzky-Golay algortihm for smoothing has been included.
+
++ Fixing a bug in the mz extraction for experiments with high resolution (greater than 30K), in the Quant package.
 
 ### Changes in the Graphical User Interface
 
 + Updated documentation.
 
++ Modify the CNIC adapter to accept the new version of ProteinAssigner, which includes the preliminary filter.
+	A new parameter has been added: *"Preliminary Regex filter before any operation"*, applicable in both FASTA and column modes.
+
 ### Changes in the Code Workflow
 
-+ Fixing a bug in reporter: The X'inf and Winf variable are retrieved correctly.
++ Fixing a bug in reporter:
+	- The X'inf and Winf variable are retrieved correctly.
+	- Possible bug caused by dictionaries in Python.
+
++ Fixing a bug in the mz extraction for experiments with high resolution (greater than 30K), in the Quant package.
+
++ New version of klibrate (v1.20) has been developed:
+	- Savitzky-Golay algortihm for smoothing has been applied. New parameters have been added:
+```
+   -S, --no-smoothing  Do not apply the Savitzky-Golay smoothing algorithm. It 
+                       is applied by default.
+   -t, --smoothing-window
+                       The window size for the Savitzky-Golay smoothing 
+                       algorithm. A larger window size will result in stronger 
+                       smoothing. The window length must be less than or equal 
+                       to the size of input. By default is length of integrated elements.
+   -T, --smoothing-polynomial
+                       The polynomial order for the Savitzky-Golay smoothing 
+                       algorithm to fit the samples. A higher polynomial order 
+                       can capture more complex patterns but may also introduce 
+                       more artifacts.
+```
+
+
 ___
 ## 1.2.12
 ```
