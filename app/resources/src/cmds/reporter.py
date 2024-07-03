@@ -229,7 +229,8 @@ def add_relation(idf, file, prefix):
 
     # check if one level is in the RT. If there are multiple, takes the first one
     # then create multiindex for the merging with RT
-    r = list(set(cols_idx) & set(df.columns))
+    # r = list(set(cols_idx) & set(df.columns))
+    r = [elem for elem in cols_idx if elem in df.columns]
     if len(r) > 0:
         r = r[0] 
         df.columns = pd.MultiIndex.from_tuples([(c,'LEVEL') if c == r else (c,'REL') for c in df.columns])

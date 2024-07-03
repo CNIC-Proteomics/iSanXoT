@@ -100,6 +100,7 @@
         { "type": "required", "id": "fasta_file", "name": "Fasta file" },
         { "type": "required", "id": "label_decoy", "name": "Decoy label" },
         { "id": "iso_leucine", "name": "Convert the isoleucine to" },
+        { "id": "regex_previous", "name": "Preliminary Regex to filter before any operation" },
         { "id": "regex", "name": "Regex to filter in case of ties" },
         { "id": "len_seq", "name": "Prioritize shortest/longest sequence" }
       ]
@@ -121,6 +122,7 @@
         { "type": "required", "id": "prot_desc_col", "name": "Prot. Description column header" },
         { "type": "required", "id": "output_desc_col", "name": "Output Prot. Desc. column header" },
         { "id": "prot_sep", "name": "Protein separator" },
+        { "id": "regex_previous", "name": "Preliminary Regex to filter before any operation" },
         { "id": "regex", "name": "Regex to filter in case of ties" },
         { "id": "len_seq", "name": "Prioritize shortest/longest sequence" }
       ]

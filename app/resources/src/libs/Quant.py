@@ -2,7 +2,7 @@
 
 # Module metadata variables
 __author__ = ["Ricardo Magni", "Jose Rodriguez"]
-__credits__ = ["Ricardo Magni", "Jose Rodriguez", "Jesus Vazquez"]
+__credits__ = ["Ricardo Magni", "Ana Martínez del Val", "Jose Rodriguez", "Jesus Vazquez"]
 __license__ = "Creative Commons Attribution-NonCommercial-NoDerivs 4.0 Unported License https://creativecommons.org/licenses/by-nc-nd/4.0/"
 __version__ = "1.0.1"
 __maintainer__ = "Jose Rodriguez"
@@ -135,6 +135,7 @@ def monoisocorrec(b1, isocorrm):
     b1 = nnls(isocorrm, b1.astype("float32"))[0]   
     return b1
 
+# DEPRECATED METHOD!! THERE IS A BUG
 def get_quant(spec_mz, spec_int, isotag, isocorrm):
     '''
     Get ion quantification
@@ -164,6 +165,87 @@ def get_quant(spec_mz, spec_int, isotag, isocorrm):
     
     return b1
 
+# Method that get the reporter by closer peak
+def get_quant_closer_peak(spec_mz, spec_int, isotag, isocorrm, error_ppm):
+    '''
+    Get ion quantification
+    '''
+    ppm = int(error_ppm)
+    p1 = []
+    po = np.zeros(len(spec_mz), dtype=bool)
+    po_1 = np.zeros(len(spec_mz), dtype=bool)
+    for i,j in enumerate(isotag): 
+        if np.any( np.logical_and(np.greater_equal(spec_mz, j-j*ppm*1e-6), np.less_equal(spec_mz, j+j*ppm*1e-6)) ) == True:
+            po_1 += np.logical_and(np.greater_equal(spec_mz, j-j*ppm*1e-6), np.less_equal(spec_mz, j+j*ppm*1e-6))
+            #print(po_1)
+            if po_1.sum()>1:
+                index = (np.abs(spec_mz[po_1] - j)).argmin()
+                match=np.abs(spec_mz[po_1])[index]
+                spec_mz.tolist().index(match)
+                po[spec_mz.tolist().index(match)]=True
+            else:
+                po+= np.logical_and(np.greater_equal(spec_mz, j-j*ppm*1e-6), np.less_equal(spec_mz, j+j*ppm*1e-6))
+            po_1=np.zeros(len(spec_mz), dtype=bool)   
+            #print(i,spec_mz[po])
+            #po_1=np.zeros(len(spec_mz), dtype=bool)
+            p1.append(i)
+    spec_mz = spec_mz[po]
+    spec_int = spec_int[po]
+    p1 = np.array(p1)
+    spec_mz=np.array(spec_mz)
+    spec_int=np.array(spec_int)
+    b1 = []
+    for i in np.arange(len(isotag)):
+        b2 = spec_int[np.where(p1==i)]    
+        if len(b2) == 0:
+            b1.append(0)
+        else:
+            b1.append(b2[0])
+    if isinstance(isocorrm, np.ndarray):
+        b1 = monoisocorrec(b1, isocorrm)
+    
+    return b1
+
+# Method that get the reporter by the most intense
+def get_quant_most_intense(spec_mz, spec_int, isotag, isocorrm, error_ppm):
+    '''
+    Get ion quantification
+    '''
+    ppm = int(error_ppm)
+    p1 = []
+    po = np.zeros(len(spec_mz), dtype=bool)
+    po_1 = np.zeros(len(spec_mz), dtype=bool)
+    for i,j in enumerate(isotag): 
+        if np.any( np.logical_and(np.greater_equal(spec_mz, j-j*ppm*1e-6), np.less_equal(spec_mz, j+j*ppm*1e-6)) ) == True:
+            po_1 += np.logical_and(np.greater_equal(spec_mz, j-j*ppm*1e-6), np.less_equal(spec_mz, j+j*ppm*1e-6))
+            #print(po_1)
+            if po_1.sum()>1:
+                index = spec_int[po_1].argmax()
+                match=np.abs(spec_mz[po_1])[index]
+                spec_mz.tolist().index(match)
+                po[spec_mz.tolist().index(match)]=True
+            else:
+                po+= np.logical_and(np.greater_equal(spec_mz, j-j*ppm*1e-6), np.less_equal(spec_mz, j+j*ppm*1e-6))
+            po_1=np.zeros(len(spec_mz), dtype=bool)   
+            #print(i,spec_mz[po])
+            #po_1=np.zeros(len(spec_mz), dtype=bool)
+            p1.append(i)
+    spec_mz = spec_mz[po]
+    spec_int = spec_int[po]
+    p1 = np.array(p1)
+    spec_mz=np.array(spec_mz)
+    spec_int=np.array(spec_int)
+    b1 = []
+    for i in np.arange(len(isotag)):
+        b2 = spec_int[np.where(p1==i)]    
+        if len(b2) == 0:
+            b1.append(0)
+        else:
+            b1.append(b2[0])
+    if isinstance(isocorrm, np.ndarray):
+        b1 = monoisocorrec(b1, isocorrm)
+    
+    return b1
 
 ######################## Parse mzml functions ############
 
@@ -181,7 +263,7 @@ def array_decoder(a, ctype, dtypea):
     else:
         return np.array([])
 
-def get_spectrum_values(elem, isotag, isocorrm):
+def get_spectrum_values(elem, isotag, isocorrm, error_ppm):
     '''
     Get the values of spectrum
     '''
@@ -221,19 +303,21 @@ def get_spectrum_values(elem, isotag, isocorrm):
     if spec["mslevel"] == 1:
         return None
     else:
-        for i,a in enumerate( get_quant(spec["mz"], spec["i"], isotag, isocorrm) ): spec[i] = a        
+        # for i,a in enumerate( get_quant(spec["mz"], spec["i"], isotag, isocorrm) ): spec[i] = a
+        # for i,a in enumerate( get_quant_closer_peak(spec["mz"], spec["i"], isotag, isocorrm, error_ppm) ): spec[i] = a
+        for i,a in enumerate( get_quant_most_intense(spec["mz"], spec["i"], isotag, isocorrm, error_ppm) ): spec[i] = a        
         del spec["mz"]
         del spec["i"]
         return list(spec.values())
             
 
-def fast_iter(file, isotag, isocorrm):
+def fast_iter(file, isotag, isocorrm, error_ppm):
     '''
     For each spectrum element, we get the wanted values.
     '''
     fh = []
     for _, elem in ET.iterparse(file, events=("end",), tag="{http://psi.hupo.org/ms/mzml}spectrum", remove_blank_text=True):
-        fha = get_spectrum_values(elem, isotag, isocorrm)        
+        fha = get_spectrum_values(elem, isotag, isocorrm, error_ppm)
         if fha != None:
             fh.append(fha)
         # It's safe to call clear() here because no descendants will be accessed
@@ -246,21 +330,21 @@ def fast_iter(file, isotag, isocorrm):
 
 
     
-def parser_mzML(file, isotag, isoname, isocorrm):
+def parser_mzML(file, isotag, isoname, isocorrm, error_ppm):
     '''
     Parse the Mass Espectometry outputs in mzML format.
     '''
-    fh = fast_iter(file, isotag, isocorrm)
+    fh = fast_iter(file, isotag, isocorrm, error_ppm)
     return fh
 
-def parser_mz(file, spec_name, isotag, isoname, isocorrm, scan_list=None):
+def parser_mz(file, spec_name, isotag, isoname, isocorrm, error_ppm, scan_list=None):
     '''    
     Parse the Mass Espectometry outputs in several formats.
     '''
     # parse the mz file
     fh = []
     if file is not None and file.strip().endswith('.mzML'):
-        fh = parser_mzML(file, isotag, isoname, isocorrm)
+        fh = parser_mzML(file, isotag, isoname, isocorrm, error_ppm)
 
     # create df with the columns of tags
     columns = ["Scan","Quant level"]+isoname
@@ -301,7 +385,7 @@ def prepare_params(tpl):
     indata = tpl[2]
 
     # extract the files from the spectrum, quantification files and correction
-    q = indata[['spectrum_file','mzfile','quan_method']]
+    q = indata[['spectrum_file','mzfile','quan_method','error_ppm']]
     q.rename(columns={'spectrum_file': 'Spectrum_File'}, inplace=True)
     q = sorted(q.drop_duplicates().values.tolist(), key=lambda x: x[0]) # sort by the Spectrum_File
 
@@ -326,8 +410,8 @@ def extract_quantification(params):
       [
       0 => '{Spectrum File}',
       1 => '{mz file}',
-      2 => '{Name of experiment}',
-      3 => '{Ion distribution file}',
+      2 => '{Ion distribution file}',
+      3 => '{Error in ppm}',
       4 => '{scan list for the Spectrum_File}',
       5 => '{Dataframe that reports the Ion Distribution}',
       ]
@@ -350,14 +434,15 @@ def extract_quantification(params):
     spec_basename = params[0]
     mzfile = params[1]
     ion_file = params[2]
-    scan_list = params[3]
-    isom = params[4]
+    error_ppm = params[3]
+    scan_list = params[4]
+    isom = params[5]
     
     label_tmt,isocorrm = correcmatrix(isom)
     isoname, isotag = isobaric_labelling(isom)
     # if isinstance(isocorrm, np.ndarray) and isoname != [None] and isotag != [None]:
     if isoname != [None] and isotag != [None]:
-        quant = parser_mz(mzfile, spec_basename, isotag, isoname, isocorrm, scan_list)
+        quant = parser_mz(mzfile, spec_basename, isotag, isoname, isocorrm, error_ppm, scan_list)
     
     return quant
 

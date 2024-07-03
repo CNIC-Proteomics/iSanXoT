@@ -7,23 +7,20 @@ import os
 import gc
 import random
 import glob # for the LogMasher
-import re # for the LogMasher
-from datetime import datetime # for Cardenio
-from numpy import *
+import re # for the LogMasher and for regular expressions
+from datetime import datetime # for Cardenio and for the timer in random seed (SanXoT)
+# from numpy import *
 from pylab import *
 from scipy.optimize import leastsq
 import matplotlib.pyplot as plt
 
 from time import strftime
-from datetime import datetime # for the timer in random seed (SanXoT)
-import argparse # to load arguments easily
 
 # libraries for SanXoTViewer
 ### PANDAS BLOCKED
 # import pandas as pd # to load and merge tables
 ### WX BLOCKED
 # import wx # to create the GUI
-import re # for regular expressions
 # import matplotlib.cbook as cbook # to check an iterable (remove if possible)
 
 # next lines are important
@@ -39,6 +36,14 @@ import pprint
 import math
 import sqlite3 # for Mojón
 from optparse import OptionParser
+
+# begin: jmrc
+import pandas as pd
+from scipy.signal import savgol_filter
+# import numpy as np
+# from sklearn.preprocessing import PolynomialFeatures
+# from sklearn.linear_model import LinearRegression
+
 
 #######################################################
 
@@ -59,7 +64,10 @@ def calibrate(inputRawData = None,
 					kSeed = 1,
 					varianceSeed = 0.001,
 					medianSide = 100,
-					maxIterations = 0,
+					maxIterations = 0,                    
+					smoothingFlag = True,
+					smoothedWindow = None,
+					smoothedPolynomialOrder = 3,
 					verbose = False,
 					showGraph = False,
 					showSumSQ = False,
@@ -100,6 +108,7 @@ def calibrate(inputRawData = None,
 		else:
 			inputRelations = stats.loadRelationsFile(relationsFile)
 	
+
 	#### calculate k and variance ####
 	
 	alpha = 1.0
@@ -108,7 +117,7 @@ def calibrate(inputRawData = None,
 			print("calculating K and variance")
 			extraLog.append(["calculating K and variance"])
 
-		# *** just to see it
+ 		# *** just to see it
 		result = getKandVariance(inputRawData, inputRelations, kSeed = kSeed, varianceSeed = varianceSeed, maxIterations = maxIterations, verbose = True, showSumSQ = True, medianSide = medianSide, alphaSeed = alphaSeed, useCooperativity = useCooperativity)
 		
 		k = result[0]
@@ -118,16 +127,72 @@ def calibrate(inputRawData = None,
 		k = kSeed
 		variance = varianceSeed
 		alpha = alphaSeed
-	
-	# save VRank graph
-	showGraphTool(inputRawData, inputRelations, k, variance, alpha, medianSide, showRank = True, graphFile = graphFileVRank, graphData = graphDataFile, dpi = graphDPI, showGraph = showGraph)
-	# save VValue graph
-	showGraphTool(inputRawData, inputRelations, k, variance, alpha, medianSide, showRank = False, graphFile = graphFileVValue, dpi = graphDPI, showGraph = showGraph)
-	
-	# get calibrated idXV
-	
-	idXV = idXVcal(inputRawData, k, alpha)
-	
+
+	    
+	# calculate the MAD distribution and get the MAD values independently
+	MADdistrOut, invOfFitOut, weights, dataCollected = calculateMAD(inputRawData, inputRelations, k, variance, alpha, medianSide)
+
+
+	# apply Savitzky-Golay for smoothing
+	if smoothingFlag:
+        
+        # if the smoothing window is not defined, we provide the length of input
+		if smoothedWindow == None:
+			smoothedWindow = len(MADdistrOut)
+			print("Applying Savitzky-Golay for smoothing")
+        
+        # check the polynomial order
+		if smoothedPolynomialOrder > smoothedWindow:
+			print('Polynomial order must be less than window_length.')
+			sys.exit()
+
+		if smoothedWindow % 2 == 0:
+			smoothedWindow -= 1
+			print(f"Smoothing window is even, decreased to the next odd number: {smoothedWindow}")
+
+		if verbose:
+			print("Smoothing window: " + str(smoothedWindow))
+			print("Smoothing polynomial order: " + str(smoothedPolynomialOrder))
+
+		# add smoothing parameters in the log file
+		extraLog.append(["Smoothing applied: " + str(smoothingFlag)])
+		extraLog.append(["Smoothing window: " + str(smoothedWindow)])
+		extraLog.append(["Smoothing polynomial order: " + str(smoothedPolynomialOrder)])
+
+		# apply smoothing algorithm
+		smoothedMAD = apply_SavitzkyGolay(MADdistrOut, smoothedWindow, smoothedPolynomialOrder)
+               
+		# collect the data and print into file 
+		dataCollected = concatenateColToTables(dataCollected, smoothedMAD)    
+		if dataCollected:
+			stats.saveFile(graphDataFile, dataCollected, "rank(Vs)\tweight\tMAD\t1/fit\tsmoothing")
+    
+        # create the idXV with smoothing
+		idXV = idXVsmoothing(inputRawData, dataCollected)
+
+    # not smoothing
+	else:
+        # 
+		smoothedMAD = invOfFitOut
+
+		# print data into file 
+		if dataCollected:
+			stats.saveFile(graphDataFile, dataCollected, "rank(Vs)\tweight\tMAD\t1/fit")
+        
+        # get calibrated idXV
+		idXV = idXVcal(inputRawData, k, alpha)
+
+        
+
+    # plot the graphs if applicable
+# 	graphFileVRank2 = add_prefix_to_filename(graphFileVRank, f"SAVITZKY_{window_size}_{polynomial_order}")
+	showOnlyGraphTool(MADdistrOut, smoothedMAD, weights, 'rank($V_s$)', '1 / MSD', 'k = %g, $\sigma^2$ = %g, alpha = %g' % (k, variance, alpha), showRank = True, graphFile = graphFileVRank, dpi = graphDPI, showGraph = showGraph)
+# 	graphFileVValue2 = add_prefix_to_filename(graphFileVValue, f"SAVITZKY_{window_size}_{polynomial_order}")
+	showOnlyGraphTool(MADdistrOut, smoothedMAD, weights, '($V_s$)', '1 / MSD', 'k = %g, $\sigma^2$ = %g, alpha = %g' % (k, variance, alpha), showRank = False, graphFile = graphFileVValue, dpi = graphDPI, showGraph = showGraph)
+   
+    # end: jmrc
+    
+
 	return idXV, variance, k, alpha, extraLog
 
 #------------------------------------------------------
@@ -356,6 +421,97 @@ def addW_klibrate(idXVlist, k = 1.0, variance = 0.0, alpha = 1.0):
 	
 	return idXVWlist
 
+# begin: jmrc
+#------------------------------------------------------
+
+def getV(idXVlist):
+	
+	idXVWlist = []
+	
+	for row in idXVlist:
+		
+		id = row[0]
+		x = row[1]
+		v = row[2]
+		
+		idXVWlist.append(v)
+	
+	return idXVWlist
+
+#------------------------------------------------------
+
+def getMAD(rankVWMADlist):
+	
+	MAD = []
+	
+	for row in rankVWMADlist:
+		
+		rankV = row[0]
+		w = row[1]
+		mad = row[2]
+		
+		MAD.append(mad)
+	
+	return MAD
+
+#------------------------------------------------------
+# Apply Savitzky-Golay for smoothing
+# A larger **window size** will result in stronger smoothing,
+# while a higher **polynomial order** can capture more complex patterns but may also introduce more artifacts.
+# Window size (odd number)
+# Order of polynomial to fit
+def apply_SavitzkyGolay(inputMAD, window_size, polynomial_order):
+	
+	# Apply Savitzky-Golay filter ------------
+	smoothedMAD = savgol_filter(inputMAD, window_size, polynomial_order)
+		
+	return smoothedMAD
+
+#------------------------------------------------------
+# Apply Polynomial Regression for smoothing
+# Polynomial regression can be used to fit a curve to your data, 
+# and you can enforce that it passes through the origin by setting the intercept to zero
+# def apply_PolynomialRegression(inputMAD, window_size, polynomial_order):
+#     # Generate x values
+#     x = np.arange(len(inputMAD)).reshape(-1, 1)
+    
+#     # Transform the features to polynomial features
+#     poly = PolynomialFeatures(degree=polynomial_order, include_bias=False)
+#     x_poly = poly.fit_transform(x)
+    
+#     # Fit the polynomial regression model without an intercept
+#     model = LinearRegression(fit_intercept=False)
+#     model.fit(x_poly, inputMAD)
+    
+#     # Predict using the model
+#     smoothedMAD = model.predict(x_poly)
+    
+#     return smoothedMAD
+
+#------------------------------------------------------
+
+def concatenateTables(table1, table2):
+	
+	table_new = []
+	
+	for i in range(len(table1)):
+		table_new.append(table1[i] + table2[i])
+	
+	return table_new
+
+#------------------------------------------------------
+
+def concatenateColToTables(table1, colList):
+	
+	table_new = []
+	
+	for i in range(len(table1)):
+		table_new.append(table1[i] + [colList[i]])
+	
+	return table_new
+
+# end: jmrc
+
 #------------------------------------------------------
 # copied to klibrate
 def getKandVariance(inputRawData,
@@ -438,17 +594,23 @@ def showGraphTool(inputRawData,
 	# stats.saveFile(folderToSave + "invOfFitOut.txt", invOfFitOut)
 	# stats.saveFile(folderToSave + "weights.txt", weights)
 	
+	# to save data
+	# *** use a better filename
+	dataToSave = []
+	for i in range(len(MADdistrOut)):
+		dataToSave.append([i, weights[i], MADdistrOut[i], invOfFitOut[i]])
+
 	if showRank:
 		plt.plot(list(range(len(MADdistrOut))), MADdistrOut, 'g.', list(range(len(invOfFitOut))), invOfFitOut, 'r', linewidth=1.0, markersize=2.0, markeredgewidth=0.0)
 		plt.xlabel('rank($V_s$)')
 		plt.ylabel('1 / MSD')
 		
-		# to save data
-		# *** use a better filename
-		dataToSave = []
-		for i in range(len(MADdistrOut)):
-			dataToSave.append([i, weights[i], MADdistrOut[i], invOfFitOut[i]])
-			
+# 		# to save data
+# 		# *** use a better filename
+# 		dataToSave = []
+# 		for i in range(len(MADdistrOut)):
+# 			dataToSave.append([i, weights[i], MADdistrOut[i], invOfFitOut[i]])
+# 			
 		if graphData:
 			stats.saveFile(graphData, dataToSave, "rank(Vs)\tweight\tMAD\t1/fit")
 	else:
@@ -472,7 +634,131 @@ def showGraphTool(inputRawData,
 	
 	if showGraph:
 		plt.show()
+    
+	return dataToSave
 	
+# begin: jmrc
+#------------------------------------------------------
+
+def calculateMAD(inputRawData,
+					inputRelations,
+					k,
+					variance,
+					alpha,
+					medianSide):
+	
+	plt.clf()
+	inputRawData.sort()
+	inputRelations.sort()
+	
+	windowWidth = medianSide * 2 + 1
+	if len(inputRawData) < windowWidth:
+		print('Error: window for median is bigger than total input size')
+		sys.exit(1)
+	
+	# output = makeStats(k, variance, input = input)
+	nextIdXData = getNextIdX_klibrate(inputRawData, inputRelations, k, variance, alpha, giveMergedData = True)
+	
+	nextIdX = nextIdXData[0]
+	mergedData = nextIdXData[1]
+
+	MADdistrOut, weights = getMADDistribution(nextIdX, mergedData, k, variance, alpha, medianSide)
+	invOfFitOut = getInverseOfFit(mergedData, k, variance, alpha)
+
+	MADdistrOut = MADdistrOut[medianSide:len(MADdistrOut) - medianSide + 1]
+	invOfFitOut = invOfFitOut[medianSide:len(invOfFitOut) - medianSide + 1]
+	weights = weights[medianSide:len(weights) - medianSide + 1]
+		
+	# to save data
+	# *** use a better filename
+	dataToSave = []
+	for i in range(len(MADdistrOut)):
+		dataToSave.append([i, weights[i], MADdistrOut[i], invOfFitOut[i]])
+    
+	return MADdistrOut, invOfFitOut, weights, dataToSave
+
+#------------------------------------------------------
+
+def showOnlyGraphTool(MADdistrOut,
+					invOfFitOut,
+                    weights,
+                    xlabel = '',
+                    ylabel = '',
+                    title = '',
+					verbose = False,
+					showRank = False,
+					graphFile = None,
+					dpi = None,
+					showGraph = True):
+	
+	plt.clf()
+
+	if showRank:
+		plt.plot(list(range(len(MADdistrOut))), MADdistrOut, 'g.', list(range(len(invOfFitOut))), invOfFitOut, 'r', linewidth=1.0, markersize=2.0, markeredgewidth=0.0)
+		plt.xlabel(xlabel)
+		plt.ylabel(ylabel)
+		
+	else:
+	
+		plt.plot(weights, MADdistrOut, 'g.', weights, invOfFitOut, 'r', linewidth=1.0, markersize=2.0, markeredgewidth=0.0)
+		plt.xlabel(xlabel)
+		plt.ylabel(ylabel)
+	
+	plt.grid(True)
+	plt.title(title)
+
+	if graphFile:
+		plt.savefig(graphFile, dpi = dpi)
+	
+	if showGraph:
+		plt.show()
+
+#------------------------------------------------------
+	
+def idXVsmoothing(inputRawData, dataCollected):
+	
+    try:
+        # create df with the inputRawData
+        df1 = pd.DataFrame(data=inputRawData, columns=['id','X','V'])
+    #     # get only the variance column
+    # 	dfV = df1[['V']]
+    #     # retrieve the rank of Variance from the non-duplicated values
+    # 	dfV2 = dfV.drop_duplicates()
+    # 	dfV2['rankV'] = dfV2.rank(method='min')
+    # 	dfV2['rankV'] -= 1 # start with 0
+    #     # merge the rankV to the inputRawData
+    # 	df1 = pd.merge(df1, dfV2, left_on=['V'], right_on=['V'])
+        
+        # create df with smoothed data
+        df2 = pd.DataFrame(data=dataCollected, columns=['rankV','W','MAD','1/fit','smoothMAD'])
+        # get the W and the smoothed MAD columns
+        df2 = df2[['W','smoothMAD']]
+        # In the case of weights are duplicated, we get the minimum smoothedMAD
+        df3 = df2.groupby(['W'])['smoothMAD'].min().reset_index()
+        
+        # create the idXVsmoothing table: id, X, Vsmoothing (from MAD)
+        # merge the inputRawData and smoothedMAD data based on RankV column
+        # in the case the 
+        df = pd.merge(df1, df3, left_on='V', right_on='W', how='left')
+        df = df.sort_values(['V'])
+        # fill NA/NaN values using the specified method: 'bfill' use next valid observation to fill gap.
+        df['Vcal'] = df['smoothMAD'].fillna(method='bfill')
+        
+        # create output
+        df_out = df[['id','X','Vcal']]
+        
+        # Convert DataFrame to a list of lists without header
+        idXVsmooth = df_out.values.tolist()
+
+    except Exception as e:
+        idXVsmooth = []
+        print('Error extracting the smoothing values: {}'.format(e))
+        sys.exit()
+                
+    return idXVsmooth
+
+# end: jmrc
+
 #------------------------------------------------------
 
 def extractKFromVarFile(kFile, verbose = True, defaultSeed = 1.0):
@@ -547,7 +833,7 @@ Usage: klibrate.py [OPTIONS] -r[relations file] -d[original data file] -o[calibr
                        Use a prefix for the output files. If this is not
                        provided, then the prefix will be garnered from the data
                        file.
-   -b, --no-verbose       Do not print result summary after executing.
+   -b, --no-verbose    Do not print result summary after executing.
    -d, --datafile      Input data file with text identificators in the first
                        column, measured values (x) in the second column, and
                        uncalibrated weights (v) in the third column.
@@ -588,7 +874,19 @@ Usage: klibrate.py [OPTIONS] -r[relations file] -d[original data file] -o[calibr
                        the rank of V (the weight) versus 1 / MSD.
    -s, --no-showsteps  Do not print result summary and steps of each Levenberg-
                        Marquardt iteration.
-   -v, --var, --varianceseed
+   -S, --no-smoothing  Do not apply the Savitzky-Golay smoothing algorithm. It 
+                       is applied by default.
+   -t, --smoothing-window
+                       The window size for the Savitzky-Golay smoothing 
+                       algorithm. A larger window size will result in stronger 
+                       smoothing. The window length must be less than or equal 
+                       to the size of input. By default is length of integrated elements.
+   -T, --smoothing-polynomial
+                       The polynomial order for the Savitzky-Golay smoothing 
+                       algorithm to fit the samples. A higher polynomial order 
+                       can capture more complex patterns but may also introduce 
+                       more artifacts.
+    -v, --var, --varianceseed
                        Seed used to start calculating the variance.
                        Default is 0.001.
    -V, --varfile=filename
@@ -623,7 +921,7 @@ klibrate.py -gf -v0.02922 -k35.28 -dC:\\temp\\originalDataFile.txt -rC:\\temp\\r
 
 def main(argv):
 	
-	version = "v1.19"
+	version = "v1.20"
 	verbose = True
 	showGraph = True
 	graphDPI = 100 # default of Matplotlib's savefig method
@@ -646,7 +944,10 @@ def main(argv):
 	graphFileVRank = ""
 	graphFileVValue = ""
 	graphDataFile = ""
-	showRank = False
+	showRank = False    
+	smoothingFlag = True
+	smoothedWindow = None
+	smoothedPolynomialOrder = 3
 	analysisName = ""
 	defaultAnalysisName = "klibrate"
 	analysisFolder = ""
@@ -663,7 +964,11 @@ def main(argv):
 	defaultGraphExtension = ".png"
 	
 	try:
-		opts, args = getopt.getopt(argv, "a:p:k:v:c:d:r:o:w:m:L:G:D:R:K:V:bgsfh", ["analysis=", "folder=", "kseed=", "varianceseed=", "alphaseed=", "datafile=", "relfile=", "outputfile=", "window=", "maxiterations=", "infofile=", "outgraphvrank=", "outgraphvvalue=", "outgraphdata=", "kfile=", "varfile=", "no-verbose", "no-showgraph", "no-showsteps", "forceparameters", "showrank", "help", "egg", "easteregg"])
+		opts, args = getopt.getopt(argv, "a:p:k:v:c:d:r:o:w:m:L:G:D:R:K:V:t:T:Sbgsfh", 
+["analysis=", "folder=", "kseed=", "varianceseed=", "alphaseed=", "datafile=", "relfile=", "outputfile=", "window=", "maxiterations=", "infofile=", "outgraphvrank=", "outgraphvvalue=", "outgraphdata=", "kfile=", "varfile=", 
+ "smoothing-window=", "smoothing-polynomial=", "no-smoothing", 
+ "no-verbose", "no-showgraph", 
+ "no-showsteps", "forceparameters", "showrank", "help", "egg", "easteregg"])
 	except getopt.GetoptError:
 		message = "Error while getting parameters."
 		print(message)
@@ -718,6 +1023,12 @@ def main(argv):
 			kFile = arg
 		elif opt in ("-V", "--varfile"):
 			varFile = arg
+		elif opt in ("-S", "--no-smoothing"):
+			smoothingFlag = False
+		elif opt in ("-t", "--smoothing-window"):
+			smoothedWindow = int(arg)
+		elif opt in ("-T", "--smoothing-polynomial"):
+			smoothedPolynomialOrder = int(arg)
 		elif opt in ("-f", "--forceparameters"):
 			forceParameters = True
 		elif opt in ("-R", "--outgraphvrank"):
@@ -781,7 +1092,8 @@ def main(argv):
 			logList.append(["K not found in text file."])
 			stats.saveFile(infoFile, logList, "INFO FILE")
 			sys.exit()
-		
+
+
 	# output
 	if len(outputCalibrated) == 0:
 		outputCalibrated = os.path.join(analysisFolder, analysisName + "_" + defaultOutputCalibrated + defaultTableExtension)
@@ -813,12 +1125,14 @@ def main(argv):
 	logList.append(["Output data file for graph: " + graphDataFile])
 	logList.append(["Parameters forced: " + str(forceParameters)])
 	logList.append(["Max iterations: " + str(maxIterations)])
-	
+
 # END REGION: FILE NAMES SETUP
 	
 	calibratedData, variance, k, alpha, extraLog = calibrate(rawDataFile = dataFile,
 		relationsFile = relationsFile, kSeed = kSeed, varianceSeed = varianceSeed,
-		medianSide = medianSide, maxIterations = maxIterations, verbose = showSteps,
+		medianSide = medianSide, maxIterations = maxIterations, 
+        smoothingFlag = smoothingFlag, smoothedWindow = smoothedWindow, smoothedPolynomialOrder = smoothedPolynomialOrder,
+        verbose = showSteps,
 		showGraph = showGraph, forceParameters = forceParameters, alphaSeed = alphaSeed,
 		showRank = showRank, useCooperativity = useCooperativity, graphFileVRank = graphFileVRank, graphFileVValue = graphFileVValue, graphDataFile = graphDataFile, graphDPI = graphDPI)
 	
