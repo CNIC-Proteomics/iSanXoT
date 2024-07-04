@@ -37,6 +37,52 @@ import ProteinAssigner_v5
 ###################
 # Local functions #
 ###################
+def parse_arguments(argv):
+    # parse arguments
+    parser = argparse.ArgumentParser(
+        description='Create the ID-q (identification and quantification) file for iSanXoT',
+        epilog='''
+        Join the results in a file and include the experiment column. If apply:
+            - Add the level identifiers.
+            - Extract and add the quantifications.
+            - Execute the pRatio: calculate the cXCorr, FDR.
+            - Calculate the most probable protein.
+        ''')
+    parser.add_argument('-w',   '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
+    # input files:
+    # Identification/Quantification input file
+    parser.add_argument('-ii',  '--infile', help='Input Identification/Quantification file')
+    # or
+    # create ID-q from proteomics pipelines
+    parser.add_argument('-id',  '--indir', help='Input Directory where identifications are saved')
+    parser.add_argument('-te',  '--intbl-exp', help='File has the params for the input experiments')
+    parser.add_argument('-tl',  '--intbl-lev', help='File has the params for the level identifiers')
+    parser.add_argument('-tlf', '--intbl-labelfree', help='File has the params for the creation intensity table from label-free')
+    # optional parameters:
+    parser.add_argument('-iz',  '--indir-mzml', help='Input Directory where mzML are saved')
+    parser.add_argument('-tq',  '--intbl-quant', help='File has the params for the quantification extraction')
+    parser.add_argument('-tf',  '--intbl-fdr', help='File has the pRatio params')
+    parser.add_argument('-tp',  '--intbl-mpp', help='File has the MPP params')
+    parser.add_argument('-o',   '--outfile', required=True, help='Output file')
+    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
+    args = parser.parse_args(argv)
+    
+    # get the name of script
+    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
+    
+    # logging debug level. By default, info level
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    else:
+        logging.basicConfig(level=logging.INFO,
+                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S %p',
+                            force=True)
+    return args
+
 def add_exps(indata, indir, addExp):
     '''
     Pre-processing the data for CNIC group
@@ -96,52 +142,6 @@ def add_levelids(df, indata):
 def print_in_background(df, file):
     df.to_csv(file, index=False, sep="\t", line_terminator='\n')
 
-    
-def parse_arguments(argv):
-    # parse arguments
-    parser = argparse.ArgumentParser(
-        description='Create the ID-q (identification and quantification) file for iSanXoT',
-        epilog='''
-        Join the results in a file and include the experiment column. If apply:
-            - Add the level identifiers.
-            - Extract and add the quantifications.
-            - Execute the pRatio: calculate the cXCorr, FDR.
-            - Calculate the most probable protein.
-        ''')
-    parser.add_argument('-w',   '--n_workers', type=int, default=2, help='Number of threads/n_workers (default: %(default)s)')
-    # input files:
-    # Identification/Quantification input file
-    parser.add_argument('-ii',  '--infile', help='Input Identification/Quantification file')
-    # or
-    # create ID-q from proteomics pipelines
-    parser.add_argument('-id',  '--indir', help='Input Directory where identifications are saved')
-    parser.add_argument('-te',  '--intbl-exp', help='File has the params for the input experiments')
-    parser.add_argument('-tl',  '--intbl-lev', help='File has the params for the level identifiers')
-    parser.add_argument('-tlf', '--intbl-labelfree', help='File has the params for the creation intensity table from label-free')
-    # optional parameters:
-    parser.add_argument('-iz',  '--indir-mzml', help='Input Directory where mzML are saved')
-    parser.add_argument('-tq',  '--intbl-quant', help='File has the params for the quantification extraction')
-    parser.add_argument('-tf',  '--intbl-fdr', help='File has the pRatio params')
-    parser.add_argument('-tp',  '--intbl-mpp', help='File has the MPP params')
-    parser.add_argument('-o',   '--outfile', required=True, help='Output file')
-    parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
-    args = parser.parse_args(argv)
-    
-    # get the name of script
-    script_name = os.path.splitext( os.path.basename(__file__) )[0].upper()
-    
-    # logging debug level. By default, info level
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p',
-                            force=True)
-    else:
-        logging.basicConfig(level=logging.INFO,
-                            format=script_name+' - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p',
-                            force=True)
-    return args
 
 def main(argv):
     '''
@@ -308,7 +308,7 @@ def main(argv):
             prot_col_mpp = indata['output_col'][0]
             prot_col_dsc_mpp = indata['output_desc_col'][0] if 'output_desc_col' in indata else ''
             label_decoy = indata['label_decoy'][0]
-            isoleu = indata['iso_leucine'][0] if 'iso_leucine' in indata else 'L'
+            isoleu = indata['iso_leucine'][0] if 'iso_leucine' in indata else ''
             regex_previous = indata['regex_previous'][0] if 'regex_previous' in indata else '//'
             regex_previous = [re.compile(i, re.IGNORECASE) for i in re.split(r'(?<!\\)/', regex_previous.strip('/ '))] # this is heredity from ProteinAssigner program
             regex = indata['regex'][0] if 'regex' in indata else '//'
