@@ -234,7 +234,7 @@ ls -1 > requirements_local.txt
     ```
     1.2) Configure python to install in user folder
     ```
-    ./configure --prefix=/home/jmrc/projects/iSanXoT/app/resources/exec/python-3.9.7-linux-x64
+    ./configure --prefix=/home/jmrodriguezc/iSanXoT/app/resources/exec/python-3.9.7-linux-x64
     ```
     1.2) Make
     ```
@@ -249,14 +249,14 @@ ls -1 > requirements_local.txt
 
 1) If it is from the Scratch, uncompress the node for MacOS
 ```
-cd /home/jmrc/projects/iSanXoT/env/node
+cd /home/jmrodriguezc/iSanXoT/env/node
 tar -xvf node-v14.16.0-linux-x64.tar.gz && mv node-v14.16.0-linux-x64  node-linux-x64
 cd ../../
 ```
 
 2) Execute program that creates the frontend enviroment
 ```
-export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./env/com.env.linux.sh /home/jmrc/projects/iSanXoT/app/resources/exec/python-3.9.7-linux-x64/bin/python3 /home/jmrc/projects/iSanXoT/env/node
+export PATH=/home/jmrodriguezc/iSanXoT/env/node/node-linux-x64/bin:$PATH && ./env/com.env.linux.sh /home/jmrodriguezc/iSanXoT/app/resources/exec/python-3.9.7-linux-x64/bin/python3 /home/jmrodriguezc/iSanXoT/env/node
 ```
 
 ### Build iSanXoT
@@ -269,7 +269,7 @@ env/prepare_isanxot_build.linux.sh
 2) Execute the program that builds the packages
 ```
 cd app
-export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/electron-builder
+export PATH=/home/jmrodriguezc/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrodriguezc/iSanXoT/env/node/node-linux-x64/bin/electron-builder
 ```
 
 ### To execute iSanXoT build
@@ -304,7 +304,7 @@ env/prepare_isanxot_debug.linux.sh
 2) Execute iSanXoT in debug mode
 ```
 cd app
-export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrc/projects/iSanXoT/env/node/node-linux-x64/bin/npm start
+export ISANXOT_MODE=debug && export ISANXOT_DEV=local && export PATH=/home/jmrodriguezc/iSanXoT/env/node/node-linux-x64/bin:$PATH && /home/jmrodriguezc/iSanXoT/env/node/node-linux-x64/bin/npm start
 ```
 
 ### In the case there are new python packages: Download the Python packages
@@ -316,3 +316,15 @@ cd resources/env/packages/linux-x64
 /Users/proteomica/projects/iSanXoT/resources/exec/python-3.9.7-linux-x64/bin/pip3 download -r requirements.txt
 ls -1 > requirements_local.txt
 ```
+
+
+<!--
+
+Installations for the Linux distributions in WSL (Windows)
+
+
+sudo apt install libxshmfence1
+sudo apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
+sudo apt-get install libasound2
+
+-->
