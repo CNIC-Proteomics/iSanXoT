@@ -37,7 +37,7 @@
       },
       "params": [
         { "type": "required", "id": "infile", "name": "Identification file" },
-        { "type": "required", "id": "experiment", "name": "Experiment" }
+        { "type": "required", "id": "batch", "name": "Batch" }
       ]
     },{
       "id": "add_levelid",
@@ -75,7 +75,7 @@
       },
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "batch", "name": "Batch" },
         { "type": "required", "id": "threshold", "name": "Threshold (ppm)" },
         { "type": "required", "id": "jump_areas", "name": "Isotopologue recovery" },
         { "type": "required", "id": "fdr", "name": "FDR cutoff" },

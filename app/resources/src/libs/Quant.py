@@ -363,7 +363,7 @@ def parser_mz(file, spec_name, isotag, isoname, isocorrm, error_ppm, scan_list=N
 
 def prepare_params(tpl):
     '''
-    Prepare the parameters to get the quantification. It will be a list of spectrum file (for each experiment)
+    Prepare the parameters to get the quantification. It will be a list of spectrum file (for each batch)
 
     Returns
     -------
@@ -372,14 +372,14 @@ def prepare_params(tpl):
       [
       0 => '{Spectrum File}',
       1 => '{mz file}',
-      2 => '{Name of experiment}',
+      2 => '{Name of batch}',
       3 => '{Ion distribution file}',
       4 => '{scan list for the Spectrum_File}',
       5 => '{Dataframe that reports the Ion Distribution}',
       ]
     ]
     '''
-    # get the input parameters based on the experiment in tuple df=(exp,df)
+    # get the input parameters based on the batch in tuple df=(exp,df)
     spec = tpl[0]
     idedf = tpl[1]
     indata = tpl[2]
@@ -458,7 +458,7 @@ def merge_quantification(ieddf, iqddf):
       [
       0 => '{Spectrum File}',
       1 => '{mz file}',
-      2 => '{Name of experiment}',
+      2 => '{Name of batch}',
       3 => '{Ion distribution file}',
       4 => '{scan list for the Spectrum_File}',
       5 => '{Identification file}',
@@ -470,7 +470,7 @@ def merge_quantification(ieddf, iqddf):
     df : TYPE
         DESCRIPTION.
     '''
-    # get the input parameters based on the experiment in tuple df=(exp,df)
+    # get the input parameters based on the batch in tuple df=(exp,df)
     idedf = ieddf[1]
     quadf = iqddf[1]
 

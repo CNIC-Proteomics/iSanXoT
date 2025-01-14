@@ -1,4 +1,25 @@
 ___
+## 2.0.0
+```
+DATE: 2024_11
+```
+
+### Highlights
+
++ The 'Experiment' column has been renamed as 'Batch'.
+
+### Changes in the Graphical User Interface
+
++ Updated the description of the INTEGRATE module.
+
++ Renamed the 'Experiment' column to 'Batch'
+
+### Changes in the Code Workflow
+
++ Added functionality to print the sigmoide plots (with and without outliers) in the 'stats' folder.
+
+
+___
 ## 1.2.13
 ```
 DATE: 2024_07

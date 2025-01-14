@@ -79,7 +79,7 @@ def preparing_data(df, ttable):
     out : list
         Create a list with the tuples:
             output (sample name)
-            exp (experiment)
+            exp (batch)
             feat (name of header)
             label (ratio numerator)
             controlTag (ratio denominator)
@@ -95,7 +95,7 @@ def preparing_data(df, ttable):
         sample = tt_sample[0]
         ttable = tt_sample[1]
         forced = ttable['force'].values[0] if 'force' in ttable.columns else None
-        exp = ttable['experiment'].values[0] if 'experiment' in ttable.columns else None
+        exp = ttable['batch'].values[0] if 'batch' in ttable.columns else None
         feat = ttable['feat_col'].values[0] 
         
         # If level is not in the task-table (WSPP_SBT modules), then 'uscan' is by default.
@@ -119,7 +119,7 @@ def preparing_data(df, ttable):
         params = list(set(itertools.chain.from_iterable([label]+controlTag)))
         
         # extract the columns from input file
-        cols = ['Experiment']+[feat]+params if 'Experiment' in df.columns else [feat]+params
+        cols = ['Batch']+[feat]+params if 'Batch' in df.columns else [feat]+params
         indata = df[cols]
         # flag absolute value
         flagVab = False
@@ -154,7 +154,7 @@ def checking_cached_files(ttable_samples, outdir):
             out.append(sample_ttable)
         else:
             # add the task whether the output file (level file) does not exist
-            outdir_e = os.path.join(outdir, sample) # get experiment folder
+            outdir_e = os.path.join(outdir, sample) # get batch folder
             ofile = f"{outdir_e}/{level}.tsv"
             if not os.path.isfile(ofile):
                 out.append(sample_ttable)
@@ -178,14 +178,14 @@ def calculate_ratio(sample_ttable):
     # declare tmp df
     tmpout = pd.DataFrame()
     
-    # filter by experiment
-    # if the task-table contains the experiment value (is not None) and the ID-q contains the 'Experiment' header
-    if exp is not None and 'Experiment' in df.columns:
-        df = df[df['Experiment']==exp]
-    # if the task-table contains the experiment value (is not None) but the ID-q does not contain the 'Experiment' header
-    elif exp is not None and 'Experiment' not in df.columns:
+    # filter by batch
+    # if the task-table contains the batch value (is not None) and the ID-q contains the 'Batch' header
+    if exp is not None and 'Batch' in df.columns:
+        df = df[df['Batch']==exp]
+    # if the task-table contains the batch value (is not None) but the ID-q does not contain the 'Batch' header
+    elif exp is not None and 'Batch' not in df.columns:
         df = pd.DataFrame(columns=df.columns)
-    # else if the task-table does not contain the experiment value => do not filter, retrieve the same input dataframe
+    # else if the task-table does not contain the batch value => do not filter, retrieve the same input dataframe
         
     
     # get the labels

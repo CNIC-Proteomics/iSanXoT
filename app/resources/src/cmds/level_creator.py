@@ -42,10 +42,10 @@ def chech_tags_available(df, rnum, rden):
 
 def filter_by_exp_from_ratios(idf, expt, feat, rnum, rden):
     '''
-    Filter by experiment and the given columns.
+    Filter by batch and the given columns.
     '''
     # filter the input dataframe by the experiments
-    idf = idf[idf['Experiment']==expt]
+    idf = idf[idf['Batch']==expt]
     # extract the columns
     cols = set([feat] + rnum + rden)
     idf = idf[cols]
@@ -120,7 +120,7 @@ if __name__ == "__main__":
             python ratios.py
         ''', formatter_class=RawTextHelpFormatter)
     parser.add_argument('-i',  '--infile', required=True, help='Input file with Identification')
-    parser.add_argument('-e',  '--exp', required=True, help='Filter given table by experiment')
+    parser.add_argument('-e',  '--exp', required=True, help='Filter given table by batch')
     parser.add_argument('-f',  '--feat', required=True, help='Column that identify the feature')
     parser.add_argument('-n',  '--rnum', required=True, help='Numerator to calculate the log2-ratios')
     parser.add_argument('-d',  '--rden', required=True, help='Denominator to calculate the log2-ratios')

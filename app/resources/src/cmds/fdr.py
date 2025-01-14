@@ -77,10 +77,10 @@ def FdrXc(df, typeXCorr, FDRlvl):
 
 def processing(df, indata, se):
     # get the dataframe from the input tuple df=(exp,df)
-    # get the indata from the dataframe group by experiment
+    # get the indata from the dataframe group by batch
     exp_df = df[0]
     df = df[1]
-    indata = indata[indata['experiment']==exp_df]
+    indata = indata[indata['batch']==exp_df]
     if not indata.empty:
         # get params
         deltaMassThreshold = int(indata['threshold'].values[0])
@@ -101,10 +101,10 @@ def calc_fdr(n_workers, ses, df, indata):
     Calculate the FDR
     '''    
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:        
-        ddf = executor.map(processing, list(df.groupby("Experiment")), repeat(indata), repeat(ses))
+        ddf = executor.map(processing, list(df.groupby("Batch")), repeat(indata), repeat(ses))
     ddf = pd.concat(ddf)
     # begin: for debugging in Spyder
-    # ddf = processing( list(df.groupby("Experiment"))[0], indata, ses)
+    # ddf = processing( list(df.groupby("Batch"))[0], indata, ses)
     # end: for debugging in Spyder
     return ddf
 
@@ -135,7 +135,7 @@ def main(args):
         sys.exit(sms)
 
 
-    logging.info("calculating the FDR by experiment")
+    logging.info("calculating the FDR by batch")
     ddf = calc_fdr(args.n_workers, se, df, indata)
         
     

@@ -89,7 +89,7 @@ def add_quantification(n_workers, indir, se, ddf, indata):
             pair_spec_ie_in = [ (k,v,in_spec[k]) for k,v in ie_spec.items() if k in in_spec]
     
             logging.info("prepare the params for each spectrum_file/mzfile pair")
-            # one experiment can be multiple spectrum files
+            # one batch can be multiple spectrum files
             with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
                 params = executor.map( Quant.prepare_params, pair_spec_ie_in )
             params = [i for s in list(params) for i in s]
@@ -125,7 +125,7 @@ def print_by_experiment(df, outdir, outfname):
     '''
     Print the output file by experiments
     '''
-    # get the experiment names from the input tuple df=(exp,df)
+    # get the batch names from the input tuple df=(exp,df)
     exp = df[0]
     # create workspace
     outdir_e = os.path.join(outdir, exp)
@@ -179,7 +179,7 @@ def main(args):
     logging.info("print the ID files by experiments")
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
         tmpfiles = executor.map( print_by_experiment,
-                                list(ddf.groupby("Experiment")),
+                                list(ddf.groupby("Batch")),
                                 itertools.repeat(args.outdir),
                                 itertools.repeat("ID.tsv") )
     [common.rename_tmpfile(f) for f in list(tmpfiles)] # rename tmp file deleting before the original file 

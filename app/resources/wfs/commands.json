@@ -33,7 +33,7 @@
       "id": "level_creator",
       "label": "LEVEL CREATOR",
       "title": "Log2-ratios & set the first level",
-      "sdesc": "This module creates a level (a text file containing identifier, X and V values) extracting the data from a Quantification table (IDq file). Only the data with the value specified in 'Experiment' column will be extracted.",
+      "sdesc": "This module creates a level (a text file containing identifier, X and V values) extracting the data from a Quantification table (IDq file). Only the data with the value specified in 'Batch' column will be extracted.",
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/level_creator.html",
       "visible": true,
@@ -59,7 +59,7 @@
     },{
       "id": "norcombine",
       "label": "NORCOMBINE",
-      "title": "Sample/experiment combination",
+      "title": "Sample/batch combination",
       "sdesc": "This module combines integration data and relation tables from different experiments. After that, the combined integrations and relations are integrated all together.",
       "panel": "sections/panels/simple.html",
       "hmodal": "sections/hmodals/norcombine.html",
@@ -171,7 +171,7 @@
       "file": "wspp_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "batch", "name": "Batch" },
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -194,7 +194,7 @@
       "file": "wsppg_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "batch", "name": "Batch" },
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -220,7 +220,7 @@
       "file": "wpp_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "batch", "name": "Batch" },
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -241,7 +241,7 @@
       "file": "wppg_sbt.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "batch", "name": "Batch" },
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator" },
@@ -265,7 +265,7 @@
       "file": "level_creator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "experiment", "name": "Experiment" },
+        { "type": "required", "id": "batch", "name": "Batch" },
         { "type": "required", "id": "feat_col", "name": "Identifier column header" },
         { "type": "required", "id": "ratio_numerator", "name": "Ratio numerator column" },
         { "type": "required", "id": "ratio_denominator", "name": "Ratio denominator column(s)" },

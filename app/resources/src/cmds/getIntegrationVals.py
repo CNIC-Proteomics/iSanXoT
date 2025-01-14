@@ -80,10 +80,13 @@ def get_values(infile,cols):
         ne = df[df['FDR'] == 'excluded']['FDR'].count() # excluded N elems
         ni = nt - ne # integrated N elems
         # get the link to sigmoide... Important: The sigmoide with outliers (first sanxot)
-        sgraph = os.path.join(dname, f"{iname}_outGraph1.png")
-        sgraph = sgraph if os.path.isfile(sgraph) else np.nan        
+        sgraph1 = os.path.join(dname, f"{iname}_outGraph1.png")
+        sgraph1 = sgraph1 if os.path.isfile(sgraph1) else np.nan
+        # get the link to sigmoide... Important: The sigmoide without outliers (second sanxot)
+        sgraph = os.path.join(dname, f"{iname}_outGraph.png")
+        sgraph = sgraph if os.path.isfile(sgraph) else np.nan
         # return data
-        df = pd.DataFrame([(sname,iname,v,nt,ne,ni,sgraph)], columns=cols)
+        df = pd.DataFrame([(sname,iname,v,nt,ne,ni,sgraph1,sgraph)], columns=cols)
     except Exception as exc:
         print("ERROR!! Getting the time values:\n{}".format(exc), flush=True)
     return df
@@ -103,7 +106,7 @@ def main(args):
     
     
     logging.info(f"getting values for every file in parallel ({args.n_workers})...")
-    cols = ['sample','integration','variance','totalNelems','excludedNelems','integratedNelems','sigmoide']
+    cols = ['sample','integration','variance','totalNelems','excludedNelems','integratedNelems','sigmoideWithOutliers','sigmoideWithoutOutliers']
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
         ddf = executor.map( get_values, infiles, repeat(cols) )
     ddf = pd.concat(ddf)
@@ -116,11 +119,11 @@ def main(args):
     ddf.sort_values(['integration','sample'], ascending=False, inplace=True)
     
     logging.info('printing tsv output...')
-    ddf.to_csv(args.outfile, index=False, sep="\t", line_terminator='\n', columns=[c for c in cols if c != 'sigmoide'])
+    ddf.to_csv(args.outfile, index=False, sep="\t", line_terminator='\n', columns=[c for c in cols if 'sigmoide' not in c])
     
-    logging.info('printing html output...')
-    # include the sigmoide image in base64
-    ddf_html = ddf.to_html(index=False, escape=False, justify='center', formatters={'sigmoide': image_formatter}, columns=cols)
+    logging.info('printing html output with/without outliers...')
+    # include the sigmoide image with/without outliers in base64
+    ddf_html = ddf.to_html(index=False, escape=False, justify='center', formatters={'sigmoideWithOutliers': image_formatter, 'sigmoideWithoutOutliers': image_formatter}, columns=cols)
     outhtml = f'''
 <!DOCTYPE html>
 <html>

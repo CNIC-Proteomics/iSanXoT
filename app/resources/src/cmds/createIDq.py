@@ -42,7 +42,7 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser(
         description='Create the ID-q (identification and quantification) file for iSanXoT',
         epilog='''
-        Join the results in a file and include the experiment column. If apply:
+        Join the results in a file and include the batch column. If apply:
             - Add the level identifiers.
             - Extract and add the quantifications.
             - Execute the pRatio: calculate the cXCorr, FDR.
@@ -96,10 +96,10 @@ def add_exps(indata, indir, addExp):
         sms = "At least, one of input files is wrong: {}".format(exc)
         logging.error(sms)
         sys.exit(sms)
-    # add Experiment column
+    # add Batch column
     if len(indata) > 1:
         exp = indata[1]
-        df['Experiment'] = exp
+        df['Batch'] = exp
     # add the Spectrum File column from the input file name
     if addExp and 'Spectrum_File' not in df.columns:
         df['Spectrum_File'] = os.path.basename(file)
@@ -107,7 +107,7 @@ def add_exps(indata, indir, addExp):
 
 def add_experiments(n_workers, indir, indata, addSpecFile=False):
     '''
-    Add experiment column
+    Add batch column
     '''
     with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:            
         ddf = executor.map( add_exps, indata.values.tolist(), repeat(indir), repeat(addSpecFile))
@@ -180,14 +180,14 @@ def main(argv):
         logging.info("executing CREATE_IDQ module ---")
         # add exp cols
         if args.intbl_exp:
-            logging.info("reading the experiment task-table")
+            logging.info("reading the batch task-table")
             indata = common.read_task_table(args.intbl_exp)
             if indata.empty:
-                sms = "There is not experiment task-table"
+                sms = "There is not batch task-table"
                 logging.error(sms)
                 sys.exit(sms)
         logging.info("processing the input file: read, add exp")
-        # add the experiment columns
+        # add the batch columns
         if args.intbl_quant or args.intbl_fdr:
             # in addition, add 'Spectrum_File' columns if the adaptors are then executed
             df = add_experiments(args.n_workers, args.indir, indata, True)
@@ -217,7 +217,7 @@ def main(argv):
             given_vals = re.split(r'\s*,\s*', indata.loc[0,'headers_intensities'])
             given_index = indata.loc[0,'feature_id']
             # given_cols = re.split(r'\s*,\s*', indata.loc[0,'feature_exp'])
-            given_cols = ['Experiment']
+            given_cols = ['Batch']
             # pivot table
             int_df = pd.pivot_table(df, values=given_vals, index=given_index, columns=given_cols, aggfunc=np.sum, fill_value=0)
             int_df = int_df.reset_index()

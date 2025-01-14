@@ -40,7 +40,7 @@ def read_relfiles(file):
 def parse_arguments(argv):
     # parse arguments
     parser = argparse.ArgumentParser(
-        description='Create a file with the list of files by experiment',
+        description='Create a file with the list of files by batch',
         epilog='''Examples:
         python  src/SanXoT/createSansonHighLevel.py
           -ii w1/c2a_outStats.tsv;wt2/c2a_outStats.tsv

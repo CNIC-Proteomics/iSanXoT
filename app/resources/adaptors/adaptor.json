@@ -37,7 +37,7 @@
       },
       "params": [
         { "type": "required", "id": "infile", "name": "Identification file" },
-        { "type": "required", "id": "experiment", "name": "Experiment" }
+        { "type": "required", "id": "batch", "name": "Batch" }
       ]
     },{
       "id": "add_levelid",
