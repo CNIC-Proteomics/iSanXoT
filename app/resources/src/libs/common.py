@@ -25,7 +25,7 @@ ROOT_FOLDER = r'[\/|\\]jobs[\/|\\]'
 def get_job_name(file):
     # get the job name from file or from string (command line)
     if os.path.isfile(file):
-        # get the name of 'experiment' until the root folder
+        # get the name of 'batch' until the root folder
         # By default, we get the last folder name of path
         fpath = os.path.dirname(file)
         name = os.path.basename(fpath)

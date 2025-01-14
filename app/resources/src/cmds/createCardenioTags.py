@@ -30,7 +30,7 @@ import common
 def parse_arguments(argv):
     # parse arguments
     parser = argparse.ArgumentParser(
-        description='Create a file with the list of files by experiment',
+        description='Create a file with the list of files by batch',
         epilog='''Examples:
         python  src/SanXoT/createCardenioTags.py
           -ii w1/p2q_lowerNormV.tsv;wt2/p2q_lowerNormV.tsv

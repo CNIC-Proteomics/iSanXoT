@@ -269,7 +269,7 @@ def prepare_params(df, refile, outdir):
       [
       0 => '{Spectrum File}',
       1 => '{mz file}',
-      2 => '{Name of experiment}',
+      2 => '{Name of batch}',
       3 => '{Type of TMT: TMT10, TMT11, TMT16, etc}',
       4 => '{scan list for the Spectrum_FILENAME}',
       5 => '{Identification file}',
@@ -277,7 +277,7 @@ def prepare_params(df, refile, outdir):
       ]
     ]
     '''
-    # get the input parameters based on the experiment in tuple df=(exp,df)
+    # get the input parameters based on the batch in tuple df=(exp,df)
     exp = df[0]
     indata = df[1]
 
@@ -285,12 +285,12 @@ def prepare_params(df, refile, outdir):
     retbl = createID.read_infiles(refile)
 
     # extract the quantification files and the experiemnt name
-    q = indata[['mzfile','experiment','type_tmt']]
+    q = indata[['mzfile','batch','type_tmt']]
     s = list(indata['infile'])
     q.insert(0,'Spectrum_File', [os.path.basename(x) for x in s])
     q = q.drop_duplicates().values.tolist()
     
-    # read the identification table based on the experiment
+    # read the identification table based on the batch
     indir_e = os.path.join(outdir, exp)
     idefile = f"{indir_e}/ID.tsv"
     idetbl = createID.read_infiles(idefile)
@@ -301,7 +301,7 @@ def prepare_params(df, refile, outdir):
     i = i.values.tolist()
     
     # from the same spectrum FILENAME, we get the scan list
-    # r => [['spectrum_file','mzfile','experiment','type_tmt']]
+    # r => [['spectrum_file','mzfile','batch','type_tmt']]
     # a => [['spectrum_file','scan_list']]
     # add the identification file (ID.tsv)
     # add the table of isotopic distrution depending on the type of TMT
@@ -321,7 +321,7 @@ def extract_quantification(params):
       [
       0 => '{Spectrum File}',
       1 => '{mz file}',
-      2 => '{Name of experiment}',
+      2 => '{Name of batch}',
       3 => '{Type of TMT: TMT10, TMT11, TMT16, etc}',
       4 => '{scan list for the Spectrum_FILENAME}',
       5 => '{Identification file}',
@@ -359,7 +359,7 @@ def merge_quantification(itup, params):
       [
       0 => '{Spectrum File}',
       1 => '{mz file}',
-      2 => '{Name of experiment}',
+      2 => '{Name of batch}',
       3 => '{Type of TMT: TMT10, TMT11, TMT16, etc}',
       4 => '{scan list for the Spectrum_FILENAME}',
       5 => '{Identification file}',
@@ -371,17 +371,17 @@ def merge_quantification(itup, params):
     df : TYPE
         DESCRIPTION.
     '''
-    # get the input parameters based on the experiment in tuple df=(exp,df)
+    # get the input parameters based on the batch in tuple df=(exp,df)
     exp = itup[0]
     quant = itup[1]
     
-    # get the params based on experiment
+    # get the params based on batch
     p = [ x for x in params if x[0] == exp][0]
     
     # get identification file
     idefile = p[5]
     
-    # read the identification table based on the experiment
+    # read the identification table based on the batch
     idetbl = createID.read_infiles(idefile)
     
     # add the quantification columns based on "scan" and "basename" of spectrum file    
@@ -437,9 +437,9 @@ def main(args):
         
         logging.info("prepare the parameters")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:            
-            params = executor.map(prepare_params, list(indata.groupby("experiment")), itertools.repeat(args.retbl), itertools.repeat(args.outdir))
+            params = executor.map(prepare_params, list(indata.groupby("batch")), itertools.repeat(args.retbl), itertools.repeat(args.outdir))
         params = list(params)
-        # params = prepare_params(list(indata.groupby("experiment"))[0], args.retbl, args.outdir)
+        # params = prepare_params(list(indata.groupby("batch"))[0], args.retbl, args.outdir)
     
     
         logging.info("extract the quantification")
@@ -459,7 +459,7 @@ def main(args):
         logging.info("print the ID files by experiments")
         with concurrent.futures.ProcessPoolExecutor(max_workers=args.n_workers) as executor:        
             tmpfiles = executor.map( createID.print_by_experiment,
-                                    list(idequant.groupby("Experiment")),
+                                    list(idequant.groupby("Batch")),
                                     itertools.repeat(args.outdir),
                                     itertools.repeat("ID-quant.tsv") )  
         # rename tmp file deleting before the original file 
@@ -469,7 +469,7 @@ def main(args):
     else:
     
         logging.info("extract the list of experiments")
-        Expt = list(indata['experiment'].unique())
+        Expt = list(indata['batch'].unique())
         logging.debug(Expt)
 
 
