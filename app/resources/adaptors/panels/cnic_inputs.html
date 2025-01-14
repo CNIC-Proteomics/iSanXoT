@@ -170,7 +170,7 @@ function extractInputDirectoryFile(inputs, errsms) {
 
 // Add the metadata values into the table
 function addMetaDataIntoTable(metadata) {
-  // add metadata for experiment table
+  // add metadata for batch table
   if ( 'exp' in metadata ) {
     // update the headers based on the metadata
     let h = $(`#page-ttable-add_expcol .tasktable`).handsontable('getColHeader');

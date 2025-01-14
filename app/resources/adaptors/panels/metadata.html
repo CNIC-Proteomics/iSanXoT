@@ -39,7 +39,7 @@
         <legend class="scheduler-border">Name the experiments</legend>
         <div id="select-experiments"></div>
       </fieldset>
-    </div> <!-- add experiment -->
+    </div> <!-- add batch -->
 
     <div class="form-group">
       <fieldset class="scheduler-border">
@@ -78,7 +78,7 @@ let inp_dir = url_params.get('inpdir');
 
 // Init tables
 let cols_tbl_exp = {
-  headers: ['File', 'Experiment'],
+  headers: ['File', 'Batch'],
   params:  {readOnly: false}
 };
 let cols_tbl_ide = {
@@ -242,7 +242,7 @@ $('#submit-annots').click(function() {
   if ( files == "" || files === undefined) {
     exceptor.showMessageBox('error',`At least one input files is required`, title='Adding metadata', end=true);
   }
-  // check the experiment values
+  // check the batch values
   // convert the data for the creation of final table
   let table_exp = $('#select-experiments .tasktable').handsontable('getData');
   if (  table_exp.every(commoner.allBlanks) ) {
