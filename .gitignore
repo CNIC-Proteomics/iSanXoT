@@ -14,8 +14,9 @@ TODO.xlsx
 *.pyc
 __pycache__/
 
-# electron
+# node packages
 app/package-lock.json
+app/node_modules
 
 # discard the environment for the frontend
 env/node/node-win-x64
@@ -34,12 +35,14 @@ env/python/Python-3.9.7
 releases
 
 # docs
+docs/user_guides/*.docx
 docs/presentations/
 docs/templates/PTM/
 docs/templates/WPP_LabelFree/
 docs/templates/WSPP-SBT/
 docs/templates/WSPP_NORCOM_RATIOS_SBT/
 docs/templates/WSPP_PTM/
+docs/templates/PTM-compass/
 
 # studies
 studies
