@@ -341,7 +341,7 @@ def add_datparams(p, trule, val):
         trule['more_params'] = _add_more_params(trule['name'], str(val), trule['more_params'])
     
     # general case
-    # p == 'experiment','input','output','level','norm','low_level', 'int_level','hig_level','lowhig_level','inthig_level','inf_infiles'
+    # p == 'batch','input','output','level','norm','low_level', 'int_level','hig_level','lowhig_level','inthig_level','inf_infiles'
     else:
         l = '__WF_'+p.upper()+'__'
         # removes whitespaces before/after comma. removes end commas
@@ -697,7 +697,7 @@ def main(args):
     # 3. For Level_Creator: check if the column headers are in the input files and there are not repeated.
     # 4. For Rels_Creator: check if the column headers are in the input files and there are not repeated.
     # # -que ya existen las tablas de relaciones que necesitamos para todas las integraciones ???
-# TODO!!!!! 3. Check the MAIN_INPUTS table is full. All the files have one experiment name
+# TODO!!!!! 3. Check the MAIN_INPUTS table is full. All the files have one batch name
 # TODO!!! 4. Check the columns: level, inf_level and sup_level are not empty    
     logging.info("check the tasktable parameters for each command")
     global OUTPUTS_FOR_CMD
