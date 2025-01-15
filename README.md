@@ -36,7 +36,7 @@ You can read the help and the user guide in the <a href="https://cnic-proteomics
 
 In addition, you can download the iSanXoT User Guides for each release in PDF format:
 
-+ [User_Guide_iSanXoT-1.2.12.pdf](https://raw.githubusercontent.com/CNIC-Proteomics/iSanXoT/master/docs/user_guides/User_Guide_iSanXoT-1.2.12.pdf)
++ [User_Guide_iSanXoT-2.0.0.pdf](https://raw.githubusercontent.com/CNIC-Proteomics/iSanXoT/master/docs/user_guides/User_Guide_iSanXoT-2.0.0.pdf)
 
 ## Publications
 
