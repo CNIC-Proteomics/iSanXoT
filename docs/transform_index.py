@@ -48,34 +48,9 @@ def main():
     content = re.sub(regex, subst, content, 0, re.DOTALL)
 
     
-    # print("moving the table content to sidebar...", flush=True)
-    # # extracting the menu from user guide
-    # regex = r"<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>\n*<h1>Table of contents</h1>\n*</div>(.*?)<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>"
-    # match = re.search(regex, content, re.DOTALL)
-    # if match:
-    #     extracted_menu = ''
-    #     ext_menu = match.group(1)
-    #     # remove        
-    #     r = r"<p class.*?</p>"
-    #     matches = re.finditer(r, ext_menu, re.DOTALL)        
-    #     for matchNum, match in enumerate(matches, start=1):            
-    #         match_p = match.group()
-    #         rr = r"<a href.*?</a>"
-    #         match_a = re.search(rr, match_p, re.DOTALL)
-    #         if match_a:
-    #             match_a = match_a.group()            
-    #             # add the "a href" element into ONLY "p" element
-    #             # substitute with the capture match 
-    #             rrr = r"<p ([^>]*)>.*?</p>"
-    #             extracted_menu += re.sub(rrr, rf"<p \1>{match_a}</p>", match_p, 0, re.DOTALL)+'\n'
-    #     # remove the menu from user guide
-    #     subst = "<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>"
-    #     content = re.sub(regex, subst, content, 0, re.DOTALL)
-    #     # add the extracted menu to the new user guide
-    #     content = content.replace("<div id='sidebar'></div>",f"<div id='sidebar'>{extracted_menu}</div>")
     print("removing the table contents...", flush=True)
     # remove the menu from user guide
-    regex = r"<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>\n*<h1>Table of contents</h1>\n*</div>(.*?)<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>"
+    regex = r"<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>\n*<h1(.*?)Table\s*of\s*contents(.*?)<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>"
     subst = "<div style='border:none;border-top:solid windowtext 1.0pt;padding:1.0pt 0in 0in 0in'>"
     content = re.sub(regex, subst, content, 0, re.DOTALL)
         
