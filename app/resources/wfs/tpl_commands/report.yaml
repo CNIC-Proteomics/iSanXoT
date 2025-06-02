@@ -8,6 +8,7 @@
   cmds:
     - name: REPORT
       force: 0
+      # replace the input files that contains the "multiple infiles" (except its own outfiles)
       rule_infiles: multiple
       rules:
         - name: report

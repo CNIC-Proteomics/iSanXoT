@@ -6,6 +6,7 @@
 - name: LEVEL_CALIBRATOR
   description: Calibrate level
   cmds:
+    # Command that calibrate the level of the data.
     - name: LEVEL_CALIBRATOR
       force: 0
       rules:
@@ -22,6 +23,29 @@
               -a: __WF_LOW_LEVEL__
             k_const:
               -k: ''
+            var(x):
+              -v: ''
+          more_params: ''
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g '
+    
+    # Command that calibrates using the K and V from the level_calibrator command.
+    - name: DEPENDENT_CALIBRATOR
+      force: 0
+      rules:
+        # Rule: klibrate that is dependent of the klibrate command
+        - name: dependent_klibrate
+          discard_infiles: __WF_CALIBRATED_SAMPLE__
+          infiles:
+            -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
+            -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+            -K: __NAMDIR__/__WF_CALIBRATED_SAMPLE__/__WF_LOW_LEVEL___infoK.txt
+            -V: __NAMDIR__/__WF_CALIBRATED_SAMPLE__/__WF_LOW_LEVEL___infoK.txt
+          outfiles:
+            -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
+            -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL___infoK.txt
+          parameters:
+            anal:
+              -a: __WF_LOW_LEVEL__
             var(x):
               -v: ''
           more_params: ''
