@@ -60,22 +60,24 @@ def get_all_statsfiles(prefix, folders, suffix):
         sys.exit(f"ERROR!! There are not files for the level:{prefix}")
     return listfiles
 
-def read_infiles(file):
+def read_infiles(file, outliers):
     # read file
     # df = pd.read_csv(file, sep="\t", na_values=['NA', 'excluded'], low_memory=False)
     df = pd.read_csv(file, sep="\t", na_values=['NA'], low_memory=False)
     
-    # drop rows when the tags contains the 'out' word
-    # only works when the serie has string value, we check if not all values are nan
-    if 'tags' in df.columns and not df['tags'].isnull().all():
-        df = df[df['tags'].str.contains('out', na=False) == False]
+    # does not display the outliers
+    if not (outliers and outliers == "1"):
+        # drop rows when the tags contains the 'out' word
+        # only works when the serie has string value, we check if not all values are nan
+        if 'tags' in df.columns and not df['tags'].isnull().all():
+            df = df[df['tags'].str.contains('out', na=False) == False]
     
     # get the name of 'job' until the root folder
     df[COL_EXP] = common.get_job_name(file)
 
     return df
 
-def create_statsDF(ifiles, prefix, col_levels, param_vars):
+def create_statsDF(ifiles, prefix, col_levels, outliers, param_vars):
     '''
     Create report from list of input files
 
@@ -97,7 +99,7 @@ def create_statsDF(ifiles, prefix, col_levels, param_vars):
     logging.debug(f"{prefix}: read and concat files")
     l = []
     for ifile in ifiles:
-        l.append( read_infiles(ifile) ) # also add column EXP
+        l.append( read_infiles(ifile, outliers) ) # also add column EXP
     df = pd.concat(l)
 
     # get only the columns with the lower+higher+Name_Exp+Reported_Vars
@@ -252,6 +254,7 @@ def parse_arguments(argv):
     parser.add_argument('-rp',  '--rep_files',     help='Add intermediate report files')
     parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
     parser.add_argument('-d',   '--discard_levels',help='Headers of columns to eliminate separated by comma')
+    parser.add_argument('-O',   '--outliers',      help='Displays the outliers')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
     args = parser.parse_args(argv)
@@ -313,7 +316,7 @@ def main(argv):
     
     logging.info("create outStats df from list of input files")
     col_levels = [prefix_i] + [prefix_s] # provide the levels to extract
-    df = create_statsDF(listfiles, prefix, col_levels, param_vars)
+    df = create_statsDF(listfiles, prefix, col_levels, args.outliers, param_vars)
 
 
     

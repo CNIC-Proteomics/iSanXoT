@@ -26,6 +26,8 @@
               -v: __WF_REPORTED_VARS__
             show_level:
               -d: ''
+            outliers:
+              -O: ''
             filter:
               -f: ''
           more_params: ''

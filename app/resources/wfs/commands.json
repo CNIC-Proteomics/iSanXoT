@@ -275,12 +275,13 @@
   },{
     "id": "LEVEL_CALIBRATOR",
     "tasktable": [{
-      "id": "level_calibrator",
-      "sdesc": "This task-table corresponds to the module that calibrates the V values freely.",
-      "file": "level_calibrator.tsv",
+      "id": "combine_calibrator",
+      "title": "Combine Calibrator",
+      "sdesc": "This task-table combines the uncalibrated data (samples) and calibrates the V values freely.",
+      "file": "combine_calibrator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
-        { "type": "required", "id": "input", "name": "Sample folder(s)" },
+        { "type": "required", "id": "input_group", "name": "Sample folders" },
         { "type": "required", "id": "low_level", "name": "Lower level for integration", "dropdown": ["u_scan", "u_peptide", "u_protein", "u_gene"] },
         { "type": "required", "id": "hig_level", "name": "Higher level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "level", "name": "Name of calibrated level", "dropdown": ["scan","peptide", "protein", "gene"] },
@@ -290,17 +291,20 @@
         { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     },{
-      "id": "dependent_calibrator",
-      "sdesc": "The second task-table corresponds to the module that calibrates the V values using the K and V constants from the previous 'calibrated sample'.",
-      "file": "dependent_calibrator.tsv",
+      "id": "level_calibrator",
+      "title": "Level Calibrator",
+      "sdesc": "Calibrates the V values using the K and V constants from the previous 'calibrated sample'.",
+      "file": "level_calibrator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
         { "type": "required", "id": "input", "name": "Sample folder(s)" },
-        { "type": "required", "id": "calibrated_sample", "name": "Calibrated sample" },
         { "type": "required", "id": "low_level", "name": "Lower level for integration", "dropdown": ["u_scan", "u_peptide", "u_protein", "u_gene"] },
         { "type": "required", "id": "hig_level", "name": "Higher level for integration", "dropdown": ["peptide", "protein", "gene", "category"] },
         { "type": "required", "id": "level", "name": "Name of calibrated level", "dropdown": ["scan","peptide", "protein", "gene"] },
         { "type": "required", "id": "output", "name": "Output Sample folder" },
+        { "type": "optional", "id": "kv_file", "name": "Sample folder with combined calibration files" },
+        { "type": "optional", "id": "k_const", "name": "K-constant" },
+        { "type": "optional", "id": "var(x)", "name": "Var(x)" },
         { "type": "optional", "id": "more_params", "name": "More params" }
       ]
     }]
@@ -412,6 +416,7 @@
         { "type": "optional", "id": "show_level", "name": "Column headers to eliminate" },
         { "type": "optional", "id": "rep_file", "name": "Merge with report" },
         { "type": "optional", "id": "rel_file", "name": "Add columns from relation table" },
+        { "type": "optional", "id": "outliers", "name": "Show outliers", "checkbox": ["",1] },
         { "type": "optional", "id": "filter", "name": "Filter" }
     ]}]
   },{
