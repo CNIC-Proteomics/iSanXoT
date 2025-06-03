@@ -37,13 +37,19 @@ releases
 # docs
 docs/user_guides/*.docx
 docs/presentations/
-docs/templates/PTM/
-docs/templates/WPP_LabelFree/
-docs/templates/WSPP-SBT/
-docs/templates/WSPP_NORCOM_RATIOS_SBT/
-docs/templates/WSPP_PTM/
-docs/templates/PTM-compass/
-docs/templates/WPP_DIA/
+docs/templates/1.2.13/WSPP-SBT/
+docs/templates/1.2.13/WSPP_NORCOM_RATIOS_SBT/
+docs/templates/1.2.13/WPP_LabelFree/
+docs/templates/1.2.13/WSPP_PTM/
+docs/templates/1.2.13/PTM-compass/
+docs/templates/1.2.13/WPP_DIA/
+docs/templates/2.1.0/WSPP-SBT/
+docs/templates/2.1.0/WSPP_NORCOM_RATIOS_SBT/
+docs/templates/2.1.0/WPP_LabelFree/
+docs/templates/2.1.0/WSPP_PTM/
+docs/templates/2.1.0/PTM-compass/
+docs/templates/2.1.0/WPP_DIA/
+docs/templates/2.1.0/SCP/
 
 # studies
 studies
