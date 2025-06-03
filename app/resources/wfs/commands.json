@@ -277,7 +277,7 @@
     "tasktable": [{
       "id": "combine_calibrator",
       "title": "Combine Calibrator",
-      "sdesc": "This task-table combines the uncalibrated data (samples) and calibrates the V values freely.",
+      "sdesc": "This sub-module combines the uncalibrated data (samples) and calibrates the V values of a level.",
       "file": "combine_calibrator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
@@ -293,7 +293,7 @@
     },{
       "id": "level_calibrator",
       "title": "Level Calibrator",
-      "sdesc": "Calibrates the V values using the K and V constants from the previous 'calibrated sample'.",
+      "sdesc": "Calibrates the V values of a level freely or using the K and V constants from the previous 'calibrated sample'.",
       "file": "level_calibrator.tsv",
       "params": [
         { "type": "required", "id": "force", "name": "F. exec.", "checkbox": ["",1] },
