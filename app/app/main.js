@@ -56,7 +56,9 @@ let template = [
       { id: 'help_cmd-wkf-1', label: 'WKF 1: One-step in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_1:_One-step') } },
       { id: 'help_cmd-wkf-2', label: 'WKF 2: Step-by-step in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_2:_Step-by-step') } },
       { id: 'help_cmd-wkf-3', label: 'WKF 3: Posttranslationally in Labeled exp.', click() { mainWindow.webContents.send('openHelper', '_Workflow_3:_Quantification') } },
-      { id: 'help_cmd-wkf-4', label: 'WKF 4: Label-free', click() { mainWindow.webContents.send('openHelper', '_Workflow_4:_Label-free') } }
+      { id: 'help_cmd-wkf-4', label: 'WKF 4: Label-free', click() { mainWindow.webContents.send('openHelper', '_Workflow_4:_Label-free') } },
+      { id: 'help_cmd-wkf-5', label: 'WKF 5: PTM-compass', click() { mainWindow.webContents.send('openHelper', '_Toc199848041') } },
+      { id: 'help_cmd-wkf-6', label: 'WKF 6: Single-Cell Proteomics', click() { mainWindow.webContents.send('openHelper', '_Toc199848045') } }
     ]},
     { id: 'help_exec-wkf-template', label: 'Importing a workflow template', click() { mainWindow.webContents.send('openHelper', '_Toc152521038') } },
     { id: 'help_preparing-input', label: 'Creating the identification/quantification file from proteomics pipelines', click() { mainWindow.webContents.send('openHelper', '_Toc152521039') } },
