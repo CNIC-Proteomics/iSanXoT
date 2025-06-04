@@ -35,6 +35,8 @@ https://.../docs/template/2.1.0/...
 
 + The report program has been modified to accept the "outlier" parameter that shows or hides the outliers.
 
++ The report program removes any columns specified in the discard_headers parameter.
+
 + Workflow template for DIA (WPP_DIA) has been included.
 
 
