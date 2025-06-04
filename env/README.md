@@ -29,7 +29,7 @@ cd iSanXoT
 	git checkout master
 	git pull origin master
 	git merge develop
-	git push origin master  
+	git push origin master
 -->
 
 ## Execute iSanXoT in debug mode for Windows distribution
@@ -124,6 +124,10 @@ Open CMD
 cd app
 set ISANXOT_MODE=debug&& set ISANXOT_DEV=local&& "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\npm" start
 ```
+<!--
+cd app
+set ISANXOT_MODE=nodebug&& set ISANXOT_DEV=local&& "C:\Users\jmrodriguezc\iSanXoT\env\node-win-x64\npm" start
+-->
 
 Note: You have to write in this way:
 =debug&& (without space)

@@ -151,6 +151,11 @@ input:disabled, button:disabled {
     padding: 0;
 }
 
+div[id^="page-ttable-"] {
+    margin-bottom: 20px;
+}
+
+
 /* sidebar */
 #page .col-1 {
     min-width: 100px;

@@ -10,6 +10,7 @@
           </div>
           <div class="modal-body">
             <p>This module calibrates the V values of a level by performing the specified integration. This calibration is done using the “klibrate” program developed in the SanXoT software package [1].</p>
+            <p>This module is composed of two task tables: the first task table calibrates the V values freely, while the second calibrates the V values using the K and V constants from the previous "calibrated sample".</p>
             <h5>Simple parameters</h5>
             <p>The parameters/columns of this module are:</p>
             <ul>
@@ -19,7 +20,7 @@
               <li>Higher level for integration: indicates the name of higher-level for the integration during the calibration.</li>
               <li>Name of calibrated level: designates the level name.</li>
               <li>Output Sample folder: indicates the name of the folder where the data file of level will be saved.</li>
-            </ul>            
+            </ul>
             <p>
               For more detail, read the Help section: <a href="#" onclick="mainWindow.webContents.send('openHelper', '_LEVEL_CALIBRATOR')">Modules > LEVEL CALIBRATOR</a>
             </p>

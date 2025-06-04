@@ -43,6 +43,7 @@ TPL_DATE            = None
 RULE_SUFFIX         = None
 
 OUTFILES = []
+DISCARDED_OUTPUTS = []
 
 #########################
 # Import local packages #
@@ -92,12 +93,12 @@ def check_command_parameters(indata):
     # iterate over all commands
     for cmd,indat in indata.items():
         if 'ttables' in indat:
-            for df in indat['ttables']:
+            for ti,ttable in indat['ttables'].items():
                 outs = []
-                if 'output' in df.columns and 'level' in df.columns:
-                    outs = list((df['output']+'/'+df['level']).values)
-                if 'output' in df.columns and 'sup_level' in df.columns:
-                    outs = list((df['output']+'/'+df['sup_level']).values)
+                if 'output' in ttable.columns and 'level' in ttable.columns:
+                    outs = list((ttable['output']+'/'+ttable['level']).values)
+                if 'output' in ttable.columns and 'sup_level' in ttable.columns:
+                    outs = list((ttable['output']+'/'+ttable['sup_level']).values)
                 if outs:
                     outdirs.extend(outs)
                     for o in outs:
@@ -212,47 +213,60 @@ def _add_datparams_params(p, trule, dat):
     if trule['parameters'] is not None and p in trule['parameters']:
         fk = list(trule['parameters'][p].keys())
         if fk:
-            k = str(fk[0])
-            # Exceptions in the 'Variance' parameters:
-            # If the value is not false, apply the new variance
-            # Otherwise, by default
-            if p.endswith('var(x)') and dat != 'nan':
-                # delete the infile with the variance (by default)
-                if '-V' in trule['infiles']: del trule['infiles']['-V']
-                # add variance seed
-                trule['parameters'][p][k] = dat
-                # force the parameters
-                # but check if not already exist the -f param (ssanxotsieve case)
-                c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
-                if not any(c):
-                    trule['more_params'] = trule['more_params']+' -f'
-            # Exceptions in the 'K-constant' parameters:
-            # If the value is not false, apply the new variance
-            # Otherwise, by default
-            elif p.endswith('k_const') and dat != 'nan':
-                # add variance seed
-                trule['parameters'][p][k] = dat
-                # force the parameters
-                # but check if not already exist the -f param (ssanxotsieve case)
-                c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
-                if not any(c):
-                    trule['more_params'] = trule['more_params']+' -f'
-            # Exceptions in the 'Tag' parameters:
-            # Update the template values (not overwrite from the given data)
-            elif p.endswith('tag') and dat != 'nan':
-                if trule['parameters'][p][k] == '':
+            # k = str(fk[0])
+            for k in fk:
+                # Exceptions in the 'Variance' parameters:
+                # If the value is not false, apply the new variance
+                # Otherwise, by default
+                if p.endswith('var(x)') and dat != 'nan':
+                    # delete the infile with the variance (by default)
+                    if '-V' in trule['infiles']: del trule['infiles']['-V']
+                    # add variance seed
                     trule['parameters'][p][k] = dat
-                else:
-                    trule['parameters'][p][k] += ' & '+ dat
-            # The rest of kind of parameters
-            elif dat and dat != 'nan':
-                trule['parameters'][p][k] = dat
+                    # force the parameters
+                    # but check if not already exist the -f param (ssanxotsieve case)
+                    c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                    if not any(c):
+                        trule['more_params'] = trule['more_params']+' -f'
+                # Exceptions in the 'K-constant' parameters:
+                # If the value is not false, apply the new variance
+                # Otherwise, by default
+                elif p.endswith('k_const') and dat != 'nan':
+                    # add variance seed
+                    trule['parameters'][p][k] = dat
+                    # force the parameters
+                    # but check if not already exist the -f param (ssanxotsieve case)
+                    c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                    if not any(c):
+                        trule['more_params'] = trule['more_params']+' -f'
+                # Exceptions in the 'Tag' parameters:
+                # Update the template values (not overwrite from the given data)
+                elif p.endswith('tag') and dat != 'nan':
+                    if trule['parameters'][p][k] == '':
+                        trule['parameters'][p][k] = dat
+                    else:
+                        trule['parameters'][p][k] += ' & '+ dat
+                # The rest of kind of parameters
+                elif dat and dat != 'nan':
+                    trule['parameters'][p][k] = dat
 
     # add optional parameters into 'infiles' coming from the task-table
     # the tag parameter to the program, it is the same name than the header table
     elif trule['infiles'] is not None and '--'+p in trule['infiles']:
         if dat and dat != 'nan':
-            trule['infiles']['--'+p] = dat
+            if p.endswith('kv_file'):
+                # the "--kv_file" is changed to "-K" and "-V" parameters
+                trule['infiles']['-K'] = dat
+                trule['infiles']['-V'] = dat
+                # remove auxiliar parameter tag
+                del trule['infiles']['--'+p]
+                # force the parameters
+                # but check if not already exist the -f param (ssanxotsieve case)
+                c = [ True for k,v in trule['parameters'].items() if '-f' in list(v.keys()) ]
+                if not any(c):
+                    trule['more_params'] = trule['more_params']+' -f'
+            else:
+                trule['infiles']['--'+p] = dat
         
 
 def _add_datparams_moreparams(p, trule, dat):
@@ -307,6 +321,23 @@ def _transform_relationship_path(vals):
         return ";".join(l)
     else:
         return ''
+    
+# return the kalibrte info file from the sample output folder
+def _transform_kalibrate_path(val):
+    l = []
+    val = val.strip()
+    # the relate table could be a full path or only a name of RT in the rels directory
+    if val != 'nan' and val != '':
+        if os.path.isfile(val):
+            l.append(val)
+        else:
+            l.append( "{}".format(f"__NAMDIR__/{val}/__WF_LOW_LEVEL___infoK.txt") )
+    if len(l) > 0:
+        return ";".join(l)
+    else:
+        return ''
+    
+
 
 def add_datparams(p, trule, val):
     # remove all the leading and trailing whitespace characters
@@ -335,6 +366,15 @@ def add_datparams(p, trule, val):
         # transform the input file
         v = __IDQFILE__ if val == '' or val == 'nan' else val
         _add_datparams_params(p, trule, v)
+
+    elif p == 'kv_file':
+        l = '__WF_'+p.upper()+'__'
+        # transform the input file
+        v = _transform_kalibrate_path(val)
+        _add_datparams_params(p, trule, v)
+        # discard this sample (output)
+        global DISCARDED_OUTPUTS
+        DISCARDED_OUTPUTS.append(val)
 
     elif p == 'more_params':
         # _add_datparams_moreparams(p, trule, val)
@@ -436,26 +476,25 @@ def add_cmd(row, icmd):
     
     return cmds
 
-def add_params_from_ttable(icmd, indat):
+def add_params_from_ttable(icmd, df):
     '''
     Add the parameters to cmd from task-table list
     '''
     # deep copy the input cmd
     cmd = copy.deepcopy(icmd)
     
-    for df in indat['ttables']:
-        # lookthrough all columns and add the parameters
-        for col in df.columns:
-            # join the unique values
-            vals = ",".join(df[col].unique()).replace(" ", "")
-            # go through the rules
-            for i in range(len(cmd['rules'])):
-                trule = cmd['rules'][i]
-                # add only the given parameters for each rule
-                add_datparams(col, trule, vals)        
-        # Add the label of forced execution
-        if 'force' in df:
-            cmd['force'] = int(df['force'].any(skipna=False))
+    # lookthrough all columns and add the parameters
+    for col in df.columns:
+        # join the unique values
+        vals = ",".join(df[col].unique()).replace(" ", "")
+        # go through the rules
+        for i in range(len(cmd['rules'])):
+            trule = cmd['rules'][i]
+            # add only the given parameters for each rule
+            add_datparams(col, trule, vals)        
+    # Add the label of forced execution
+    if 'force' in df:
+        cmd['force'] = int(df['force'].any(skipna=False))
     return cmd
         
 def _param_str_to_dict(s):
@@ -609,9 +648,12 @@ def add_recursive_cmds(icmd):
         files_ast = [file for trule in trules for file in trule['infiles'].values() if '/*/' in file]
         if len(files_ast) > 0:
             # for each file, if the file matches, then get the folder that is not equal
-            folders_exp = []
+            aux_folders_exp = []
             for file in np.unique(files_ast):
-                folders_exp += _get_unmatch_folder(file, OUTFILES)
+                aux_folders_exp += _get_unmatch_folder(file, OUTFILES)
+            # remove the discarded outputs
+            folders_exp = [i for i in aux_folders_exp if i not in DISCARDED_OUTPUTS]
+            
             # for each unmatched folder, create a list of cmds and replace the '*' to unmatched folder
             # get the unique folders but keeping the original orders
             for folder_exp in list(dict.fromkeys(folders_exp)):
@@ -621,6 +663,9 @@ def add_recursive_cmds(icmd):
                 # update the output files
                 OUTFILES += [ofile for cmds in cmds_new for rule_new in cmds['rules'] for ofile in rule_new['outfiles'].values()]
                 OUTFILES = list(dict.fromkeys(OUTFILES)) # get unique without sort
+            # the new list is equal than the input
+            else:
+                cmds_new.append(cmd)
         # the new list is equal than the input
         else:
             cmds_new.append(cmd)
@@ -753,7 +798,8 @@ def main(args):
                 if 'unique_exec' in cmd and cmd['unique_exec']:
                     # add the parameters from task-ables if apply
                     if 'ttables' in indat:
-                        cmd = add_params_from_ttable(cmd, indat)
+                        ti,ttables = next(iter(indat['ttables'].items())) # only one ttable
+                        cmd = add_params_from_ttable(cmd, ttables)
                     # remove the infiles/outfiles/parameters that have not valid value, for instance, the optional table as input file
                     cmd = remove_ttable_param(cmd, '^__')
                     # add into cmd
@@ -761,10 +807,13 @@ def main(args):
                 else:
                     if 'ttables' in indat:
                         # create a new list of cmds based on the values for each row
-                        for df in indat['ttables']:
-                            c = list(df.apply( add_cmd, args=(cmd, ), axis=1))
-                            c = [i for sublist in c for i in sublist]
-                            cmds = cmds + c
+                        for ti,ttable in indat['ttables'].items():
+                            if cmd['name'].lower() == ti.lower(): # check if the task-table is for the current command
+                                # reversed ttable for cases when optional parameter has dependency of required parameters, as "kv_file" parameter (level_calibrator cmd)
+                                ttable_reversed = ttable[ttable.columns[::-1]]
+                                c = list(ttable_reversed.apply( add_cmd, args=(cmd, ), axis=1))
+                                c = [i for sublist in c for i in sublist]
+                                cmds = cmds + c
             # add the list of cmds into cmd template
             cmd_tpl['cmds'] = cmds
             # add the template
@@ -792,6 +841,8 @@ def main(args):
                 OUTFILES += ofiles
             # get the new list of commands for '*' inputs (and also update the OUTFILES)
             cmds = add_recursive_cmds(tpl['commands'][i]['cmds'][j])
+            # replace constant within command tpls
+            cmds = replace_val_rec(cmds, repl)
             cmds_new.append(cmds)
         # update with the new list of commands
         cmds_new = [i for sublist in cmds_new for i in sublist]

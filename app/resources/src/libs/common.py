@@ -124,8 +124,9 @@ def read_commands_from_tables(ttablefiles):
         indata[c] = {}
         # if ttable exists, it includes it
         if 'ttables' in ttablefile:
-            indata[c]['ttables']=[]
+            indata[c]['ttables']={}
             for ttable in ttablefile['ttables']:
+                ti = ttable['id']
                 tf = ttable['file']
                 with open(tf, "r") as file:
                     idta = file.read()
@@ -135,7 +136,7 @@ def read_commands_from_tables(ttablefiles):
                 d = pd.read_csv(io.StringIO(idta), sep='\t', dtype=str, skip_blank_lines=True).dropna(how="all").dropna(how="all", axis=1).astype('str')
                 if not d.empty:
                     d = d.replace('\\','/')
-                    indata[c]['ttables'].append(d)
+                    indata[c]['ttables'][ti] = d
     return indata
 
 

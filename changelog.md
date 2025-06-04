@@ -1,8 +1,47 @@
 ___
+## 2.1.0
+
+### Date 📅 *2025_06*
+
+### Changes in the Graphical User Interface
+
++ Important! The CALIBRATE and REPORT modules are not compatible with previous versions of iSanXoT.
+
++ Important! The links to the workflow templates have been updated:
+
+Templates for version 1.2.13 and earlier have been moved to:
+https://.../docs/template/1.2.13/...
+(Note: A version-specific folder has been added.)
+
+Templates for the current version (2.1.0) are also located in a version-specific folder:
+https://.../docs/template/2.1.0/...
+
+
++ CALIBRATE: This module now includes a task table for calibrating samples and another task table for dependent calibrations that use the K and V values from the previous calibration.
+
++ REPORT: New parameter that shows or hides the outliers. By default, outliers are not displayed (option unchecked).
+
++ Updated documentation for the CALIBRATE and REPORT modules.
+
++ Fixing a bug showing the help documents.
+
++ Render the new Calibration Task-Tables.
+
++ Add “Insert Row Above” and “Insert Row Below” submenus in the right-click menu of Task-Tables.
+
+### Changes in the Code Workflow
+
++ The TABLE2CFG has been modified to accept several commands for the template. See CALIBRATE module.
+
++ The report program has been modified to accept the "outlier" parameter that shows or hides the outliers.
+
++ Workflow template for DIA (WPP_DIA) has been included.
+
+
+___
 ## 2.0.0
-```
-DATE: 2024_11
-```
+
+### Date 📅 *2024_11*
 
 ### Highlights
 

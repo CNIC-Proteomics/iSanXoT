@@ -6,6 +6,40 @@
 - name: LEVEL_CALIBRATOR
   description: Calibrate level
   cmds:
+    # Command that combines the given samples and then calibrate the data freely.
+    - name: COMBINE_CALIBRATOR
+      force: 0
+      # replace the input files that contains the "multiple infiles" (except its own outfiles)
+      rule_infiles: multiple
+      rules:
+        # Rule: create a file with the combination of samples to calibrate ---
+        - name: combine_samples
+          infiles:
+            -ii: __NAMDIR__/__WF_INPUT_GROUP__/__WF_LOW_LEVEL__.tsv
+          outfiles:
+            -o: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__.tsv
+          parameters:
+          more_params: ''
+          # depending how the parameters are provided:
+          # pfile, the parameters are provided using a file. For that, 'exec_prog.py' is used as a proxy script.
+          # inline, the parameters are provided in the command line. By default.
+          cline_type: 'pfile'
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_WFS_HOME__/exec_prog.py"  "__ISANXOT_SRC_HOME__/cmds/joinElements.py" '
+        # Rule: klibrate ---
+        - name: combine_klibrate
+          infiles:
+            -d: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL__.tsv
+            -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+          outfiles:
+            -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
+            -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL___infoK.txt
+          parameters:
+            anal:
+              -a: __WF_LOW_LEVEL__
+          more_params: ''
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g -S '
+          
+    # Command that calibrate the level of the data freely or using the K and V from the previous command.
     - name: LEVEL_CALIBRATOR
       force: 0
       rules:
@@ -14,6 +48,8 @@
           infiles:
             -d: __NAMDIR__/__WF_INPUT__/__WF_LOW_LEVEL__.tsv
             -r: __RELDIR__/__WF_LOW_LEVEL__2__WF_HIG_LEVEL__.tsv
+            # Optional input parameter if "kv_file" is provideed. Then, the "--kv_file" is changed to "-K" and "-V" parameters
+            --kv_file: ''
           outfiles:
             -o: __NAMDIR__/__WF_OUTPUT__/__WF_LEVEL__.tsv
             -L: __NAMDIR__/__WF_OUTPUT__/__WF_LOW_LEVEL___infoK.txt
@@ -25,5 +61,5 @@
             var(x):
               -v: ''
           more_params: ''
-          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g '
+          cline: '"__ISANXOT_PYTHON_EXEC__"  __ISANXOT_PYTHON_PARAMS__  "__ISANXOT_SRC_HOME__/SanXoT/klibrate.py" -g '    
 ###################

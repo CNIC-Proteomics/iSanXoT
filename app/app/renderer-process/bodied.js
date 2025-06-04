@@ -156,9 +156,15 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
             let ttable = cmd['tasktable'][k];
             let ttable_id = ttable['id'];
             let ttable_file = `${wkf_dir}/${ttable['file']}`;
+            let ttable_title = ('title' in ttable) ? ttable['title'] : '';
+            let ttable_sdesc = ('sdesc' in ttable) ? ttable['sdesc'] : '';
 
             // create html page if not apply
-            if ( $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).length == 0 ) $(`#page-cmd-${cmd_id} `).append(`<div id="page-ttable-${ttable_id}"></div>`);
+            if ( $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id}`).length == 0 ) $(`#page-cmd-${cmd_id} `).append(`<div id="page-ttable-${ttable_id}"><div class="title"><h6></h6></div><div class="sdesc"><p></p></div></div>`);
+
+            // add the title and short description of task-table
+            $(`#page-ttable-${ttable_id} .title h6`).html(ttable_title);
+            $(`#page-ttable-${ttable_id} .sdesc p`).html(ttable_sdesc);
 
             // get task-table data
             let ttable_data = {};          
@@ -251,24 +257,6 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
                   if (cmd_params_readonlycol_index && cmd_params_readonlycol_index.length > 0 && cmd_params_readonlycol_index.includes(col)) {
                     cellProperties.readOnly = true;
                   }
-                  // // column with handsontables inside (coming from the wortkflow.json config file)
-                  // if (cmd_params_hottable_index && cmd_params_hottable_index.length > 0 && cmd_params_hottable_index.includes(col)) {
-                  //   let hottable_header = cmd_params_hottable[col].header;
-                  //   let hottable_data = [];
-                  //   for ( k in cmd_params_hottable[col].data) {
-                  //     hottable_data.push( [ k, cmd_params_hottable[col].data[k] ] );
-                  //   }
-                  //   this.type = 'handsontable';
-                  //   this.handsontable = {
-                  //     colHeaders: hottable_header,
-                  //     autoColumnSize: true,
-                  //     data: hottable_data,
-                  //     getValue: function() {
-                  //       var selection = this.getSelectedLast();
-                  //       return this.getSourceDataAtRow(selection[0])[0]; // return the first column
-                  //     },
-                  //   };
-                  // }
                   // column with handsontables inside (coming from the wortkflow.json config file)
                   if (cmd_params_select_index && cmd_params_select_index.length > 0 && cmd_params_select_index.includes(col)) {
                     this.editor = 'select';
@@ -302,7 +290,7 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
               afterCut: function(changes) { clipboardCache = sheetclip.stringify(changes); },
               // we want to be sure that our cache is up to date, even if someone pastes data from another source than our tables.
               afterPaste: function(changes) { clipboardCache = sheetclip.stringify(changes); },
-              contextMenu: ['undo','redo','make_read_only','---------','remove_col','remove_row','---------','copy','cut',
+              contextMenu: ['undo','redo','make_read_only','---------','row_above','row_below','remove_row','---------','copy','cut',
                 {
                   key: 'paste',
                   name: 'Paste',
@@ -318,13 +306,32 @@ for (var h = 0; h < wf['tabs'].length; h++) { // go through tabs
                 }
               ],  
             });
+            // render current tasktable
             $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
-
           }
-
         } // end tasktable in cmd
       }
     } // end loop of commands
+
+
+    /* Render all tables */
+
+    // for (var i = 0; i < tab['works'].length; i++) { // go through works
+    //   // get variables
+    //   let wk = tab['works'][i];
+    //   for (var j = 0; j < wk['cmds'].length; j++) { // go through cmds
+    //     let cmd = wk['cmds'][j];
+    //     let cmd_id = cmd['id'];
+    //     for (let k=0; k < cmd['tasktable'].length; k++) { // go through ttables
+    //       let ttable = cmd['tasktable'][k];
+    //       let ttable_id = ttable['id'];
+    //       console.log(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`);
+    //       $(`#page-cmd-${cmd_id} #page-ttable-${ttable_id} .tasktable`).handsontable('render');
+    //     }
+    //   }
+    // }
+    // hardcore: render the dependent calibrator tasktable
+    $(`#page-cmd-LEVEL_CALIBRATOR #page-ttable-level_calibrator .tasktable`).handsontable('render');
 
     /* Init the Work tab */
 
