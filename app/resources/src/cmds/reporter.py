@@ -253,7 +253,7 @@ def parse_arguments(argv):
     parser.add_argument('-v',   '--vars',          help='List of reported variables separated by comma')
     parser.add_argument('-rp',  '--rep_files',     help='Add intermediate report files')
     parser.add_argument('-rl',  '--rel_files',     help='Multiple relationship files (external or not) separated by semicolon')
-    parser.add_argument('-d',   '--discard_levels',help='Headers of columns to eliminate separated by comma')
+    parser.add_argument('-d',   '--discard_headers',help='Headers of columns to eliminate separated by comma')
     parser.add_argument('-O',   '--outliers',      help='Displays the outliers')
     parser.add_argument('-f',   '--filter',        help='Boolean expression for the filtering of report')
     parser.add_argument('-vv', dest='verbose', action='store_true', help="Increase output verbosity")
@@ -355,11 +355,11 @@ def main(argv):
     logging.info("get the columns in order")
     # get the LEVEL columns
     # get the discarded levels columns. to show. By default, get all LEVEL columns
-    discard_levels = []
-    if args.discard_levels:
-        discard_levels = re.split(r'\s*,\s*', args.discard_levels.strip())
+    discard_headers = []
+    if args.discard_headers:
+        discard_headers = re.split(r'\s*,\s*', args.discard_headers.strip())
     # get the column levels discarding the given columns
-    cols_levels = [c for c in df.columns if c[1] == 'LEVEL' and c[0] not in discard_levels]
+    cols_levels = [c for c in df.columns if c[1] == 'LEVEL' and c[0] not in discard_headers]
     # Get the REPORTED VARS columns
     # Get two list: one with the 'n_' and another with the rest
     cols_vars = []
@@ -369,6 +369,8 @@ def main(argv):
             cols_vars_n.append(c)
         else:
             cols_vars.append(c)
+    # get the column vars discarding the given columns
+    cols_vars = [c for c in cols_vars if c[0] not in discard_headers]
     # Init the REL columns
     cols_rels = [c for c in df.columns if c[1] == 'REL']
     # get the columns based on the columns (show cols)
