@@ -241,7 +241,8 @@ function offsetAnchor() {
       <li><a href="#_Workflow_2:_Step-by-step">Wkf 2: Step-by-step quantification and sample combination</a></li>
       <li><a href="#_Workflow_3:_Quantification">Wkf 3: PTMs quantification</a></li>
       <li><a href="#_Workflow_4:_Label-free">Wkf 4: Label-free quantification</a></li>
-      <li><a href="#_Toc187758918">Wkf 5: PTM-compass</a></li>
+      <li><a href="#_Toc199848041">Wkf 5: PTM-compass</a></li>
+      <li><a href="#_Toc199848045">Wkf 6: Single-Cell Proteomics</a></li>
     </ul>
   </li>
   <li><a href="#_Toc152521038">Importing a workflow template</a></li>
