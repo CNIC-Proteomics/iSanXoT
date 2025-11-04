@@ -1,3 +1,16 @@
+## 2.1.1
+
+### Date 📅 *2025_11*
+
+### Changes in the Graphical User Interface
+
++ Renaming the 'protein' column to 'proteins' due to the new version of MSFragger (4.2).
+
+### Changes in the Code Workflow
+
++ Bug fix (Klibrate): Vcal values in the smoothing method are now properly filled. Now, NA/NaN values are handled using a combination of forward fill (ffill) and backward fill (bfill).
+
+
 ___
 ## 2.1.0
 
