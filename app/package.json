@@ -1,6 +1,6 @@
 {
   "name": "iSanXoT",
-  "version": "2.1.1-cnic",
+  "version": "2.1.1",
   "description": "A bioinformatic application for quantitative high-throughput proteomics using SanXoT package",
   "repository": {
     "type": "git",
