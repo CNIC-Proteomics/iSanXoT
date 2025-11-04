@@ -741,8 +741,8 @@ def idXVsmoothing(inputRawData, dataCollected):
         # in the case the 
         df = pd.merge(df1, df3, left_on='V', right_on='W', how='left')
         df = df.sort_values(['V'])
-        # fill NA/NaN values using the specified method: 'bfill' use next valid observation to fill gap.
-        df['Vcal'] = df['smoothMAD'].fillna(method='bfill')
+        # fill NA/NaN values using the specified method combining forward fill (ffill) and backward fill (bfill)
+        df['Vcal'] = df['smoothMAD'].fillna(method='bfill').fillna(method='ffill')
         
         # create output
         df_out = df[['id','X','Vcal']]

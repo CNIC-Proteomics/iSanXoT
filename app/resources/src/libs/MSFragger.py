@@ -6,10 +6,10 @@ import pandas as pd
 ###################
 # Local variables #
 ###################
-COLS_NEEDED = ['scannum','hit_rank','charge','peptide','modification_info','protein']
+COLS_NEEDED = ['scannum','hit_rank','charge','peptide','modification_info','proteins']
 COLS_NEEDED_acid = [
     'hit_rank', # for preProcessing func.
-    'protein', # for tagDecoy func.
+    'proteins', # for tagDecoy func.
     'massdiff', # for Jump func.
     'calc_neutral_pep_mass', # for Jump func.
     'peptide', # for createPeptideId func.
@@ -34,7 +34,7 @@ def targetdecoy(df, tagDecoy, sep):
     '''
     Assing target and decoy proteins
     '''    
-    z = list(df["protein"].str.split(sep))
+    z = list(df["proteins"].str.split(sep))
     p = [(all(tagDecoy  in item for item in i )) if type(i) is list else True for i in z]
     r = [0 if i==True else 1 for i in p]
     return r
